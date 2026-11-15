@@ -13,13 +13,15 @@ Try it in a browser: the [published dashboard](https://jeerun.github.io/flame-in
 or open `console/index.html` from a checkout.
 [Watch the short desktop demo](docs/crew-console-demo.mp4).
 
-![NASA research on the crew console, showing activities, investigation rankings and the selected NASA record.](docs/console-preview.png)
+![Research home with the orbit map and a short summary of the selected investigation.](docs/console-preview.png)
 
 - **NASA research** (the home page) summarizes the 24 combustion investigations in
   NASA's PSI database and ranks them for the question you pick: prevention,
   detection, suppression, or cabin air (the oxygen-rich, low-pressure air planned for
-  the Moon Base). The list can be switched to an orbit view: the question sits in the
-  middle and the investigations circle it, the most relevant nearest the centre.
+  the Moon Base). The page opens in Orbit view, with the most relevant investigations
+  nearest the centre. Pick one for a short summary. **Find** (F) searches all 24
+  by name, full title or PSI ID. **Investigation details** opens the record and
+  **List view** (X) shows the full ranking for the selected topic.
 - **Oxygen map** (Y on the research page) puts the tests of seven investigations on
   one oxygen axis, read from nine of NASA's own test tables. It has three levels of
   detail: the range each investigation covered, every test as a dot, and every test
@@ -28,16 +30,21 @@ or open `console/index.html` from a checkout.
   20 CFI-G rows meet the brief’s thresholds. The CFI source repeats eight rows,
   and FLEX has no flight/ground label per row. Select an investigation to see its
   measurements across all three views. [Mobile pressure chart](docs/oxygen-map-phone.png)
+- **Moon evidence check.** Open **Research tools → Moon evidence check** (G) and
+  decide whether those 20 rows support using a solid panel on the Moon. All 20
+  describe gas flames, and the source table gives no gravity measurement per row.
+  Inspect each test's original oxygen fraction, pressure in bar and CSV line in
+  the offline activity. [Moon evidence preview](docs/moon-evidence-preview.png)
 - **Earth or orbit?** Pick which environment gave the longer burn for a Saffire-II
   material, then reveal the measured lengths side by side (Research, LT or E).
 - **Read the sensors.** See the initial and final oxygen readings from BASS-II,
   then reveal how CO and CO₂ changed in the same test (Research, RT or N).
-- **[Ember evidence lab](console/ember-lab.html).** On Research, select **Open evidence lab**
-  (L or left-stick click). In **FLEX footage**, compare two candidate frames with the original NASA
+- **[Ember evidence lab](console/ember-lab.html).** Open **Research tools → Evidence lab**
+  (or press L or the left stick). In **FLEX footage**, compare two candidate frames with the original NASA
   movie and select a timestamp to seek there. In **Ask the table**, try “Which tests recorded unchanged oxygen
-  and rising CO?” and expand a match to inspect its original BASS-II row. The saved frame review
-  and three sample questions open offline. Start the Python dashboard with Ollama available
-  here or on its configured peer for a fresh film review or a new English question.
+  and rising CO?” and expand a match to inspect its original BASS-II row. The NASA clip,
+  saved frame review and three sample questions work offline. A fresh film review or new
+  English question uses the Python dashboard with Ollama available here or on its configured peer.
 - **Find counterexample.** From a selected FLEX star, compare a real test with the
   same fuel and gas mix and the opposite outcome. The panel shows differences in
   pressure and droplet size alongside both fitted estimates (Console, E or A in the zoomed map).
@@ -70,7 +77,8 @@ or open `console/index.html` from a checkout.
 - **The real tests go with you.** One button downloads the 252 FLEX tests in use,
   with the model's prediction beside each, as a CSV file. Another sends that file to
   the computer that serves the dashboard, so it is not left on the handheld.
-- **Share view.** From a selected investigation or a FLEX reading, copy a link to
+- **Share view.** Select **Share** beside **NASA source** or the **Share view**
+  button on a FLEX reading to copy a link to
   the same question, investigation and list/orbit view, or the same fuel, settings,
   cabin preset and selected FLEX test. On a local file or localhost, copy the view
   code and paste it under **Share view → Open a shared view** in another copy.
@@ -105,6 +113,8 @@ Working on real data (Nov 15, 2026).
   use remain unverified. The preview demo was captured in desktop Edge.
   [Device test record](CLAUDE.md)
 - The official submission form is still pending.
+- Open `console/index.html` from a checkout to try the orbit-first home,
+  investigation search and Moon evidence check. [Pull request #10](https://github.com/jeerun/flame-in-freefall/pull/10)
 
 ## Run it
 
@@ -171,7 +181,7 @@ B closes.
 
 | Where | Gamepad | Keyboard |
 |---|---|---|
-| NASA research | Left/Right change the question. Up/Down move through the ranked list. X switches between the list and the orbit view. In the orbit view the right stick points at an investigation. Y (or View) opens the Oxygen map. | Arrows, X, O |
+| NASA research | Left/Right change the question. Up/Down move through the ranked list. X switches between the list and the orbit view. In the orbit view the right stick points at an investigation. Y (or View) opens the Oxygen map. | Arrows, X, O, F to find an investigation, G for the Moon evidence check |
 | Research evidence activities | LT opens Earth or orbit?, RT opens Read the sensors. D-pad Up/Down changes case, Left/Right chooses an answer, A reveals, B closes. | E / N, arrows, Enter, Esc |
 | FLEX counterexample | A on the zoomed star map opens the panel. Left/Right moves between actions, A activates, B closes. | E, arrows, Enter, Esc |
 | Oxygen map | Up/Down pick an investigation. Left/Right or X change the level of detail. B or Y closes. | Arrows, 1 to 3, X, Esc |
@@ -207,6 +217,7 @@ they were checked with. From the repo root:
     python data/clean/build_research.py
     python data/clean/build_tables.py
     python data/clean/build_evidence.py
+    python data/clean/build_moon_evidence.py
     python data/clean/fetch_psi_tables.py --verify
 
 The first builds `data/clean/flex_clean.csv` from the raw table. The second builds
@@ -218,7 +229,8 @@ re-run gives the same files. The fourth joins the PSI records with the notes in
 `data/clean/research_notes.json` and writes `console/research.js`. The fifth reads
 the oxygen and pressure of each test from the PSI test tables and writes
 `console/tables.js` and the counts Ember is given. The sixth builds the
-Saffire-II and BASS-II evidence cases. The last command checks the original download
+Saffire-II and BASS-II evidence cases. The seventh exports the Moon evidence rows
+and their CSV line references to `console/moon-evidence-data.js`. The last command checks the original download
 hashes offline, restoring CRLF line endings in memory when necessary.
 
 After changing the shipped model or CSV layout, run `node server/export_digest.cjs`, review the new export and update `CSV_SHA256` in `server/serve.py`. The server verifies the digest before storing or forwarding a file.
@@ -393,7 +405,7 @@ candidates, page patch, tests and write-up) was produced by a team member with
 Claude. Its results were re-run on the team's PC and checked with a separate script
 before the console was switched to it.
 
-OpenAI Codex also helped implement and test the three evidence activities, the
+OpenAI Codex also helped implement and test the evidence activities, investigation search, the
 responsive dashboard layout, the console and server fixes, and the captioned browser demonstration. Its scenes
 show the actual dashboard and NASA table values.
 
