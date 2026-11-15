@@ -599,6 +599,7 @@ window.FLAME_MODEL = {
       if (M.meta.auc != null) fine += "Checked on tests held out of training: AUC " + M.meta.auc.toFixed(2)
         + " for telling the two outcomes apart (0.5 is a coin flip, 1 is perfect)"
         + (M.meta.burn_rate_mae != null ? ", and burning rate off by " + M.meta.burn_rate_mae + " mm²/s on average" : "") + ". ";
+      fine += "\"Goes out\" means the visible flame: FLEX found that fuel can keep reacting after it, in a cool flame. ";
     }
     $("sheetFine").textContent = fine + "This is a model reading for study and planning, not a crew procedure.";
   }

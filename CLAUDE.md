@@ -62,7 +62,13 @@ Done:
   simulated standard gamepad (d-pad, left stick, A, B, Y, hold to repeat) all work.
   Without `model.js` the page still falls back to the mock model and its banner.
 
+- Step 5 done: `docs/sources.md` is filled. Every source in it was opened and read
+  on Nov 14 (the PSI-69 page in a browser, the FLEX requirements PDF as text, the
+  NTRS and NASA pages). The explanation panel gained one sourced sentence: "goes
+  out" means the visible flame, and FLEX found cool flames after it.
+
 Not done:
+- Step 4 is waiting for the owner to paste the official challenge page text.
 - Console has not been tried on the real Legion Go yet (a simulated gamepad is not
   the real one). If the gamepad moves the mouse instead, the device is in desktop
   mode and needs gamepad mode.
@@ -71,7 +77,7 @@ Not done:
   work while the team's "looking for members" box is ticked; untick it after all
   five are in. Teammates must also be invited to this repo as collaborators.
 - Nobody has read the official challenge page closely yet. Do that before adding features.
-- `docs/sources.md` and `docs/submission.md` are still empty templates.
+- `docs/submission.md` is still an empty template.
 
 ## Next steps, in order
 
@@ -85,8 +91,9 @@ and update Status above each time.
 3. DONE. Check the console in a browser with `model.js`, then commit `model.js`.
 4. Ask the owner for the text of the official challenge page, compare it with what
    we built, and propose the smallest thing that closes any gap.
-5. Fill `docs/sources.md`: NASA dataset, DOI, link, download date, and a source for
-   every sentence shown on screen.
+5. DONE. Fill `docs/sources.md`: NASA dataset, DOI, link, download date, and a source
+   for every sentence shown on screen. If the wording on screen changes, update the
+   claims table in that file too.
 6. Fill `docs/submission.md` in English, every form field, with the accuracy
    numbers and the use of AI.
 7. Update `README.md`: real status, how to run, data used, use of AI.
