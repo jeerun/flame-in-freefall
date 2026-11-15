@@ -52,7 +52,7 @@ async function assertDisplay(page,fuel,values){
   assert.equal((await page.locator('#pKeep').innerText()).trim(),String(e.keep));
   assert.equal((await page.locator('#pOut').innerText()).trim(),String(100-e.keep));
   assert.equal((await page.locator('#kVal').innerText()).trim(),e.K);
-  assert.match(await page.locator('#meter').getAttribute('aria-label'),new RegExp(`fuel is gone: ${e.keep} percent`));
+  assert.match(await page.locator('#meter').getAttribute('aria-label'),new RegExp(`Estimated completion chance among clear outcomes: ${e.keep} percent`));
 }
 async function reset(page){
   await page.locator('body').click({position:{x:5,y:100}});

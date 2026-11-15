@@ -28,10 +28,10 @@
     "burn_rate": true
   },
   "sha256": {
-    "model/train.py": "d19bfe04cbb9e56cd47d49dc27f03228df099b0f0c6be8ccbbe24a0658cf9e7c",
-    "model/train_per_fuel.py": "edea71532b7f4d6a11afae4e769a9af5f1f0b3047407dbf4a0a099427edd3784",
+    "model/train.py": "d3b652172c58816e68d1c969836bf96a954ab45e3bbb959240d40e79224808aa",
+    "model/train_per_fuel.py": "617b436152626c1e3775ce7731d8a667d605bd4c70b23dd63345396295c64e07",
     "console/model.js": "148248e0e18c84eb74747935bd59c59868acf7054a107242235aaa3591e15372",
-    "console/index.html": "974b92731481679819c878bc6b6b8de2089ed4aefc56edabae006fc414e2beb7",
+    "console/index.html": "a173c38766d7b71c6d36a07bd751f29a9414e77889103f98f4d49048e3c80166",
     "data/clean/flex_clean.csv": "4f8c5b93feb3be16391fe5d8bcccfb827de08e2d3a50b62f5107e9e512c5fc32"
   },
   "versions": {

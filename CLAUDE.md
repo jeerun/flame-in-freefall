@@ -606,7 +606,7 @@ under 10% predicted, 4% completed (115 tests); 10 to 20%, 7% (30); 20 to 35%, 13
 It misses four methanol tests at 0.7 atm with 20 to 30% CO2 that burned to
 completion (it gives them under 5%); the nearby-test count on screen shows them.
 
-A start screen, then three pages in this order: NASA research (home), Flame console,
+Three pages in this order: NASA research (home), Flame console,
 Fire drill. RB goes forward, LB back, keys 1 to 3 jump. Menu (or key /) opens Ember,
 the AI, when the page is served by `server/serve.py`. The full control table is in
 the README; keep the two in step.
@@ -631,8 +631,8 @@ Tests live outside the repo (Playwright scripts driving headless Edge). When the
 page changes, the things worth re-checking are: nothing scrolls at 1280x680 and
 1280x800 on any page, the top bar stays on one line with the Ember button showing,
 the explanation panel does not overflow, and the page still works opened as a file
-with `model.js` only, with nothing but `index.html`, and with `#notitle` to skip
-the start screen.
+with `model.js` only, with nothing but `index.html`, and with `#title` to show
+the optional start screen. Opening the dashboard normally goes straight to research.
 
 Running the local AI: Ollama 0.40 and the model `gemma4:12b` (8 GB) are installed
 on the owner's PC (ASUS ROG, RTX 5080 16 GB). `py server/serve.py` serves
