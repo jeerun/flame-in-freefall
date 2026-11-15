@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#121819">
+  <title>Ember evidence lab · Flame in Freefall</title>
+  <link rel="stylesheet" href="ember-lab.css">
+  <script defer src="lab-media/flex-analysis.js"></script>
+  <script defer src="flex-film.js"></script>
+  <script defer src="lab-table-examples.js"></script>
+  <script defer src="table-lab.js"></script>
+</head>
+<body>
+  <header class="lab-bar">
+    <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true"></span>Flame in Freefall</a>
+    <a id="lab-back-link" class="lab-back" href="index.html"><span aria-hidden="true">←</span> Back to console</a>
+  </header>
+  <main>
+    <div class="lab-heading">
+      <h1>Ember evidence lab</h1>
+      <div class="lab-tabs" role="tablist" aria-label="Evidence activity">
+        <button id="film-tab" type="button" role="tab" aria-selected="true" aria-controls="lab-film">FLEX footage</button>
+        <button id="table-tab" type="button" role="tab" aria-selected="false" aria-controls="lab-table" tabindex="-1">Ask the table</button>
+      </div>
+    </div>
+    <noscript>Enable JavaScript to open the evidence activities.</noscript>
+    <section id="lab-film" role="tabpanel" aria-labelledby="film-tab"></section>
+    <section id="lab-table" role="tabpanel" aria-labelledby="table-tab" hidden>
+      <div class="table-layout">
+        <section class="lab-card table-ask">
+          <div class="lab-kicker">BASS-II · PSI-25</div>
+          <h2>Ask about gas readings</h2>
+          <p class="lab-subtle">Find tests by ID or by how oxygen, carbon monoxide, and carbon dioxide changed.</p>
+          <form id="question-form">
+            <div id="question-entry" hidden>
+              <label for="question">Your question</label>
+              <textarea id="question" name="question" rows="3" maxlength="300" placeholder="Which tests recorded rising carbon monoxide?" aria-describedby="question-mode" disabled></textarea>
+              <button id="ask-question" class="lab-btn primary" type="submit" disabled>Search the table</button>
+            </div>
+            <p id="question-mode" class="lab-subtle" role="status">Checking local search availability…</p>
+          </form>
+          <div class="examples">
+            <h3>Try a question</h3>
+            <div id="example-questions"></div>
+          </div>
+          <a class="lab-source" href="https://psi.nasa.gov/physci/repo/data/investigations/PSI-25" target="_blank" rel="noopener noreferrer">NASA investigation record ↗</a>
+        </section>
+        <section class="table-results lab-card" aria-labelledby="result-heading">
+          <h2 id="result-heading" tabindex="-1">Recorded readings</h2>
+          <p id="table-status" role="status"></p>
+          <div id="table-results"></div>
+        </section>
+      </div>
+    </section>
+  </main>
+  <footer><span>Gamepad</span> LB / RB switch activity <b>·</b> D-pad moves focus <b>·</b> A selects <b>·</b> B returns</footer>
+</body>
+</html>
