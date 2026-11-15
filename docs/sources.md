@@ -122,6 +122,13 @@ Wording in quotes is the text on screen. "Our model" means the two regressions i
 | "Download tests (CSV)", "Send to base", "Sent N real FLEX tests to ..." | The file holds the 252 in-scope PSI-69 tests as recorded, with two extra columns that are ours (the model's chance and burning rate) and a source column naming PSI-69 and its DOI. |
 | "Ask Ember": answers that quote counts such as "20 test rows that match the Moon Base air" | The counts `build_tables.py` made from the PSI test tables, which the server gives the model as text (`data/clean/psi_tables_summary.json`). |
 
+| Explanation panel: "Prediction", "... % estimated chance of burning until the fuel is gone; ... % of going out first. Burning rate: ... mm²/s.", "Outside the tested conditions. Do not rely on this prediction." | The same model outputs as the main reading. Outside the tested range the numbers are replaced by the warning. |
+| Explanation panel: "Real-test evidence", "N nearby test(s): ... burned to completion, ... went out early, ... had no clear outcome.", "Closest: FLEX test N ... Even this test is far from the current settings." | Counts over the nearby PSI-69 tests, the same ones as in the confidence box. |
+| Explanation panel: "Limitations": "Experimental coverage does not guarantee accuracy for this exact combination.", "There is no close experimental match for these conditions.", "Nearby tests have no clear flame outcome, so they cannot confirm this prediction.", "Nearby real tests disagree with the model. Give the experimental evidence priority.", "These conditions are near the edge of the tested range.", "Mars cabin air is an assumed scenario, not a Mars-gravity validation." | Our own statements, each tied to the same rule as the confidence box (range, distance to the closest test, outcomes of nearby tests, the Mars button). |
+| Explanation panel: "Visible flame extinction does not establish safety; cool-flame reactions may continue." | NASA "Studying Combustion and Fire Safety" (cool flames found in FLEX). The safety wording is ours. |
+| Comparison: "Baseline A", "Current B", "+... pp vs A", "+... mm²/s vs A", "Data support" | Our model's outputs for two sets of settings, and their difference. "pp" is percentage points. Not a measurement. |
+| Comparison: "Delta withheld: unsupported conditions" and "Differences are model estimates, not a ranking of overall fire safety." | Our rule: when either set of settings is outside the tested range no difference is shown. The second sentence is our own statement. |
+
 ## What we do not claim
 
 - That every row is a space experiment. The PSI-69 page says the investigation used
