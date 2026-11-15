@@ -505,7 +505,7 @@
   .sheet summary small { font-weight: 400; color: var(--ink-2); margin-left: .5rem; }
   .sheet details[open] summary { margin-bottom: .65rem; }
   .baseline-actions { display: flex; flex-wrap: wrap; gap: .45rem; align-items: center; margin-top: .6rem; }
-  .baseline-actions button { padding: .55rem .75rem; background: var(--panel-hi); border: 1px solid var(--flame); border-radius: .45rem; cursor: pointer; color: var(--ink); }
+  .baseline-actions button { display: inline-flex; gap: .4rem; align-items: center; padding: .45rem .75rem; background: var(--panel-hi); border: 1px solid var(--flame); border-radius: .45rem; cursor: pointer; color: var(--ink); }
   .baseline-actions button:disabled { opacity: .45; cursor: default; }
   #baselineStatus { font-size: .8rem; color: var(--ink-2); flex-basis: 100%; }
   .compare-table { width: 100%; border-collapse: collapse; margin-top: .8rem; font-size: .9rem; table-layout: fixed; }
@@ -516,6 +516,15 @@
   .compare-warnings { display: grid; gap: .5rem; margin-top: .75rem; }
   .compare-warning { padding: .65rem; border-left: 3px solid var(--warning); background: var(--panel); font-size: .9rem; line-height: 1.4; }
   .sheet summary:focus-visible, .baseline-actions button:focus-visible { outline: 2px solid var(--flame); outline-offset: 3px; }
+  /* Short screens: the summary, the two buttons and both section headings must show without scrolling. */
+  @media (max-height: 720px) and (min-width: 821px) {
+    .reading-summary { gap: .35rem; margin: .45rem 0; }
+    .reading-summary section { padding: .35rem .8rem; }
+    .reading-summary h4 { margin-bottom: .1rem; }
+    .sheet details { padding: .35rem 0; }
+    .baseline-actions { margin-top: .35rem; }
+    .baseline-actions button { padding: .3rem .75rem; }
+  }
 
 </style>
 </head>
@@ -560,11 +569,6 @@
     <div class="legend"><i aria-hidden="true"></i> Range the experiments actually tested
       <button type="button" class="csv" id="csvBtn" hidden title="Key D. Saves the real tests on this device.">Download tests (CSV)</button>
       <button type="button" class="csv" id="sendBtn" hidden></button></div>
-    <div class="baseline-actions">
-      <button type="button" id="saveBaseline" title="Key H">Save baseline</button>
-      <button type="button" id="openCompare" disabled title="Key C">Compare</button>
-      <span id="baselineStatus" role="status">Save a setting, then change it to compare.</span>
-    </div>
   </section>
 
   <section class="read" id="read" aria-labelledby="hRead" aria-live="polite">
@@ -618,8 +622,8 @@
       <table class="compare-table"><thead><tr><th scope="col">Setting / result</th><th scope="col">Baseline A</th><th scope="col">Current B</th></tr></thead><tbody id="compareRows"></tbody></table>
       <div id="compareWarnings" class="compare-warnings"></div>
       <p class="fine">Differences are model estimates, not a ranking of overall fire safety. pp = percentage points.</p>
-      <div class="baseline-actions"><button type="button" id="replaceBaseline">Replace baseline with B</button><button type="button" id="clearBaseline">Clear baseline</button></div>
-      <p class="fine">Saved for this page session only. Reset changes B; refreshing clears A. Keys: H save/replace, C compare, Esc close.</p>
+      <div class="baseline-actions"><button type="button" id="replaceBaseline" title="Key H, or LT"><kbd class="wide">LT</kbd> Replace baseline with B</button><button type="button" id="clearBaseline">Clear baseline</button></div>
+      <p class="fine">Saved for this page session only. Reset changes B; refreshing clears A. Keys: H save or replace, C compare, Esc close. Controller: LT replaces the baseline, the right stick scrolls this panel, B closes.</p>
     </div>
     <div class="sheet" id="sheet" hidden role="dialog" aria-labelledby="sheetTitle">
       <button type="button" class="close" id="closeSheet"><kbd>B</kbd> Close</button>
@@ -628,6 +632,11 @@
         <section><h4>Prediction</h4><p id="summaryPrediction"></p></section>
         <section><h4>Real-test evidence</h4><p id="summaryEvidence"></p></section>
         <section class="summary-limit"><h4>Limitations</h4><p id="summaryLimits"></p></section>
+      </div>
+      <div class="baseline-actions">
+        <button type="button" id="saveBaseline" title="Key H, or LT while this panel is open"><kbd class="wide">LT</kbd> <span id="saveBaselineText">Save as baseline and compare</span></button>
+        <button type="button" id="openCompare" disabled title="Key C">Compare</button>
+        <span id="baselineStatus" role="status">Save these settings as A, then change the bars to see B beside it.</span>
       </div>
       <details id="whyDetails"><summary>Why this prediction? <small>X / key W</small></summary><ul id="sheetList"></ul></details>
       <details id="testDetails"><summary>Test details &amp; sources <small>Y / key T</small></summary><ul id="testList"></ul><p class="fine" id="sheetFine"></p>
@@ -1297,7 +1306,7 @@ window.FLAME_MODEL = {
   }
   function renderComparison() {
     $("openCompare").disabled = !state.baseline;
-    $("saveBaseline").textContent = state.baseline ? "Replace baseline" : "Save baseline";
+    $("saveBaselineText").textContent = state.baseline ? "Replace the baseline and compare" : "Save as baseline and compare";
     if (!state.baseline || !state.comparing) return;
     var a = state.baseline, b = comparisonSnapshot(), body = $("compareRows");
     body.innerHTML = "";
@@ -2706,7 +2715,7 @@ window.FLAME_MODEL = {
   var wheelAcc = 0, wheelAt = 0;
   window.addEventListener("wheel", function (e) {
     var t = e.target && e.target.closest ? e.target : document.body;
-    if (titleOn || SIM.open || AI.open || e.ctrlKey || (state.sheet && !MAP.big)) return;      // those scroll, or do nothing, by themselves
+    if (titleOn || SIM.open || AI.open || e.ctrlKey || (state.sheet && !MAP.big) || t.closest(".sheet")) return;   // those scroll, or do nothing, by themselves
     if (view.page === "drill" || (view.page === "research" && !OX.open && (view.orbit || t.closest("#card")))) return;
     e.preventDefault();
     var d = e.deltaMode === 1 ? e.deltaY * 40 : e.deltaY, now = Date.now(), steps;
@@ -2930,11 +2939,17 @@ window.FLAME_MODEL = {
       // Right stick: point at a star on the map, or at an investigation in the orbit view. RT replays, R3 goes there.
       var rx = pad.axes[2] || 0, ry = pad.axes[3] || 0;
       if (!ai && rx * rx + ry * ry > 0.12) {
-        if (con) pickStar(rx, ry); else if (pg === "research") pickOrbit(rx, ry);
+        if (con && (state.comparing || state.sheet)) $(state.comparing ? "compareSheet" : "sheet").scrollTop += ry * 14;   // an open panel scrolls
+        else if (con) pickStar(rx, ry); else if (pg === "research") pickOrbit(rx, ry);
       }
       fire("rt", now, b(7), 0, 0, function () { if (con) replayStar(); });
       fire("r3", now, b(11), 0, 0, function () { if (con) flyToStar(); });
-      fire("lt", now, b(6), 0, 0, function () { if (con && !ai) openSim(); });
+      fire("lt", now, b(6), 0, 0, function () {
+        if (!con || ai) return;
+        if (state.comparing) saveBaseline();                               // in the comparison: B becomes the new baseline
+        else if (state.sheet) { if (state.baseline) toggleComparison(true); else saveBaseline(); }
+        else openSim();
+      });
     }
     requestAnimationFrame(poll);
   }
@@ -2944,7 +2959,7 @@ window.FLAME_MODEL = {
   if (M.meta.mock) $("mockChip").hidden = false;
   else { $("srcChip").hidden = false; $("srcChip").textContent = "Model: " + (M.meta.source || "NASA data") + (M.meta.rows ? ", " + M.meta.rows + " tests" : ""); }
 
-  window.__flame = { saveBaseline: saveBaseline, clearBaseline: clearBaseline, toggleComparison: toggleComparison, render: render, state: state, predict: predict, rangeCheck: rangeCheck, nudge: nudge, select: select, toggleSheet: toggleSheet, reset: reset,
+  window.__flame = { readingSummary: readingSummary, saveBaseline: saveBaseline, clearBaseline: clearBaseline, toggleComparison: toggleComparison, render: render, state: state, predict: predict, rangeCheck: rangeCheck, nudge: nudge, select: select, toggleSheet: toggleSheet, reset: reset,
                      cyclePreset: cyclePreset, activePreset: activePreset, view: view, showPage: showPage,
                      AI: AI, openAI: openAI, askAI: askAI, readingText: readingText,
                      drill: function () { return drill; }, drillStart: drillStart, drillGuess: drillGuess, drillNext: drillNext, buzz: buzz,
