@@ -27,14 +27,16 @@ class LabServerTests(unittest.TestCase):
             return json.load(response)
 
     def test_player_seeks_to_bytes_in_bundled_movie(self):
-        film = (serve.CONSOLE / "lab-media/flex-iss.webm").read_bytes()
-        request = urllib.request.Request(self.url + "/lab-media/flex-iss.webm",
-                                         headers={"Range": "bytes=256-511"})
-        with urllib.request.urlopen(request) as response:
-            self.assertEqual(response.status, 206)
-            self.assertEqual(response.headers["Content-Type"], "video/webm")
-            self.assertEqual(response.headers["Content-Range"], f"bytes 256-511/{len(film)}")
-            self.assertEqual(response.read(), film[256:512])
+        for path in sorted((serve.CONSOLE / "lab-media").glob("*.webm")):
+            with self.subTest(film=path.name):
+                request = urllib.request.Request(f"{self.url}/lab-media/{path.name}",
+                                                 headers={"Range": "bytes=256-511"})
+                with urllib.request.urlopen(request) as response, path.open("rb") as film:
+                    film.seek(256)
+                    self.assertEqual(response.status, 206)
+                    self.assertEqual(response.headers["Content-Type"], "video/webm")
+                    self.assertEqual(response.headers["Content-Range"], f"bytes 256-511/{path.stat().st_size}")
+                    self.assertEqual(response.read(), film.read(256))
 
     def test_static_resources_and_sample_without_ollama(self):
         for asset in evidence_lab.ASSETS:

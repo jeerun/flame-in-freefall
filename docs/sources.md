@@ -73,11 +73,39 @@ lunar gravity. [Table definitions and units](../data/clean/build_tables.py)
 
 ## Other sources (papers, NASA pages)
 
+The cabin-air buttons use locally bundled NASA images. Earth shows the Apollo 17
+crew's Blue Marble photograph, AS17-148-22727 (NASA Johnson Space Center).
+The Moon shows Galileo's PIA00405 mosaic (NASA/JPL/USGS). Mars shows the
+Viking Orbiter 1 Valles Marineris mosaic, PIA04304 (NASA/JPL-Caltech).
+[Earth](https://svs.gsfc.nasa.gov/30613/) · [Moon](https://science.nasa.gov/photojournal/earths-moon/) · [Mars](https://science.nasa.gov/resource/valles-marineris-the-grand-canyon-of-mars/) · [NASA media usage guidelines](https://www.nasa.gov/nasa-brand-center/images-and-media/)
+
 The evidence lab plays the unmodified FLEX experiment clip from NASA SVS release 11318.
 Credit: Science@NASA and NASA's Goddard Space Flight Center. The JPEG stills come from this
 movie. Times shown on the player are seconds from the start of the clip. A proposed frame
 pair describes the visibility of the flame rim. The public clip is linked at the investigation
 level because its release page gives no experimental-table test ID. [NASA video and credits](https://svs.gsfc.nasa.gov/11318/)
+
+For Saffire-I, the lab includes NASA’s camera sequence of a cotton–fiberglass
+sample aboard Cygnus on June 14, 2016. Green LEDs illuminated the smoke. The
+bundled WebM preserves the timing of NASA's 574-frame GIF (22.96 seconds).
+The 0:02 and 0:22 buttons refer to the compilation clock. Credit: NASA.
+[NASA experiment and caption](https://www.nasa.gov/centers-and-facilities/glenn/nasa-ignites-fire-experiment-aboard-space-cargo-ship/) · [Original NASA sequence](https://www.nasa.gov/wp-content/uploads/2016/06/saffire-1-burn.gif)
+
+The additional offline clips retain the timing of the selected NASA footage. Cue
+times on the player are relative to the bundled clip and may differ from time
+elapsed in the experiment.
+
+| Clip | Footage, edits and credit |
+| --- | --- |
+| FLEX-2 | A silent excerpt from 02:08–02:40 of *Spherical Flames*. NASA's on-screen annotations identify soot. Credit: Science@NASA and NASA’s Goddard Space Flight Center. [NASA release](https://svs.gsfc.nasa.gov/11640/) |
+| SoFIE-GEL | The complete 46-second published sequence, transcoded to WebM. Blue patches appear to move around the sample as the visible flame fades. The camera records the changing light pattern. Credit: NASA Johnson Space Center. [NASA archive record](https://images.nasa.gov/details/SoFIE-GEL) |
+| Saffire-V | The complete published video of ribbed PMMA (acrylic) aboard Cygnus, transcoded to 24 fps. The 76-second player clock follows the release. NASA identifies the thinner ribs and thicker material on the right of the sample. Credit: NASA Glenn Research Center, GRC-2021-CN-00008. [NASA archive record](https://images.nasa.gov/details/GRC-2021-CN-00008) |
+| Saffire-VI | NASA's complete front and edge camera comparison of PMMA aboard Cygnus, transcoded without audio. The one-minute release shows the experiment at 20× speed and retains the original annotations. Credit: NASA. [NASA release](https://www.nasa.gov/centers-and-facilities/glenn/flame-burns-out-on-nasas-long-running-spacecraft-fire-experiment/) · [Source movie](https://www.nasa.gov/wp-content/uploads/2024/02/saf-vi-s8c3c4-1-sided-pmma-unmapped-jpeg-20x-plus-text-2.mp4) |
+
+Two related videos are available online. NASA Johnson’s FLEX-2 recording shows an
+opening in the flame shell appearing and closing repeatedly. NASA Glenn’s
+Saffire-IV video shows glowing char behind a flame spreading across cotton–fiberglass
+fabric. [NASA Johnson’s FLEX-2 recording](https://www.youtube.com/watch?v=qQQ1OHW1_F4) · [NASA Glenn’s Saffire-IV footage and caption](https://www.nasa.gov/humans-in-space/the-flame-of-discovery-grows-as-saffire-sets-new-fires-in-space/)
 
 The checked-in result from `gemma4:12b` compares 24 one-second samples. It marks 0:08 and
 0:09 as a candidate transition. Use `python server/analyze_flex_clip.py` with Ollama, Pillow
@@ -172,7 +200,7 @@ Nov 15, 2026), trained only on the PSI-69 table.
 | "Mars base (assumed)" (button) and "Cabin air for a Mars base is an assumption ..." | Ours. The challenge brief names bases on the Martian surface but gives cabin air only for the Moon Base and pressurized rovers, so the same air is used and labelled as assumed. |
 | Background scene: the Earth, the Moon or Mars | Our own drawing. It follows the cabin-air button and carries no data. |
 | Zoomed star map: test numbers, grid, and the dashed lines "model 25 %", "model 50 %", "model 75 %" | Test numbers are the PSI-69 "FLEX Test #". The dashed lines are our outcome model solved for those chances at the pressure, carbon dioxide and helium set now. They are not NASA's. |
-| Ignite: "This run: the flame went out after ... s, with the droplet at ... mm (stopping size borrowed from real FLEX test N)", "it burned all its fuel in ... s", the tally | Our model: the droplet follows the d-squared law at the modelled burning rate, the outcome of a run is drawn at random with the modelled chance, and the stopping size is the end-to-start diameter ratio of one of the eight closest real PSI-69 tests that went out. A run of the model, not a measurement. |
+| Ignite outcome, stopping diameter and tally | The droplet follows the d-squared law at the fitted burning rate. The model samples a clear outcome. For extinction, it draws from up to eight nearby same-fuel PSI-69 extinction rows with a recorded endpoint and applies the end-to-start diameter ratio, capped at 0.95, to the simulated droplet. With no eligible endpoint it labels an assumed ratio of 0.5. |
 | Ignite picture: igniter wires, thin spherical flame, soot shell in a heptane flame, faint haze after a heptane flame goes out, "illustration, not footage" | Our own drawing, made to resemble FLEX footage. The haze stands for the cool flame FLEX found (NASA "Studying Combustion and Fire Safety"); it is not modelled. |
 | “Outside the FLEX model range”, “Back within the FLEX input ranges”, “All nearby FLEX outcomes are inconclusive” and the disagreement banner | These messages follow the input-range, neighbourhood and disagreement rules in `console/index.html`. A completion estimate describes a liquid droplet outcome and does not quantify overall cabin fire risk. |
 | "Download tests (CSV)", "Send to base", "Sent N real FLEX tests to ..." | The file holds the 252 in-scope PSI-69 tests as recorded, with three extra columns that are ours (the model's chance of burning all the fuel, its chance of a disruption, and its burning rate) and a source column naming PSI-69 and its DOI. |

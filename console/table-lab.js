@@ -23,13 +23,14 @@
 
   function showTab() {
     const current = location.hash === "#table" ? tabs[1] : tabs[0];
+    const film = byId("lab-film");
+    if (current === tabs[1] && !film.hidden) film.dispatchEvent(new Event("leave-film"));
     for (const tab of tabs) {
       const selected = tab === current;
       tab.setAttribute("aria-selected", String(selected));
       tab.tabIndex = selected ? 0 : -1;
       byId(tab.getAttribute("aria-controls")).hidden = !selected;
     }
-    if (current === tabs[1]) byId("lab-film").querySelector("video")?.pause();
   }
   function activate(tab) {
     location.hash = tab === tabs[1] ? "table" : "film";
