@@ -1,0 +1,68 @@
+# Setting up the Legion Go
+
+Three ways to use the handheld, from the least to the most set-up. None of this has
+been done on the real Legion Go yet: the scripts were dry-run on the PC, and the
+two-machine link was tried with two copies of the server on the PC. Tick the boxes
+in `docs/checklist.md` as you go.
+
+## A. The Legion Go as the screen, the PC as the brain (nothing to install)
+
+1. On the PC with the GPU, double-click `Start dashboard.bat`. Leave its window open.
+   It prints a line like `On the Legion Go (same Wi-Fi): http://192.168.x.x:8000`.
+2. The first time, Windows asks whether to let Python through the firewall. Tick the
+   kind of network the PC is on (Private, Public, or both) and choose Allow. If you
+   are not sure which kind it is, tick both.
+3. On the Legion Go, on the same Wi-Fi or router, open Edge at that address and
+   press F11. Press A on the start screen.
+4. Proof that it got through: the PC window prints `New device connected: ...`, and
+   on the PC `http://localhost:8000/who` lists the handheld with a count of its
+   requests, its questions to Ember and the files it sent.
+
+If the Legion Go cannot open the address:
+
+- The firewall prompt was closed without Allow. Windows then keeps a blocking rule.
+  On the PC open Windows Security, Firewall and network protection, "Allow an app
+  through firewall", "Change settings", find the Python entries and tick Private and
+  Public for them.
+- A VPN is running on the PC. Many VPN apps keep local devices out. Pause it, or
+  turn on its "allow local network" setting, and start the dashboard again.
+- The two devices are not on the same network, or the network keeps devices apart
+  (campus and guest Wi-Fi often do). Use a phone hotspot or a home router for both.
+- Double-clicking `Start dashboard.bat` a second time is harmless: it says the
+  dashboard is already running and opens it.
+
+## B. The Legion Go with its own small AI model (works with no PC and no network)
+
+Needs internet once, about 5 GB of disk, and about 15 minutes.
+
+1. On the Legion Go open https://github.com/jeerun/flame-in-freefall , choose Code,
+   Download ZIP, and unzip it (for example on the Desktop).
+2. In that folder double-click `Setup Legion Go.bat`. It installs Python and Ollama
+   with winget and downloads the model `gemma4:e2b` (4.3 GB). winget shows each
+   licence and asks you to agree. If Ollama was just installed and the script says
+   it cannot find it, close the window and run the script again.
+3. Double-click `Start on Legion Go.bat`. It asks once for the address the PC
+   printed (step A1). Press Enter instead to run without the PC.
+4. In the dashboard open Ember (Menu button). With both machines up, a row "Ember
+   thinks on:" offers Auto, the PC and the handheld, and X switches. Close the
+   dashboard window on the PC: within about 20 seconds a banner says the big machine
+   is out of reach, and Ember answers from the handheld.
+
+What to expect: the small model is slower and less careful than the one on the PC.
+We have not measured it on the handheld. If its answers are poor, use way A.
+
+## C. Away from the PC's network
+
+Use a private network between your own devices, such as Tailscale, on both the PC
+and the Legion Go, and give `Start on Legion Go.bat` the PC's address on that
+network (for example `http://100.x.y.z:8000`). Start the PC side with
+`Start dashboard.bat` as usual. Do not use a public tunnel: the dashboard has no
+login.
+
+## Where the sent file goes
+
+"Send to base" (press the left stick on the Flame console) stores the CSV of real
+tests in the folder `exports` on the computer that runs the server, and on the PC
+as well when the handheld is linked to it. To make that a shared folder, write its
+path on the first line of a file named `exports-folder.txt` next to
+`Start dashboard.bat`, for example a folder inside OneDrive or Google Drive.
