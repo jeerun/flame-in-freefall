@@ -3,7 +3,9 @@
 Rules from the challenge: up to 30 seconds, English subtitles, hosted outside the
 Space Apps site, public, no login.
 
-The team previously checked the handheld's connection to its PC. Rendering, controls, audio and rumble still need a hands-on check before filming that configuration.
+The team recorded controller runs on the earlier dashboard and checked the per-fuel
+page on the physical Legion Go. Before filming this redesigned PR, repeat the
+handheld checks below. [Device test record](../CLAUDE.md)
 
 The [28-second captioned desktop demo](crew-console-demo.mp4) opens on the research ranking, reveals the Saffire-II burn lengths at 0:09 and the BASS-II sensor readings at 0:16, then compares FLEX tests #108 and #183 at 0:22. The sequence below is an alternative if the team films its handheld and Ember.
 
