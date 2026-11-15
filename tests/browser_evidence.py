@@ -111,6 +111,17 @@ def check(page):
     key("1")
     expect(loc("#tabResearch")).to_have_attribute("aria-pressed", "true")
 
+    # FLEX 29 has a modelled majority chance of disruption but no observed disruptions nearby.
+    settings = "#view=v1&page=console&fuel=methanol&o2=30&p=1.009&co2=0&he=0&d0=2.57"
+    page.goto(CONSOLE.as_uri() + settings)
+    expect(loc("#confTitle")).to_have_text("Elevated modelled disruption chance")
+    expect(loc("#confText")).to_contain_text("52% chance of disruption. 0 of 2 nearby FLEX tests")
+    expect(loc("#disNote")).to_be_visible()
+    page.goto(CONSOLE.as_uri() + settings.replace("o2=30", "o2=40"))
+    expect(loc("#confTitle")).to_have_text("Outside the tested range")
+    expect(loc("#disNote")).to_be_hidden()
+    assert "Modelled chance that a test like this ends in disruption" not in page.evaluate("window.__flame.readingText()")
+
 
 def check_phone(page):
     page.set_viewport_size({"width": 390, "height": 844})

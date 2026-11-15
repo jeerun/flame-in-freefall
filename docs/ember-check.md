@@ -1,5 +1,7 @@
 # Ember answer check
 
+This transcript predates the change that distinguishes a modelled disruption chance from the observed nearby count. Answers 17 and 18 below preserve the original model responses. The current dashboard withholds the disruption estimate outside the tested range.
+
 Made by `server/ember_check.py` on 2026-11-15. Ember is the local AI model in the dashboard. Every answer below was written by that model, not by a person.
 
 Automatic checks flagged none of the 18 answers. No person has checked any of them yet.
@@ -31,7 +33,7 @@ Asked from the research page (nothing picked, list ranked for Cabin air).
 > 
 > 1. CFI-G, normal flames [PSI-159]
 
-- Answered by: gemma4:12b on this team's NVIDIA GeForce RTX 5080, in 3.5 s
+- Answered by: gemma4:12b on this team's NVIDIA GeForce RTX 5080, in 3.4 s
 - NASA PSI records the model was given in full: [PSI-69](https://psi.nasa.gov/physci/repo/data/investigations/PSI-69), [PSI-20](https://psi.nasa.gov/physci/repo/data/investigations/PSI-20), [PSI-25](https://psi.nasa.gov/physci/repo/data/investigations/PSI-25), [PSI-142](https://psi.nasa.gov/physci/repo/data/investigations/PSI-142)
 - Automatic check: every number in the answer is in the material it was given; every PSI id sits next to its own investigation name.
 - Human verdict (correct / wrong / unsure, and why): 
@@ -63,7 +65,7 @@ Asked from the research page (looking at PSI-69, list ranked for Suppression).
 > 2. The ambient oxygen mole fraction, which ranged from 12 to 34 percent.
 > 3. The concentration of the gaseous suppressants used.
 
-- Answered by: gemma4:12b on this team's NVIDIA GeForce RTX 5080, in 4.2 s
+- Answered by: gemma4:12b on this team's NVIDIA GeForce RTX 5080, in 4.1 s
 - NASA PSI records the model was given in full: [PSI-69](https://psi.nasa.gov/physci/repo/data/investigations/PSI-69), [PSI-117](https://psi.nasa.gov/physci/repo/data/investigations/PSI-117), [PSI-47](https://psi.nasa.gov/physci/repo/data/investigations/PSI-47), [PSI-21](https://psi.nasa.gov/physci/repo/data/investigations/PSI-21), [PSI-26](https://psi.nasa.gov/physci/repo/data/investigations/PSI-26)
 - Automatic check: every number in the answer is in the material it was given; every PSI id sits next to its own investigation name.
 - Human verdict (correct / wrong / unsure, and why): 
@@ -112,7 +114,7 @@ Asked from the research page (looking at PSI-47, list ranked for Detection).
 
 > DAFT / DAFT-2 [PSI-47] was designed to mitigate risks for the Smoke Aerosol Measurement Experiment (SAME). It tested whether a modified commercial particulate counter, the TSI P-Trak, would remain accurate in microgravity. Because the original P-Trak relied on gravity to recycle isopropyl alcohol, the DAFT / DAFT-2 investigation redesigned the condenser tube to use capillary forces and removed the orientation-detecting mercury switch. This research helps develop more reliable and sensitive fire and smoke detection systems for the International Space Station and future spacecraft.
 
-- Answered by: gemma4:12b on this team's NVIDIA GeForce RTX 5080, in 3.9 s
+- Answered by: gemma4:12b on this team's NVIDIA GeForce RTX 5080, in 3.8 s
 - NASA PSI records the model was given in full: [PSI-47](https://psi.nasa.gov/physci/repo/data/investigations/PSI-47), [PSI-115](https://psi.nasa.gov/physci/repo/data/investigations/PSI-115), [PSI-101](https://psi.nasa.gov/physci/repo/data/investigations/PSI-101), [PSI-102](https://psi.nasa.gov/physci/repo/data/investigations/PSI-102)
 - Automatic check: every number in the answer is in the material it was given; every PSI id sits next to its own investigation name.
 - Human verdict (correct / wrong / unsure, and why): 
@@ -177,7 +179,7 @@ Asked from the research page (looking at PSI-39).
 > 3. Cool-flame limits [PSI-142]
 > 4. ACME CFI-G [PSI-159]
 
-- Answered by: gemma4:12b on this team's NVIDIA GeForce RTX 5080, in 3.7 s
+- Answered by: gemma4:12b on this team's NVIDIA GeForce RTX 5080, in 3.6 s
 - NASA PSI records the model was given in full: [PSI-39](https://psi.nasa.gov/physci/repo/data/investigations/PSI-39), [PSI-10](https://psi.nasa.gov/physci/repo/data/investigations/PSI-10), [PSI-21](https://psi.nasa.gov/physci/repo/data/investigations/PSI-21), [PSI-142](https://psi.nasa.gov/physci/repo/data/investigations/PSI-142)
 - Automatic check: every number in the answer is in the material it was given; every PSI id sits next to its own investigation name.
 - Human verdict (correct / wrong / unsure, and why): 
@@ -201,7 +203,7 @@ Asked from the research page (nothing picked, list ranked for Suppression).
 
 > The material states that there is no partial-gravity combustion data in the PSI records. Therefore, nothing in the records was measured at Moon or Mars gravity. The records only contain microgravity and normal-gravity results, which can only be used to bound what happens in between.
 
-- Answered by: gemma4:12b on this team's NVIDIA GeForce RTX 5080, in 3.6 s
+- Answered by: gemma4:12b on this team's NVIDIA GeForce RTX 5080, in 3.5 s
 - NASA PSI records the model was given in full: [PSI-60](https://psi.nasa.gov/physci/repo/data/investigations/PSI-60), [PSI-47](https://psi.nasa.gov/physci/repo/data/investigations/PSI-47), [PSI-20](https://psi.nasa.gov/physci/repo/data/investigations/PSI-20), [PSI-115](https://psi.nasa.gov/physci/repo/data/investigations/PSI-115)
 - Automatic check: every number in the answer is in the material it was given; every PSI id sits next to its own investigation name.
 - Human verdict (correct / wrong / unsure, and why): 
@@ -226,13 +228,15 @@ Asked from the Flame console with this reading on screen:
 ```
 Fuel: Heptane. Oxygen 30.0 %, Pressure 0.69 atm, Carbon dioxide 0 %, Helium 0 %, Droplet diameter 3.0 mm. Cabin air preset: Moon Base (expected).
 Model output conditional on completion or visible extinction (disruptions excluded): chance the flame burns until the fuel is gone 99 %; chance it goes out before the fuel is gone 1 %; burning rate 0.75 mm2/s; droplet gone in about 12 s if the flame lasts.
+Modelled chance that a test like this ends in disruption instead (NASA's label for an ending with no clear outcome): 98 %.
+Refitted on resampled tests, the completion chance falls between 98 % and 99 %.
 Confidence box: No clear outcome in nearby tests. Nearby FLEX rows: 3. All ended in disruption. The percentage relies on tests farther away.
 One-line reading: Nearby tests cannot confirm the estimated outcome.
 ```
 
-> The model estimates a 99 percent chance the heptane droplet burns to completion and a 1 percent chance it goes out before the fuel is gone. If the flame lasts, the droplet is estimated to be gone in about 12 seconds with a burning rate of 0.75 mm2/s. These estimates are not certain because the three nearby FLEX [PSI-69] tests all ended in disruption, meaning the outcome relies on tests farther away.
+> Most tests like this were disrupted and the completion percentage describes only the rest. The estimated chance the flame burns until the fuel is gone is between 98 % and 99 %. If the flame lasts, the droplet is expected to be gone in about 12 s with a burning rate of 0.75 mm2/s.
 
-- Answered by: gemma4:12b on this team's NVIDIA GeForce RTX 5080, in 3.0 s
+- Answered by: gemma4:12b on this team's NVIDIA GeForce RTX 5080, in 7.0 s
 - NASA PSI records the model was given in full: [PSI-69](https://psi.nasa.gov/physci/repo/data/investigations/PSI-69)
 - Automatic check: every number in the answer is in the material it was given; every PSI id sits next to its own investigation name.
 - Human verdict (correct / wrong / unsure, and why): 
@@ -244,11 +248,12 @@ Asked from the Flame console with this reading on screen:
 ```
 Fuel: Heptane. Oxygen 40.0 %, Pressure 0.69 atm, Carbon dioxide 0 %, Helium 0 %, Droplet diameter 3.0 mm.
 Model output conditional on completion or visible extinction (disruptions excluded): chance the flame burns until the fuel is gone 99 %; chance it goes out before the fuel is gone 1 %; burning rate 0.96 mm2/s; droplet gone in about 9 s if the flame lasts.
+Modelled chance that a test like this ends in disruption instead (NASA's label for an ending with no clear outcome): 99 %.
 Confidence box: Outside the tested range. No experiment was run at this oxygen setting. Do not rely on these numbers.
 One-line reading: These settings exceed the model's scope.
 ```
 
-> The current reading for a 3.0 mm heptane droplet at 40.0% oxygen and 0.69 atm is outside the tested range for the FLEX [PSI-69] investigation. Because no experiment was run at this oxygen setting, the flame outcome is unknown. The model estimates a 99% chance the flame burns until the fuel is gone and a 1% chance it goes out, but these are estimates and not certain physics.
+> Most tests like this were disrupted and the completion percentage describes only the rest. The model estimates a 99 percent chance the flame burns until the fuel is gone and a 1 percent chance it goes out before the fuel is gone. However, these settings are outside the tested range for the FLEX [PSI-69] investigation, so the flame outcome is unknown and you should not rely on these numbers.
 
 - Answered by: gemma4:12b on this team's NVIDIA GeForce RTX 5080, in 2.9 s
 - NASA PSI records the model was given in full: [PSI-69](https://psi.nasa.gov/physci/repo/data/investigations/PSI-69)

@@ -25,6 +25,8 @@ OUT = serve.ROOT / "docs" / "ember-check.md"
 MOON = ("Fuel: Heptane. Oxygen 30.0 %, Pressure 0.69 atm, Carbon dioxide 0 %, Helium 0 %, Droplet diameter 3.0 mm. Cabin air preset: Moon Base (expected).\n"
         "Model output conditional on completion or visible extinction (disruptions excluded): chance the flame burns until the fuel is gone 99 %; chance it goes out before the fuel is gone 1 %; burning rate 0.75 mm2/s; "
         "droplet gone in about 12 s if the flame lasts.\n"
+        "Modelled chance that a test like this ends in disruption instead (NASA's label for an ending with no clear outcome): 98 %.\n"
+        "Refitted on resampled tests, the completion chance falls between 98 % and 99 %.\n"
         "Confidence box: No clear outcome in nearby tests. Nearby FLEX rows: 3. All ended in disruption. The percentage relies on tests farther away.\n"
         "One-line reading: Nearby tests cannot confirm the estimated outcome.")
 OUTSIDE = ("Fuel: Heptane. Oxygen 40.0 %, Pressure 0.69 atm, Carbon dioxide 0 %, Helium 0 %, Droplet diameter 3.0 mm.\n"

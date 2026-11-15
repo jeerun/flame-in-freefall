@@ -1,0 +1,567 @@
+{
+  "made_by": "model/design_audit.py",
+  "data": {
+    "tests_in_source": 274,
+    "tests_in_scope": 252,
+    "endings_in_scope": {
+      "Completion": 27,
+      "Extinction": 172,
+      "Disruption": 53
+    },
+    "endings_by_oxygen": {
+      "heptane": {
+        "up to 15 %": {
+          "Completion": 3,
+          "Extinction": 6,
+          "Disruption": 0
+        },
+        "above 15 to 18 %": {
+          "Completion": 6,
+          "Extinction": 22,
+          "Disruption": 1
+        },
+        "above 18 to 21.5 %": {
+          "Completion": 6,
+          "Extinction": 21,
+          "Disruption": 11
+        },
+        "above 21.5 to below 25 %": {
+          "Completion": 3,
+          "Extinction": 7,
+          "Disruption": 8
+        },
+        "25 % or more": {
+          "Completion": 1,
+          "Extinction": 0,
+          "Disruption": 11
+        }
+      },
+      "methanol": {
+        "up to 15 %": {
+          "Completion": 0,
+          "Extinction": 36,
+          "Disruption": 0
+        },
+        "above 15 to 18 %": {
+          "Completion": 1,
+          "Extinction": 34,
+          "Disruption": 0
+        },
+        "above 18 to 21.5 %": {
+          "Completion": 2,
+          "Extinction": 33,
+          "Disruption": 5
+        },
+        "above 21.5 to below 25 %": {
+          "Completion": 2,
+          "Extinction": 11,
+          "Disruption": 5
+        },
+        "25 % or more": {
+          "Completion": 3,
+          "Extinction": 2,
+          "Disruption": 12
+        }
+      }
+    },
+    "heptane_at_29_to_31_pct_oxygen_near_0_7_atm": {
+      "Completion": 0,
+      "Extinction": 0,
+      "Disruption": 4
+    },
+    "droplet_volume_gone_when_the_flame_went_out": {
+      "what": "1 - (end diameter / start diameter) cubed, for tests that ended in Extinction and have both diameters",
+      "tests_without_a_usable_end_diameter": 17,
+      "heptane": {
+        "tests": 54,
+        "median": 0.4,
+        "middle_half": [
+          0.11,
+          0.55
+        ],
+        "tests_with_90_pct_or_more_gone": 5,
+        "tests_with_less_than_half_gone": 35
+      },
+      "methanol": {
+        "tests": 101,
+        "median": 0.82,
+        "middle_half": [
+          0.45,
+          0.89
+        ],
+        "tests_with_90_pct_or_more_gone": 24,
+        "tests_with_less_than_half_gone": 29
+      }
+    },
+    "completions_per_parameter": {
+      "heptane": {
+        "clear_outcomes": 75,
+        "completions": 19,
+        "own_parameters": 6,
+        "completions_per_parameter": 3.2
+      },
+      "methanol": {
+        "clear_outcomes": 124,
+        "completions": 8,
+        "own_parameters": 6,
+        "completions_per_parameter": 1.3
+      }
+    },
+    "methanol_completions": [
+      {
+        "test": 20,
+        "o2": 34.0,
+        "p": 0.71,
+        "co2": 0.0,
+        "he": 0.0,
+        "d0": 3.4
+      },
+      {
+        "test": 25,
+        "o2": 30.0,
+        "p": 0.707,
+        "co2": 0.0,
+        "he": 0.0,
+        "d0": 2.6
+      },
+      {
+        "test": 29,
+        "o2": 30.0,
+        "p": 1.009,
+        "co2": 0.0,
+        "he": 0.0,
+        "d0": 2.57
+      },
+      {
+        "test": 97,
+        "o2": 23.0,
+        "p": 0.703,
+        "co2": 20.0,
+        "he": 0.0,
+        "d0": 4.25
+      },
+      {
+        "test": 108,
+        "o2": 23.0,
+        "p": 0.708,
+        "co2": 25.0,
+        "he": 0.0,
+        "d0": 3.75
+      },
+      {
+        "test": 111,
+        "o2": 21.0,
+        "p": 0.706,
+        "co2": 30.0,
+        "he": 0.0,
+        "d0": 3.37
+      },
+      {
+        "test": 112,
+        "o2": 21.0,
+        "p": 0.698,
+        "co2": 30.0,
+        "he": 0.0,
+        "d0": 3.99
+      },
+      {
+        "test": 151,
+        "o2": 18.0,
+        "p": 1.003,
+        "co2": 15.0,
+        "he": 0.0,
+        "d0": 3.86
+      }
+    ],
+    "clear_outcomes_by_pressure_and_gas_mix": {
+      "heptane": {
+        "about 0.7 atm": {
+          "oxygen and nitrogen only": 2,
+          "with carbon dioxide": 13,
+          "with helium": 10
+        },
+        "about 1.0 atm": {
+          "oxygen and nitrogen only": 24,
+          "with carbon dioxide": 16,
+          "with helium": 10
+        }
+      },
+      "methanol": {
+        "about 0.7 atm": {
+          "oxygen and nitrogen only": 4,
+          "with carbon dioxide": 31,
+          "with helium": 12
+        },
+        "about 1.0 atm": {
+          "oxygen and nitrogen only": 37,
+          "with carbon dioxide": 28,
+          "with helium": 12
+        }
+      }
+    },
+    "tests_above_the_pressure_limit": {
+      "limit_atm": 1.1,
+      "tests": 9,
+      "pressures_atm": [
+        2.03,
+        2.04,
+        2.7,
+        2.72,
+        2.73,
+        3.05
+      ],
+      "heptane": {
+        "Completion": 0,
+        "Extinction": 1,
+        "Disruption": 1
+      },
+      "methanol": {
+        "Completion": 0,
+        "Extinction": 6,
+        "Disruption": 1
+      }
+    },
+    "twins": {
+      "clear_outcomes": 199,
+      "tests_with_a_twin": 185,
+      "groups": 70,
+      "groups_with_both_outcomes": 15
+    },
+    "d_squared_rule_with_nasa_rate_against_burn_time": {
+      "completions": 27,
+      "median_ratio": 1.17,
+      "middle_half": [
+        0.99,
+        1.29
+      ]
+    },
+    "tested_range_by_fuel": {
+      "o2": {
+        "both": [
+          12.0,
+          34.0
+        ],
+        "heptane": [
+          13.0,
+          34.0
+        ],
+        "methanol": [
+          12.0,
+          34.0
+        ]
+      },
+      "p": {
+        "both": [
+          0.693,
+          1.019
+        ],
+        "heptane": [
+          0.695,
+          1.015
+        ],
+        "methanol": [
+          0.693,
+          1.019
+        ]
+      },
+      "co2": {
+        "both": [
+          0.0,
+          50.0
+        ],
+        "heptane": [
+          0.0,
+          45.0
+        ],
+        "methanol": [
+          0.0,
+          50.0
+        ]
+      },
+      "he": {
+        "both": [
+          0.0,
+          45.0
+        ],
+        "heptane": [
+          0.0,
+          45.0
+        ],
+        "methanol": [
+          0.0,
+          45.0
+        ]
+      },
+      "d0": {
+        "both": [
+          1.1,
+          4.67
+        ],
+        "heptane": [
+          1.1,
+          4.67
+        ],
+        "methanol": [
+          1.61,
+          4.53
+        ]
+      }
+    }
+  },
+  "fitted": {
+    "readings": {
+      "heptane at the starting values": {
+        "burns_all_its_fuel_among_clear_outcomes_pct": 57.1,
+        "range_pct": [
+          34.2,
+          74.8
+        ],
+        "disruption_pct": 32.3,
+        "all_three_pct": {
+          "disruption": 32.3,
+          "burns_all_its_fuel": 38.6,
+          "goes_out": 29.0
+        }
+      },
+      "methanol at the starting values": {
+        "burns_all_its_fuel_among_clear_outcomes_pct": 3.3,
+        "range_pct": [
+          0.1,
+          9.0
+        ],
+        "disruption_pct": 12.3,
+        "all_three_pct": {
+          "disruption": 12.3,
+          "burns_all_its_fuel": 2.9,
+          "goes_out": 84.8
+        }
+      },
+      "heptane in Moon Base air": {
+        "burns_all_its_fuel_among_clear_outcomes_pct": 99.9,
+        "range_pct": [
+          98.4,
+          100.0
+        ],
+        "disruption_pct": 98.5,
+        "all_three_pct": {
+          "disruption": 98.5,
+          "burns_all_its_fuel": 1.5,
+          "goes_out": 0.0
+        }
+      },
+      "methanol in Moon Base air": {
+        "burns_all_its_fuel_among_clear_outcomes_pct": 76.1,
+        "range_pct": [
+          39.8,
+          96.8
+        ],
+        "disruption_pct": 85.4,
+        "all_three_pct": {
+          "disruption": 85.4,
+          "burns_all_its_fuel": 11.1,
+          "goes_out": 3.5
+        }
+      },
+      "heptane at 24 % oxygen": {
+        "burns_all_its_fuel_among_clear_outcomes_pct": 91.7,
+        "range_pct": [
+          78.6,
+          97.3
+        ],
+        "disruption_pct": 68.0,
+        "all_three_pct": {
+          "disruption": 68.0,
+          "burns_all_its_fuel": 29.4,
+          "goes_out": 2.7
+        }
+      },
+      "heptane at 16 % oxygen": {
+        "burns_all_its_fuel_among_clear_outcomes_pct": 3.8,
+        "range_pct": [
+          1.0,
+          8.4
+        ],
+        "disruption_pct": 3.8,
+        "all_three_pct": {
+          "disruption": 3.8,
+          "burns_all_its_fuel": 3.6,
+          "goes_out": 92.6
+        }
+      }
+    },
+    "range_from_the_refits_against_a_variance_table": {
+      "refits": 1000,
+      "ranges": {
+        "heptane at the starting values": {
+          "from_the_refits_pct": [
+            35.7,
+            74.4
+          ],
+          "from_a_variance_table_pct": [
+            36.6,
+            75.6
+          ]
+        },
+        "methanol at the starting values": {
+          "from_the_refits_pct": [
+            0.2,
+            8.5
+          ],
+          "from_a_variance_table_pct": [
+            0.3,
+            28.3
+          ]
+        },
+        "heptane in Moon Base air": {
+          "from_the_refits_pct": [
+            98.4,
+            100.0
+          ],
+          "from_a_variance_table_pct": [
+            98.2,
+            100.0
+          ]
+        },
+        "methanol in Moon Base air": {
+          "from_the_refits_pct": [
+            37.3,
+            97.0
+          ],
+          "from_a_variance_table_pct": [
+            30.7,
+            95.8
+          ]
+        },
+        "heptane at 24 % oxygen": {
+          "from_the_refits_pct": [
+            79.0,
+            97.2
+          ],
+          "from_a_variance_table_pct": [
+            77.1,
+            97.4
+          ]
+        },
+        "heptane at 16 % oxygen": {
+          "from_the_refits_pct": [
+            1.0,
+            8.8
+          ],
+          "from_a_variance_table_pct": [
+            1.2,
+            11.5
+          ]
+        }
+      }
+    },
+    "training_auc_without_a_penalty": {
+      "what": "1.000 would mean the two outcomes can be split perfectly and the coefficients have no finite answer",
+      "both fuels, own slopes": 0.953,
+      "heptane": 0.955,
+      "methanol": 0.932
+    },
+    "held_out_near_certain_readings": {
+      "model said under 1 %": {
+        "tests_per_repeat": 75.9,
+        "burned_to_completion_pct": 1.3
+      },
+      "model said over 99 %": {
+        "tests_per_repeat": 1.0,
+        "burned_to_completion_pct": 100.0
+      }
+    },
+    "smaller_methanol_models_held_out": {
+      "penalty_c": 10.0,
+      "candidates": {
+        "console model: own slope for every setting": {
+          "auc": 0.902,
+          "brier": 0.0674,
+          "methanol_auc": 0.846,
+          "methanol_brier": 0.0497,
+          "methanol_30_to_65_pct_band": {
+            "tests_per_repeat": 4.8,
+            "model_said_pct": 42.8,
+            "happened_pct": 13.5
+          }
+        },
+        "methanol's own slopes penalised 4 times more": {
+          "auc": 0.892,
+          "brier": 0.0716,
+          "methanol_auc": 0.833,
+          "methanol_brier": 0.0501,
+          "methanol_30_to_65_pct_band": {
+            "tests_per_repeat": 4.1,
+            "model_said_pct": 43.5,
+            "happened_pct": 30.5
+          }
+        },
+        "methanol's own slopes penalised 16 times more": {
+          "auc": 0.866,
+          "brier": 0.0769,
+          "methanol_auc": 0.762,
+          "methanol_brier": 0.0516,
+          "methanol_30_to_65_pct_band": {
+            "tests_per_repeat": 3.6,
+            "model_said_pct": 45.6,
+            "happened_pct": 31.5
+          }
+        },
+        "own slopes for oxygen and droplet size only": {
+          "auc": 0.891,
+          "brier": 0.0714,
+          "methanol_auc": 0.827,
+          "methanol_brier": 0.0512,
+          "methanol_30_to_65_pct_band": {
+            "tests_per_repeat": 3.1,
+            "model_said_pct": 43.4,
+            "happened_pct": 36.5
+          }
+        },
+        "own slope for oxygen only": {
+          "auc": 0.809,
+          "brier": 0.0874,
+          "methanol_auc": 0.609,
+          "methanol_brier": 0.0559,
+          "methanol_30_to_65_pct_band": {
+            "tests_per_repeat": 3.7,
+            "model_said_pct": 45.9,
+            "happened_pct": 35.1
+          }
+        },
+        "one set of slopes (the earlier model's shape)": {
+          "auc": 0.81,
+          "brier": 0.086,
+          "methanol_auc": 0.603,
+          "methanol_brier": 0.0549,
+          "methanol_30_to_65_pct_band": {
+            "tests_per_repeat": 4.0,
+            "model_said_pct": 46.2,
+            "happened_pct": 32.9
+          }
+        }
+      }
+    },
+    "pressure_slope": {
+      "tests in scope": {
+        "heptane": {
+          "share_of_refits_where_more_pressure_means_more_likely_to_go_out": 0.48,
+          "middle_slope_per_atm": -0.29
+        },
+        "methanol": {
+          "share_of_refits_where_more_pressure_means_more_likely_to_go_out": 0.87,
+          "middle_slope_per_atm": 4.6
+        }
+      },
+      "with the tests above the pressure limit": {
+        "heptane": {
+          "share_of_refits_where_more_pressure_means_more_likely_to_go_out": 0.5,
+          "middle_slope_per_atm": 0.01
+        },
+        "methanol": {
+          "share_of_refits_where_more_pressure_means_more_likely_to_go_out": 0.99,
+          "middle_slope_per_atm": 4.07
+        }
+      }
+    }
+  }
+}

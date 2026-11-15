@@ -36,6 +36,102 @@
         "co2",
         "d0"
       ]
+    },
+    "auc_95_pct_interval": [
+      0.83,
+      0.96
+    ],
+    "auc_95_pct_interval_by_fuel": {
+      "heptane": [
+        0.82,
+        0.98
+      ],
+      "methanol": [
+        0.64,
+        0.97
+      ]
+    },
+    "completions_per_fuel": {
+      "heptane": 19,
+      "methanol": 8
+    },
+    "held_out_chance_of_completion_by_fuel": {
+      "heptane": [
+        {
+          "band_pct": [
+            0,
+            10
+          ],
+          "tests_per_repeat": 31.8,
+          "model_said_pct": 2.5,
+          "happened_pct": 4.1
+        },
+        {
+          "band_pct": [
+            10,
+            30
+          ],
+          "tests_per_repeat": 19.6,
+          "model_said_pct": 19.4,
+          "happened_pct": 14.1
+        },
+        {
+          "band_pct": [
+            30,
+            65
+          ],
+          "tests_per_repeat": 13.9,
+          "model_said_pct": 45.3,
+          "happened_pct": 39.4
+        },
+        {
+          "band_pct": [
+            65,
+            100
+          ],
+          "tests_per_repeat": 9.8,
+          "model_said_pct": 80.5,
+          "happened_pct": 96.9
+        }
+      ],
+      "methanol": [
+        {
+          "band_pct": [
+            0,
+            10
+          ],
+          "tests_per_repeat": 103.0,
+          "model_said_pct": 1.6,
+          "happened_pct": 2.1
+        },
+        {
+          "band_pct": [
+            10,
+            30
+          ],
+          "tests_per_repeat": 13.9,
+          "model_said_pct": 18.9,
+          "happened_pct": 25.1
+        },
+        {
+          "band_pct": [
+            30,
+            65
+          ],
+          "tests_per_repeat": 4.8,
+          "model_said_pct": 42.7,
+          "happened_pct": 14.4
+        },
+        {
+          "band_pct": [
+            65,
+            100
+          ],
+          "tests_per_repeat": 2.2,
+          "model_said_pct": 82.3,
+          "happened_pct": 73.3
+        }
+      ]
     }
   },
   "burn_rate": {
@@ -43,6 +139,109 @@
     "cv": "5-fold, repeated 20 times",
     "r2": 0.732,
     "mean_abs_error_mm2_s": 0.045,
-    "target_std_mm2_s": 0.138
+    "target_std_mm2_s": 0.138,
+    "by_fuel": {
+      "heptane": {
+        "rows": 106,
+        "r2": 0.619,
+        "mean_abs_error_mm2_s": 0.069
+      },
+      "methanol": {
+        "rows": 146,
+        "r2": 0.873,
+        "mean_abs_error_mm2_s": 0.026
+      }
+    },
+    "by_ending": {
+      "Completion": {
+        "rows": 27,
+        "mean_error_mm2_s": -0.022,
+        "mean_abs_error_mm2_s": 0.09
+      },
+      "Extinction": {
+        "rows": 172,
+        "mean_error_mm2_s": 0.002,
+        "mean_abs_error_mm2_s": 0.036
+      },
+      "Disruption": {
+        "rows": 53,
+        "mean_error_mm2_s": 0.002,
+        "mean_abs_error_mm2_s": 0.048
+      }
+    },
+    "time_to_consume_against_nasa_burn_time": {
+      "what": "for tests that burned to completion: the page's time (d0 squared over the modelled rate, held out) divided by NASA's burn time",
+      "completions": 27,
+      "median_ratio": 1.18,
+      "middle_half": [
+        0.94,
+        1.42
+      ],
+      "range": [
+        0.87,
+        3.3
+      ]
+    }
+  },
+  "disruption": {
+    "rows": 252,
+    "disrupted": 53,
+    "cv": "5-fold stratified, repeated 20 times; penalty strength picked inside each training fold",
+    "penalty_c_chosen": 10.0,
+    "auc": 0.892,
+    "brier": 0.1008,
+    "brier_if_always_guessing_base_rate": 0.1661,
+    "held_out_chance_of_disruption": [
+      {
+        "band_pct": [
+          0,
+          10
+        ],
+        "tests_per_repeat": 134.9,
+        "model_said_pct": 3.3,
+        "happened_pct": 3.4
+      },
+      {
+        "band_pct": [
+          10,
+          30
+        ],
+        "tests_per_repeat": 55.0,
+        "model_said_pct": 18.2,
+        "happened_pct": 17.5
+      },
+      {
+        "band_pct": [
+          30,
+          65
+        ],
+        "tests_per_repeat": 35.5,
+        "model_said_pct": 43.3,
+        "happened_pct": 47.8
+      },
+      {
+        "band_pct": [
+          65,
+          100
+        ],
+        "tests_per_repeat": 26.5,
+        "model_said_pct": 89.1,
+        "happened_pct": 81.9
+      }
+    ],
+    "share_disrupted_by_oxygen": {
+      "up to 18 %": {
+        "heptane": "1 of 38",
+        "methanol": "0 of 71"
+      },
+      "above 18 to below 25 %": {
+        "heptane": "19 of 56",
+        "methanol": "10 of 58"
+      },
+      "25 % or more": {
+        "heptane": "11 of 12",
+        "methanol": "12 of 17"
+      }
+    }
   }
 }
