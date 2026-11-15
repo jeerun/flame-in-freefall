@@ -221,9 +221,20 @@ Not done:
     dashboard on without a firewall change; it answered from the PC itself. The
     server reads the proxy's X-Forwarded-For so `/who` shows the real device.
 
+  - Teammate's pull requests merged on Nov 15 at the owner's word (both additive):
+    #1 independent audit (`model/science_audit.py`, `docs/scientific-validation.md`;
+    re-run here, same results, 5 of 5 tests pass; key finding: Completion recall
+    23.7 % at a 50 % cut-off) and #2 page-versus-Python parity check
+    (`model/check_parity.py`, `docs/model-parity.md`; needs Node, not re-run here).
+    Both findings are in the README and the submission draft.
+  - The owner opened the dashboard on the real Legion Go over Tailscale on Nov 15
+    (about 00:47 to 01:14 by the PC clock). Seen from the PC: 118 requests, 26
+    questions to Ember all answered (slowest 2.1 s), 4 CSV files received, no server
+    errors. What the screen, sound, rumble and buttons did was not visible from here.
+
 Not done, or not verified:
 - Everything in the list above is unverified on the real Legion Go, with real
-  gloves, and over real Wi-Fi.
+  gloves, and over real Wi-Fi, except what the previous point says.
 - The share sheet ("Share" button) cannot be tested in a headless browser.
 - `gemma4:e2b` exists in the Ollama library (checked Nov 14) but was never run here.
 - Owner or teammate: read `docs/ember-check.md` and fill in the verdict lines.
