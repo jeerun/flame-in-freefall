@@ -395,3 +395,66 @@ body[data-page="console"]:has(#viewConsole.crew-mode) #stars { visibility: hidde
   #sim .box > * { flex: none; }
   #sim .simside { grid-template-rows: auto 100px auto auto; }
 }
+
+/* ---------- Easy on the handheld: no text under 12 px, and controls a thumb can hit ---------- */
+#viewResearch .research-photo figcaption { font-size: 12px; }
+#viewResearch .research-tools kbd, #viewResearch #orbitBtn kbd { font-size: 12px; }
+#viewResearch .research-label { font-size: 12px; letter-spacing: .085em; }
+#viewResearch .rank .nm small, #viewResearch .rank .lv, #viewResearch #rankNote,
+#viewResearch .card .tags span, #viewResearch .card .fine, #viewResearch .needs span { font-size: 12px; }
+#orbitLegend b { font-size: 12px; }
+#viewResearch #orbit [data-ring-score] text { font-size: 12px; }
+#viewResearch .rank-actions button { min-height: 40px; padding: 5px 11px; font-size: 13px; }
+#viewResearch .research-detail-top a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 4px; font-size: 13px; }
+#viewConsole :is(#igniteBtn, #openSheet) kbd, #viewDrill :is(.dbtns, #drillNext) kbd {
+  font-size: max(12px, .68rem); min-width: 1.3rem; height: 1.3rem;
+}
+#viewConsole .map:not(.big) .maplegend { font-size: max(12px, .71rem); }
+#viewConsole .preset-status, #viewConsole .presets button small, #viewConsole #read .caption,
+#crewContext .crew-kicker, #viewConsole .compare-table small { font-size: max(12px, .75rem); }
+#viewDrill .pips i { font-size: max(12px, .7rem); }
+@media (min-width: 821px) and (min-height: 760px) {
+  /* A handheld in full screen (1280 x 800) has the height for thumb-sized controls. */
+  .tabs button, .top .guide-button, .top .aibtn, .guide-title button, .guide-status .snd { min-height: 42px; }
+  #viewConsole .step { width: 2.6rem; height: 2.6rem; }
+  #viewConsole .track { height: 2.6rem; }
+  #viewConsole .track input[type=range]::-webkit-slider-thumb { margin-top: .84rem; }
+  #viewConsole .fuels button, #viewConsole #openSheet, #viewDrill #drillRestart { min-height: 42px; }
+  #viewConsole .csv { min-height: 40px; padding-inline: .7rem; }
+  #viewConsole .map:not(.big) .mapbtn { min-height: 38px; padding-inline: .7rem; }
+  #oxLevels button, #oxStudy { min-height: 42px; }
+  .sim .ahead button, .ai .ahead button { min-height: 42px; }
+  .sheet .close, .baseline-actions button { min-height: 42px; }
+  .sheet summary { padding-block: .5rem; }
+  #viewConsole .map.big :is(.mapzoom button, .mapbtn) { min-height: 40px; }
+}
+
+/* Fire drill: the rounds played, under the scoreboard */
+#viewDrill .drill-log { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: .35rem; min-height: 0; }
+#viewDrill .drill-log h3 { margin: .15rem 0 0; font-size: .88rem; font-weight: 600; color: var(--case-muted); }
+#viewDrill #drillLogEmpty { margin: 0; font-size: .84rem; line-height: 1.45; color: var(--case-muted); }
+#viewDrill #drillLog {
+  list-style: none; margin: 0; padding: 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
+  scrollbar-color: #536267 transparent; align-self: start; max-height: 100%;
+  border: 1px solid var(--case-line); border-radius: .6rem; background: var(--case-surface);
+}
+#viewDrill #drillLog:empty { display: none; }
+#viewDrill #drillLog li {
+  display: grid; grid-template-columns: 1.3rem minmax(0, 1fr) auto auto auto; gap: .6rem; align-items: baseline;
+  padding: .36rem .7rem; font-size: .84rem; border-bottom: 1px solid var(--case-line);
+}
+#viewDrill #drillLog li:last-child { border-bottom: 0; }
+#viewDrill #drillLog .n, #viewDrill #drillLog .end { color: var(--case-muted); }
+#viewDrill #drillLog .what { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#viewDrill #drillLog :is(.end, .hit, .miss) { white-space: nowrap; }
+#viewDrill #drillLog .hit { color: #a8e6c9; }
+#viewDrill #drillLog .miss { color: #ffb5a9; }
+@media (min-width: 821px) {
+  #viewDrill { grid-template-rows: auto minmax(0, 1fr); }
+  #viewDrill .drill-score { display: grid; grid-template-rows: auto auto auto minmax(0, 1fr); align-content: stretch; min-height: 0; }
+}
+@media (max-width: 820px) {
+  #viewDrill #drillLog li { grid-template-columns: 1.3rem minmax(0, 1fr) auto auto; row-gap: .1rem; }
+  #viewDrill #drillLog .what { grid-column: 2 / -1; }
+  #viewDrill #drillLog .end { grid-column: 2; }
+}

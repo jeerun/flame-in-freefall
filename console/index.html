@@ -794,6 +794,11 @@
     <h2 id="hScore">Scoreboard</h2>
     <div class="board" id="drillBoard"></div>
     <div class="legend" id="drillNote">Ten NASA FLEX tests (PSI-69), shuffled. Five burned to completion and five went out. The model trained on these tests, so it has a head start.</div>
+    <div class="drill-log">
+      <h3 id="hDrillLog">Rounds played</h3>
+      <p id="drillLogEmpty">Each answer is listed here with what the real test did.</p>
+      <ol id="drillLog" aria-labelledby="hDrillLog"></ol>
+    </div>
   </section>
 </main>
 
@@ -1682,8 +1687,8 @@ window.FLAME_MODEL = {
     if (W < 220 || H < 60) return;                 // no room: leave the panel empty rather than squeeze it
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
     // The plot covers the tested range plus a small margin, so the stars use the space.
-    var big = MAP.big, lvl = big ? MAP.level : 1, fs = big ? 12.5 : 10;
-    var fx = byKey.o2, fy = byKey.d0, L = big ? 44 : 26, Rt = big ? 18 : 10, T = big ? 14 : 6, B = big ? 26 : 16;
+    var big = MAP.big, lvl = big ? MAP.level : 1, fs = big ? 12.5 : 12;
+    var fx = byKey.o2, fy = byKey.d0, L = big ? 44 : 28, Rt = big ? 18 : 10, T = big ? 14 : 6, B = big ? 26 : 18;
     var x0 = fx.data_min - 2, x1 = fx.data_max + 2, y0 = fy.data_min - 0.35, y1 = fy.data_max + 0.35;
     var X = function (v) { return L + (Math.min(x1, Math.max(x0, v)) - x0) / (x1 - x0) * (W - L - Rt); };
     var Y = function (v) { return H - B - (Math.min(y1, Math.max(y0, v)) - y0) / (y1 - y0) * (H - T - B); };
@@ -1703,7 +1708,7 @@ window.FLAME_MODEL = {
       if (lvl >= 2) svg.appendChild(svgEl("line", { x1: L, y1: Y(dy), x2: W - Rt, y2: Y(dy), stroke: "#f1f4ff", "stroke-opacity": dy % 1 ? 0.05 : 0.13 }));
       svg.appendChild(svgEl("text", { x: L - 6, y: Y(dy) + 3.5, "text-anchor": "end", "font-size": fs }, String(dy)));
     }
-    svg.appendChild(svgEl("text", { x: L + 4, y: T + (big ? 12 : 9), "font-size": fs }, "mm droplet"));
+    svg.appendChild(svgEl("text", { x: L + 4, y: T + (big ? 12 : 11), "font-size": fs }, "mm droplet"));
     if (lvl >= 3 && M.extinction && M.extinction.coef && M.extinction.coef.o2) {
       // Where the model puts the chance of burning all the fuel at 25, 50 and 75 %, with the other settings as they are
       // now. The model is a straight-line formula, so each of these is a straight line across the map.
@@ -1995,7 +2000,7 @@ window.FLAME_MODEL = {
       var lx = compact ? (left ? cx - 10 : cx + 10) : left ? cx - rad - 14 : cx + rad + 14;
       var ly = compact ? (upper ? 15 : H - 9) : upper ? cy - rad * 0.74 : cy + rad * 0.8;
       svg.appendChild(fuelIcon(fuel, lx + (left ? 2 : -2), ly - 4, 0.8, FUEL_COLOR[fuel]));
-      svg.appendChild(svgEl("text", { x: lx + (left ? -9 : 9), y: ly, "text-anchor": left ? "end" : "start", "font-size": 11, style: "fill:#b9c3e0" }, FUEL_SHORT[fuel]));
+      svg.appendChild(svgEl("text", { x: lx + (left ? -9 : 9), y: ly, "text-anchor": left ? "end" : "start", "font-size": 12, style: "fill:#b9c3e0" }, FUEL_SHORT[fuel]));
       [3, 2, 1, 0].forEach(function (score) {
         var group = R.items.filter(function (it) { return it.fuel === fuel && it.scores[need.key] === score; });
         group.forEach(function (it, i) {
@@ -2049,7 +2054,7 @@ window.FLAME_MODEL = {
       var badge = svgEl("g", { "data-ring-score": score, transform: "translate(" + best.x + " " + best.y + ")",
         "aria-hidden": "true", "pointer-events": "none" });
       badge.appendChild(svgEl("rect", { x: -7.5, y: -7.5, width: 15, height: 15, rx: 3 }));
-      badge.appendChild(svgEl("text", { y: 3.5, "text-anchor": "middle" }, String(score)));
+      badge.appendChild(svgEl("text", { y: 4.2, "text-anchor": "middle" }, String(score)));
       svg.appendChild(badge);
       occupied.push({ x: best.x - 8, y: best.y - 8, width: 16, height: 16 });
     });
@@ -2376,6 +2381,21 @@ window.FLAME_MODEL = {
     var s2 = el("span", "", "Best on this device: "); s2.appendChild(el("b", "", best ? best + " of " + n : "none yet")); extra.appendChild(s2);
     board.appendChild(extra);
 
+    var log = $("drillLog"); log.innerHTML = "";     // one line per answered round: the test, what it did, who was right
+    drill.you.forEach(function (ok, i) {
+      var past = drill.rounds[i], burned = past[8] === "Completion", li = el("li");
+      li.title = "FLEX test " + past[0] + ": " + testSettings(past);
+      li.appendChild(el("span", "n", String(i + 1)));
+      li.appendChild(el("span", "what", "FLEX " + past[0] + " · " + past[2].charAt(0).toUpperCase() + past[2].slice(1)
+        + " · " + trim(past[3]) + " % oxygen · " + trim(past[7]) + " mm"));
+      li.appendChild(el("span", "end", burned ? "Burned all its fuel" : "Went out first"));
+      li.appendChild(el("span", ok ? "hit" : "miss", "You " + (ok ? "✓" : "✕")));
+      li.appendChild(el("span", drill.model[i] ? "hit" : "miss", "Model " + (drill.model[i] ? "✓" : "✕")));
+      log.appendChild(li);
+    });
+    $("drillLogEmpty").hidden = drill.you.length > 0;
+    log.scrollTop = log.scrollHeight;
+
     $("hDrillRound").textContent = "Round " + (drill.i + 1) + " of " + n;
     if (REPLAY.box !== $("drillBox")) $("drillBox").className = "flamebox" + (done ? (truth === "burn" ? " ended-burn" : " ended-out") : "");
     if (!done) {                                    // a fresh round: the picture gives nothing away
@@ -2573,11 +2593,11 @@ window.FLAME_MODEL = {
     var d2 = run.d0 * run.d0 - run.K * tau;
     svg.appendChild(svgEl("line", { x1: X(0), y1: Y(run.d0 * run.d0), x2: X(tau), y2: Y(d2), stroke: "#7db8ff", "stroke-width": 2.5, "stroke-linecap": "round" }));
     svg.appendChild(svgEl("circle", { cx: X(tau), cy: Y(d2), r: 4.5, fill: "#f1f4ff" }));
-    svg.appendChild(svgEl("text", { x: L, y: 13, "font-size": 10 }, "droplet diameter squared, mm²"));
-    svg.appendChild(svgEl("text", { x: L, y: H - 6, "font-size": 10 }, "time, s (dashed line: if it burned all its fuel)"));
-    svg.appendChild(svgEl("text", { x: L, y: H - B + 12, "font-size": 10 }, "0"));
-    svg.appendChild(svgEl("text", { x: L - 5, y: Y(run.d0 * run.d0) + 3, "text-anchor": "end", "font-size": 10 }, (run.d0 * run.d0).toFixed(1)));
-    svg.appendChild(svgEl("text", { x: X(run.Tfull), y: H - B + 12, "text-anchor": "end", "font-size": 10 }, run.Tfull.toFixed(1)));
+    svg.appendChild(svgEl("text", { x: L, y: 13, "font-size": 12 }, "droplet diameter squared, mm²"));
+    svg.appendChild(svgEl("text", { x: L, y: H - 6, "font-size": 12 }, "time, s (dashed line: if it burned all its fuel)"));
+    svg.appendChild(svgEl("text", { x: L, y: H - B + 12, "font-size": 12 }, "0"));
+    svg.appendChild(svgEl("text", { x: L - 5, y: Y(run.d0 * run.d0) + 3, "text-anchor": "end", "font-size": 12 }, (run.d0 * run.d0).toFixed(1)));
+    svg.appendChild(svgEl("text", { x: X(run.Tfull), y: H - B + 12, "text-anchor": "end", "font-size": 12 }, run.Tfull.toFixed(1)));
   }
   // The picture is drawn to look like footage of a FLEX test: a droplet at true scale (see the scale bar), two igniter
   // wires that pull back, a thin spherical flame that grows relative to the droplet as it burns, a soot shell inside a
@@ -2832,7 +2852,7 @@ window.FLAME_MODEL = {
     var m = T.meta, rows = T.rows, n = rows.length, three = OX.level === 3, compact = W < 620;
     svg.setAttribute("aria-label", OX_LEVELS[OX.level - 1] + (three ? ": oxygen versus pressure. " : ": oxygen by investigation. ") + "Selected: " + rows[OX.sel].name);
     var L = compact ? (three ? 34 : 83) : 218, top = three && compact ? 32 : 26, bot = 36;
-    var pw = W - L - (compact ? 16 : 22), ph = H - top - bot, x0 = 10, x1 = three ? 100 : 90;
+    var pw = W - L - (compact ? 16 : three ? 58 : 22), ph = H - top - bot, x0 = 10, x1 = three ? 100 : 90;
     var rh = (ph - (three ? 0 : 14)) / n;
     var X = function (o) { return L + (o - x0) / (x1 - x0) * pw; };
     var Y = function (p) { return top + (1 - Math.log(p / 0.25) / Math.log(6 / 0.25)) * ph; };
@@ -2865,13 +2885,15 @@ window.FLAME_MODEL = {
       if (on) add("rect", { x: 4, y: cy - rh / 2 + 1, width: three ? L - 8 : W - 8, height: rh - 2, rx: 5, fill: "rgba(125,184,255,0.13)" });
       if (i && row.oxygen_is !== rows[i - 1].oxygen_is) add("line", { x1: 8, y1: cy - rh / 2, x2: three ? L - 8 : W - 8, y2: cy - rh / 2, stroke: "rgba(200,215,245,0.25)" });
       var parts = row.name.split(", "), labelX = L - (compact ? 5 : 12);
-      var label = add("text", { x: labelX, y: cy + (compact && parts.length > 1 ? -4 : 1), "font-size": compact ? 11 : 12.5, "text-anchor": "end", "dominant-baseline": "middle",
+      // A second line under some names. It is 12 px where the row has room for two lines.
+      var note = compact ? "" : three ? (st.np ? "" : "no pressure in its table") : row.oxygen_is === "burner" ? "oxygen in the burner flow" : "";
+      var roomy = rh >= 32;
+      var label = add("text", { x: labelX, y: cy + (compact && parts.length > 1 ? -4 : note && roomy ? -7 : 1), "font-size": compact ? 11 : 12.5, "text-anchor": "end", "dominant-baseline": "middle",
         style: "fill:" + (on ? "var(--ink)" : faint ? "var(--ink-3)" : "var(--ink-2)") + ";font-weight:" + (on ? 600 : 400) + ";cursor:pointer" }, compact ? parts[0] : row.name);
       if (compact && parts.length > 1) label.appendChild(svgEl("tspan", {x: labelX, dy: 12, "font-size": 10}, parts[1].split(" ")[0]));
       tip(label, row.name);
       label.addEventListener("click", function () { oxChoose(i); });
-      if (three && !st.np) add("text", { x: L - 12, y: cy + 13, "font-size": 10, "text-anchor": "end", style: "fill:var(--ink-3)" }, "no pressure in its table");
-      if (row.oxygen_is === "burner" && !three && !compact) add("text", { x: L - 12, y: cy + 13, "font-size": 10, "text-anchor": "end", style: "fill:var(--ink-3)" }, "oxygen in the burner flow");
+      if (note) add("text", { x: L - 12, y: cy + 13, "font-size": roomy ? 12 : 10, "text-anchor": "end", style: "fill:var(--ink-3)" }, note);
     });
 
     if (!three) {
@@ -2884,9 +2906,9 @@ window.FLAME_MODEL = {
             if (b > split) add("rect", { x: split, y: cy - 4, width: b - split, height: 8, rx: 4, fill: OX_WARM });
           } else add("rect", { x: a, y: cy - 4, width: b - a, height: 8, rx: 4, fill: "none", stroke: OX_COOL, "stroke-width": 1.5 });
           if (!compact) {
-            add("text", { x: a - 6, y: cy + 4, "font-size": 11.5, "text-anchor": "end" }, oxNum(st.lo));
+            add("text", { x: a - 6, y: cy + 4, "font-size": 12, "text-anchor": "end" }, oxNum(st.lo));
             var tightRight = W - b < 105;
-            add("text", { x: tightRight ? W - 5 : b + 6, y: tightRight ? cy - 6 : cy + 4, "text-anchor": tightRight ? "end" : "start", "font-size": 11.5 },
+            add("text", { x: tightRight ? W - 5 : b + 6, y: tightRight ? cy - 6 : cy + 4, "text-anchor": tightRight ? "end" : "start", "font-size": 12 },
               oxNum(st.hi) + " %  ·  " + st.n + " rows");
           }
         } else {                                   // every test: piles of dots, one pile per oxygen level
@@ -2908,7 +2930,7 @@ window.FLAME_MODEL = {
       // pressure axis (log scale, so the low pressures that matter for a Moon Base are not squeezed flat)
       [0.3, 0.5, 1, 2, 3, 5].forEach(function (p) {
         add("line", { x1: L, y1: Y(p), x2: L + pw, y2: Y(p), stroke: "rgba(200,215,245,0.10)" });
-        add("text", { x: compact ? L - 5 : L + 6, y: Y(p) + (compact ? 3 : -4), "font-size": 11, "text-anchor": compact ? "end" : "start" }, compact ? String(p) : p + " atm");
+        add("text", { x: compact ? L - 5 : L + pw + 12, y: Y(p) + (compact ? 3 : 4), "font-size": compact ? 11 : 12, "text-anchor": compact ? "end" : "start" }, compact ? String(p) : p + " atm");
       });
       add("text", { x: compact ? L : L + pw - 4, y: compact ? top - 13 : top + 12, "font-size": 12, "text-anchor": compact ? "start" : "end" }, compact ? "Pressure (atm, log scale)" : "pressure of the gas (log scale)");
       var dot = function (row, p, big) {
@@ -2927,7 +2949,7 @@ window.FLAME_MODEL = {
       [[21, 1.0, "Earth at sea level", "end", -8], [100, 4.3 / 14.696, "Spacesuit: 100 % oxygen at 4.3 psi", "end", -8]].forEach(function (ref) {
         tip(add("circle", { cx: X(ref[0]), cy: Y(ref[1]), r: 6, fill: "none", stroke: "var(--ink)", "stroke-width": 1.5 }), ref[2]);
         var earth = ref[0] === 21;
-        add("text", { x: X(ref[0]) + (compact && earth ? 8 : ref[4]), y: Y(ref[1]) - 9, "font-size": compact ? 10.5 : 11.5, "text-anchor": compact && earth ? "start" : ref[3], style: "fill:var(--ink)" },
+        add("text", { x: X(ref[0]) + (compact && earth ? 8 : ref[4]), y: Y(ref[1]) - 9, "font-size": compact ? 10.5 : 12, "text-anchor": compact && earth ? "start" : ref[3], style: "fill:var(--ink);paint-order:stroke;stroke:#172023;stroke-width:3px;stroke-linejoin:round" },
           compact ? (earth ? "Earth" : "Suit · 4.3 psi") : ref[2]);
       });
     }
@@ -2937,10 +2959,10 @@ window.FLAME_MODEL = {
       if (three && byKey.p) {
         var uy = Y(Math.min(6, Math.max(0.25, state.values.p)));
         add("path", { d: "M" + ux + " " + (uy - 7) + " L" + (ux + 7) + " " + uy + " L" + ux + " " + (uy + 7) + " L" + (ux - 7) + " " + uy + " Z", fill: "none", stroke: "var(--flame)", "stroke-width": 2 });
-        add("text", { x: ux + 8, y: uy + 18, "font-size": compact ? 10.5 : 11.5, style: "fill:var(--flame)" }, compact ? "Console" : "your console setting");
+        add("text", { x: ux + 8, y: uy + 19, "font-size": compact ? 10.5 : 12, style: "fill:var(--flame);paint-order:stroke;stroke:#172023;stroke-width:3px;stroke-linejoin:round" }, compact ? "Console" : "your console setting");
       } else {
         add("line", { x1: ux, y1: top, x2: ux, y2: top + ph, stroke: "var(--flame)", "stroke-width": 1.5 });
-        add("text", { x: ux + 5, y: top + ph - 3, "font-size": compact ? 10.5 : 11.5, style: "fill:var(--flame)" }, compact ? "Console" : "your console setting");
+        add("text", { x: ux + 5, y: top + ph - 3, "font-size": compact ? 10.5 : 12, style: "fill:var(--flame);paint-order:stroke;stroke:#172023;stroke-width:3px;stroke-linejoin:round" }, compact ? "Console" : "your console setting");
       }
     }
   }
