@@ -1,0 +1,806 @@
+{
+  "schema_version": "2.1",
+  "provenance": {
+    "dataset_sha256": "4f8c5b93feb3be16391fe5d8bcccfb827de08e2d3a50b62f5107e9e512c5fc32",
+    "script_sha256": "65373e424f0b40bc0336bd00c9e2d8255a60f4043522d3ff7c7fc9a36852b3e2",
+    "python": "3.12.10",
+    "numpy": "2.5.4",
+    "pandas": "3.1.1",
+    "scikit_learn": "1.9.1"
+  },
+  "fold_training_prevalence_baselines": [
+    {
+      "seed": 7,
+      "fuel": "ALL",
+      "brier_score": 0.11735,
+      "accuracy": 0.86432
+    },
+    {
+      "seed": 7,
+      "fuel": "heptane",
+      "brier_score": 0.20306,
+      "accuracy": 0.74667
+    },
+    {
+      "seed": 7,
+      "fuel": "methanol",
+      "brier_score": 0.06551,
+      "accuracy": 0.93548
+    },
+    {
+      "seed": 18,
+      "fuel": "ALL",
+      "brier_score": 0.11735,
+      "accuracy": 0.86432
+    },
+    {
+      "seed": 18,
+      "fuel": "heptane",
+      "brier_score": 0.20303,
+      "accuracy": 0.74667
+    },
+    {
+      "seed": 18,
+      "fuel": "methanol",
+      "brier_score": 0.06552,
+      "accuracy": 0.93548
+    },
+    {
+      "seed": 29,
+      "fuel": "ALL",
+      "brier_score": 0.11735,
+      "accuracy": 0.86432
+    },
+    {
+      "seed": 29,
+      "fuel": "heptane",
+      "brier_score": 0.20315,
+      "accuracy": 0.74667
+    },
+    {
+      "seed": 29,
+      "fuel": "methanol",
+      "brier_score": 0.06545,
+      "accuracy": 0.93548
+    },
+    {
+      "seed": 40,
+      "fuel": "ALL",
+      "brier_score": 0.11735,
+      "accuracy": 0.86432
+    },
+    {
+      "seed": 40,
+      "fuel": "heptane",
+      "brier_score": 0.20306,
+      "accuracy": 0.74667
+    },
+    {
+      "seed": 40,
+      "fuel": "methanol",
+      "brier_score": 0.0655,
+      "accuracy": 0.93548
+    },
+    {
+      "seed": 51,
+      "fuel": "ALL",
+      "brier_score": 0.11735,
+      "accuracy": 0.86432
+    },
+    {
+      "seed": 51,
+      "fuel": "heptane",
+      "brier_score": 0.20306,
+      "accuracy": 0.74667
+    },
+    {
+      "seed": 51,
+      "fuel": "methanol",
+      "brier_score": 0.0655,
+      "accuracy": 0.93548
+    }
+  ],
+  "baseline_note": "Fold baselines use only training labels (pooled fuels). Existing constant-prevalence and majority-class metrics are descriptive full-subset references, not held-out baselines.",
+  "data_path": "data/clean/flex_clean.csv",
+  "label_definition": "1 = visible droplet-flame extinction; 0 = completion",
+  "model_for_audit": "StandardScaler + LogisticRegression(C=1.0; max_iter=2000)",
+  "validation": {
+    "method": "stratified row cross-validation",
+    "n_folds": 5,
+    "seeds": [
+      7,
+      18,
+      29,
+      40,
+      51
+    ],
+    "group_column": null,
+    "candidate_group_columns_not_verified": [],
+    "note": "Repeated seed results vary the splits of the same dataset; they are not external validation."
+  },
+  "counts": {
+    "raw_rows": 274,
+    "usable_feature_rows": 252,
+    "excluded_rows": 22,
+    "classification_rows": 199,
+    "regression_rows": 252,
+    "feature_rows_with_gas_total_over_100_pct": 0
+  },
+  "classification_overall": {
+    "n": 199,
+    "completion_n": 27,
+    "extinction_n": 172,
+    "extinction_fraction": 0.86432,
+    "mean_predicted_extinction": 0.8637,
+    "brier_score": 0.0843,
+    "constant_prevalence_baseline_brier": 0.11727,
+    "accuracy_at_0_5": 0.89447,
+    "majority_class_baseline_accuracy": 0.86432,
+    "confusion_matrix_rows_actual_completion_extinction": [
+      [
+        8,
+        19
+      ],
+      [
+        2,
+        170
+      ]
+    ],
+    "balanced_accuracy_at_0_5": 0.64233,
+    "roc_auc": 0.81288,
+    "macro_f1_at_0_5": 0.68713,
+    "per_class_at_0_5": {
+      "completion": {
+        "support": 27,
+        "predicted_count": 10,
+        "precision_undefined_no_predictions": false,
+        "recall_undefined_no_actual_cases": false,
+        "precision": 0.8,
+        "recall": 0.2963,
+        "f1": 0.43243
+      },
+      "extinction": {
+        "support": 172,
+        "predicted_count": 189,
+        "precision_undefined_no_predictions": false,
+        "recall_undefined_no_actual_cases": false,
+        "precision": 0.89947,
+        "recall": 0.98837,
+        "f1": 0.94183
+      }
+    },
+    "completion_misclassified_as_extinction_n": 19,
+    "completion_misclassified_as_extinction_fraction": 0.7037
+  },
+  "classification_by_fuel": {
+    "heptane": {
+      "n": 75,
+      "completion_n": 19,
+      "extinction_n": 56,
+      "extinction_fraction": 0.74667,
+      "mean_predicted_extinction": 0.75488,
+      "brier_score": 0.12807,
+      "constant_prevalence_baseline_brier": 0.18916,
+      "accuracy_at_0_5": 0.81333,
+      "majority_class_baseline_accuracy": 0.74667,
+      "confusion_matrix_rows_actual_completion_extinction": [
+        [
+          5,
+          14
+        ],
+        [
+          0,
+          56
+        ]
+      ],
+      "balanced_accuracy_at_0_5": 0.63158,
+      "roc_auc": 0.87124,
+      "macro_f1_at_0_5": 0.65278,
+      "per_class_at_0_5": {
+        "completion": {
+          "support": 19,
+          "predicted_count": 5,
+          "precision_undefined_no_predictions": false,
+          "recall_undefined_no_actual_cases": false,
+          "precision": 1.0,
+          "recall": 0.26316,
+          "f1": 0.41667
+        },
+        "extinction": {
+          "support": 56,
+          "predicted_count": 70,
+          "precision_undefined_no_predictions": false,
+          "recall_undefined_no_actual_cases": false,
+          "precision": 0.8,
+          "recall": 1.0,
+          "f1": 0.88889
+        }
+      },
+      "completion_misclassified_as_extinction_n": 14,
+      "completion_misclassified_as_extinction_fraction": 0.73684
+    },
+    "methanol": {
+      "n": 124,
+      "completion_n": 8,
+      "extinction_n": 116,
+      "extinction_fraction": 0.93548,
+      "mean_predicted_extinction": 0.92952,
+      "brier_score": 0.05783,
+      "constant_prevalence_baseline_brier": 0.06035,
+      "accuracy_at_0_5": 0.94355,
+      "majority_class_baseline_accuracy": 0.93548,
+      "confusion_matrix_rows_actual_completion_extinction": [
+        [
+          3,
+          5
+        ],
+        [
+          2,
+          114
+        ]
+      ],
+      "balanced_accuracy_at_0_5": 0.67888,
+      "roc_auc": 0.58513,
+      "macro_f1_at_0_5": 0.71588,
+      "per_class_at_0_5": {
+        "completion": {
+          "support": 8,
+          "predicted_count": 5,
+          "precision_undefined_no_predictions": false,
+          "recall_undefined_no_actual_cases": false,
+          "precision": 0.6,
+          "recall": 0.375,
+          "f1": 0.46154
+        },
+        "extinction": {
+          "support": 116,
+          "predicted_count": 119,
+          "precision_undefined_no_predictions": false,
+          "recall_undefined_no_actual_cases": false,
+          "precision": 0.95798,
+          "recall": 0.98276,
+          "f1": 0.97021
+        }
+      },
+      "completion_misclassified_as_extinction_n": 5,
+      "completion_misclassified_as_extinction_fraction": 0.625
+    }
+  },
+  "classification_repeated_seed_summary": {
+    "ALL": {
+      "repeats": 5,
+      "accuracy_at_0_5": {
+        "mean": 0.88844,
+        "min": 0.88442,
+        "max": 0.89447,
+        "sd_across_seeds": 0.0055
+      },
+      "balanced_accuracy_at_0_5": {
+        "mean": 0.61387,
+        "min": 0.58969,
+        "max": 0.64233,
+        "sd_across_seeds": 0.02675
+      },
+      "roc_auc": {
+        "mean": 0.81843,
+        "min": 0.80383,
+        "max": 0.8273,
+        "sd_across_seeds": 0.00995
+      },
+      "brier_score": {
+        "mean": 0.08487,
+        "min": 0.08362,
+        "max": 0.08616,
+        "sd_across_seeds": 0.001
+      },
+      "completion_recall_at_0_5": {
+        "mean": 0.23704,
+        "min": 0.18519,
+        "max": 0.2963,
+        "sd_across_seeds": 0.05617
+      },
+      "completion_precision_at_0_5": {
+        "mean": 0.80333,
+        "min": 0.75,
+        "max": 0.83333,
+        "sd_across_seeds": 0.03416
+      },
+      "completion_f1_at_0_5": {
+        "mean": 0.36276,
+        "min": 0.30303,
+        "max": 0.43243,
+        "sd_across_seeds": 0.06565
+      },
+      "extinction_recall_at_0_5": {
+        "mean": 0.9907,
+        "min": 0.98837,
+        "max": 0.99419,
+        "sd_across_seeds": 0.00319
+      },
+      "extinction_precision_at_0_5": {
+        "mean": 0.8922,
+        "min": 0.88601,
+        "max": 0.89947,
+        "sd_across_seeds": 0.00684
+      },
+      "extinction_f1_at_0_5": {
+        "mean": 0.93886,
+        "min": 0.93664,
+        "max": 0.94183,
+        "sd_across_seeds": 0.00272
+      }
+    },
+    "heptane": {
+      "repeats": 5,
+      "accuracy_at_0_5": {
+        "mean": 0.792,
+        "min": 0.77333,
+        "max": 0.81333,
+        "sd_across_seeds": 0.0152
+      },
+      "balanced_accuracy_at_0_5": {
+        "mean": 0.59295,
+        "min": 0.55263,
+        "max": 0.63158,
+        "sd_across_seeds": 0.03314
+      },
+      "roc_auc": {
+        "mean": 0.8562,
+        "min": 0.83365,
+        "max": 0.87124,
+        "sd_across_seeds": 0.0156
+      },
+      "brier_score": {
+        "mean": 0.13474,
+        "min": 0.12807,
+        "max": 0.13784,
+        "sd_across_seeds": 0.00385
+      },
+      "completion_recall_at_0_5": {
+        "mean": 0.18947,
+        "min": 0.10526,
+        "max": 0.26316,
+        "sd_across_seeds": 0.07062
+      },
+      "completion_precision_at_0_5": {
+        "mean": 0.96667,
+        "min": 0.83333,
+        "max": 1.0,
+        "sd_across_seeds": 0.07454
+      },
+      "completion_f1_at_0_5": {
+        "mean": 0.31052,
+        "min": 0.19048,
+        "max": 0.41667,
+        "sd_across_seeds": 0.09558
+      },
+      "extinction_recall_at_0_5": {
+        "mean": 0.99643,
+        "min": 0.98214,
+        "max": 1.0,
+        "sd_across_seeds": 0.00799
+      },
+      "extinction_precision_at_0_5": {
+        "mean": 0.78396,
+        "min": 0.76712,
+        "max": 0.8,
+        "sd_across_seeds": 0.01405
+      },
+      "extinction_f1_at_0_5": {
+        "mean": 0.87742,
+        "min": 0.86822,
+        "max": 0.88889,
+        "sd_across_seeds": 0.00766
+      }
+    },
+    "methanol": {
+      "repeats": 5,
+      "accuracy_at_0_5": {
+        "mean": 0.94677,
+        "min": 0.94355,
+        "max": 0.95161,
+        "sd_across_seeds": 0.00441
+      },
+      "balanced_accuracy_at_0_5": {
+        "mean": 0.66897,
+        "min": 0.62069,
+        "max": 0.68319,
+        "sd_across_seeds": 0.02707
+      },
+      "roc_auc": {
+        "mean": 0.62004,
+        "min": 0.57328,
+        "max": 0.65194,
+        "sd_across_seeds": 0.03763
+      },
+      "brier_score": {
+        "mean": 0.0547,
+        "min": 0.05211,
+        "max": 0.05783,
+        "sd_across_seeds": 0.00218
+      },
+      "completion_recall_at_0_5": {
+        "mean": 0.35,
+        "min": 0.25,
+        "max": 0.375,
+        "sd_across_seeds": 0.0559
+      },
+      "completion_precision_at_0_5": {
+        "mean": 0.67333,
+        "min": 0.6,
+        "max": 0.75,
+        "sd_across_seeds": 0.07509
+      },
+      "completion_f1_at_0_5": {
+        "mean": 0.45734,
+        "min": 0.36364,
+        "max": 0.5,
+        "sd_across_seeds": 0.0558
+      },
+      "extinction_recall_at_0_5": {
+        "mean": 0.98793,
+        "min": 0.98276,
+        "max": 0.99138,
+        "sd_across_seeds": 0.00472
+      },
+      "extinction_precision_at_0_5": {
+        "mean": 0.95661,
+        "min": 0.95041,
+        "max": 0.95833,
+        "sd_across_seeds": 0.00347
+      },
+      "extinction_f1_at_0_5": {
+        "mean": 0.97201,
+        "min": 0.97021,
+        "max": 0.97458,
+        "sd_across_seeds": 0.00235
+      }
+    }
+  },
+  "evidence_coverage_by_fuel": {
+    "heptane": {
+      "n": 106,
+      "observed_pressure_atm_rounded_2dp": {
+        "0.69": 1,
+        "0.70": 24,
+        "0.71": 10,
+        "0.72": 2,
+        "0.99": 3,
+        "1.00": 30,
+        "1.01": 36
+      },
+      "observed_pressure_levels_atm": [
+        0.6947,
+        0.6961,
+        0.6968,
+        0.6978,
+        0.6988,
+        0.6996,
+        0.7,
+        0.7001,
+        0.7003,
+        0.7007,
+        0.7008,
+        0.7011,
+        0.7021,
+        0.7026,
+        0.7029,
+        0.703,
+        0.7032,
+        0.7038,
+        0.7039,
+        0.7055,
+        0.7057,
+        0.7062,
+        0.7068,
+        0.707,
+        0.7088,
+        0.7093,
+        0.7101,
+        0.7114,
+        0.7129,
+        0.7159,
+        0.7163,
+        0.9895,
+        0.9901,
+        0.9938,
+        0.9954,
+        0.9964,
+        0.9972,
+        0.9979,
+        0.9984,
+        0.9987,
+        0.9988,
+        0.9991,
+        0.9997,
+        0.9999,
+        1.0001,
+        1.0003,
+        1.0013,
+        1.0017,
+        1.0024,
+        1.0026,
+        1.0028,
+        1.003,
+        1.0032,
+        1.0036,
+        1.0038,
+        1.0049,
+        1.0051,
+        1.0053,
+        1.0058,
+        1.0061,
+        1.0062,
+        1.0064,
+        1.0068,
+        1.0071,
+        1.0075,
+        1.0078,
+        1.0082,
+        1.0086,
+        1.0088,
+        1.0093,
+        1.0095,
+        1.0097,
+        1.01,
+        1.0105,
+        1.0107,
+        1.0108,
+        1.0121,
+        1.0133,
+        1.0138,
+        1.0145,
+        1.0146,
+        1.015
+      ],
+      "pressure_gap_screening_min_atm": 0.1,
+      "large_internal_pressure_gaps": [
+        {
+          "between_pressure_atm": [
+            0.7163,
+            0.9895
+          ],
+          "gap_width_atm": 0.2732,
+          "note": "No observed pressure strictly inside this interval; raw values used."
+        }
+      ],
+      "example_pressure_checks": [
+        {
+          "pressure_atm": 0.85,
+          "pressure_coverage_status": "within_large_internal_pressure_gap",
+          "nearest_observed_pressure_atm": 0.7163,
+          "distance_to_nearest_pressure_atm": 0.1337,
+          "pressure_evidence_level": "Limited Evidence",
+          "large_internal_gap_bounds_atm": [
+            0.7163,
+            0.9895
+          ],
+          "warning": "Pressure-only screen; does not establish joint-feature support or safety."
+        }
+      ],
+      "min_max_by_feature": {
+        "o2_pct": {
+          "min": 13.0,
+          "max": 34.0
+        },
+        "pressure_atm": {
+          "min": 0.6947,
+          "max": 1.015
+        },
+        "co2_pct": {
+          "min": 0.0,
+          "max": 45.0
+        },
+        "he_pct": {
+          "min": 0.0,
+          "max": 45.0
+        },
+        "d0_mm": {
+          "min": 1.1,
+          "max": 4.67
+        }
+      },
+      "distance_method": "same-fuel leave-one-out Euclidean / global feature range",
+      "nearest_neighbor_distance_p95": 0.15746,
+      "nearest_neighbor_distance_max": 0.2997,
+      "exact_duplicate_neighbor_fraction": 0.0
+    },
+    "methanol": {
+      "n": 146,
+      "observed_pressure_atm_rounded_2dp": {
+        "0.69": 3,
+        "0.70": 35,
+        "0.71": 26,
+        "0.99": 5,
+        "1.00": 37,
+        "1.01": 37,
+        "1.02": 3
+      },
+      "observed_pressure_levels_atm": [
+        0.6925,
+        0.6942,
+        0.6946,
+        0.6979,
+        0.6983,
+        0.6989,
+        0.6993,
+        0.6996,
+        0.6997,
+        0.6999,
+        0.7,
+        0.7005,
+        0.7012,
+        0.7016,
+        0.702,
+        0.7028,
+        0.7029,
+        0.703,
+        0.7032,
+        0.7033,
+        0.7034,
+        0.7036,
+        0.7039,
+        0.7041,
+        0.7042,
+        0.7049,
+        0.705,
+        0.7054,
+        0.7055,
+        0.7057,
+        0.7059,
+        0.7062,
+        0.7064,
+        0.7066,
+        0.7067,
+        0.7068,
+        0.707,
+        0.7071,
+        0.7072,
+        0.7083,
+        0.7084,
+        0.7092,
+        0.7095,
+        0.7099,
+        0.7112,
+        0.7113,
+        0.7124,
+        0.7139,
+        0.9913,
+        0.9921,
+        0.9924,
+        0.9942,
+        0.9949,
+        0.9957,
+        0.9959,
+        0.9961,
+        0.9968,
+        0.997,
+        0.9974,
+        0.9975,
+        0.9978,
+        0.9988,
+        0.9989,
+        0.9992,
+        0.9993,
+        0.9997,
+        0.9999,
+        1.0,
+        1.0003,
+        1.0004,
+        1.0008,
+        1.0011,
+        1.0016,
+        1.0021,
+        1.0025,
+        1.0026,
+        1.0028,
+        1.0033,
+        1.0043,
+        1.0045,
+        1.0046,
+        1.0049,
+        1.0055,
+        1.0058,
+        1.0059,
+        1.0061,
+        1.0066,
+        1.007,
+        1.0072,
+        1.0074,
+        1.0078,
+        1.0079,
+        1.008,
+        1.0088,
+        1.0089,
+        1.0091,
+        1.0095,
+        1.01,
+        1.0101,
+        1.0109,
+        1.0111,
+        1.0114,
+        1.0116,
+        1.0121,
+        1.0125,
+        1.0132,
+        1.0142,
+        1.0147,
+        1.0175,
+        1.018,
+        1.0186
+      ],
+      "pressure_gap_screening_min_atm": 0.1,
+      "large_internal_pressure_gaps": [
+        {
+          "between_pressure_atm": [
+            0.7139,
+            0.9913
+          ],
+          "gap_width_atm": 0.2774,
+          "note": "No observed pressure strictly inside this interval; raw values used."
+        }
+      ],
+      "example_pressure_checks": [
+        {
+          "pressure_atm": 0.85,
+          "pressure_coverage_status": "within_large_internal_pressure_gap",
+          "nearest_observed_pressure_atm": 0.7139,
+          "distance_to_nearest_pressure_atm": 0.1361,
+          "pressure_evidence_level": "Limited Evidence",
+          "large_internal_gap_bounds_atm": [
+            0.7139,
+            0.9913
+          ],
+          "warning": "Pressure-only screen; does not establish joint-feature support or safety."
+        }
+      ],
+      "min_max_by_feature": {
+        "o2_pct": {
+          "min": 12.0,
+          "max": 34.0
+        },
+        "pressure_atm": {
+          "min": 0.6925,
+          "max": 1.0186
+        },
+        "co2_pct": {
+          "min": 0.0,
+          "max": 50.0
+        },
+        "he_pct": {
+          "min": 0.0,
+          "max": 45.0
+        },
+        "d0_mm": {
+          "min": 1.61,
+          "max": 4.53
+        }
+      },
+      "distance_method": "same-fuel leave-one-out Euclidean / global feature range",
+      "nearest_neighbor_distance_p95": 0.16907,
+      "nearest_neighbor_distance_max": 0.27209,
+      "exact_duplicate_neighbor_fraction": 0.0
+    }
+  },
+  "burn_rate_regression": {
+    "n": 252,
+    "out_of_fold_mae_mm2_s": 0.04844,
+    "out_of_fold_r2": 0.70844,
+    "negative_predictions_before_any_ui_clamp": 0,
+    "negative_observed_targets": 0,
+    "grouped_cv": false
+  },
+  "limitations": [
+    "Independent audit refit; not evaluation of saved deployed model files or console output.",
+    "Compare FEATURES, dataset filters, and hyperparameters with current model/train.py before claiming identical methodology.",
+    "Data reused over CV seeds; seed variation is not an independent validation set or confidence interval.",
+    "Grouped splitting is only used when --group-col is provided with genuine experiment/run IDs. Otherwise correlated replicates could inflate scores.",
+    "Probability bins and fuel-specific class metrics can be highly unstable with few Completion cases.",
+    "When a class is never predicted, its precision is mathematically undefined; scikit-learn zero_division=0 reports it as 0, with a separate flag.",
+    "No threshold calibration or probability adjustment has been deployed or validated.",
+    "Pressure gap threshold is an illustrative audit screen on raw pressure values, not a certified physical OOD boundary. Rounded histograms are display-only.",
+    "Nearest-neighbor distances describe training-data coverage, not calibrated model confidence.",
+    "Visible droplet-flame extinction is not evidence of complete combustion termination or spacecraft cabin fire safety.",
+    "methanol: only 8 labelled Completion cases; estimates are fragile."
+  ]
+}
