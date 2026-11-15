@@ -167,6 +167,10 @@ the notes in `data/clean/research_notes.json` and writes `console/research.js`. 
 fourth reads the oxygen and pressure of each test from the PSI test tables and
 writes `console/tables.js` and the counts Ember is given. It needs no extra packages.
 
+`python model/science_audit.py` repeats the independent audit, and
+`python -m unittest tests.test_science_audit` runs its tests.
+`python model/check_parity.py` repeats the page-versus-Python check (needs Node.js).
+
 `python data/clean/fetch_psi_tables.py` downloads the PSI test tables again (it
 never overwrites a file that is already there). With the server running,
 `python server/ember_check.py` asks Ember the 18 fixed questions again and rewrites
@@ -212,13 +216,26 @@ Known limits: the outcome model is much weaker for methanol than for heptane (on
 8 of 124 methanol tests burned to completion); pressure sits at only two levels;
 "goes out" means the visible flame only. More in `docs/submission.md`.
 
+Two independent checks by a teammate:
+
+- `docs/scientific-validation.md` (`model/science_audit.py`): a separately fitted
+  model on the same 199 tests, five-fold cross-validation over five seeds. Mean
+  accuracy 88.8 %, balanced accuracy 61.4 %. Read as a yes or no at 50 %, it finds on
+  average only 23.7 % of the tests that burned to completion (heptane 19 %, methanol
+  35 %). So a low percentage on the console means "less likely", not "it will go
+  out". Re-run on the team's PC: same results, 5 of 5 tests pass.
+- `docs/model-parity.md` (`model/check_parity.py`): runs the page's own prediction
+  code in Node against the Python model on 820 inputs and finds the same numbers to
+  within rounding. It needs Node.js and was run by the teammate, not on the team's PC.
+
 ## Folders, and who owns each
 
 | Folder | Owner (role) | What goes here |
 |---|---|---|
 | `data/raw/` | 1 Data | Files exactly as downloaded from NASA PSI. Never edit these. |
 | `data/clean/` | 1 Data | One tidy CSV built from the raw files, plus notes on each column. Also the research notes and the script that writes `console/research.js`. |
-| `model/` | 2 Model | Training script. It writes `console/model.js`. |
+| `model/` | 2 Model | Training script. It writes `console/model.js`. Also the independent audit (`science_audit.py`, results in `audit_v2_1/`) and the parity check (`check_parity.py`). |
+| `tests/` | 2 Model | Tests for the audit and the parity check. |
 | `console/` | 3 Console | `index.html`, the page that runs on the Legion Go, with `model.js`, `research.js` and `tables.js`. |
 | `server/` | 3 Console | `serve.py`: serves the dashboard on the local network, passes questions for Ember to the language model, and keeps the sent CSV file. `ember_check.py`: asks Ember a fixed list of questions for checking. |
 | `docs/sources.md` | 4 Science | Every NASA dataset and source we use. |

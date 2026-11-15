@@ -207,6 +207,10 @@ except Ember works, fully offline.
 - If most nearby real tests ended the other way from the model, the page says so and
   tells the user to trust the tests.
 - Accuracy is measured on tests held out of training and shown on screen.
+- A teammate checked the model independently, twice: an audit that reports each
+  outcome separately instead of one accuracy figure (`docs/scientific-validation.md`),
+  and a test that runs the page's own prediction code against the Python model on 820
+  inputs and finds the same numbers to within rounding (`docs/model-parity.md`).
 - AI-written text is labelled as AI-written, next to facts copied from PSI.
 - The Oxygen map counts rows of NASA's tables as published. A row whose oxygen cell
   is not a number is left out and reported as left out. Inverse gas flames, where the
@@ -230,6 +234,10 @@ except Ember works, fully offline.
   same numbers (AUC 0.80, R² 0.70).
 - When the page says under 10%, 4% of those tests burned to completion; at
   35 to 65%, 67% did. The model rarely goes above 65%.
+- An independent audit by a teammate, with a separately fitted model on the same 199
+  tests (five-fold cross-validation over five seeds): mean accuracy 88.8%, balanced
+  accuracy 61.4%. Read as a yes or no at 50%, it finds on average only 23.7% of the
+  tests that burned to completion (heptane 19%, methanol 35%).
 
 **Limits we know about.**
 
@@ -258,6 +266,9 @@ except Ember works, fully offline.
   three" lines do not always point at the nearest-looking stars.
 - The outcome model separates heptane tests well (AUC about 0.8 within heptane) and
   methanol tests poorly (about 0.6): only 8 of 124 methanol tests burned to completion.
+- Read as a yes or no at 50%, the model misses most of the tests that burned to
+  completion (about three in four in the independent audit). A low percentage means
+  "less likely", not "it will go out".
 - Pressure sits at only two levels, about 0.7 and 1.0 atm, so its effect is weakly known.
 - "Goes out" means the visible flame. FLEX found that fuel can keep reacting afterwards
   in a cool flame, which the page does not model.
@@ -277,7 +288,8 @@ always shows where the data stops.
 cleaning, training and the chart, and the Python standard library for the local
 server. HTML, CSS and plain JavaScript with the browser Gamepad API for the
 dashboard, including the drawings (inline SVG), the sound effects (Web Audio) and the
-voice (the browser's speech synthesis). Ollama running the open Gemma 4 12B model on
+voice (the browser's speech synthesis). Node.js for the test that runs the page's
+prediction code outside a browser. Ollama running the open Gemma 4 12B model on
 an NVIDIA RTX 5080 for Ember. Git, GitHub and GitHub Pages. Shown on a Lenovo
 Legion Go.
 
@@ -369,3 +381,4 @@ TO ADD (owner): anything teammates did with AI tools outside this repo.
 Held-out accuracy for "does the flame go out": AUC 0.81; accuracy 0.887 against 0.864 for always answering "goes out" (199 tests, 5-fold cross-validation repeated 20 times).
 Held-out error for burning rate: mean absolute error 0.048 mm²/s, R² 0.71 (252 tests).
 Number of tests used: 252 of the 274 in the table (199 for the flame outcome, 252 for burning rate).
+Independent audit (separately fitted model, five seeds): balanced accuracy 61.4%; finds 23.7% of the tests that burned to completion at a 50% cut-off.
