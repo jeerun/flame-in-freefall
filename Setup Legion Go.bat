@@ -20,11 +20,14 @@ if errorlevel 1 (
   goto done
 )
 
+rem Both installs name "--source winget". On the real Legion Go, with winget 1.11, the Microsoft Store
+rem source fails its certificate check, error 0x8A15005E, and "winget install" stops unless only the
+rem winget source is asked.
 echo.
 echo Step 1 of 3: Python
 where py >nul 2>nul
 if errorlevel 1 (
-  winget install --id Python.Python.3.13 --exact
+  winget install --id Python.Python.3.13 --exact --source winget
 ) else (
   echo   already installed
 )
@@ -34,7 +37,7 @@ echo Step 2 of 3: Ollama
 if exist "%OLLAMA%" (
   echo   already installed
 ) else (
-  winget install --id Ollama.Ollama --exact
+  winget install --id Ollama.Ollama --exact --source winget
 )
 if not exist "%OLLAMA%" (
   echo   Ollama is not where it is expected: %OLLAMA%
