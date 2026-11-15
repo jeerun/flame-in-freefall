@@ -4,7 +4,7 @@
 
 **Workstream:** Independent Scientific Validation · `feature/scientific-validation`
 
-**Status:** V2.1 implementation tested with synthetic fixtures; NASA FLEX rerun pending. Results are diagnostic, not certification.
+**Status:** V2.1 passed all 5 automated tests and completed a cleaned NASA FLEX audit using 5-fold stratified row cross-validation across 5 seeds. Results are diagnostic, not certification or validation of the deployed console model.
 
 ## Purpose and scope
 
@@ -105,3 +105,15 @@ Do not automatically label a query Supported from this screen or use nearest-nei
 **Summary:** Adds reusable diagnostic scripts for per-class metrics, split-seed stability, optional group CV, pressure evidence-gap reporting, and reviewer documentation. No change to model training/deployment or the handheld console. Results are explicitly labelled independent and non-operational.
 
 **Real-data verification still required:** Run `py model/science_audit.py --repeats 5 --check-pressure 0.85`, inspect the four generated files, and compare classification totals against `model/metrics.json` and the current `model/train.py` methodology.
+
+## Verified local audit — 15 November 2026
+
+The audit used 199 classification samples: 27 Completion and 172 Extinction cases. Across five CV seeds, mean accuracy was 88.84%, mean balanced accuracy was 61.39%, and mean Completion recall was 23.70%.
+
+Mean Completion recall was 18.95% for Heptane and 35.00% for Methanol. These results describe an independently refitted audit model, not the deployed console model.
+
+Both fuels have an internal pressure evidence gap containing 0.85 atm:
+- Heptane: 0.7163–0.9895 atm.
+- Methanol: 0.7139–0.9913 atm.
+
+Results are stored in `model/audit_v2_1/`. Validation is row-based; no verified experimental grouping was used. Variation across seeds is not a confidence interval or external validation.
