@@ -3,9 +3,11 @@
 Everything in English. Deadline: Sunday Nov 15, 11:59 PM, team owner's local time
 (confirm on the team page). "Submit for Judging" is final.
 
-The captioned demo was recorded in desktop Edge. The team previously confirmed that a
-Lenovo Legion Go could reach the dashboard server, obtain Ember answers and send CSVs.
-The handheld's controls, rendering, rumble and on-device model still need verification.
+The captioned demo was recorded in desktop Edge. On Nov 15 the owner tested the
+earlier dashboard's gamepad controls, wheel, sound and rumble on a Lenovo Legion Go.
+A separate screen check covered the per-fuel build at `f8374e5` at 1280×800.
+The newer evidence activities, shared views and redesigned controls were tested
+in desktop Edge with simulated gamepad input. [Handheld test record](../CLAUDE.md)
 
 ## Project name
 
@@ -171,8 +173,9 @@ application may transfer the file once connected.
 - Ember, the on-board AI, on every page. A language model (Gemma 4, 12 billion
   parameters) runs on the team's own PC with an RTX 5080. The optional two-server
   setup prefers the reachable PC and falls back to the server's own configured
-  model. This was tested with two instances on the PC. The intended fallback
-  on the handheld itself remains unverified. On the research page Ember answers
+  model. On the handheld's own server, the owner switched Ember from the PC to
+  the Legion Go and received a local answer. A second server on the handheld
+  answered with its configured peer unreachable. On the research page Ember answers
   questions such as "For a Moon Base cabin with about 30% oxygen at low pressure,
   which investigations matter most, and why?", "Compare BASS-II with BASS" or "What
   did this investigation measure, and with which instruments?" from the PSI text of
@@ -280,9 +283,10 @@ These scores describe performance within this FLEX dataset.
   recorded burn lengths and gas concentrations alongside those atmosphere records.
 - The Mars base setting is an assumption, as the page says. Ignite shows the model's
   odds, not physics.
-- Two-machine model fallback was exercised with two server instances on a PC.
-  The physical handheld connected to the PC over Tailscale. Running the small
-  model on the handheld, controller operation and rumble there remain unverified.
+- The physical Legion Go reached the PC over Tailscale. After a controller CSV
+  export, the PC’s `/tests.csv` returned 252 rows. The PC's destination folder
+  was not opened. The team did not test a direct Wi-Fi address or stop the PC
+  mid-session to check the disconnect banner.
 - The relevance ranks are an AI model's reading of NASA's descriptions, on a 0 to 3
   scale. They are a starting point, not a NASA rating.
 - In Fire drill the model was trained on the tests it is scored on, so its score there
@@ -381,8 +385,8 @@ Where and how we used AI. Copy from the README and add anything new.
 Inside the product:
 
 - Ember, the on-board assistant, is Gemma 4 12B, an open language model from Google,
-  run locally with Ollama on the team's own RTX 5080 PC. A smaller model is
-  configured for handheld fallback and awaits hardware testing. Ember adds a
+  run locally with Ollama on the team's own RTX 5080 PC. The smaller
+  `gemma4:e2b` also answered on the Legion Go's CPU. Ember adds a
   one-sentence comment after each Fire drill round, from the NASA PSI records, the
   counts we made from NASA's test tables and the numbers on screen, which our server
   puts in its prompt. The server instructs it to cite PSI identifiers and the
