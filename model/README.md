@@ -20,6 +20,23 @@ See `model.example.js` in this folder. Copy its shape exactly.
 - Set `meta.mock` to false, `meta.source` to the dataset name, and `meta.rows`
   to the number of tests used.
 
+## Extra fields in the real export
+
+`train.py` also writes these. The console uses them when present and still runs
+without them (the example file leaves them out).
+
+- `meta.auc`, `meta.burn_rate_mae`, `meta.rows_burn_rate`: held-out accuracy,
+  shown in the fine print of the explanation panel.
+- `meta.exclusive`: pairs of settings that no test combined, `[["co2","he"]]`.
+  Both above zero counts as outside the tested range.
+- `meta.far_distance`: the 95th percentile of each test's distance to its nearest
+  same-fuel neighbour. A reading farther than this from every test gets a warning.
+- `tests`: one row per in-scope test,
+  `[test, id, fuel, o2 %, pressure atm, co2 %, he %, droplet mm, test end, burning rate]`.
+  The console shows the closest one and counts how the nearby ones ended.
+  Distance: same fuel only, each setting divided by its tested range
+  (`data_max - data_min`), then the straight-line distance.
+
 ## Rules that keep the result honest
 
 - Use only settings known before ignition as inputs. Never feed in anything
