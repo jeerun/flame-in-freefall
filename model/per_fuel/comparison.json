@@ -1,0 +1,509 @@
+{
+  "console_model": "per_fuel",
+  "protocol": {
+    "folds": 5,
+    "repeats": 20,
+    "seed": 7,
+    "outcome_tests": 199,
+    "burn_rate_tests": 252,
+    "groups_fuel_and_gas_mix": 68,
+    "watch_level": 0.3
+  },
+  "outcome_candidates": {
+    "one_slope": "The console's earlier model: one set of slopes for both fuels, fixed penalty (model/train.py)",
+    "one_slope_balanced": "The earlier model with the rarer outcome weighted up (class_weight='balanced')",
+    "per_fuel_fixed": "Per-fuel slopes, the earlier fixed penalty (C=1)",
+    "per_fuel": "THE CONSOLE'S MODEL. Per-fuel slopes, penalty picked inside the training rows (model/train_per_fuel.py)",
+    "per_fuel_curved": "Per-fuel slopes plus two curved terms, penalty picked the same way",
+    "boosting": "Gradient-boosted trees (depth 3, 100 rounds, rate 0.05)",
+    "forest": "Random forest (300 trees, at least 3 tests per leaf)",
+    "base_rate": "No model: always the share of tests that went out"
+  },
+  "burn_rate_candidates": {
+    "one_slope": "The console's earlier model: one set of slopes for both fuels (model/train.py)",
+    "per_fuel": "THE CONSOLE'S MODEL. Per-fuel slopes (model/train_per_fuel.py)",
+    "per_fuel_curved": "Per-fuel slopes plus two curved terms",
+    "boosting": "Gradient-boosted trees (depth 3, 200 rounds, rate 0.05)",
+    "mean": "No model: always the average burning rate"
+  },
+  "outcome": {
+    "rows": {
+      "one_slope": {
+        "auc": 0.8127,
+        "auc_heptane": 0.8458,
+        "auc_methanol": 0.6046,
+        "brier": 0.0865,
+        "log_loss": 0.3148,
+        "completions_found_at_50_pct": 0.2167,
+        "went_out_called_completion_at_50_pct": 0.0078,
+        "completions_at_or_above_watch": 0.6074,
+        "went_out_at_or_above_watch": 0.0759,
+        "repeats_where_proposed_is_better": {
+          "auc": 20,
+          "brier": 20,
+          "log_loss": 20
+        }
+      },
+      "one_slope_balanced": {
+        "auc": 0.8006,
+        "auc_heptane": 0.7607,
+        "auc_methanol": 0.679,
+        "brier": 0.1717,
+        "log_loss": 0.5113,
+        "completions_found_at_50_pct": 0.763,
+        "went_out_called_completion_at_50_pct": 0.2875,
+        "completions_at_or_above_watch": 0.8296,
+        "went_out_at_or_above_watch": 0.4578,
+        "repeats_where_proposed_is_better": {
+          "auc": 20,
+          "brier": 20,
+          "log_loss": 20
+        }
+      },
+      "per_fuel_fixed": {
+        "auc": 0.8755,
+        "auc_heptane": 0.894,
+        "auc_methanol": 0.7863,
+        "brier": 0.0763,
+        "log_loss": 0.2665,
+        "completions_found_at_50_pct": 0.3444,
+        "went_out_called_completion_at_50_pct": 0.009,
+        "completions_at_or_above_watch": 0.6722,
+        "went_out_at_or_above_watch": 0.075,
+        "repeats_where_proposed_is_better": {
+          "auc": 20,
+          "brier": 20,
+          "log_loss": 20
+        }
+      },
+      "per_fuel": {
+        "auc": 0.9016,
+        "auc_heptane": 0.9056,
+        "auc_methanol": 0.8471,
+        "brier": 0.0676,
+        "log_loss": 0.2372,
+        "completions_found_at_50_pct": 0.5241,
+        "went_out_called_completion_at_50_pct": 0.0235,
+        "completions_at_or_above_watch": 0.6407,
+        "went_out_at_or_above_watch": 0.0785
+      },
+      "per_fuel_curved": {
+        "auc": 0.902,
+        "auc_heptane": 0.9014,
+        "auc_methanol": 0.8531,
+        "brier": 0.0699,
+        "log_loss": 0.2414,
+        "completions_found_at_50_pct": 0.5037,
+        "went_out_called_completion_at_50_pct": 0.034,
+        "completions_at_or_above_watch": 0.663,
+        "went_out_at_or_above_watch": 0.0762,
+        "repeats_where_proposed_is_better": {
+          "auc": 9,
+          "brier": 20,
+          "log_loss": 17
+        }
+      },
+      "boosting": {
+        "auc": 0.7859,
+        "auc_heptane": 0.7615,
+        "auc_methanol": 0.6928,
+        "brier": 0.0968,
+        "log_loss": 0.3359,
+        "completions_found_at_50_pct": 0.2519,
+        "went_out_called_completion_at_50_pct": 0.0212,
+        "completions_at_or_above_watch": 0.4333,
+        "went_out_at_or_above_watch": 0.089,
+        "repeats_where_proposed_is_better": {
+          "auc": 20,
+          "brier": 20,
+          "log_loss": 20
+        }
+      },
+      "forest": {
+        "auc": 0.8137,
+        "auc_heptane": 0.8083,
+        "auc_methanol": 0.716,
+        "brier": 0.0908,
+        "log_loss": 0.311,
+        "completions_found_at_50_pct": 0.1833,
+        "went_out_called_completion_at_50_pct": 0.0081,
+        "completions_at_or_above_watch": 0.463,
+        "went_out_at_or_above_watch": 0.066,
+        "repeats_where_proposed_is_better": {
+          "auc": 20,
+          "brier": 20,
+          "log_loss": 20
+        }
+      },
+      "base_rate": {
+        "auc": 0.4744,
+        "auc_heptane": 0.478,
+        "auc_methanol": 0.4595,
+        "brier": 0.1173,
+        "log_loss": 0.3974,
+        "completions_found_at_50_pct": 0.0,
+        "went_out_called_completion_at_50_pct": 0.0,
+        "completions_at_or_above_watch": 0.0,
+        "went_out_at_or_above_watch": 0.0,
+        "repeats_where_proposed_is_better": {
+          "auc": 20,
+          "brier": 20,
+          "log_loss": 20
+        }
+      }
+    },
+    "grouped": {
+      "one_slope": {
+        "auc": 0.805,
+        "auc_heptane": 0.8525,
+        "auc_methanol": 0.578,
+        "brier": 0.0867,
+        "log_loss": 0.3202,
+        "completions_found_at_50_pct": 0.2519,
+        "went_out_called_completion_at_50_pct": 0.0108,
+        "completions_at_or_above_watch": 0.6074,
+        "went_out_at_or_above_watch": 0.0802,
+        "repeats_where_proposed_is_better": {
+          "auc": 20,
+          "brier": 20,
+          "log_loss": 20
+        }
+      },
+      "one_slope_balanced": {
+        "auc": 0.7894,
+        "auc_heptane": 0.7607,
+        "auc_methanol": 0.6435,
+        "brier": 0.1744,
+        "log_loss": 0.521,
+        "completions_found_at_50_pct": 0.7574,
+        "went_out_called_completion_at_50_pct": 0.2849,
+        "completions_at_or_above_watch": 0.8185,
+        "went_out_at_or_above_watch": 0.4442,
+        "repeats_where_proposed_is_better": {
+          "auc": 20,
+          "brier": 20,
+          "log_loss": 20
+        }
+      },
+      "per_fuel_fixed": {
+        "auc": 0.8717,
+        "auc_heptane": 0.8979,
+        "auc_methanol": 0.7625,
+        "brier": 0.0745,
+        "log_loss": 0.2661,
+        "completions_found_at_50_pct": 0.4,
+        "went_out_called_completion_at_50_pct": 0.0078,
+        "completions_at_or_above_watch": 0.6519,
+        "went_out_at_or_above_watch": 0.0715,
+        "repeats_where_proposed_is_better": {
+          "auc": 19,
+          "brier": 19,
+          "log_loss": 19
+        }
+      },
+      "per_fuel": {
+        "auc": 0.9005,
+        "auc_heptane": 0.8964,
+        "auc_methanol": 0.847,
+        "brier": 0.067,
+        "log_loss": 0.2379,
+        "completions_found_at_50_pct": 0.4981,
+        "went_out_called_completion_at_50_pct": 0.0201,
+        "completions_at_or_above_watch": 0.6537,
+        "went_out_at_or_above_watch": 0.0791
+      },
+      "per_fuel_curved": {
+        "auc": 0.9016,
+        "auc_heptane": 0.8945,
+        "auc_methanol": 0.8556,
+        "brier": 0.0694,
+        "log_loss": 0.2417,
+        "completions_found_at_50_pct": 0.4963,
+        "went_out_called_completion_at_50_pct": 0.0299,
+        "completions_at_or_above_watch": 0.6556,
+        "went_out_at_or_above_watch": 0.0741,
+        "repeats_where_proposed_is_better": {
+          "auc": 7,
+          "brier": 18,
+          "log_loss": 15
+        }
+      },
+      "boosting": {
+        "auc": 0.7655,
+        "auc_heptane": 0.7767,
+        "auc_methanol": 0.6208,
+        "brier": 0.1006,
+        "log_loss": 0.3532,
+        "completions_found_at_50_pct": 0.2037,
+        "went_out_called_completion_at_50_pct": 0.0224,
+        "completions_at_or_above_watch": 0.4241,
+        "went_out_at_or_above_watch": 0.0919,
+        "repeats_where_proposed_is_better": {
+          "auc": 20,
+          "brier": 20,
+          "log_loss": 20
+        }
+      },
+      "forest": {
+        "auc": 0.7845,
+        "auc_heptane": 0.7688,
+        "auc_methanol": 0.6813,
+        "brier": 0.0961,
+        "log_loss": 0.3268,
+        "completions_found_at_50_pct": 0.1611,
+        "went_out_called_completion_at_50_pct": 0.0076,
+        "completions_at_or_above_watch": 0.3741,
+        "went_out_at_or_above_watch": 0.0616,
+        "repeats_where_proposed_is_better": {
+          "auc": 20,
+          "brier": 20,
+          "log_loss": 20
+        }
+      },
+      "base_rate": {
+        "auc": 0.4739,
+        "auc_heptane": 0.4746,
+        "auc_methanol": 0.4398,
+        "brier": 0.1174,
+        "log_loss": 0.3974,
+        "completions_found_at_50_pct": 0.0,
+        "went_out_called_completion_at_50_pct": 0.0,
+        "completions_at_or_above_watch": 0.0,
+        "went_out_at_or_above_watch": 0.0,
+        "repeats_where_proposed_is_better": {
+          "auc": 20,
+          "brier": 20,
+          "log_loss": 20
+        }
+      }
+    }
+  },
+  "burn_rate": {
+    "rows": {
+      "one_slope": {
+        "r2": 0.7054,
+        "mean_abs_error_mm2_s": 0.0481,
+        "repeats_where_proposed_is_better": {
+          "r2": 20,
+          "mean_abs_error_mm2_s": 20
+        }
+      },
+      "per_fuel": {
+        "r2": 0.7323,
+        "mean_abs_error_mm2_s": 0.0449
+      },
+      "per_fuel_curved": {
+        "r2": 0.7415,
+        "mean_abs_error_mm2_s": 0.0455,
+        "repeats_where_proposed_is_better": {
+          "r2": 6,
+          "mean_abs_error_mm2_s": 16
+        }
+      },
+      "boosting": {
+        "r2": 0.6643,
+        "mean_abs_error_mm2_s": 0.0534,
+        "repeats_where_proposed_is_better": {
+          "r2": 20,
+          "mean_abs_error_mm2_s": 20
+        }
+      },
+      "mean": {
+        "r2": -0.0116,
+        "mean_abs_error_mm2_s": 0.1079,
+        "repeats_where_proposed_is_better": {
+          "r2": 20,
+          "mean_abs_error_mm2_s": 20
+        }
+      }
+    },
+    "grouped": {
+      "one_slope": {
+        "r2": 0.6978,
+        "mean_abs_error_mm2_s": 0.0492,
+        "repeats_where_proposed_is_better": {
+          "r2": 19,
+          "mean_abs_error_mm2_s": 20
+        }
+      },
+      "per_fuel": {
+        "r2": 0.724,
+        "mean_abs_error_mm2_s": 0.0457
+      },
+      "per_fuel_curved": {
+        "r2": 0.7216,
+        "mean_abs_error_mm2_s": 0.0471,
+        "repeats_where_proposed_is_better": {
+          "r2": 12,
+          "mean_abs_error_mm2_s": 19
+        }
+      },
+      "boosting": {
+        "r2": 0.6184,
+        "mean_abs_error_mm2_s": 0.0584,
+        "repeats_where_proposed_is_better": {
+          "r2": 20,
+          "mean_abs_error_mm2_s": 20
+        }
+      },
+      "mean": {
+        "r2": -0.0213,
+        "mean_abs_error_mm2_s": 0.1087,
+        "repeats_where_proposed_is_better": {
+          "r2": 20,
+          "mean_abs_error_mm2_s": 20
+        }
+      }
+    }
+  },
+  "candidates_better_than_the_console_model": {
+    "outcome_rows": {
+      "auc": [
+        "per_fuel_curved"
+      ],
+      "brier": [],
+      "log_loss": [],
+      "auc_heptane": [],
+      "auc_methanol": [
+        "per_fuel_curved"
+      ],
+      "completions_found_at_50_pct": [
+        "one_slope_balanced"
+      ]
+    },
+    "outcome_grouped": {
+      "auc": [
+        "per_fuel_curved"
+      ],
+      "brier": [],
+      "log_loss": [],
+      "auc_heptane": [
+        "per_fuel_fixed"
+      ],
+      "auc_methanol": [
+        "per_fuel_curved"
+      ],
+      "completions_found_at_50_pct": [
+        "one_slope_balanced"
+      ]
+    },
+    "burn_rate_rows": {
+      "r2": [
+        "per_fuel_curved"
+      ],
+      "mean_abs_error_mm2_s": []
+    },
+    "burn_rate_grouped": {
+      "r2": [],
+      "mean_abs_error_mm2_s": []
+    }
+  },
+  "slope_stability": {
+    "penalty_c": 10.0,
+    "bootstrap_refits": 1000,
+    "log_odds_of_going_out_per_unit": {
+      "o2_pct": {
+        "heptane": {
+          "slope": -0.706,
+          "p5": -0.948,
+          "p95": -0.537,
+          "sign_is_stable": true
+        },
+        "methanol": {
+          "slope": -0.363,
+          "p5": -0.707,
+          "p95": -0.232,
+          "sign_is_stable": true
+        }
+      },
+      "pressure_atm": {
+        "heptane": {
+          "slope": 0.11,
+          "p5": -6.874,
+          "p95": 6.015,
+          "sign_is_stable": false
+        },
+        "methanol": {
+          "slope": 4.209,
+          "p5": -1.932,
+          "p95": 12.16,
+          "sign_is_stable": false
+        }
+      },
+      "co2_pct": {
+        "heptane": {
+          "slope": 0.127,
+          "p5": 0.065,
+          "p95": 0.213,
+          "sign_is_stable": true
+        },
+        "methanol": {
+          "slope": -0.003,
+          "p5": -0.077,
+          "p95": 0.049,
+          "sign_is_stable": false
+        }
+      },
+      "he_pct": {
+        "heptane": {
+          "slope": 0.064,
+          "p5": 0.004,
+          "p95": 0.133,
+          "sign_is_stable": true
+        },
+        "methanol": {
+          "slope": 0.146,
+          "p5": 0.084,
+          "p95": 0.198,
+          "sign_is_stable": true
+        }
+      },
+      "d0_mm": {
+        "heptane": {
+          "slope": 3.272,
+          "p5": 2.677,
+          "p95": 4.269,
+          "sign_is_stable": true
+        },
+        "methanol": {
+          "slope": -0.394,
+          "p5": -1.351,
+          "p95": 1.219,
+          "sign_is_stable": false
+        }
+      }
+    }
+  },
+  "calibration_held_out": [
+    {
+      "from": 0,
+      "to": 0.1,
+      "tests_per_repeat": 134.7,
+      "share_that_burned_to_completion": 0.026
+    },
+    {
+      "from": 0.1,
+      "to": 0.2,
+      "tests_per_repeat": 18.3,
+      "share_that_burned_to_completion": 0.158
+    },
+    {
+      "from": 0.2,
+      "to": 0.3,
+      "tests_per_repeat": 15.2,
+      "share_that_burned_to_completion": 0.22
+    },
+    {
+      "from": 0.3,
+      "to": 0.65,
+      "tests_per_repeat": 18.8,
+      "share_that_burned_to_completion": 0.33
+    },
+    {
+      "from": 0.65,
+      "to": 1.0,
+      "tests_per_repeat": 12.0,
+      "share_that_burned_to_completion": 0.925
+    }
+  ]
+}

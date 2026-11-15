@@ -129,7 +129,8 @@
 
   function modelValue(row) {
     const p = typeof predictCompletion === "function" ? predictCompletion(row) : null;
-    return Number.isFinite(p) && p >= 0 && p <= 1 ? (p * 100).toFixed(1) + "%" : "Unavailable";
+    if (!Number.isFinite(p) || p < 0 || p > 1) return "Unavailable";
+    return Math.min(99, Math.max(1, p * 100)).toFixed(1) + "%";
   }
 
   function pairTable(selected, match) {
@@ -171,7 +172,7 @@
       const fuel = row[2][0].toUpperCase() + row[2].slice(1);
       content.append(element("p", fuel + " in both tests · " + row[3] + "% oxygen · " + row[5] +
         "% carbon dioxide · " + row[6] + "% helium.", "mix"), pairTable(row, match),
-        element("p", "¹ These probabilities apply to tests with a clear outcome. Both rows were used to train the model.", "method"));
+        element("p", "¹ These estimates apply to clear outcomes and are displayed from 1% to 99%. Both rows were used to train the model.", "method"));
       const details = element("details");
       details.append(element("summary", "How was this pair chosen?"), element("p",
         "Among tests with the same fuel and gas mix, the console finds the nearest opposite outcome by pressure and starting diameter. It scales each difference by its observed FLEX range. The pair cannot establish why the outcomes differed."));

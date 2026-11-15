@@ -82,7 +82,8 @@ viewing. [Burning in Microgravity, May 25, 2011](https://www.nasa.gov/image-arti
 ## Claims shown in the console, and where each comes from
 
 Wording in quotes is the text on screen. "Our model" means the two regressions in
-`model/train.py`, trained only on the PSI-69 table.
+`model/train_per_fuel.py` (own slopes for each fuel; the console's model since
+Nov 15, 2026), trained only on the PSI-69 table.
 
 | Text on screen | Source |
 |---|---|
@@ -100,9 +101,11 @@ Wording in quotes is the text on screen. "Our model" means the two regressions i
 | “No clear outcome in nearby tests” | “Disruption” is the PSI-69 label. The project treats these observations as inconclusive for the two-outcome model. Amber appears when the neighbourhood is populated exclusively by such rows. |
 | "Earth-like air" (button): oxygen 21 %, pressure 1.00 atm | Sea-level air. The challenge brief gives Earth's sea-level pressure as 14.7 psi, which is 1 atm. |
 | “Moon Base (expected)” | The brief gives at least 30% oxygen and at most 10.2 psi. The preset uses 30% and 0.694 atm. No FLEX row meets both thresholds. Seventeen FLEX rows are close on the high-pressure side. The default heptane preset has three nearby rows and all three ended in disruption. |
-| "... pushes toward going out early" and "... pushes toward burning until the fuel is gone" | The sign and size of our model's coefficients. Not a NASA statement. Three directions agree with the FLEX documents: more oxygen favours burning to completion, larger droplets favour (radiative) extinction, CO2 and helium act as suppressants. The pressure direction rests on only two pressure levels. |
-| “Nearby real tests disagree with the model” | Inside the input range, at least two clear nearby outcomes are required. A majority must contradict a completion estimate below 35% or at least 65%. |
-| “Checked on tests held out of training” | `model/train.py` fits scaling and regressions inside the folds. `model/metrics.json` records AUC 0.813 and burning-rate MAE 0.048 mm²/s from five-fold row-level cross-validation repeated 20 times. Similar settings can occur in different folds. |
+| Fitted effect of changing a setting | `model/train_per_fuel.py` fits separate slopes for each fuel. The explanation uses the direction and size of a fitted effect. A slope sign that changes in more than one in ten of 1,000 bootstrap refits is marked uncertain. This applies to pressure for both fuels and to CO₂ and starting diameter for methanol. |
+| “Nearby real tests disagree with the model” | Inside the input range, at least two clear nearby outcomes are required. A majority must contradict a completion estimate below 30% or at least 65%. |
+| “Checked on tests held out of training” | `model/train_per_fuel.py` evaluates five row-level folds repeated 20 times, with classifier penalty strength selected inside each outer training fold. `model/metrics.json` gives AUC 0.902 and burning-rate MAE 0.045 mm²/s. Similar settings can occur on both sides of a row split. |
+| Displayed completion and extinction percentages | The primary reading limits the fitted percentage to 1–99%. The CSV exports the fitted completion estimate to one decimal place before this display limit. In repeated row-level evaluation 2.6% of rows assigned less than a 10% chance completed (`model/per_fuel/comparison.json`). |
+| Completion threshold for “Could go either way” | The team's study threshold is 30% (`meta.watch`). Across repeated row-level evaluation, 64.1% of completions and 7.8% of visible extinctions received estimates of at least 30% (`model/metrics.json`). |
 | ""Goes out" means the visible flame: FLEX found that fuel can keep reacting after it, in a cool flame." | NASA "Studying Combustion and Fire Safety". The PSI-69 column is named "Visible flame extinction diameter". |
 | "This is a model reading for study and planning, not a crew procedure." | Our own statement. |
 | NASA research page: "Prevention", "Detection", "Suppression" | The three parts of NASA's spacecraft fire-safety work named in the Space Apps challenge brief. |
@@ -159,9 +162,11 @@ exporter reads the selected columns directly from the downloaded files. [Case ex
 - That every row is a space experiment. The PSI-69 page says the investigation used
   both space-based data and ground-based tests, and the table has no column that
   tells them apart.
-- That every completion can be identified from the starting conditions. The
-  independent audit in `docs/scientific-validation.md` fits a separate model
-  on the 199 clear outcomes. At a 50% cutoff its mean completion recall is 23.7%.
+- That all completions can be predicted from the starting conditions. The current
+  per-fuel classifier found 52.4% of completions at a 50% cutoff
+  (`model/metrics.json`). The earlier pooled model's five-seed audit reported 23.7%.
+- The outcome regression is fitted on 199 clear outcomes and the burning-rate
+  regression on 252 measurements. Neither is a physical model of flame behaviour.
 - That a flame that "goes out" is safe. The outcome is about the visible flame.
 - Anything outside the tested ranges. The console marks those readings as unknown.
 - That the Oxygen map says how flammable anything is. It shows where tests were run.
