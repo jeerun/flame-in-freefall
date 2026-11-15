@@ -558,7 +558,7 @@
     <button type="button" id="tabDrill" aria-pressed="false">Fire drill</button>
   </nav>
   <span class="spacer"></span>
-  <button type="button" class="chip aibtn" id="aiBtn" hidden>Ask Ember</button>
+  <button type="button" class="chip aibtn" id="aiBtn" hidden aria-haspopup="dialog" aria-controls="ai">Ask Ember</button>
   <button type="button" class="guide-button" id="guideBtn" aria-haspopup="dialog" aria-controls="controlGuide">Controls</button>
   <span class="chip mock" id="mockChip" hidden><span class="mark" aria-hidden="true">!</span><span id="mockText">Mock numbers, not NASA data yet</span></span>
 </header>
@@ -580,7 +580,7 @@
   </section>
 
   <section class="read" id="read" aria-labelledby="hRead" aria-live="polite">
-    <h2 id="hRead" tabindex="-1">Model reading</h2>
+    <div class="reading-heading"><h2 id="hRead" tabindex="-1">Model reading</h2><button type="button" class="view-action" id="shareReading" hidden aria-haspopup="dialog">Share view</button></div>
 
     <div class="stage">
       <div class="flamebox" aria-hidden="true">
@@ -599,7 +599,7 @@
     <div class="facts three">
       <div class="fact"><div class="k">Burning rate</div><div class="v"><span id="kVal">0.00</span> <small>mm²/s</small></div></div>
       <div class="fact"><div class="k">Time to consume the droplet</div><div class="v"><span id="tVal">0</span> <small>s, if the flame lasts</small></div></div>
-      <button type="button" class="ignite" id="igniteBtn" title="Play an illustrated run of the model">Ignite droplet <kbd class="wide">LT</kbd></button>
+      <button type="button" class="ignite" id="igniteBtn" aria-haspopup="dialog" aria-controls="sim" title="Play an illustrated run of the model">Ignite droplet <kbd class="wide">LT</kbd></button>
     </div>
 
     <div class="conf" id="conf">
@@ -695,7 +695,7 @@
     <p id="rankNote"></p>
   </section>
   <section class="research-detail" aria-labelledby="hCard">
-    <div class="research-detail-top"><h2 id="hCard" class="research-label">Selected investigation</h2><a id="researchSource" target="_blank" rel="noopener noreferrer">NASA source ↗</a></div>
+    <div class="research-detail-top"><h2 id="hCard" class="research-label" tabindex="-1">Selected investigation</h2><span class="research-actions"><button type="button" class="view-action" id="shareResearch" hidden aria-haspopup="dialog">Share view</button><a id="researchSource" target="_blank" rel="noopener noreferrer">NASA source ↗</a></span></div>
     <article class="card" id="card" aria-labelledby="investigationName"></article>
   </section>
 </main>
@@ -738,6 +738,21 @@
   </section>
 </main>
 
+<dialog class="control-guide share-view" id="shareViewDialog" aria-labelledby="shareTitle">
+  <div class="guide-title"><h2 id="shareTitle">Share view</h2><button type="button" id="shareClose">Close</button></div>
+  <p id="shareSubject"></p>
+  <p id="shareHelp"></p>
+  <label id="shareOutputLabel" for="shareOutput">View code</label>
+  <div class="share-field"><input id="shareOutput" readonly spellcheck="false"><button type="button" id="shareCopy">Copy code</button></div>
+  <p class="share-status" id="shareStatus" role="status"></p>
+  <details id="shareImport"><summary>Open a shared view</summary>
+    <form id="shareForm">
+      <label for="shareInput">Paste a dashboard link or view code</label>
+      <div class="share-field"><input id="shareInput" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" required><button type="submit">Open view</button></div>
+      <p class="share-status" id="shareError" role="status"></p>
+    </form>
+  </details>
+</dialog>
 <dialog class="control-guide" id="controlGuide" aria-labelledby="controlTitle">
   <div class="guide-title"><h2 id="controlTitle">Controls</h2><button type="button" id="guideClose" autofocus>Close</button></div>
   <div class="guide-status"><span class="chip" id="padChip"><span class="dot" aria-hidden="true"></span><span id="padText">No controller</span></span><button type="button" class="chip snd" id="sndBtn" title="Toggle sound (M)">♪ Sound</button></div>
@@ -771,7 +786,7 @@
   <p class="guide-model" id="srcChip" hidden></p>
 </dialog>
 
-<div class="sim" id="sim" hidden role="dialog" aria-labelledby="simTitle">
+<dialog class="sim" id="sim" hidden aria-labelledby="simTitle">
   <div class="box">
     <div class="ahead">
       <h3 id="simTitle">Ignite</h3>
@@ -794,26 +809,28 @@
     </div>
     <p class="fine">A run of the model, not of physics. The droplet shrinks along the d-squared law at the burning rate the model predicts. Whether this run burns all its fuel is drawn at random with the model's odds, and when it goes out, the size it stops at is borrowed from a real FLEX test close to these settings. The flame, igniter wires, soot shell and the faint haze after a heptane flame goes out (FLEX found that a cool flame can carry on there) are drawn to look like the experiment. They are illustration, not footage and not modelled.</p>
   </div>
-</div>
+</dialog>
 
 <dialog class="sim ox" id="ox" hidden aria-labelledby="oxTitle">
   <div class="box">
     <div class="ahead">
       <h3 id="oxTitle">Oxygen map</h3>
-      <span class="who">What air did NASA's microgravity fire tests burn in? <span class="ox-pan-hint">Swipe across the chart to see the full oxygen range.</span></span>
-      <div class="levels" id="oxLevels" aria-label="Level of detail"><kbd class="wide">←→</kbd></div>
       <button type="button" class="close" id="oxClose"><kbd>B</kbd> Close</button>
     </div>
-    <p class="headline" id="oxHead" aria-live="polite"></p>
+    <div class="ox-controls">
+      <label for="oxStudy">Investigation <select id="oxStudy" aria-controls="oxSvg oxPick"></select></label>
+      <div class="levels" id="oxLevels" role="group" aria-label="Chart view"></div>
+    </div>
     <div class="ox-chart" tabindex="0" role="region" aria-label="Oxygen chart by investigation">
-      <svg id="oxSvg" role="img" aria-label="Oxygen level of each test, by investigation"></svg>
+      <svg id="oxSvg" role="img" aria-describedby="oxPick"></svg>
     </div>
     <p class="pick" id="oxPick" aria-live="polite"></p>
+    <p class="headline" id="oxHead"></p>
     <p class="fine" id="oxFine"></p>
   </div>
 </dialog>
 
-<div class="ai" id="ai" hidden role="dialog" aria-labelledby="aiTitle">
+<dialog class="ai" id="ai" hidden aria-labelledby="aiTitle">
   <div class="box">
     <div class="ahead">
       <h3 id="aiTitle">Ask Ember</h3>
@@ -829,10 +846,10 @@
         <button type="submit">Ask</button>
       </form>
     </div>
-    <div class="ans" id="aiAns" aria-live="polite"></div>
+    <div class="ans" id="aiAns" tabindex="0" role="region" aria-label="Ember’s answer" aria-live="polite"></div>
     <p class="fine">Ember is a language model running on the team's own PC. It writes each answer on the spot from the NASA PSI records and the numbers on this screen. It can be wrong: check the PSI ids it cites. Not a crew procedure.</p>
   </div>
-</div>
+</dialog>
 
 <!--
   MODEL
@@ -842,15 +859,14 @@
   from the Python training script. data_min / data_max must be the real min and
   max of each column in the training data: the range warning depends on them.
 
-  extinction: logistic regression. P(flame goes out) = sigmoid(intercept + fuel + sum(coef * value))
-              "Goes out" is FLEX "Extinction": the flame went out before the fuel was gone.
-              The other outcome is "Completion": it burned until the fuel was gone.
-  burn_rate:  linear regression.  K in mm^2/s       = intercept + fuel + sum(coef * value)
+  Each model score is intercept + fuel offset + sum((shared slope + fuel-specific slope) * value).
+  extinction: sigmoid(score) estimates visible extinction among FLEX Extinction and Completion rows.
+  burn_rate: max(0, score) gives the fitted burning rate in mm^2/s.
 
   Optional fields the real export adds (the page works without them):
   meta.exclusive     pairs of settings no test ever combined, e.g. [["co2","he"]]
   meta.far_distance  nearest-test distance above which a reading counts as far from the data
-  meta.auc, meta.burn_rate_mae, meta.rows_burn_rate   held-out accuracy, shown in the fine print
+  meta.auc, meta.burn_rate_mae, meta.rows_burn_rate   cross-validation metrics and burning-rate sample size
   tests              one row per real test:
                      [test, id, fuel, o2 %, pressure atm, co2 %, he %, droplet mm, test end, burning rate,
                       burn time s, end diameter mm]
@@ -877,6 +893,8 @@ window.FLAME_MODEL = {
 <script src="evidence-data.js" onerror="this.remove()"></script>
 <script src="evidence.js" onerror="this.remove()"></script>
 <script src="counterexample.js" onerror="this.remove()"></script>
+<script src="view-link.js" onerror="this.remove()"></script>
+<script src="share-view.js" onerror="this.remove()"></script>
 
 <script>
 (function () {
@@ -885,8 +903,8 @@ window.FLAME_MODEL = {
   var $ = function (id) { return document.getElementById(id); };
   var state = { sel: 0, fuel: M.fuels[0].key, values: {}, sheet: false, baseline: null, comparing: false };
   var last = null;                                // the reading on screen: { r: prediction, rc: range check }
-  var WATCH = (M.meta && M.meta.watch) || 0.35;   // where "could go either way" starts
-  var lastLevel = null, lastBand = null, lastNoClear = false, lastDisagree = false;   // the previous reading, to notice changes
+  var lastLevel = null, lastNoClear = false, lastDisagree = false;
+  var WATCH = (M.meta && M.meta.watch) || 0.35, lastWatch = false;
 
   /* ---------- saved preferences and sound ---------- */
   function load(key, fallback) {
@@ -1042,8 +1060,6 @@ window.FLAME_MODEL = {
   // The percentage as the page shows it. The model can come out at 0.1 % or 99.9 %, but a few hundred tests cannot
   // support that much certainty, so no chance is shown below 1 % or above 99 %.
   function shown(p) { return Math.min(99, Math.max(1, Math.round(p * 100))); }
-  // The same limits to one decimal, for places that set two close estimates side by side.
-  function shown1(p) { var x = p * 100; return x < 1 ? "under 1" : x > 99 ? "over 99" : x.toFixed(1); }
   function predictFor(fuel, values) {
     var pOut = 1 / (1 + Math.exp(-linear(M.extinction, fuel, values)));
     var K = Math.max(0, linear(M.burn_rate, fuel, values));
@@ -1209,16 +1225,16 @@ window.FLAME_MODEL = {
     flame.style.setProperty("--beat", Math.max(1.1, 3.2 - r.K * 2.4).toFixed(2) + "s");
     flame.parentNode.classList.toggle("unknown", rc.level === "outside");
     // notifications: only when something changes, never on the first reading
-    var band = rc.level !== "inside" ? null : r.pKeep >= 0.65 ? "high" : r.pKeep >= WATCH ? "watch" : "low";
+    var watch = !!M.meta.watch && rc.level === "inside" && r.pKeep >= WATCH;
     if (lastLevel) {
       if (rc.level === "outside" && lastLevel !== "outside") notify("Outside the FLEX model range. The flame outcome is unknown.", "alert");
       else if (rc.level !== "outside" && lastLevel === "outside") notify("Back within the FLEX input ranges.", "info");
       if (rc.level !== "outside" && rc.noClear && !lastNoClear) notify("All nearby FLEX outcomes are inconclusive.", "warn");
-      if (band === "high" && lastBand !== "high") notify("The model expects this flame to burn all its fuel.", "warn");
-      else if (M.meta.watch && band === "watch" && lastBand !== "watch" && lastBand !== "high") notify("Watch: this flame has a real chance of burning all its fuel.", "info");
       if (rc.disagree && !lastDisagree) notify("Real tests nearby disagree with the model. Trust the tests.", "warn");
+      if (watch && !lastWatch) notify("Model watch level reached: at least " + shown(WATCH) + "% estimated completion among clear outcomes.", "info");
     }
-    lastLevel = rc.level; lastBand = band; lastNoClear = rc.level !== "outside" && rc.noClear; lastDisagree = !!rc.disagree;
+    lastLevel = rc.level; lastNoClear = rc.level !== "outside" && rc.noClear; lastDisagree = !!rc.disagree;
+    lastWatch = watch;
     if (d0) $("droplet").style.setProperty("--drop", (0.04 + d0 * 0.022).toFixed(3));
 
     var conf = $("conf");
@@ -1254,6 +1270,7 @@ window.FLAME_MODEL = {
     var line;
     if (rc.level === "outside") line = "These settings exceed the model's scope.";
     else if (rc.noClear) line = "Nearby tests cannot confirm the estimated outcome.";
+    else if (rc.level === "edge") line = "Check the nearby FLEX tests before interpreting the estimate.";
     else if (r.pKeep >= 0.65) line = "The model expects this flame to burn until the fuel is gone.";
     else if (r.pKeep >= WATCH) line = "Could go either way: burn until the fuel is gone, or go out first.";
     else line = "The model expects this flame to go out before the fuel is gone.";
@@ -1292,7 +1309,8 @@ window.FLAME_MODEL = {
     li("Burning rate " + r.K.toFixed(2) + " mm²/s means the droplet's diameter squared shrinks by that much every second.");
     ul = $("testList");
     if (ap && ap.key === "moon") li("Cabin air is the Moon Base case from the challenge brief: oxygen 30 % or more at 10.2 psi (0.69 atm) or less.");
-    if (ap && ap.key === "mars") li("Cabin air for a Mars base is an assumption: the challenge brief gives numbers only for the Moon Base and pressurized rovers, so the same air is used here. NASA has no fire tests at Mars gravity yet.");    if (rc.near) {
+    if (ap && ap.key === "mars") li("The Mars base scenario assumes the Moon Base cabin air. The FLEX records shown here do not establish a Mars-gravity outcome.");
+    if (rc.near) {
       var nb = rc.near.near;
       var ranked = el("li", "", "Closest real FLEX tests with this fuel, ranked (settings, outcome, measured burning rate):");
       var ol = el("ol");
@@ -1315,10 +1333,10 @@ window.FLAME_MODEL = {
       fine = "Trained on " + (M.meta.source || "NASA data")
         + (M.meta.rows ? " (" + M.meta.rows + " tests for the flame outcome"
           + (M.meta.rows_burn_rate ? ", " + M.meta.rows_burn_rate + " for burning rate" : "") + "). " : ". ");
-      if (M.meta.auc != null) fine += "Checked on tests held out of training: AUC " + M.meta.auc.toFixed(2)
+      if (M.meta.auc != null) fine += "In cross-validation with held-out FLEX rows: AUC " + M.meta.auc.toFixed(2)
         + " for telling the two outcomes apart (0.5 is a coin flip, 1 is perfect)"
         + (M.meta.burn_rate_mae != null ? ", and burning rate off by " + M.meta.burn_rate_mae + " mm²/s on average" : "") + ". ";
-      fine += "No chance is shown below 1 % or above 99 %: " + (M.meta.rows || "these") + " tests cannot support more certainty than that. ";
+      fine += "The main reading displays whole percentages from 1% to 99%. These display limits do not quantify model uncertainty. ";
       fine += "\"Goes out\" means the visible flame: FLEX found that fuel can keep reacting after it, in a cool flame. ";
     }
     $("sheetFine").textContent = fine + "This is a model reading for study and planning, not a crew procedure.";
@@ -1388,11 +1406,13 @@ window.FLAME_MODEL = {
       row(f.label, fmt(f, av) + " " + f.unit, fmt(f, bv) + " " + f.unit, Math.abs(av - bv) > 1e-9);
     });
     var usable = a.level !== "outside" && b.level !== "outside";
-    row("Burns to completion", shown(a.r.pKeep) + "%", shown(b.r.pKeep) + "%", Math.abs(a.r.pKeep - b.r.pKeep) > 1e-9,
-      usable ? signed((b.r.pKeep - a.r.pKeep) * 100, 1, "pp") : "Delta withheld: unsupported conditions");
-    row("Goes out first", (100 - shown(a.r.pKeep)) + "%", (100 - shown(b.r.pKeep)) + "%", Math.abs(a.r.pOut - b.r.pOut) > 1e-9);
-    row("Burning rate", a.r.K.toFixed(2) + " mm²/s", b.r.K.toFixed(2) + " mm²/s", Math.abs(a.r.K - b.r.K) > 1e-9,
-      usable ? signed(b.r.K - a.r.K, 2, "mm²/s") : "Delta withheld: unsupported conditions");
+    var aKeep = shown(a.r.pKeep), bKeep = shown(b.r.pKeep);
+    row("Burns to completion", aKeep + "%", bKeep + "%", aKeep !== bKeep,
+      usable ? signed(bKeep - aKeep, 0, "pp") : "Delta withheld: unsupported conditions");
+    row("Goes out first", (100 - aKeep) + "%", (100 - bKeep) + "%", aKeep !== bKeep);
+    var aRate = a.r.K.toFixed(2), bRate = b.r.K.toFixed(2);
+    row("Burning rate", aRate + " mm²/s", bRate + " mm²/s", aRate !== bRate,
+      usable ? signed(Number(bRate) - Number(aRate), 2, "mm²/s") : "Delta withheld: unsupported conditions");
     row("Data support", a.coverage, b.coverage, a.coverage !== b.coverage);
     var warnings = $("compareWarnings"); warnings.innerHTML = "";
     [a, b].forEach(function (snap, i) {
@@ -1822,8 +1842,8 @@ window.FLAME_MODEL = {
   }
   function toggleOrbit() { view.orbit = !view.orbit; sfx.preset(); renderResearch(); }
   var LEVEL = { 3: "Direct", 2: "Strong", 1: "Related", 0: "Not about this" };
-  function ranked() {
-    var key = R.needs[view.need].key, flight = function (it) { return it.type === "Microgravity Investigation" ? 0 : 1; };
+  function ranked(needIndex) {
+    var key = R.needs[needIndex == null ? view.need : needIndex].key, flight = function (it) { return it.type === "Microgravity Investigation" ? 0 : 1; };
     return R.items.filter(function (it) { return it.scores[key] > 0; })
       .sort(function (a, b) { return (b.scores[key] - a.scores[key]) || (flight(a) - flight(b)) || (a.num - b.num); });
   }
@@ -2062,7 +2082,7 @@ window.FLAME_MODEL = {
       $("drillIco").textContent = right ? "✓" : "✕";
       $("drillTitle").textContent = right ? "Correct." : "Not this time.";
       $("drillText").textContent = "This was FLEX test " + t[0] + (t[9] != null ? ", measured burning rate " + t[9].toFixed(2) + " mm²/s" : "")
-        + ". The model gave it " + shown1(p) + "% completion among clear outcomes, so it answered \"" + (p >= 0.5 ? "burned all its fuel" : "went out first")
+        + ". The model gave it " + shown(p) + "% completion among clear outcomes, so it answered \"" + (p >= 0.5 ? "burned all its fuel" : "went out first")
         + "\": " + (drill.model[drill.i] ? "right" : "wrong") + ".";
       $("drillNextText").textContent = lastRound ? "Play again" : "Next test";
     }
@@ -2082,7 +2102,7 @@ window.FLAME_MODEL = {
   $("drillNext").addEventListener("click", drillNext);
   // The current drill test as plain text, for Ask the AI (only offered after the answer is shown).
   function drillText() {
-    var t = drill.rounds[drill.i], p = shown1(predictFor(t[2], drillValues(t)).pKeep);
+    var t = drill.rounds[drill.i], p = shown(predictFor(t[2], drillValues(t)).pKeep);
     return "Fire drill page: the player is looking at one real test from the NASA FLEX table (PSI-69).\n"
       + "FLEX test " + t[0] + " (" + t[1] + "): " + t[2] + " at " + testSettings(t) + ".\n"
       + "NASA's recorded outcome: " + (t[8] === "Completion" ? "it burned until the fuel was gone" : "the flame went out before the fuel was gone")
@@ -2145,7 +2165,7 @@ window.FLAME_MODEL = {
     var b = $("sendBtn");
     if (!hasTests) return;
     if (BASE.ours) { b.textContent = "L3: send to base"; b.title = "Left stick click, or key S. Stores the file on " + (BASE.host || "the computer that serves this page") + "."; b.hidden = false; }
-    else if (canShare()) { b.textContent = "Share"; b.title = "Key S. Opens this device's share sheet (mail, chat, nearby share)."; b.hidden = false; }
+    else if (canShare()) { b.textContent = "Share CSV"; b.title = "Key S. Opens this device's share sheet for the FLEX tests CSV."; b.hidden = false; }
     else b.hidden = true;
   }
   if (hasTests) { $("csvBtn").hidden = false; $("csvBtn").addEventListener("click", downloadCsv); $("sendBtn").addEventListener("click", sendCsv); sendButton(); }
@@ -2318,23 +2338,41 @@ window.FLAME_MODEL = {
   function simTally() {
     var t = SIM.tally, n = t.out + t.burn, pct = SIM.run && !SIM.run.blocked ? shown(SIM.run.pKeep) : null;
     $("simTally").textContent = pct == null ? "" : "The model estimates " + pct + "% completion among clear outcomes. "
-      + (n ? "So far at these settings: " + t.burn + " of " + n + " run" + (n > 1 ? "s" : "") + " burned all their fuel, " + t.out + " went out." : "Press A to run it again and watch the tally.");
+      + (n ? "So far at these settings: " + t.burn + " of " + n + " run" + (n > 1 ? "s" : "") + " burned all their fuel, " + t.out + " went out." : "Choose Ignite again to repeat the run at these settings.");
+  }
+  function leaveDialog(id, opener, fallback) {
+    $(id).close();
+    $(id).hidden = true;
+    var target = opener && opener !== document.body && opener.isConnected && opener.getClientRects().length ? opener : $(fallback);
+    if (!target.getClientRects().length) target = document.querySelector('button[aria-current="page"]');
+    if (target) target.focus({ preventScroll: true });
+    waitForPadRelease = poll.activeInput;
+  }
+  function cycleDialogTab(e, dialog) {
+    if (e.key !== "Tab") return;
+    var stops = Array.from(dialog.querySelectorAll("button, input, [tabindex='0']")).filter(function (node) {
+      return !node.disabled && node.getClientRects().length;
+    });
+    var first = stops[0], last = stops[stops.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   }
   function openSim() {
-    if (view.page !== "console" || SIM.open || !last) return;
+    if (view.page !== "console" || SIM.open || !last || document.querySelector("dialog[open]")) return;
     mapBig(false);
     SIM.returnFocus = document.activeElement;
-    SIM.open = true; $("sim").hidden = false;
+    SIM.open = true; $("sim").hidden = false; $("sim").showModal();
     simStart();
-    $("simAgain").focus();
+    $(SIM.run.blocked ? "simClose" : "simAgain").focus();
   }
   function closeSim() {
     if (!SIM.open) return;
-    SIM.open = false; cancelAnimationFrame(SIM.raf); $("sim").hidden = true; sfx.close();
-    if (SIM.returnFocus && SIM.returnFocus.isConnected) SIM.returnFocus.focus();
+    SIM.open = false; cancelAnimationFrame(SIM.raf);
+    leaveDialog("sim", SIM.returnFocus, "igniteBtn"); sfx.close();
   }
   $("igniteBtn").addEventListener("click", openSim);
   $("simClose").addEventListener("click", closeSim);
+  $("sim").addEventListener("cancel", function (e) { e.preventDefault(); closeSim(); });
   $("simAgain").addEventListener("click", simStart);
 
   /* ---------- oxygen map: what air did each investigation's tests burn in? ---------- */
@@ -2355,11 +2393,15 @@ window.FLAME_MODEL = {
   });
   function oxNum(v) { return (Math.round(v * 10) / 10).toString(); }
   function oxDraw() {
-    var svg = $("oxSvg"), box = svg.getBoundingClientRect(), W = Math.max(640, Math.round(box.width)), H = Math.max(240, Math.round(box.height));
+    var svg = $("oxSvg"), box = svg.getBoundingClientRect(), W = Math.round(box.width), H = Math.round(box.height);
+    if (!W || !H) return;
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
     while (svg.firstChild) svg.removeChild(svg.firstChild);
-    var m = T.meta, rows = T.rows, n = rows.length, three = OX.level === 3;
-    var L = 218, top = 26, bot = 36, pw = W - L - 22, ph = H - top - bot, x0 = 10, x1 = three ? 100 : 90, rh = ph / n;
+    var m = T.meta, rows = T.rows, n = rows.length, three = OX.level === 3, compact = W < 620;
+    svg.setAttribute("aria-label", OX_LEVELS[OX.level - 1] + (three ? ": oxygen versus pressure. " : ": oxygen by investigation. ") + "Selected: " + rows[OX.sel].name);
+    var L = compact ? (three ? 34 : 83) : 218, top = three && compact ? 32 : 26, bot = 36;
+    var pw = W - L - (compact ? 16 : 22), ph = H - top - bot, x0 = 10, x1 = three ? 100 : 90;
+    var rh = (ph - (three ? 0 : 14)) / n;
     var X = function (o) { return L + (o - x0) / (x1 - x0) * pw; };
     var Y = function (p) { return top + (1 - Math.log(p / 0.25) / Math.log(6 / 0.25)) * ph; };
     var add = function (tag, attrs, text) { var e = svgEl(tag, attrs, text); svg.appendChild(e); return e; };
@@ -2370,29 +2412,34 @@ window.FLAME_MODEL = {
     add("rect", { x: X(m.moon_o2_pct), y: zoneTop, width: X(x1) - X(m.moon_o2_pct), height: top + ph - zoneTop, fill: "rgba(255,157,92,0.10)" });
     add("line", { x1: X(m.moon_o2_pct), y1: zoneTop, x2: X(m.moon_o2_pct), y2: top + ph, stroke: OX_WARM, "stroke-width": 1.2, "stroke-dasharray": "5 4" });
     if (three) add("line", { x1: X(m.moon_o2_pct), y1: zoneTop, x2: X(x1), y2: zoneTop, stroke: OX_WARM, "stroke-width": 1.2, "stroke-dasharray": "5 4" });
-    add("text", { x: X(m.moon_o2_pct) + 6, y: three ? top + ph - 8 : top - 8, "font-size": 12, style: "fill:" + OX_WARM },
-      three ? "Moon Base thresholds: ≥30% oxygen, ≤10.2 psi" : "Moon Base oxygen threshold: ≥30%");
+    add("text", { x: X(m.moon_o2_pct) + 4, y: three ? top + ph - 5 : top - 8, "font-size": compact ? 10.5 : 12, style: "fill:" + OX_WARM },
+      compact ? (three ? "Moon Base ≥30%, ≤10.2 psi" : "Moon Base ≥30%") : three ? "Moon Base thresholds: ≥30% oxygen, ≤10.2 psi" : "Moon Base oxygen threshold: ≥30%");
     // Earth air
     add("line", { x1: X(21), y1: top, x2: X(21), y2: top + ph, stroke: "rgba(200,215,245,0.45)", "stroke-width": 1, "stroke-dasharray": "2 4" });
-    add("text", { x: X(21) - 5, y: top - 8, "font-size": 12, "text-anchor": "end" }, "Earth air, 21 %");
+    if (!three || !compact) add("text", { x: X(21) - 4, y: top - 8, "font-size": compact ? 10.5 : 12, "text-anchor": "end" }, compact ? "Earth 21%" : "Earth air, 21 %");
     // oxygen axis
     for (var t = 10; t <= x1; t += 10) {
       add("line", { x1: X(t), y1: top + ph, x2: X(t), y2: top + ph + 4, stroke: "rgba(200,215,245,0.5)" });
-      add("text", { x: X(t), y: top + ph + 17, "font-size": 12, "text-anchor": "middle" }, t + (t === x1 ? " %" : ""));
+      if (!compact || t === x0 || t === x1 || t % 20 === 0)
+        add("text", { x: X(t), y: top + ph + 16, "font-size": compact ? 11 : 12, "text-anchor": "middle" }, t + (t === x1 && !compact ? " %" : ""));
     }
     add("line", { x1: L, y1: top + ph, x2: L + pw, y2: top + ph, stroke: "rgba(200,215,245,0.35)" });
     add("text", { x: L + pw / 2, y: H - 4, "font-size": 12, "text-anchor": "middle" }, "oxygen, % of the gas");
 
     // the list of investigations: axis labels for levels 1 and 2, a legend to pick from for level 3
     rows.forEach(function (row, i) {
+      if (compact && three) return; // The selector identifies the highlighted series and leaves the whole width for both axes.
       var cy = top + (i + 0.5) * rh, on = i === OX.sel, st = OX.stats[i], faint = three && !st.np;
       if (on) add("rect", { x: 4, y: cy - rh / 2 + 1, width: three ? L - 8 : W - 8, height: rh - 2, rx: 5, fill: "rgba(125,184,255,0.13)" });
       if (i && row.oxygen_is !== rows[i - 1].oxygen_is) add("line", { x1: 8, y1: cy - rh / 2, x2: three ? L - 8 : W - 8, y2: cy - rh / 2, stroke: "rgba(200,215,245,0.25)" });
-      var label = add("text", { x: L - 12, y: cy + 1, "font-size": 12.5, "text-anchor": "end", "dominant-baseline": "middle",
-        style: "fill:" + (on ? "var(--ink)" : faint ? "var(--ink-3)" : "var(--ink-2)") + ";font-weight:" + (on ? 600 : 400) + ";cursor:pointer" }, row.name);
-      label.addEventListener("click", function () { OX.sel = i; oxRender(); });
+      var parts = row.name.split(", "), labelX = L - (compact ? 5 : 12);
+      var label = add("text", { x: labelX, y: cy + (compact && parts.length > 1 ? -4 : 1), "font-size": compact ? 11 : 12.5, "text-anchor": "end", "dominant-baseline": "middle",
+        style: "fill:" + (on ? "var(--ink)" : faint ? "var(--ink-3)" : "var(--ink-2)") + ";font-weight:" + (on ? 600 : 400) + ";cursor:pointer" }, compact ? parts[0] : row.name);
+      if (compact && parts.length > 1) label.appendChild(svgEl("tspan", {x: labelX, dy: 12, "font-size": 10}, parts[1].split(" ")[0]));
+      tip(label, row.name);
+      label.addEventListener("click", function () { oxChoose(i); });
       if (three && !st.np) add("text", { x: L - 12, y: cy + 13, "font-size": 10, "text-anchor": "end", style: "fill:var(--ink-3)" }, "no pressure in its table");
-      if (row.oxygen_is === "burner" && !three) add("text", { x: L - 12, y: cy + 13, "font-size": 10, "text-anchor": "end", style: "fill:var(--ink-3)" }, "oxygen in the burner flow");
+      if (row.oxygen_is === "burner" && !three && !compact) add("text", { x: L - 12, y: cy + 13, "font-size": 10, "text-anchor": "end", style: "fill:var(--ink-3)" }, "oxygen in the burner flow");
     });
 
     if (!three) {
@@ -2404,8 +2451,12 @@ window.FLAME_MODEL = {
             if (split > a) add("rect", { x: a, y: cy - 4, width: split - a, height: 8, rx: 4, fill: OX_COOL });
             if (b > split) add("rect", { x: split, y: cy - 4, width: b - split, height: 8, rx: 4, fill: OX_WARM });
           } else add("rect", { x: a, y: cy - 4, width: b - a, height: 8, rx: 4, fill: "none", stroke: OX_COOL, "stroke-width": 1.5 });
-          add("text", { x: a - 6, y: cy + 4, "font-size": 11.5, "text-anchor": "end" }, oxNum(st.lo));
-          add("text", { x: b + 6, y: cy + 4, "font-size": 11.5 }, oxNum(st.hi) + " %  ·  " + st.n + " rows");
+          if (!compact) {
+            add("text", { x: a - 6, y: cy + 4, "font-size": 11.5, "text-anchor": "end" }, oxNum(st.lo));
+            var tightRight = W - b < 105;
+            add("text", { x: tightRight ? W - 5 : b + 6, y: tightRight ? cy - 6 : cy + 4, "text-anchor": tightRight ? "end" : "start", "font-size": 11.5 },
+              oxNum(st.hi) + " %  ·  " + st.n + " rows");
+          }
         } else {                                   // every test: piles of dots, one pile per oxygen level
           var bins = {}, cap = Math.max(3, Math.floor((rh - 6) / 4.2));
           row.pts.forEach(function (p) { var k = Math.round(X(p[0]) / 4.2); (bins[k] = bins[k] || []).push(p); });
@@ -2413,7 +2464,8 @@ window.FLAME_MODEL = {
             var pile = bins[k], cols = Math.ceil(pile.length / cap);
             pile.forEach(function (p, j) {
               var col = Math.floor(j / cap), inCol = Math.min(cap, pile.length - col * cap), row2 = j % cap;
-              var cx = +k * 4.2 + (col - (cols - 1) / 2) * 4.2, y = cy + (row2 - (inCol - 1) / 2) * 4.2, warm = amb && p[0] >= m.moon_o2_pct;
+              var cx = compact ? X(p[0]) : +k * 4.2 + (col - (cols - 1) / 2) * 4.2;
+              var y = cy + (row2 - (inCol - 1) / 2) * 4.2, warm = amb && p[0] >= m.moon_o2_pct;
               tip(add("circle", amb ? { cx: cx, cy: y, r: 1.8, fill: warm ? OX_WARM : OX_COOL } : { cx: cx, cy: y, r: 1.5, fill: "none", stroke: OX_COOL, "stroke-width": 0.9 }),
                 row.name + ": " + oxNum(p[0]) + " % oxygen" + (p[1] != null ? ", " + p[1].toFixed(2) + " atm" : ""));
             });
@@ -2424,25 +2476,27 @@ window.FLAME_MODEL = {
       // pressure axis (log scale, so the low pressures that matter for a Moon Base are not squeezed flat)
       [0.3, 0.5, 1, 2, 3, 5].forEach(function (p) {
         add("line", { x1: L, y1: Y(p), x2: L + pw, y2: Y(p), stroke: "rgba(200,215,245,0.10)" });
-        add("text", { x: L + 6, y: Y(p) - 4, "font-size": 11 }, p + " atm");
+        add("text", { x: compact ? L - 5 : L + 6, y: Y(p) + (compact ? 3 : -4), "font-size": 11, "text-anchor": compact ? "end" : "start" }, compact ? String(p) : p + " atm");
       });
-      add("text", { x: L + pw - 4, y: top + 12, "font-size": 12, "text-anchor": "end" }, "pressure of the gas (log scale)");
-      var dot = function (row, p, j, big) {
+      add("text", { x: compact ? L : L + pw - 4, y: compact ? top - 13 : top + 12, "font-size": 12, "text-anchor": compact ? "start" : "end" }, compact ? "Pressure (atm, log scale)" : "pressure of the gas (log scale)");
+      var dot = function (row, p, big) {
         var amb = row.oxygen_is === "ambient", warm = amb && p[0] >= m.moon_o2_pct && p[1] <= m.moon_atm + 1e-9;
-        var cx = X(p[0]) + ((j * 7919) % 9 - 4) * 0.55, y = Y(p[1]) + ((j * 104729) % 9 - 4) * 0.55;
-        var a = amb ? { cx: cx, cy: y, r: big ? 3.4 : 2.3, fill: warm ? OX_WARM : OX_COOL, "fill-opacity": big ? 1 : 0.6 }
+        var cx = X(p[0]), y = Y(p[1]);
+        var a = amb ? { cx: cx, cy: y, r: big ? 3.4 : 2.3, fill: warm ? OX_WARM : OX_COOL, "fill-opacity": big ? 1 : 0.38 }
                     : { cx: cx, cy: y, r: 3, fill: "none", stroke: OX_COOL, "stroke-width": 1.2 };
-        if (big && amb) { a.stroke = "#0a1124"; a["stroke-width"] = 1; }
+        if (big && amb) { a.stroke = "var(--ink)"; a["stroke-width"] = 0.8; }
         tip(add("circle", a), row.name + ": " + oxNum(p[0]) + " % oxygen, " + p[1].toFixed(2) + " atm (" + (p[1] * 14.696).toFixed(1) + " psi)");
       };
       rows.forEach(function (row, i) {             // everything first, the picked investigation on top
-        if (i !== OX.sel && row.oxygen_is === "ambient") row.pts.forEach(function (p, j) { if (p[1] != null) dot(row, p, j, false); });
+        if (i !== OX.sel && row.oxygen_is === "ambient") row.pts.forEach(function (p) { if (p[1] != null) dot(row, p, false); });
       });
-      rows[OX.sel].pts.forEach(function (p, j) { if (p[1] != null) dot(rows[OX.sel], p, j, true); });
+      rows[OX.sel].pts.forEach(function (p) { if (p[1] != null) dot(rows[OX.sel], p, true); });
       // the two atmospheres the brief names besides the Moon Base
       [[21, 1.0, "Earth at sea level", "end", -8], [100, 4.3 / 14.696, "Spacesuit: 100 % oxygen at 4.3 psi", "end", -8]].forEach(function (ref) {
-        add("circle", { cx: X(ref[0]), cy: Y(ref[1]), r: 6, fill: "none", stroke: "var(--ink)", "stroke-width": 1.5 });
-        add("text", { x: X(ref[0]) + ref[4], y: Y(ref[1]) - 9, "font-size": 11.5, "text-anchor": ref[3], style: "fill:var(--ink)" }, ref[2]);
+        tip(add("circle", { cx: X(ref[0]), cy: Y(ref[1]), r: 6, fill: "none", stroke: "var(--ink)", "stroke-width": 1.5 }), ref[2]);
+        var earth = ref[0] === 21;
+        add("text", { x: X(ref[0]) + (compact && earth ? 8 : ref[4]), y: Y(ref[1]) - 9, "font-size": compact ? 10.5 : 11.5, "text-anchor": compact && earth ? "start" : ref[3], style: "fill:var(--ink)" },
+          compact ? (earth ? "Earth" : "Suit · 4.3 psi") : ref[2]);
       });
     }
     // where the Flame console is set right now
@@ -2451,16 +2505,17 @@ window.FLAME_MODEL = {
       if (three && byKey.p) {
         var uy = Y(Math.min(6, Math.max(0.25, state.values.p)));
         add("path", { d: "M" + ux + " " + (uy - 7) + " L" + (ux + 7) + " " + uy + " L" + ux + " " + (uy + 7) + " L" + (ux - 7) + " " + uy + " Z", fill: "none", stroke: "var(--flame)", "stroke-width": 2 });
-        add("text", { x: ux + 10, y: uy + 19, "font-size": 11.5, style: "fill:var(--flame)" }, "your console setting");
+        add("text", { x: ux + 8, y: uy + 18, "font-size": compact ? 10.5 : 11.5, style: "fill:var(--flame)" }, compact ? "Console" : "your console setting");
       } else {
         add("line", { x1: ux, y1: top, x2: ux, y2: top + ph, stroke: "var(--flame)", "stroke-width": 1.5 });
-        add("text", { x: ux + 5, y: top + ph - 5, "font-size": 11.5, style: "fill:var(--flame)" }, "your console setting");
+        add("text", { x: ux + 5, y: top + ph - 3, "font-size": compact ? 10.5 : 11.5, style: "fill:var(--flame)" }, compact ? "Console" : "your console setting");
       }
     }
   }
   function oxRender() {
     if (!T || !OX.open) return;
     var m = T.meta, row = T.rows[OX.sel], st = OX.stats[OX.sel];
+    $("oxStudy").selectedIndex = OX.sel;
     var names = function (key) { return T.rows.filter(function (r, i) { return OX.stats[i][key] > 0; }).map(function (r) { return r.name; }).join("; "); };
     Array.prototype.forEach.call($("oxLevels").querySelectorAll("button"), function (b, i) { b.setAttribute("aria-pressed", String(i + 1 === OX.level)); });
     $("oxHead").textContent = "Of " + m.ambient_with_pressure + " NASA table rows with ambient oxygen and pressure, "
@@ -2470,11 +2525,13 @@ window.FLAME_MODEL = {
       + (row.oxygen_is === "ambient"
         ? "At 30% oxygen or more: " + st.rich + " rows." + (st.np ? " Meeting both Moon Base thresholds: " + st.zone + ". Just above the pressure threshold: " + st.near + "." : "")
         : "This is the oxygen in the burner flow of an inverse flame, which burns inside fuel gas. It is not a cabin atmosphere, so it is left out of the counts above.")
+      + (OX.level === 3 ? (st.np ? " Its pressure rows are outlined." : " This pressure chart shows rows from the other tables.") : "")
       + " Source: PSI table version " + row.version + (row.doi ? ", DOI " + row.doi : "") + ".";
     oxDraw();
   }
   function oxLevel(n) { OX.level = Math.min(3, Math.max(1, n)); save("oxlevel", OX.level); sfx.preset(); oxRender(); }
-  function oxMove(d) { OX.sel = (OX.sel + d + T.rows.length) % T.rows.length; oxRender(); }
+  function oxChoose(i) { OX.sel = i; oxRender(); }
+  function oxMove(d) { oxChoose((OX.sel + d + T.rows.length) % T.rows.length); }
   function openOx() {
     if (!T || OX.open || SIM.open || AI.open || titleOn) return;
     OX.open = true;
@@ -2490,13 +2547,15 @@ window.FLAME_MODEL = {
     sfx.close();
   }
   if (T) {
+    T.rows.forEach(function (row, i) { $("oxStudy").add(new Option(row.name + " (" + row.id + ")", String(i))); });
+    $("oxStudy").addEventListener("change", function () { oxChoose(this.selectedIndex); });
     OX_LEVELS.forEach(function (name, i) {
       var b = el("button", "", (i + 1) + "  " + name); b.type = "button";
       b.addEventListener("click", function () { oxLevel(i + 1); });
       $("oxLevels").appendChild(b);
     });
-    $("oxFine").textContent = "One mark is one row of an investigation's Experimental Table on NASA PSI (public data, read " + T.meta.fetched
-      + "). FLEX rows have no flight or ground label. Rows without readable oxygen are excluded. Hollow marks are inverse flames. The reference atmospheres come from the challenge brief. "
+    $("oxFine").textContent = "Dots are PSI table rows (read " + T.meta.fetched
+      + "). Repeated measurements can overlap. Hollow data marks show burner oxygen in inverse flames. FLEX rows have no flight or ground label. Rows without readable oxygen are excluded. The reference atmospheres come from the challenge brief. "
       + "This shows where tests were run. It does not say how flammable anything is.";
     $("oxBtn").hidden = false; $("oxBtn").addEventListener("click", openOx);
     $("oxClose").addEventListener("click", closeOx);
@@ -2627,9 +2686,17 @@ window.FLAME_MODEL = {
     var box = $("aiQs"); box.innerHTML = "";
     AI.qs.forEach(function (q, i) {
       var b = el("button", "q" + (i === AI.sel ? " sel" : ""), q); b.type = "button";
-      b.addEventListener("click", function () { AI.sel = i; renderAI(); askAI(q); });
+      b.addEventListener("focus", function () {
+        box.children[AI.sel].classList.remove("sel");
+        AI.sel = i; b.classList.add("sel");
+      });
+      b.addEventListener("click", function () { askAI(q); });
       box.appendChild(b);
     });
+  }
+  function moveAI(dir) {
+    var buttons = $("aiQs").children;
+    if (buttons.length) buttons[(AI.sel + dir + buttons.length) % buttons.length].focus();
   }
   // Where Ember thinks: "auto" takes the big machine when it answers and this device when it does not.
   function upBrains() { return AI.brains.filter(function (b) { return b.up; }); }
@@ -2639,15 +2706,21 @@ window.FLAME_MODEL = {
   }
   function renderBrains() {
     var box = $("aiBrains"), up = upBrains();
+    var focused = box.contains(document.activeElement) ? document.activeElement.dataset.brain : null;
     box.innerHTML = ""; box.hidden = up.length < 2;
-    if (up.length < 2) return;
+    if (up.length < 2) {
+      if (focused) $("aiClose").focus();
+      return;
+    }
     box.appendChild(el("kbd", "", "X")); box.appendChild(el("span", "", "Ember thinks on:"));
     [{ id: "auto", text: "Auto" }].concat(up.map(function (b) { return { id: b.id, text: b.label }; })).forEach(function (o) {
-      var b = el("button", "", o.text); b.type = "button";
+      var b = el("button", "", o.text); b.type = "button"; b.dataset.brain = o.id;
       b.setAttribute("aria-pressed", String(o.id === (upBrains().some(function (x) { return x.id === AI.brain; }) ? AI.brain : "auto")));
       b.addEventListener("click", function () { setBrain(o.id); });
       box.appendChild(b);
+      if (o.id === focused) b.focus();
     });
+    if (focused && !box.contains(document.activeElement)) $("aiClose").focus();
   }
   function setBrain(id) { AI.brain = id; save("brain", id); sfx.preset(); renderBrains(); aiWho(); }
   function cycleBrain() {
@@ -2656,23 +2729,31 @@ window.FLAME_MODEL = {
   }
   function aiWho() {
     var b = brainNow();
-    $("aiWho").textContent = b ? "Answering model: " + b.label + ". Read-aloud uses an installed English voice when available." : "";
+    $("aiWho").textContent = b ? "Answering model: " + b.label + ". Read-aloud uses an installed English voice when available." : "Ember is offline.";
   }
   function openAI() {
-    if (!AI.ok || AI.open) return;
+    if (!AI.ok || AI.open || document.querySelector("dialog[open]")) return;
     var qs = aiQuestions();
     if (!qs.length) return;
+    AI.returnFocus = document.activeElement;
     AI.open = true; AI.sel = 0; AI.qs = qs; renderAI(); renderBrains(); aiWho();
-    $("ai").hidden = false;
+    $("ai").hidden = false; $("ai").showModal(); $("aiQs").firstElementChild.focus();
     sfx.open();
     askAI(AI.qs[0]);                               // one press is enough: the first question is asked straight away
   }
-  function closeAI() { if (AI.open) sfx.close(); AI.open = false; $("ai").hidden = true; $("aiInput").blur(); hush(); }
+  function closeAI() {
+    if (!AI.open) return;
+    AI.open = false;
+    if (AI.request) AI.request.abort();
+    AI.request = null; AI.busy = false;
+    $("aiAns").setAttribute("aria-busy", "false");
+    leaveDialog("ai", AI.returnFocus, "aiBtn"); hush(); sfx.close();
+  }
   // Send one question to the model on the PC. onText gets the answer so far, onEnd gets (error or null, full text).
-  function aiStream(body, onText, onEnd) {
+  function aiStream(body, onText, onEnd, signal) {
     var got = "", meta = { label: "", fellBack: false };
     body.brain = AI.brain;
-    fetch("/ask", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
+    fetch("/ask", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), signal: signal })
       .then(function (resp) {
         if (!resp.ok || !resp.body) throw new Error("HTTP " + resp.status);
         meta.label = resp.headers.get("X-Brain-Label") || ""; meta.fellBack = resp.headers.get("X-Brain-Fallback") === "1";
@@ -2707,16 +2788,22 @@ window.FLAME_MODEL = {
     } catch (err) { /* no speech on this device */ }
   }
   function hush() { try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (err) { /* nothing to stop */ } }
-  function voiceButton() { $("aiVoice").textContent = "Voice: " + (VOICE.on ? "on" : "off"); }
+  function voiceButton() {
+    $("aiVoice").textContent = "Voice: " + (VOICE.on ? "on" : "off");
+    $("aiVoice").setAttribute("aria-pressed", String(VOICE.on));
+  }
   function toggleVoice() { VOICE.on = !VOICE.on; save("voice", VOICE.on); voiceButton(); if (!VOICE.on) hush(); }
   $("aiVoice").addEventListener("click", toggleVoice);
   voiceButton();
   function askAI(q) {
     q = (q || "").trim();
-    if (!q || AI.busy) return;
-    AI.busy = true;
+    if (!q || !AI.open || (AI.busy && AI.question === q)) return;
+    if (!AI.ok) { aiWho(); return; }
+    if (AI.request) AI.request.abort();
+    var request = new AbortController();
+    AI.request = request; AI.busy = true; AI.question = q;
     hush();
-    var box = $("aiAns"); box.innerHTML = "";
+    var box = $("aiAns"); box.innerHTML = ""; box.setAttribute("aria-busy", "true");
     box.appendChild(el("span", "asked", q));
     var who = brainNow();
     var out = el("span", "", "Ember is thinking" + (who ? " (" + who.label + ")" : "") + " ..."); box.appendChild(out);
@@ -2729,8 +2816,10 @@ window.FLAME_MODEL = {
     }
     var t0 = Date.now();
     aiStream(body,
-      function (text) { out.textContent = text; box.scrollTop = box.scrollHeight; },
+      function (text) { if (AI.request === request) { out.textContent = text; box.scrollTop = box.scrollHeight; } },
       function (err, text, meta) {
+        if (AI.request !== request) return;
+        AI.request = null; AI.busy = false; box.setAttribute("aria-busy", "false");
         if (err) out.textContent = "Ember did not answer (" + err.message + "). The rest of the dashboard still works.";
         else {
           box.appendChild(el("span", "took", "Answered in " + ((Date.now() - t0) / 1000).toFixed(1) + " s by Ember (" + (meta.label || (who ? who.label : AI.model)) + ")."));
@@ -2745,22 +2834,25 @@ window.FLAME_MODEL = {
           sfx.reply();
           if (AI.open) say(text);
         }
-        AI.busy = false;
-      });
+      }, request.signal);
   }
   $("aiBtn").addEventListener("click", openAI);
   $("aiClose").addEventListener("click", closeAI);
+  $("ai").addEventListener("cancel", function (e) { e.preventDefault(); closeAI(); });
   $("aiForm").addEventListener("submit", function (ev) { ev.preventDefault(); askAI($("aiInput").value); });
   // Ask the server which machines can answer. Asked again every 20 seconds, so a lost or returning PC is noticed.
+  function showAIAvailability() {
+    $("aiBtn").hidden = !AI.ok; $("titleAI").hidden = !AI.ok;
+    Array.prototype.forEach.call(document.querySelectorAll(".hintAI"), function (s) { s.hidden = !AI.ok; });
+    aiWho(); if (AI.open) renderBrains();
+  }
   function refreshAI(first) {
     fetch("/ai").then(function (resp) { return resp.json(); }).then(function (j) {
       var was = AI.def, wasOk = AI.ok, up = (j && j.brains ? j.brains : []).filter(function (b) { return b.up; });
       if (first && j && j.brains) { BASE.ours = true; BASE.host = j.host || ""; sendButton(); setInterval(function () { refreshAI(false); }, 20000); }
       AI.ok = !!(j && j.ok); AI.brains = j && j.brains ? j.brains : []; AI.def = up.length ? up[0] : null;
       AI.model = AI.def ? AI.def.model : ""; AI.gpu = (j && j.gpu) || ""; AI.label = AI.def ? AI.def.label : "";
-      $("aiBtn").hidden = !AI.ok; $("titleAI").hidden = !AI.ok;
-      Array.prototype.forEach.call(document.querySelectorAll(".hintAI"), function (s) { s.hidden = !AI.ok; });
-      aiWho(); if (AI.open) renderBrains();
+      showAIAvailability();
       if (first) return;
       if (wasOk && !AI.ok) notify("Ember is out of reach. Everything else still works.", "warn");
       else if (!wasOk && AI.ok) notify("Ember is back: " + AI.label + ".", "good");
@@ -2769,7 +2861,7 @@ window.FLAME_MODEL = {
         notify(toPeer ? "The big machine is back. Ember thinks there again: " + AI.def.label + "." : "The big machine is out of reach. Ember now thinks on " + AI.def.where + ".", toPeer ? "good" : "warn");
       }
     }).catch(function () {
-      if (AI.ok) { AI.ok = false; AI.brains = []; AI.def = null; $("aiBtn").hidden = true; notify("Ember is out of reach. Everything else still works.", "warn"); }
+      if (AI.ok) { AI.ok = false; AI.brains = []; AI.def = null; showAIAvailability(); notify("Ember is out of reach. Everything else still works.", "warn"); }
     });
   }
   if (/^https?:$/.test(location.protocol) && window.fetch) {
@@ -2880,10 +2972,75 @@ window.FLAME_MODEL = {
     }
   } };
   function activeCasePanel() {
+    if (shareView && shareView.isOpen()) return shareView;
     if (guide.open) return guidePanel;
     if (window.FLAME_EVIDENCE && window.FLAME_EVIDENCE.isOpen()) return window.FLAME_EVIDENCE;
     if (window.FLAME_COUNTER && window.FLAME_COUNTER.isOpen()) return window.FLAME_COUNTER;
     return null;
+  }
+  function captureView() {
+    if (view.page === "research" && R) {
+      var item = ranked()[view.sel], need = R.needs[view.need];
+      if (item) return { label: item.name + " · " + need.label, data: {
+        page: "research", need: need.key, id: item.id, orbit: view.orbit
+      } };
+    }
+    if (view.page !== "console" || M.meta.mock) return null;
+    var preset = activePreset();
+    var data = { page: "console", fuel: state.fuel, values: Object.assign({}, state.values) };
+    if (preset) data.preset = preset.key;
+    if (MAP.sel) data.test = MAP.sel[0];
+    return { label: fuelLabel() + " · " + (preset ? preset.label : "Custom settings"), data: data };
+  }
+  function restoreView(spec) {
+    var needIndex, selection, pickedTest, preset;
+    if (spec.page === "research") {
+      if (!R) return false;
+      needIndex = R.needs.findIndex(function (n) { return n.key === spec.need; });
+      if (needIndex < 0) return false;
+      selection = ranked(needIndex).findIndex(function (it) { return it.id === spec.id; });
+      if (selection < 0) return false;
+    } else {
+      if (spec.page !== "console" || M.meta.mock || !M.fuels.some(function (f) { return f.key === spec.fuel; })) return false;
+      if (!M.features.every(function (f) {
+        var v = spec.values[f.key];
+        return Number.isFinite(v) && v >= f.min && v <= f.max;
+      })) return false;
+      if (spec.preset) {
+        preset = PRESETS.find(function (ps) { return ps.key === spec.preset; });
+        if (!preset || !Object.keys(preset.values).every(function (k) {
+          return Math.abs(spec.values[k] - preset.values[k]) < 1e-6;
+        })) return false;
+      }
+      if (spec.test != null) {
+        pickedTest = hasTests && M.tests.find(function (t) { return t[0] === spec.test && t[2] === spec.fuel; });
+        if (!pickedTest) return false;
+      }
+    }
+    // A link opened from the address bar may arrive while another tool owns focus.
+    if (guide.open) guide.close();
+    if (shareView.isOpen()) shareView.close();
+    if (window.FLAME_COUNTER && window.FLAME_COUNTER.isOpen()) window.FLAME_COUNTER.close();
+    if (window.FLAME_EVIDENCE && window.FLAME_EVIDENCE.isOpen()) window.FLAME_EVIDENCE.close();
+    if (SIM.open) closeSim();
+    if (AI.open) closeAI();
+    if (OX.open) closeOx();
+    if (MAP.big) mapBig(false);
+    if (state.sheet) toggleSheet(false);
+    if (state.comparing) toggleComparison(false);
+    if (spec.page === "research") {
+      view.need = needIndex; view.sel = selection; view.orbit = spec.orbit;
+    } else {
+      state.fuel = spec.fuel;
+      state.values = Object.assign({}, spec.values);
+      state.place = spec.preset;
+      MAP.sel = pickedTest || null;
+    }
+    showPage(spec.page);
+    var heading = $(spec.page === "research" ? "hCard" : "hRead");
+    heading.focus({ preventScroll: true });
+    if (window.matchMedia("(max-width: 820px)").matches) heading.scrollIntoView({ block: "start" });
+    return true;
   }
   function openEvidence(mode) {
     if (window.FLAME_EVIDENCE && window.FLAME_EVIDENCE_DATA) window.FLAME_EVIDENCE.open(mode);
@@ -2932,6 +3089,7 @@ window.FLAME_MODEL = {
 
   /* ---------- keyboard ---------- */
   document.addEventListener("keydown", function (e) {
+    if (window.FLAME_SHARE_VIEW && window.FLAME_SHARE_VIEW.isOpen()) return;
     var panel = activeCasePanel();
     if (panel) {
       var action = { ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right",
@@ -2949,13 +3107,13 @@ window.FLAME_MODEL = {
       return;
     }
     if (SIM.open) {                                // the Ignite screen: A or Enter runs it again, B or Esc closes
+      cycleDialogTab(e, $("sim"));
       if (e.key === "Escape" || e.key === "Backspace") { e.preventDefault(); closeSim(); }
-      else if ((e.key === "Enter" || e.key === " " || e.key === "i" || e.key === "I") && !onButton) { e.preventDefault(); simStart(); }
+      else if (((e.key === "Enter" || e.key === " ") && !onButton) || e.key.toLowerCase() === "i") { e.preventDefault(); if (!e.repeat) simStart(); }
       return;
     }
     if (OX.open) {                                 // the oxygen map: up/down picks, left/right changes the detail
-      if (e.target && e.target.classList && e.target.classList.contains("ox-chart") &&
-          e.target.scrollWidth > e.target.clientWidth && (e.key === "ArrowLeft" || e.key === "ArrowRight")) return;
+      if (e.target === $("oxStudy")) return;        // The native selector owns arrows, type-ahead, Home/End and popup dismissal.
       if (e.key === "Escape" || e.key === "Backspace" || e.key === "o" || e.key === "O") { e.preventDefault(); closeOx(); }
       else if (e.key === "ArrowUp") { e.preventDefault(); oxMove(-1); }
       else if (e.key === "ArrowDown") { e.preventDefault(); oxMove(1); }
@@ -2965,13 +3123,12 @@ window.FLAME_MODEL = {
       return;
     }
     if (AI.open) {
-      var n = AI.qs.length;
+      cycleDialogTab(e, $("ai"));
       if (e.key === "Escape") { e.preventDefault(); closeAI(); }
       else if (!typing) {
-        if (e.key === "ArrowUp") { e.preventDefault(); AI.sel = (AI.sel - 1 + n) % n; renderAI(); }
-        else if (e.key === "ArrowDown") { e.preventDefault(); AI.sel = (AI.sel + 1) % n; renderAI(); }
-        else if ((e.key === "Enter" || e.key === " ") && !onButton) { e.preventDefault(); askAI(AI.qs[AI.sel]); }
-        else if (e.key === "Backspace") closeAI();
+        if (e.key === "ArrowUp" && e.target !== $("aiAns")) { e.preventDefault(); moveAI(-1); }
+        else if (e.key === "ArrowDown" && e.target !== $("aiAns")) { e.preventDefault(); moveAI(1); }
+        else if (e.key === "Backspace") { e.preventDefault(); closeAI(); }
         else if (e.key === "v" || e.key === "V") toggleVoice();
         else if (e.key === "x" || e.key === "X") cycleBrain();
       }
@@ -3051,7 +3208,7 @@ window.FLAME_MODEL = {
   /* ---------- gamepad ---------- */
   // Standard mapping: 0=A 1=B 2=X 3=Y 4=LB 5=RB 6=LT 7=RT 8=View 9=Menu 10=L3 11=R3 12=up 13=down 14=left 15=right,
   // axes 0/1 = left stick, axes 2/3 = right stick.
-  var held = {};
+  var held = {}, waitForPadRelease = false;
   function fire(name, now, isDown, firstDelay, repeatMs, fn) {
     var h = held[name];
     if (!isDown) { held[name] = null; return; }
@@ -3069,6 +3226,12 @@ window.FLAME_MODEL = {
     chip.title = pad ? "" : "Press any button on the controller to wake it up";
     if (pad) {
       var b = function (n) { return !!(pad.buttons[n] && pad.buttons[n].pressed); };
+      poll.activeInput = pad.buttons.some(function (button) { return button.pressed; }) ||
+        pad.axes.some(function (axis) { return Math.abs(axis) > 0.18; });
+      if (waitForPadRelease) {
+        if (!poll.activeInput) { waitForPadRelease = false; held = {}; poll.acc = 0; }
+        requestAnimationFrame(poll); return;
+      }
       var panel = activeCasePanel();
       if (panel) {
         var px = pad.axes[0] || 0, py = pad.axes[1] || 0;
@@ -3124,12 +3287,11 @@ window.FLAME_MODEL = {
       }
       var ax = pad.axes[0] || 0, ay = pad.axes[1] || 0, ai = AI.open;
       var pg = ai ? "ai" : view.page, con = pg === "console";
-      var aiMove = function (dir) { AI.sel = (AI.sel + dir + AI.qs.length) % AI.qs.length; renderAI(); };
       fire("up", now, b(12) || ay < -0.6, 350, 200, function () {
-        if (pg === "ai") aiMove(-1); else if (pg === "research") researchMove(-1); else if (con) move(-1);
+        if (pg === "ai") moveAI(-1); else if (pg === "research") researchMove(-1); else if (con) move(-1);
       });
       fire("down", now, b(13) || ay > 0.6, 350, 200, function () {
-        if (pg === "ai") aiMove(1); else if (pg === "research") researchMove(1); else if (con) move(1);
+        if (pg === "ai") moveAI(1); else if (pg === "research") researchMove(1); else if (con) move(1);
       });
       // On the console the left stick slides the selected bar: a light push creeps, a full push sweeps the whole
       // range in about a second. Big movements for gloved hands. The d-pad still moves one step at a time.
@@ -3158,6 +3320,7 @@ window.FLAME_MODEL = {
       fire("lb", now, b(4), 0, 0, function () { if (!ai) turnPage(-1); });
       fire("rb", now, b(5), 0, 0, function () { if (!ai) turnPage(1); });
       fire("menu", now, b(9), 0, 0, function () { if (ai) closeAI(); else openAI(); });             // Menu: Ember
+      if (ai !== AI.open) { requestAnimationFrame(poll); return; }
       fire("view", now, b(8), 0, 0, function () {                                                    // View: zoom this page's chart
         if (ai) return;
         if (con) mapBig(true); else if (pg === "research") openOx(); else toggleSound();
@@ -3195,6 +3358,21 @@ window.FLAME_MODEL = {
                      mapBig: mapBig, mapLevel: mapLevel, starAt: starAt, ox: OX, openOx: openOx, closeOx: closeOx, oxLevel: oxLevel, tables: T, notes: NOTES, notify: notify, base: BASE, sendCsv: sendCsv, refreshAI: refreshAI, sim: SIM, openSim: openSim, closeSim: closeSim, simStart: simStart, testsCsv: testsCsv, downloadCsv: downloadCsv };
   render();
   showPage(PAGES[0]);                              // the NASA research dashboard is the home page when its data is present
+  var shareView = window.FLAME_SHARE_VIEW;
+  if (shareView && window.FLAME_VIEW_LINK) {
+    shareView.init(captureView, restoreView);
+    $("shareResearch").hidden = !R;
+    $("shareReading").hidden = M.meta.mock;
+    $("shareResearch").addEventListener("click", shareView.open);
+    $("shareReading").addEventListener("click", shareView.open);
+    function openFragment() {
+      if (location.hash.startsWith("#view=") && !shareView.restore(location.hash)) {
+        notify("This shared view could not be opened with the data in this copy.", "warn");
+      }
+    }
+    openFragment();
+    window.addEventListener("hashchange", openFragment);
+  }
   window.addEventListener("resize", function () { showPage(view.page); });   // the two drawings size themselves to the space they get
 })();
 </script>

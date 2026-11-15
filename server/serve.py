@@ -58,7 +58,7 @@ TABLES = ROOT / "data" / "clean" / "psi_tables_summary.json"   # counts from the
 OLLAMA = "http://127.0.0.1:11434"
 STATIC = {"/": "index.html", **{"/" + name: name for name in (
     "index.html", "model.js", "research.js", "tables.js", "counterexample.js", "evidence.js", "evidence-data.js",
-    "interface.css", "research-ui.css", "console-ui.css", "flex-flame.webp")}}
+    "interface.css", "research-ui.css", "console-ui.css", "flex-flame.webp", "view-link.js", "share-view.js")}}
 TYPES = {".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8",
          ".css": "text/css; charset=utf-8", ".webp": "image/webp"}
 MAX_BODY = 16000
@@ -74,6 +74,8 @@ SYSTEM = (
     "Answer ONLY from the material given after the question. "
     "Refer to an investigation by its name followed by its PSI id in square brackets, like FLEX [PSI-69]. "
     "If the material does not contain the answer, say so plainly instead of guessing. "
+    "Describe counts from the oxygen map as published table rows meeting the brief's thresholds. "
+    "Only attribute a Moon Base research purpose to an experiment if its PSI record says so. "
     "Never invent numbers, test results, dates or investigation names. "
     "Copy every number exactly as it is written in that investigation's own record, and never attach a number from the "
     "question, the challenge brief or another investigation to it. "
@@ -84,7 +86,7 @@ SYSTEM_READING = (
     " The completion and visible-extinction percentages are conditional on a clear outcome. The classifier trained on "
     "199 FLEX tests with decisive outcomes and excluded 53 disruptions. It estimates a droplet outcome, never cabin fire risk. "
     "They are estimates, not physics and not a crew procedure, so do not present them as certain. "
-    "If the reading says the settings are outside the tested range, say that the flame outcome there is unknown. "
+    "If the reading says the settings are outside the tested range, say that the fire risk there is unknown. "
     "'Goes out' means the visible flame only."
 )
 STOP = set("the a an and or of to in on for with by is are was were be been it this that these those what which who how why "

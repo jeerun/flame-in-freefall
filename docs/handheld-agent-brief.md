@@ -37,14 +37,17 @@ redesigned page has been seen on this device. For the second run:
 - What is new: on the research page LT opens "Earth or orbit?" and RT opens "Read the
   sensors" (D-pad up and down change the case, left and right choose an answer, A
   reveals, B closes). On the Flame console, A in the zoomed star map opens "Find
-  counterexample".
+  counterexample". "Share view" sits on the research card and on the reading. The
+  Oxygen map has an investigation picker. Ignite and Ember are dialogs: B must close
+  them and return to the control that opened them.
 - Readings to expect: heptane at the starting values 57 %. X to Moon Base: 99 %, an
   amber box "No clear outcome in nearby tests" and a banner.
 - "Send to base" only accepts the file of the page the server itself serves. From this
   device's own dashboard (`Start on Legion Go.bat`) it reaches the PC only when both
   checkouts are at the same commit.
-- Repeat steps 2 and 4, and the controller part of step 3 only if something behaves
-  differently, then step 7. The boxes in `docs/checklist.md` are all open again.
+- Go through "Handheld recheck of the redesigned page" in `docs/checklist.md`, repeat
+  step 2, and the controller part of step 3 only if something behaves differently,
+  then step 7.
 
 ## Do these, in order, and report after each
 

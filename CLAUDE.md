@@ -44,6 +44,17 @@ Submission closes Sunday Nov 15, 11:59 PM in the team owner's local time
 
 Last updated Sunday Nov 15, about 4:10 AM by the owner's PC clock (British Columbia time, UTC-7).
 
+Pull request 5, merged on Nov 15, includes shared research views and FLEX readings. Open a shared URL on
+the hosted dashboard, or paste a view code into another offline copy. The Oxygen
+map has a mobile layout and an investigation selector. Ignite and Ember use native
+dialogs with keyboard focus contained while open.
+
+The evidence preview adds two research activities from Saffire-II and BASS-II and a FLEX counterexample comparison. The Oxygen map counts published table rows, including duplicates. Outcome estimates apply to clear outcomes only, and the Moon preset flags inconclusive nearby tests. Replays require recorded burn time and measured diameters, except for an inferred zero endpoint after fuel completion. The included video is a desktop capture. The notes below record earlier milestones.
+
+The dashboard uses the per-fuel model from the team's November 15 update.
+Current metrics are in `model/metrics.json`. The audit of the earlier pooled
+model is retained for comparison.
+
 Done:
 - Team created on the Space Apps site, challenge selected.
 - This repo created (public) with the folder skeleton.
@@ -431,8 +442,15 @@ Not done:
       deliberate fault each were all caught.
     - #6, from the Claude session on the Legion Go: the point above, the checklist
       ticks and `--source winget` in `Setup Legion Go.bat`.
-    - #5, made with OpenAI Codex on the owner's account: a redesign for handheld and
-      phone screens and three evidence activities. What it changes:
+    - #5, made with OpenAI Codex on the owner's account, in two rounds. Round one was
+      its first four commits, written on the page before the model switch. It was
+      joined with the per-fuel model here and merged. Meanwhile the branch gained seven
+      more commits that bring in main themselves (per-fuel model, browser tests,
+      handheld results) and add more. Round two took the branch's newer version of
+      every file. Where both rounds had settled the same question the branch's answer
+      stands: one "watch level" banner, whole percentages from 1 to 99 everywhere, and
+      a checklist split into an open recheck list and the ticked earlier runs.
+      What pull request 5 changes:
       - Look: new colours and layout, three style sheets beside `index.html`, and a
         phone layout with "View reading" and "Adjust settings" jumps.
       - The page opens on NASA research. The start screen is optional, at `#title`.
@@ -445,44 +463,47 @@ Not done:
         `data/clean/build_evidence.py`, each shown with its PSI id, DOI and CSV line.
       - Flame console: "Find counterexample" (E, or A in the zoomed map) pairs a FLEX
         test with the nearest test of the same fuel and gas mix that ended the other
-        way. The wording says the chance is "among clear outcomes" and that
-        disruptions are left out. A new amber state, "No clear outcome in nearby
-        tests": the Moon Base preset for heptane is one (its three nearest tests ended
-        in disruption). The words "fire risk" are gone from the reading: it is a
-        droplet outcome.
+        way (tests 108 and 183 read 25.6 % and 25.7 %). The wording says the chance is
+        "among clear outcomes" and that disruptions are left out. A new amber state,
+        "No clear outcome in nearby tests": the Moon Base preset for heptane is one
+        (its three nearest tests ended in disruption). The words "fire risk" are gone
+        from the reading: it is a droplet outcome.
       - Replays need NASA's burn time and diameters. The end diameter is no longer
         worked out from the burning rate. A completion without one ends at zero and
         says so.
       - The Oxygen map and Ember count "rows", and say that some rows repeat and that
-        FLEX has no flight or ground label.
+        FLEX has no flight or ground label. On a phone the map has an investigation
+        picker and keeps both axes in view.
+      - "Share view" on the research page and on the reading: a link (`#view=...`) on
+        the hosted copy, a view code to paste on a local file. The receiving page
+        checks every value against its own model before it opens the view.
+      - Ignite and Ember are native dialogs: focus stays inside, B or Esc returns to
+        the control that opened them, and a late Ember answer cannot replace a newer
+        one.
       - `server/serve.py` accepts, stores and serves only the dashboard's own CSV, by
         its SHA-256 (`CSV_SHA256`). After any change to the model or to the CSV, run
         `node server/export_digest.cjs` and update it, or "Send to base" answers 400.
         A handheld whose own copy of the page is older than the PC's is refused too.
-    - Joined with the per-fuel model here: the per-fuel slopes, the watch level, the
-      1 to 99 % display (to one decimal: "under 1" and "over 99") and the
-      unsettled-slope notes are kept. The band banners stay, reworded, only inside the
-      tested range. The counterexample pair 108 and 183 reads 25.6 % and 25.7 %. The
-      zoomed map's three model-line labels no longer run into each other. Found on the
-      way: at the model switch a comment of mine had switched off three assertions in
-      `tests/test_console_features.cjs`. They run again and pass.
-    - Checked after the merge: 19 Python tests, the Node test, 40 of 40 browser
-      scenarios, `tests/browser_evidence.py` (keyboard and a simulated gamepad), the
-      parity report, the 25 NASA source hashes, no page scroll at 1280x680 and
-      1280x800, and the twelve earlier scratch suites (what they flag is the new
-      wording and layout).
-    - NOT checked: the redesigned page on the real Legion Go. Every handheld box in
-      `docs/checklist.md` is open again, and `docs/handheld-agent-brief.md` says what
-      a second run needs.
-    - Not carried over: `docs/crew-console-demo.mp4` from #5. It shows the earlier
-      model (35 % and 90 %). A new recording is owed before the submission.
+    - Added here on top of the branch: the zoomed star map's three model-line labels
+      sit on their own lines, a step apart, instead of running into each other.
+    - Found on the way: at the model switch a comment of mine had switched off three
+      assertions in `tests/test_console_features.cjs`. They run again and pass (the
+      branch had found and fixed the same thing).
+    - Checked on the final tree, on the PC: 19 Python tests, both Node tests
+      (`test_console_features.cjs`, `test_view_link.cjs`), 40 of 40 browser scenarios,
+      `tests/browser_evidence.py`, `tests/browser_view_links.py` and
+      `tests/browser_dialogs.py` in Edge (keyboard and a simulated gamepad), the CSV
+      digest, the parity report, the 25 NASA source hashes, and frames of the demo
+      recording (57 % at the starting values, 25.6 % and 25.7 % for the pair).
+    - NOT checked: the redesigned page on the real Legion Go. `docs/checklist.md` has
+      the open recheck list and `docs/handheld-agent-brief.md` says what a second run
+      needs.
 
 Not done, or not verified:
 - Everything in the list above is unverified on the real Legion Go, with real
   gloves, and over real Wi-Fi, except what the two points about the real Legion Go
   above say. Those two points are about the page before the redesign of pull request
   5: the redesigned page has not been on the handheld at all.
-- There is no demo video of the current build.
 - The share sheet ("Share" button) cannot be tested in a headless browser.
 - `gemma4:e2b` exists in the Ollama library (checked Nov 14) but was never run on the
   PC. (It ran on the real handheld on Nov 15, see "Verified on the real Legion Go".)

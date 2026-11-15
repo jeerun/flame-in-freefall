@@ -1,9 +1,11 @@
 # Setting up the Legion Go
 
-Three ways to use the handheld, from the least to the most set-up. None of this has
-been done on the real Legion Go yet: the scripts were dry-run on the PC, and the
-two-machine link was tried with two copies of the server on the PC. Tick the boxes
-in `docs/checklist.md` as you go.
+On Nov 15 the owner ran the earlier dashboard on a Legion Go 8APU1 in Edge, using
+the PC over Tailscale and the handheld's own Ollama installation. Controller
+operation, sound and rumble were checked before the model switch. The per-fuel
+build at `f8374e5` received a separate 1280×800 screen check. The newer activities,
+shared views and controls were tested in desktop Edge with simulated gamepad input.
+The direct Wi-Fi route in A still needs a device test. [Device test record](../CLAUDE.md)
 
 ## A. The Legion Go as the screen, the PC as the brain (nothing to install)
 
@@ -44,18 +46,20 @@ Needs internet once, about 5 GB of disk, and about 15 minutes.
 3. Double-click `Start on Legion Go.bat`. It asks once for the address the PC
    printed (step A1). Press Enter instead to run without the PC.
 4. In the dashboard open Ember (Menu button). With both machines up, a row "Ember
-   thinks on:" offers Auto, the PC and the handheld, and X switches. Close the
-   dashboard window on the PC: within about 20 seconds a banner says the big machine
-   is out of reach, and Ember answers from the handheld.
+   thinks on:" offers Auto, the PC and the handheld. Press X to switch. On this
+   Legion Go the owner switched from Auto on the PC to the handheld and received
+   a local answer. A second server on the device answered with an unreachable
+   peer configured. The PC stayed up, so the live disconnect banner is unverified.
 
-What to expect: the small model is slower and less careful than the one on the PC.
-We have not measured it on the handheld. If its answers are poor, use way A.
+The handheld's CPU generated the observed local answers in 3.7–14.5 seconds.
+One answer confused the rate of change of droplet diameter with the rate of
+change of its square. Check scientific explanations against the cited PSI data.
 
 ## C. Away from the PC's network
 
 Use a private network between your own devices, such as Tailscale. It also gets
 around Wi-Fi that keeps devices apart, because the two machines talk through it
-directly. Not tried yet.
+over the private network. The tested route used `http://run/` on Tailscale.
 
 1. Install Tailscale on the PC and on the Legion Go, signed in to the same account,
    and switch it on (Connect) on both. If another VPN is running on either machine,
@@ -75,15 +79,16 @@ dashboard on by itself, with no firewall change. On the PC, in two windows:
 
 The second command prints the address, of the form `http://<pc-name>.<tailnet>.ts.net/`.
 Open it on the Legion Go. The numeric address does not work this way, only the
-name. It lasts until that window is closed. This was tried from the PC itself on
-Nov 15 and answered; the server lists a device that arrives this way under its
-Tailscale address in `http://localhost:8000/who`.
+name. On Nov 15 the handheld reached the PC at `http://run/`. The dashboard
+confirmed a CSV export to RUN and the PC's `/tests.csv` returned 252 rows.
+The team did not inspect the PC's export folder during the handheld test.
 
 Do not use a public tunnel (`tailscale funnel` is one): the dashboard has no login.
 
 ## The Legion Go's extra controls
 
-Tried with a simulated mouse and wheel in a desktop browser, not on the device.
+On the earlier dashboard, the owner verified the physical wheel moved the
+selected setting one step per notch. FPS mode was not tried on the device.
 
 - **The wheel on the back of the right controller** (or any mouse wheel). On the
   Flame console it turns the selected setting, one step per notch; point at another
@@ -109,8 +114,9 @@ Tried with a simulated mouse and wheel in a desktop browser, not on the device.
   | M2 | G | Move the settings onto the picked test |
   | M3 | / | Ask Ember |
 
-- **Detached controllers** behave like the attached ones: the browser still sees one
-  gamepad. Rumble comes through the same way.
+- **Controller detection.** Edge reported one standard Xbox 360 controller with
+  17 buttons and four axes during the checklist run. The owner felt rumble on
+  an out-of-range setting and a wrong drill answer. Detached operation is unverified.
 - There is no camera on the Legion Go, and the browser cannot read the controllers'
   motion sensors, so neither is used.
 

@@ -97,7 +97,7 @@ def check(page):
         ("Pressure", ["0.708 atm", "0.703 atm"]),
         ("Starting diameter", ["3.75 mm", "3.72 mm"]),
         ("NASA recorded", ["Burned all its fuel", "Visible flame went out"]),
-        ("Model chance of completion", ["25.6%", "25.7%"]),   # the per-fuel model (the earlier model gave 4.6% and 4.8%)
+        ("Model chance of completion", ["25.6%", "25.7%"]),
     ]:
         row = pair.get_by_role("row").filter(has=page.get_by_role("rowheader", name=label))
         expect(row.get_by_role("cell")).to_have_text(values)
@@ -127,6 +127,18 @@ def check_phone(page):
     page.keyboard.press("1")
     page.locator("#oxBtn").click()
     expect(page.locator("#oxClose")).to_be_in_viewport()
+    study = page.get_by_role("combobox", name="Investigation")
+    study.select_option(label="CFI-G, normal flames (PSI-159)")
+    expect(page.locator("#oxPick")).to_contain_text("Meeting both Moon Base thresholds: 20.")
+    page.get_by_role("button", name="3 With pressure").click()
+    chart = page.get_by_role("img", name="With pressure: oxygen versus pressure. Selected: CFI-G, normal flames")
+    expect(chart).to_be_visible()
+    assert chart.evaluate("(svg) => svg.viewBox.baseVal.width <= svg.parentElement.clientWidth + 1")
+    study.press("b")  # Native select type-ahead picks BASS-II.
+    expect(page.locator("#oxPick")).to_contain_text("The table gives no pressure.")
+    page.evaluate("window.pressPad(13)")
+    expect(study.locator("option:checked")).to_have_text("Saffire-II (PSI-99)")
+    expect(page.locator("#oxPick")).to_contain_text("Saffire-II [PSI-99]")
     page.locator("#oxClose").click()
     expect(page.locator("#ox")).to_be_hidden()
     expect(page.locator("#oxBtn")).to_be_focused()

@@ -3,10 +3,11 @@
 Everything in English. Deadline: Sunday Nov 15, 11:59 PM, team owner's local time
 (confirm on the team page). "Submit for Judging" is final.
 
-One thing is still TO ADD: the demo video link. On Nov 15 the page as it was before
-the redesign was tried on a real Lenovo Legion Go with the owner on the controller:
-controls, rendering, sound, rumble, Ember from the PC and from the handheld's own model.
-The redesigned page has not been tried on the handheld yet.
+The captioned demo was recorded in desktop Edge. On Nov 15 the owner tested the
+earlier dashboard's gamepad controls, wheel, sound and rumble on a Lenovo Legion Go.
+A separate screen check covered the per-fuel build at `f8374e5` at 1280×800.
+The newer evidence activities, shared views and redesigned controls were tested
+in desktop Edge with simulated gamepad input. [Handheld test record](../CLAUDE.md)
 
 ## Project name
 
@@ -28,10 +29,7 @@ support. Its optional assistant, Ember, uses Ollama on a configured machine. The
 core dashboard and evidence activities open offline.
 
 ## Link to project demo
-TO ADD: the public link to the demo video (30 seconds or less, English subtitles, no
-login). It must show the current build: heptane at the starting values reads 57 %, and
-99 % in Moon Base air. The desktop recording made for pull request 5 shows the earlier
-model (35 % and 90 %) and must not be used.
+[Watch the captioned desktop demo](https://github.com/jeerun/flame-in-freefall/blob/69c3424992b88d973510548c758df07db61dd935/docs/crew-console-demo.mp4)
 
 ## Link to final project
 The public GitHub repo. No login needed to view.
@@ -39,7 +37,7 @@ The public GitHub repo. No login needed to view.
 https://github.com/jeerun/flame-in-freefall
 
 Published browser copy without Ember: https://jeerun.github.io/flame-in-freefall/
-It is the `console/` folder of the repository, with the three evidence activities.
+It is the `console/` folder of the repository, the build the linked demo shows.
 
 ## Detailed project description
 What it does, how it works, what benefit it has, what tools and languages we used.
@@ -71,6 +69,8 @@ three closest real FLEX tests and shows how each one ended.
 **Compares cabin atmospheres.** The Oxygen map reads ambient or burner oxygen from
 nine PSI tables for FLEX, CFI, CFI-G, Flame Design, BASS-II, Saffire-I and Saffire-II.
 Users can switch from ranges to individual rows to oxygen plotted against pressure.
+An investigation selector keeps the same series selected across all three views.
+The phone layout fits the chart axes to the available width.
 Of 746 rows with measured ambient oxygen and pressure, 20 CFI-G normal-flame rows
 meet both brief thresholds (at least 30% oxygen and at most 10.2 psi). No FLEX row
 meets both. Seventeen FLEX rows meet the oxygen threshold at pressures above 10.2
@@ -122,6 +122,11 @@ burn time or an unrecorded endpoint for extinction or disruption prevents replay
 Zoom adds a grid, test numbers and contours for 25%, 50% and 75% modelled
 completion among clear outcomes at the current pressure and gas settings.
 
+**Reopen the same evidence.** A research link preserves the question and selected
+NASA investigation. A FLEX link preserves the fuel, five inputs, cabin preset and
+any selected test. On a local copy, a view code can be pasted into another copy
+of the dashboard. The receiving dashboard computes its own reading.
+
 **Plays like a handheld game.** It opens directly on NASA research and supports a gamepad,
 with sound effects made in the browser. The flame picture breathes
 faster as the burning rate rises. When the settings leave what NASA tested, the
@@ -166,9 +171,9 @@ application may transfer the file once connected.
 - Ember, the on-board AI, on every page. A language model (Gemma 4, 12 billion
   parameters) runs on the team's own PC with an RTX 5080. The optional two-server
   setup prefers the reachable PC and falls back to the server's own configured
-  model. This was tested with two instances on the PC, and on Nov 15 on the real
-  handheld with its own small model: it answered by itself in 4 to 15 seconds, and a
-  copy whose PC could not be reached answered alone. On the research page Ember answers
+  model. On the handheld's own server, the owner switched Ember from the PC to
+  the Legion Go and received a local answer. A second server on the handheld
+  answered with its configured peer unreachable. On the research page Ember answers
   questions such as "For a Moon Base cabin with about 30% oxygen at low pressure,
   which investigations matter most, and why?", "Compare BASS-II with BASS" or "What
   did this investigation measure, and with which instruments?" from the PSI text of
@@ -184,8 +189,9 @@ application may transfer the file once connected.
 - The predictions on the console page come from machine-learning models trained on
   NASA data.
 
-If the PC is switched off, the dashboard still opens as a plain file and everything
-except Ember works, fully offline.
+With the PC switched off, a local copy still runs the research, evidence activities,
+predictions and drill and can save the CSV on the device. Ember and sending a CSV
+to base require a reachable server.
 
 **How it works.**
 
@@ -198,17 +204,12 @@ except Ember works, fully offline.
 2. Models. Two deliberately small models, so every number can be explained: a
    logistic regression for "the flame went out before the fuel was gone" against "it
    burned until the fuel was gone", and a linear regression for the burning rate.
-   Inputs are only things known before ignition. Each fuel has its own slope for
-   every setting, because the tests show heptane and methanol respond differently:
-   carbon dioxide clearly pushes heptane flames toward going out and shows no such
-   effect for methanol. The strength of the logistic model's penalty is picked by
-   cross-validation inside the training rows.
-3. Export. Scripts write the fitted model, the in-scope tests, the research notes,
-   the oxygen and pressure of each test in nine tables and the selected evidence
-   rows as small JavaScript data files for offline use.
-4. Dashboard. One HTML page with its own style sheets and scripts, and no libraries,
-   reads them. It works with a gamepad, touch or keyboard, fits a 1280x680 screen and
-   reflows for a phone.
+   Inputs are settings known before ignition. Each fuel has its own slopes. The
+   outcome model selects penalty strength inside each outer training fold.
+3. Export. Scripts write the fitted model, in-scope tests, research notes, oxygen
+   map and selected evidence rows as JavaScript data files for offline use.
+4. Dashboard. One HTML file with no libraries reads them. It works with a gamepad,
+   touch or keyboard and fits a 1280x680 screen.
 5. Local AI. A small Python script on the PC serves the dashboard on the local
    network. For each question it picks the PSI records that share the most words with
    the question, adds the top of our own ranking for the need on screen, a one-line
@@ -237,8 +238,7 @@ except Ember works, fully offline.
   switched the console. A third check runs the page's own prediction code against
   the Python model on 820 inputs and finds the same numbers to within rounding
   (`docs/model-parity.md`).
-- No chance is shown below 1% or above 99%: 199 tests cannot support more certainty
-  than that.
+- The main reading displays estimates from 1% to 99%. This is a display rule.
 - Where resampling the tests does not settle which way a setting pushes for a fuel
   (pressure for both fuels; droplet size and carbon dioxide for methanol), the
   explanation says so on the line that leans on it.
@@ -256,33 +256,23 @@ except Ember works, fully offline.
 used row-level splits. Similar settings can appear in both training and evaluation.
 These scores describe performance within this FLEX dataset.
 
-- Flame outcome, 199 tests (172 went out, 27 burned until the fuel was gone):
-  AUC 0.90 (0.91 within heptane, 0.85 within methanol). Accuracy 0.915, against 0.864
-  for always answering "goes out". The two outcomes are lopsided, so the AUC is the
-  fairer number.
-- Read as a yes or no at 50%, the model finds 52% of the tests that burned to
-  completion and wrongly calls about 2% of those that went out. At a "watch" level of
-  30%, which the page marks with a banner, it flags 64% of the completions and about
-  8% of the tests that went out.
-- Burning rate, 252 tests: mean absolute error 0.045 mm²/s, R² 0.73. The measured
-  values spread about 0.14 mm²/s around their mean.
-- Keeping all tests with the same fuel and gas mix together in one fold gives almost
-  the same numbers (AUC 0.90, R² 0.72).
-- Do the percentages mean what they say? When the page says under 10%, 3% of those
-  tests burned to completion; at 10 to 30%, about one in five; at 30 to 65%, 33%; at
-  65% and above, 93%.
-- Against the model the console used before (one set of slopes for both fuels): AUC
-  0.81 to 0.90, within methanol 0.60 to 0.85, completions found at 50% from 22% to
-  52%, burning-rate R² 0.71 to 0.73. Of eight candidates tried, including gradient
-  boosting and a random forest, the per-fuel model has the best Brier score and log
-  loss, and is level with the best on AUC.
-- The gain holds when checked another way: with models built from separate code and
-  held out one gas mix or one test day at a time, AUC goes from 0.80 to 0.90, and the
-  per-fuel model is ahead in more than 99% of 4000 paired resamples of the tests.
-- An independent audit by a teammate of that earlier model, with a separately fitted
-  model on the same 199 tests (five-fold cross-validation over five seeds): mean
-  accuracy 88.8%, balanced accuracy 61.4%, and on average only 23.7% of the tests
-  that burned to completion found at 50% (heptane 19%, methanol 35%).
+- Of 199 clear outcomes, 172 were visible extinctions and 27 were completions.
+  AUC was 0.902 overall, 0.906 within heptane and 0.847 within methanol.
+  Accuracy was 0.915, compared with 0.864 for always predicting extinction.
+- At a 50% cutoff the model identified 52.4% of completions and called about 2%
+  of extinctions completions. At the 30% study threshold it identified 64.1% of
+  completions and also flagged 7.8% of extinctions.
+- On 252 tests, burning-rate MAE was 0.045 mm²/s and R² was 0.732. The measured
+  rates had a standard deviation of 0.138 mm²/s.
+- Keeping each fuel and gas mixture together in the same evaluation fold gave AUC
+  0.9005 and burning-rate R² 0.724 (`model/per_fuel/comparison.json`).
+- In row-held-out predictions, 2.6% of the rows assigned a completion chance below
+  10% completed. The share was 33% for predictions from 30% to below 65%, and 92.5%
+  at 65% or above. These are averages across repeated splits of the same rows.
+- The earlier pooled-slope model reached AUC 0.813. Its independent five-seed
+  audit found 23.7% completion recall at 50% and 61.4% balanced accuracy.
+  The current per-fuel classifier had the lowest Brier score and log loss of the
+  eight candidates in the row-split comparison.
 
 **Limits we know about.**
 
@@ -291,11 +281,10 @@ These scores describe performance within this FLEX dataset.
   recorded burn lengths and gas concentrations alongside those atmosphere records.
 - The Mars base setting is an assumption, as the page says. Ignite shows the model's
   odds, not physics.
-- On Nov 15 the page as it was before the redesign was tried on the real Legion Go:
-  every stick and button the code uses, the screen, sound, rumble and the wheel, and
-  the handheld's own small model, which runs on its CPU and answers in 4 to 15 seconds.
-  The redesigned page has been checked in a desktop browser with a simulated gamepad
-  and not yet on the handheld.
+- The physical Legion Go reached the PC over Tailscale. After a controller CSV
+  export, the PC’s `/tests.csv` returned 252 rows. The PC's destination folder
+  was not opened. The team did not test a direct Wi-Fi address or stop the PC
+  mid-session to check the disconnect banner.
 - The relevance ranks are an AI model's reading of NASA's descriptions, on a 0 to 3
   scale. They are a starting point, not a NASA rating.
 - In Fire drill the model was trained on the tests it is scored on, so its score there
@@ -309,18 +298,15 @@ These scores describe performance within this FLEX dataset.
 - The star map shows oxygen and droplet size only. Two stars that sit close together
   can still differ in pressure, carbon dioxide or helium, which is why the "closest
   three" lines do not always point at the nearest-looking stars.
-- Only 8 of 124 methanol tests burned to completion. The tests do not settle which
-  way droplet size and carbon dioxide push for methanol: refits on resampled tests
-  disagree on the sign. The page says so where it matters.
-- Read as a yes or no at 50%, the model still misses about half of the tests that
-  burned to completion. A low percentage means "less likely", not "it will go out".
-- Pressure sits at only two levels, about 0.7 and 1.0 atm. Its effect is not settled
-  for either fuel.
-- The model was chosen and scored on the same 199 and 252 tests. There is no separate
-  test set, and picking the best of eight candidates flatters the winner a little.
-- For heptane in Moon Base air the model says 99.9% and the page shows 99%, but the
-  three nearest real tests ended in a disruption, with no clear outcome. The page
-  marks that reading amber and says so.
+- Only 8 of the 124 clear methanol outcomes completed. Bootstrap refits disagree
+  on the direction of the methanol diameter and CO₂ effects.
+- At a 50% cutoff the model misses about half the recorded completions.
+- In-scope pressures cluster near 0.7 and 1.0 atm. The direction of the pressure
+  effect is unstable for both fuels.
+- We selected the model family and evaluated it on the same FLEX dataset. No
+  independent flight or external test set was used.
+- At the default heptane droplet size the Moon Base preset gives a very high
+  fitted completion chance. All three nearby measured outcomes were disruptions.
 - "Goes out" means the visible flame. FLEX found that fuel can keep reacting afterwards
   in a cool flame, which the page does not model.
 - The PSI-69 page says the investigation used both space-based data and ground-based
@@ -342,7 +328,7 @@ server. HTML, CSS and plain JavaScript with the browser Gamepad API for the
 dashboard, including the drawings (inline SVG), the sound effects (Web Audio) and the
 voice (the browser's speech synthesis). Node.js for the test that runs the page's
 prediction code outside a browser. Ollama running the open Gemma 4 12B model on
-an NVIDIA RTX 5080 for Ember.
+an NVIDIA RTX 5080 for Ember. The captioned demo was captured in desktop Edge.
 
 ## NASA data
 Copy from docs/sources.md.
@@ -397,8 +383,8 @@ Where and how we used AI. Copy from the README and add anything new.
 Inside the product:
 
 - Ember, the on-board assistant, is Gemma 4 12B, an open language model from Google,
-  run locally with Ollama on the team's own RTX 5080 PC. A smaller Gemma 4 model
-  on the handheld is the fallback (tried on the real device on Nov 15). Ember adds a
+  run locally with Ollama on the team's own RTX 5080 PC. The smaller
+  `gemma4:e2b` also answered on the Legion Go's CPU. Ember adds a
   one-sentence comment after each Fire drill round, from the NASA PSI records, the
   counts we made from NASA's test tables and the numbers on screen, which our server
   puts in its prompt. The server instructs it to cite PSI identifiers and the
@@ -418,36 +404,35 @@ While building it we used Claude (Anthropic), an AI assistant, for:
 - writing the dashboard (`console/index.html`) and the local server (`server/serve.py`);
 - writing the data-cleaning and training scripts, then reviewing them and re-running
   them to confirm the numbers;
-- (Claude, used by a team member) the per-fuel model the console now uses: the
-  training script, the comparison of eight candidates, the page patch, the tests and
-  the write-up, re-run and independently checked on the team's PC before the console
-  was switched;
-- (OpenAI ChatGPT/Codex, used by a team member) writing the summary-first
-  explanation panel and the baseline comparison, which were then reviewed, fitted to
-  the screen and tested with Claude;
+- implementing the per-fuel models, comparison of eight outcome candidates,
+  dashboard changes, tests and write-up with a team member;
 - reading the PSI-69 table from the NASA page into a file (checked page by page with
   SHA-256 hashes), downloading the other PSI test tables and writing the script that
   reads them, reading the official challenge page and finding the NASA sources
   listed in `docs/sources.md`;
 - drafting the documentation and this form text.
 
-OpenAI Codex also helped implement and test the three evidence activities and the
-responsive dashboard layout, revise evidence labels, and fix controls and local server
-handling. That work was then merged with the per-fuel model and tested again with
-Claude. The measurements in these activities come directly from the cited PSI tables.
+OpenAI ChatGPT/Codex helped write the summary-first explanation and baseline
+comparison, which the team reviewed and tested with Claude. Codex also helped
+implement and test the three evidence activities and responsive dashboard layout,
+revise evidence labels, fix controls and local server handling, and capture and caption the desktop demo.
+The video shows the running dashboard. The measurements in these activities
+come directly from the cited PSI tables.
 
-Three pieces were contributed by a teammate outside this workflow: the independent
-audit (`model/science_audit.py`, `docs/scientific-validation.md`), the check that
+Two pieces were contributed by a teammate outside this workflow: the independent
+audit (`model/science_audit.py`, `docs/scientific-validation.md`) and the check that
 the page and the Python model give the same numbers (`model/check_parity.py`,
-`docs/model-parity.md`) and the browser tests (`tests/e2e/console_e2e.cjs`,
-`docs/console-e2e.md`). We could not confirm before submitting whether AI tools
+`docs/model-parity.md`). We could not confirm before submitting whether AI tools
 helped write them, so we list them here to be safe: treat that code and text as
 possibly AI-assisted. Their results do not rest on that: the audit was re-run on the
 team's PC and reproduced exactly, and its five tests pass.
 
 ## Model accuracy (for the description)
 
-- Held-out classification on 199 clear outcomes: AUC 0.90, accuracy 0.915 against 0.864 for always predicting extinction, and 52% of the completions found at a 50% cutoff (5-fold cross-validation repeated 20 times).
-- Held-out burning-rate estimates on 252 tests: MAE 0.045 mm²/s, R² 0.73.
-- Tests used: 252 of the 274 in the table (199 for the flame outcome, 252 for the burning rate).
-- The earlier one-slope model, for comparison: AUC 0.81 and 22% of the completions found at 50%. A separate five-seed audit of it gave balanced accuracy 61.4% and completion recall 23.7%.
+- Row-held-out classification on 199 clear FLEX outcomes gave AUC 0.902, accuracy
+  0.915 and completion recall 52.4% at a 50% cutoff. Always predicting visible
+  extinction would give accuracy 0.864.
+- Burning-rate prediction on 252 rows gave mean absolute error 0.045 mm²/s and
+  R² 0.732. Both evaluations used five folds repeated 20 times.
+- The old pooled model's separate five-seed audit gave completion recall 23.7%
+  and balanced accuracy 61.4%.
