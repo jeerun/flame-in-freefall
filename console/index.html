@@ -124,7 +124,7 @@
     background: transparent; cursor: pointer; font-size: 0.85rem; color: var(--ink-2);
   }
   .presets button[aria-pressed=true] { background: var(--flame); border-color: var(--flame); color: #0b1020; font-weight: 600; }
-  .legend { margin-top: 0.5rem; font-size: 0.8rem; color: var(--ink-3); display: flex; align-items: center; gap: 0.45rem; }
+  .legend { margin-top: 0.5rem; font-size: 0.8rem; color: var(--ink-3); display: flex; align-items: center; gap: 0.45rem; text-shadow: 0 0 3px var(--bg), 0 0 6px var(--bg); }
   .legend i { display: inline-block; width: 1.6rem; height: 0.45rem; border-radius: 999px; background: var(--flame-dim); }
 
   /* readout */
@@ -137,6 +137,23 @@
   .maphead > span:first-child { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .maplegend { display: flex; gap: 0.7rem; color: var(--ink-3); white-space: nowrap; flex: none; }
   .maplegend span { display: inline-flex; align-items: center; gap: 0.2rem; }
+  .mapbtn, .mapzoom button {
+    flex: none; border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 0.05rem 0.6rem; cursor: pointer;
+    font-size: 0.78rem; color: var(--ink-2); white-space: nowrap;
+  }
+  .mapzoom { display: none; gap: 0.3rem; flex: none; }
+  .mapzoom button[aria-pressed=true] { background: var(--flame); border-color: var(--flame); color: #0b1020; font-weight: 600; }
+  .mapfine { margin: 0; font-size: 0.82rem; color: var(--ink-3); }
+  /* zoomed: the same panel, lifted over the page */
+  .map.big {
+    position: fixed; z-index: 5; inset: 3.5rem 1.2rem 0.9rem; grid-template-rows: auto minmax(0, 1fr) auto; gap: 0.4rem; padding: 0.7rem 1.1rem;
+    background: #0a1124; border: 1px solid var(--flame); box-shadow: 0 0 0 100vmax rgba(4, 7, 18, 0.9);
+  }
+  .map.big .maphead { font-size: 0.92rem; flex-wrap: wrap; justify-content: flex-start; row-gap: 0.3rem; }
+  .map.big .maphead > span:first-child { flex: 1 1 100%; color: var(--ink); }
+  .map.big .mapzoom { margin-left: auto; }
+  .map.big .mapzoom { display: inline-flex; }
+  .map.big .mapbtn, .map.big .mapzoom button { font-size: 0.85rem; padding: 0.2rem 0.75rem; }
   .maplegend svg { width: 1.1rem; height: 1.1rem; }
   #map, #orbit { width: 100%; height: 100%; min-height: 0; display: block; }
   #map text, #orbit text { font-family: inherit; fill: var(--ink-3); }
@@ -259,7 +276,8 @@
   .rank .nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .rank .nm small { color: var(--ink-3); margin-left: 0.5rem; font-size: 0.8rem; }
   .fpic { width: 0.9rem; height: 0.9rem; margin-right: 0.3rem; vertical-align: -0.12rem; }
-  .rankhead { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  .rankhead { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+  .rankhead h2 { margin-right: auto; }
   .rankhead button {
     display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.15rem 0.6rem; border-radius: 999px;
     border: 1px solid var(--line); background: transparent; cursor: pointer; font-size: 0.82rem; color: var(--ink-2);
@@ -370,6 +388,18 @@
   .simend { font-size: 1.1rem; font-weight: 600; min-height: 2.8rem; }
   .simtally { font-size: 0.92rem; color: var(--ink-2); }
   .sim .fine { margin: 0; font-size: 0.8rem; color: var(--ink-3); }
+  /* ---------- oxygen map ---------- */
+  .ox .box { grid-template-rows: auto auto minmax(0, 1fr) auto auto; }
+  .ox .levels { display: flex; gap: 0.3rem; align-items: center; }
+  .ox .levels button {
+    padding: 0.25rem 0.75rem; border-radius: 999px; border: 1px solid var(--line); background: transparent; cursor: pointer;
+    font-size: 0.85rem; color: var(--ink-2); white-space: nowrap;
+  }
+  .ox .levels button[aria-pressed=true] { background: var(--flame); border-color: var(--flame); color: #0b1020; font-weight: 600; }
+  .ox .headline { margin: 0; font-size: 1.02rem; font-weight: 600; }
+  #oxSvg { width: 100%; height: 100%; min-height: 0; display: block; background: var(--panel); border-radius: 0.5rem; }
+  #oxSvg text { font-family: inherit; fill: var(--ink-2); }
+  .ox .pick { margin: 0; font-size: 0.92rem; min-height: 2.6rem; }
   .csv + .csv { margin-left: 0; }
   .csv { white-space: nowrap; margin-left: auto; padding: 0.15rem 0.6rem; border-radius: 999px; border: 1px solid var(--line); background: transparent; cursor: pointer; font-size: 0.8rem; color: var(--ink-2); }
 
@@ -540,8 +570,11 @@
       <div class="maphead">
         <span id="mapTitle"></span>
         <span class="maplegend" id="mapLegend"></span>
+        <span class="mapzoom" id="mapZoom" aria-label="Level of detail"></span>
+        <button type="button" class="mapbtn" id="mapBigBtn" title="Key Z, or the View button on the controller"><span id="mapBigText">Zoom in</span></button>
       </div>
       <svg id="map" role="img" aria-label="Star map of the real FLEX tests with this fuel: oxygen across, droplet size up"></svg>
+      <p class="mapfine" id="mapFine" hidden></p>
     </div>
 
     <div class="sheet" id="sheet" hidden role="dialog" aria-labelledby="sheetTitle">
@@ -560,6 +593,7 @@
     <div class="needs" id="needs"></div>
     <div class="rankhead">
       <h2 id="hRank" style="margin:0"></h2>
+      <button type="button" id="oxBtn" hidden title="Key O"><kbd>Y</kbd> Oxygen map</button>
       <button type="button" id="orbitBtn"><kbd>X</kbd> <span id="orbitBtnText">Orbit view</span></button>
     </div>
     <div class="rank" id="rank"></div>
@@ -631,6 +665,7 @@
   <span><kbd class="wide">←→</kbd> Change the question</span>
   <span><kbd class="wide">↑↓</kbd> Pick an investigation</span>
   <span><kbd>X</kbd> Orbit view</span>
+  <span class="hintOx" hidden><kbd>Y</kbd> Oxygen map</span>
   <span><kbd class="wide">LB</kbd><kbd class="wide">RB</kbd> Other page</span>
   <span class="hintAI" hidden><kbd class="wide">☰</kbd> Ask Ember (AI)</span>
   <span>Keys: arrows, 1 to 3, M sound</span>
@@ -658,6 +693,21 @@
       </div>
     </div>
     <p class="fine">A run of the model, not of physics. The droplet shrinks along the d-squared law at the burning rate the model predicts. Whether this run burns all its fuel is drawn at random with the model's odds, and when it goes out, the size it stops at is borrowed from a real FLEX test close to these settings. The flame, igniter wires, soot shell and the faint haze after a heptane flame goes out (FLEX found that a cool flame can carry on there) are drawn to look like the experiment. They are illustration, not footage and not modelled.</p>
+  </div>
+</div>
+
+<div class="sim ox" id="ox" hidden role="dialog" aria-labelledby="oxTitle">
+  <div class="box">
+    <div class="ahead">
+      <h3 id="oxTitle">Oxygen map</h3>
+      <span class="who">What air did NASA's microgravity fire tests burn in?</span>
+      <div class="levels" id="oxLevels" aria-label="Level of detail"><kbd class="wide">←→</kbd></div>
+      <button type="button" class="close" id="oxClose"><kbd>B</kbd> Close</button>
+    </div>
+    <p class="headline" id="oxHead" aria-live="polite"></p>
+    <svg id="oxSvg" role="img" aria-label="Oxygen level of each test, by investigation"></svg>
+    <p class="pick" id="oxPick" aria-live="polite"></p>
+    <p class="fine" id="oxFine"></p>
   </div>
 </div>
 
@@ -721,6 +771,7 @@ window.FLAME_MODEL = {
 </script>
 <script src="model.js" onerror="this.remove()"></script>
 <script src="research.js" onerror="this.remove()"></script>
+<script src="tables.js" onerror="this.remove()"></script>
 
 <script>
 (function () {
@@ -795,8 +846,10 @@ window.FLAME_MODEL = {
   // Cabin atmospheres to jump to with X. The Moon Base case is from the 2026 Space Apps challenge brief:
   // oxygen "30% or greater" at "10.2 psi or less" (10.2 psi = 0.69 atm). Suppressant gases go to zero.
   var PRESETS = (byKey.o2 && byKey.p) ? [
-    { key: "earth", label: "Earth-like air", values: { o2: 21, p: 1.0, co2: 0, he: 0 } },
-    { key: "moon", label: "Moon Base (expected)", values: { o2: 30, p: 0.694, co2: 0, he: 0 } }   // 10.2 / 14.696
+    { key: "earth", label: "Earth-like air", chip: "Earth air", values: { o2: 21, p: 1.0, co2: 0, he: 0 } },
+    { key: "moon", label: "Moon Base (expected)", chip: "Moon Base", values: { o2: 30, p: 0.694, co2: 0, he: 0 } },  // 10.2 / 14.696
+    // The brief names bases on Mars too but gives no cabin air for them, so the Moon Base air is assumed and said to be assumed.
+    { key: "mars", label: "Mars base (assumed)", chip: "Mars (assumed)", values: { o2: 30, p: 0.694, co2: 0, he: 0 } }
   ] : [];
 
   /* ---------- build rows ---------- */
@@ -850,7 +903,7 @@ window.FLAME_MODEL = {
     presetBox.hidden = false;
     presetBox.appendChild(el("kbd", "", "X"));
     PRESETS.forEach(function (ps) {
-      var b = el("button", "", ps.label); b.type = "button"; b.dataset.preset = ps.key;
+      var b = el("button", "", ps.chip); b.type = "button"; b.dataset.preset = ps.key; b.title = ps.label; b.style.whiteSpace = "nowrap";
       b.addEventListener("click", function () { applyPreset(ps); });
       presetBox.appendChild(b);
     });
@@ -859,10 +912,12 @@ window.FLAME_MODEL = {
     return Object.keys(ps.values).every(function (k) { return !byKey[k] || Math.abs(state.values[k] - ps.values[k]) < 1e-6; });
   }
   function activePreset() {
-    for (var i = 0; i < PRESETS.length; i++) if (presetOn(PRESETS[i])) return PRESETS[i];
-    return null;
+    var hits = PRESETS.filter(presetOn);             // Moon and Mars share one air: the place last chosen decides
+    for (var i = 0; i < hits.length; i++) if (hits[i].key === state.place) return hits[i];
+    return hits[0] || null;
   }
   function applyPreset(ps) {
+    state.place = ps.key;
     Object.keys(ps.values).forEach(function (k) { if (byKey[k]) state.values[k] = ps.values[k]; });
     sfx.preset();
     render();
@@ -1104,7 +1159,8 @@ window.FLAME_MODEL = {
       li((n === 0 ? "Biggest factor: " : "") + what + " " + dir + ".");
     });
     li("Burning rate " + r.K.toFixed(2) + " mm²/s means the droplet's diameter squared shrinks by that much every second.");
-    if (ap && ap.key === "moon") li("Cabin air is the Moon Base case from the challenge brief: oxygen 30 % or more at 10.2 psi (0.69 atm) or less.");    if (rc.near) {
+    if (ap && ap.key === "moon") li("Cabin air is the Moon Base case from the challenge brief: oxygen 30 % or more at 10.2 psi (0.69 atm) or less.");
+    if (ap && ap.key === "mars") li("Cabin air for a Mars base is an assumption: the challenge brief gives numbers only for the Moon Base and pressurized rovers, so the same air is used here. NASA has no fire tests at Mars gravity yet.");    if (rc.near) {
       var nb = rc.near.near;
       var ranked = el("li", "", "Closest real FLEX tests with this fuel, ranked (settings, outcome, measured burning rate):");
       var ol = el("ol");
@@ -1156,6 +1212,7 @@ window.FLAME_MODEL = {
     render();
   }
   function toggleSheet(open) {
+    if (MAP.big && open !== false) mapBig(false);
     var was = state.sheet;
     state.sheet = open == null ? !state.sheet : open;
     if (state.sheet !== was) { if (state.sheet) sfx.open(); else sfx.close(); }
@@ -1213,7 +1270,8 @@ window.FLAME_MODEL = {
     });
     box.appendChild(el("span", "", "bigger = burned faster"));
   })();
-  var MAP = { stars: [], sel: null, plot: null };  // what the last drawing put where, and the star picked with the right stick
+  var MAP = { stars: [], sel: null, plot: null, big: false, level: Math.min(3, Math.max(1, +load("maplevel", 2) || 2)) };
+  // stars, plot: what the last drawing put where. sel: the star picked with the right stick. big, level: the zoomed view.
   function drawMap(rc) {
     var box = $("mapBox"), svg = $("map");
     if (!hasTests || !byKey.o2 || !byKey.d0) { box.hidden = true; return; }
@@ -1224,21 +1282,47 @@ window.FLAME_MODEL = {
     if (W < 220 || H < 60) return;                 // no room: leave the panel empty rather than squeeze it
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
     // The plot covers the tested range plus a small margin, so the stars use the space.
-    var fx = byKey.o2, fy = byKey.d0, L = 26, Rt = 10, T = 6, B = 16;
+    var big = MAP.big, lvl = big ? MAP.level : 1, fs = big ? 12.5 : 10;
+    var fx = byKey.o2, fy = byKey.d0, L = big ? 44 : 26, Rt = big ? 18 : 10, T = big ? 14 : 6, B = big ? 26 : 16;
     var x0 = fx.data_min - 2, x1 = fx.data_max + 2, y0 = fy.data_min - 0.35, y1 = fy.data_max + 0.35;
     var X = function (v) { return L + (Math.min(x1, Math.max(x0, v)) - x0) / (x1 - x0) * (W - L - Rt); };
     var Y = function (v) { return H - B - (Math.min(y1, Math.max(y0, v)) - y0) / (y1 - y0) * (H - T - B); };
     MAP.plot = { cx: (L + W - Rt) / 2, cy: (T + H - B) / 2, w: W - L - Rt, h: H - T - B };
     svg.appendChild(svgEl("rect", { x: X(fx.data_min), y: Y(fy.data_max), width: X(fx.data_max) - X(fx.data_min),
       height: Y(fy.data_min) - Y(fy.data_max), rx: 4, fill: "rgba(125,184,255,0.07)", stroke: "#2b3b66" }));
-    for (var ox = Math.ceil(x0 / 5) * 5; ox <= x1; ox += 5) {
-      var lastX = ox + 5 > x1;
-      svg.appendChild(svgEl("text", { x: X(ox), y: H - 3, "text-anchor": lastX ? "end" : "middle", "font-size": 10 }, ox + (lastX ? " % oxygen" : "")));
+    var stepX = lvl >= 2 ? 1 : 5, stepY = lvl >= 2 ? 0.5 : 1;
+    for (var ox = Math.ceil(x0 / stepX) * stepX; ox <= x1; ox += stepX) {
+      var lastX = ox + stepX > x1;
+      if (lvl >= 2) svg.appendChild(svgEl("line", { x1: X(ox), y1: T, x2: X(ox), y2: H - B, stroke: "#f1f4ff", "stroke-opacity": ox % 5 ? 0.05 : 0.13 }));
+      svg.appendChild(svgEl("text", { x: X(ox), y: H - (big ? 8 : 3), "text-anchor": lastX && lvl < 2 ? "end" : "middle", "font-size": fs }, ox + (lastX && lvl < 2 ? " % oxygen" : "")));
     }
-    for (var dy = Math.ceil(y0); dy <= y1; dy += 1) {
-      svg.appendChild(svgEl("text", { x: L - 6, y: Y(dy) + 3.5, "text-anchor": "end", "font-size": 10 }, String(dy)));
+    if (lvl >= 2) svg.appendChild(svgEl("text", { x: W - Rt - 5, y: H - B - 7, "text-anchor": "end", "font-size": fs }, "% oxygen"));
+    for (var dy = Math.ceil(y0 / stepY) * stepY; dy <= y1; dy += stepY) {
+      if (lvl >= 2) svg.appendChild(svgEl("line", { x1: L, y1: Y(dy), x2: W - Rt, y2: Y(dy), stroke: "#f1f4ff", "stroke-opacity": dy % 1 ? 0.05 : 0.13 }));
+      svg.appendChild(svgEl("text", { x: L - 6, y: Y(dy) + 3.5, "text-anchor": "end", "font-size": fs }, String(dy)));
     }
-    svg.appendChild(svgEl("text", { x: L + 4, y: T + 9, "font-size": 10 }, "mm droplet"));
+    svg.appendChild(svgEl("text", { x: L + 4, y: T + (big ? 12 : 9), "font-size": fs }, "mm droplet"));
+    if (lvl >= 3 && M.extinction && M.extinction.coef && M.extinction.coef.o2) {
+      // Where the model puts the chance of burning all the fuel at 25, 50 and 75 %, with the other settings as they are
+      // now. The model is a straight-line formula, so each of these is a straight line across the map.
+      var bo = M.extinction.coef.o2, bd = M.extinction.coef.d0 || 0, z0 = linear(M.extinction, state.fuel, state.values);
+      var Xr = function (v) { return L + (v - x0) / (x1 - x0) * (W - L - Rt); };
+      var clip = svgEl("clipPath", { id: "mapClip" });
+      clip.appendChild(svgEl("rect", { x: L, y: T, width: W - L - Rt, height: H - T - B }));
+      svg.appendChild(clip);
+      [0.25, 0.5, 0.75].forEach(function (c) {
+        var zc = Math.log((1 - c) / c);              // the formula gives the chance of going out, which is 1 - c
+        var at = function (d) { return state.values.o2 + (zc - z0 - bd * (d - state.values.d0)) / bo; };
+        svg.appendChild(svgEl("line", { x1: Xr(at(y0)), y1: Y(y0), x2: Xr(at(y1)), y2: Y(y1), stroke: "#7db8ff", "stroke-width": c === 0.5 ? 2 : 1.2,
+          "stroke-dasharray": "7 5", "stroke-opacity": 0.85, "clip-path": "url(#mapClip)" }));
+        for (var d = y1 - 0.12 * (y1 - y0); d > y0; d -= 0.25) {
+          if (at(d) > x0 + 1 && at(d) < x1 - 2.5) {
+            svg.appendChild(svgEl("text", { x: Xr(at(d)) + 5, y: Y(d) + 4, "font-size": 12, style: "fill:#7db8ff;paint-order:stroke;stroke:#0a1124;stroke-width:3px" }, "model " + Math.round(c * 100) + " %"));
+            break;
+          }
+        }
+      });
+    }
 
     var ux = X(state.values.o2), uy = Y(state.values.d0), top = rc.near ? rc.near.top : [];
     top.forEach(function (c) {
@@ -1249,7 +1333,8 @@ window.FLAME_MODEL = {
         var known = !!OUT_COLOR[t[8]];
         if (t[2] !== state.fuel || (known ? t[8] !== end : end !== "Disruption")) return;
         var cx = X(t[3]), cy = Y(t[7]), star;
-        star = starMark(cx, cy, t);
+        star = starMark(cx, cy, t, big ? 1.35 : 1);
+        if (lvl >= 2) star.appendChild(svgEl("text", { x: cx + (big ? 9 : 6), y: cy - (big ? 7 : 5), "font-size": 9.5, style: "fill:var(--ink-3)" }, String(t[0])));
         star.appendChild(svgEl("title", {}, "FLEX test " + t[0] + ": " + testSettings(t) + ". " + testEnd(t)));
         star.addEventListener("click", function () { selectStar(t); });
         svg.appendChild(star);
@@ -1269,8 +1354,32 @@ window.FLAME_MODEL = {
       title = MAP.stars.length + " real " + fuelLabel().toLowerCase() + " tests, one star each. Lines: your three closest. Right stick picks a star.";
     }
     $("mapTitle").textContent = title; $("mapTitle").title = title;
-    $("mapLegend").hidden = !!s;                   // the picked star's story takes the whole line
+    $("mapLegend").hidden = !!s && !big;           // in the small map the picked star's story takes the whole line
+    if (big) {
+      Array.prototype.forEach.call($("mapZoom").querySelectorAll("button"), function (bt, i) { bt.setAttribute("aria-pressed", String(i + 1 === lvl)); });
+      $("mapFine").textContent = "Up and down or the right stick picks a star, RT replays it, R3 moves the settings onto it, X or left and right changes the detail, B closes. "
+        + (lvl >= 3 ? "Dashed lines: where this dashboard's model puts the chance of burning all the fuel at 25, 50 and 75 %, for the pressure, carbon dioxide and helium set now. They are the model's lines, not NASA's. "
+          : lvl === 2 ? "The small numbers are FLEX test numbers. " : "")
+        + "Stars at the same oxygen and size sit on top of each other.";
+    }
   }
+  function mapBig(on) {
+    var box = $("mapBox");
+    on = on == null ? !MAP.big : !!on;
+    if (on === MAP.big || (on && (box.hidden || view.page !== "console" || !last))) return;
+    if (on && state.sheet) toggleSheet(false);
+    MAP.big = on; box.classList.toggle("big", on); $("mapFine").hidden = !on; $("mapBigText").textContent = on ? "Close" : "Zoom in";
+    if (on) sfx.open(); else sfx.close();
+    render();
+  }
+  function mapLevel(n) { MAP.level = Math.min(3, Math.max(1, n)); save("maplevel", MAP.level); sfx.preset(); render(); }
+  ["Stars", "Grid and test numbers", "Model lines"].forEach(function (name, i) {
+    var bt = el("button", "", (i + 1) + "  " + name); bt.type = "button";
+    bt.addEventListener("click", function () { mapLevel(i + 1); });
+    $("mapZoom").appendChild(bt);
+  });
+  $("mapBigBtn").addEventListener("click", function () { mapBig(); });
+  window.addEventListener("resize", function () { if (MAP.big) render(); });
   function selectStar(t) {
     if (MAP.sel === t) return;
     MAP.sel = t; sfx.move(); render();
@@ -1352,6 +1461,7 @@ window.FLAME_MODEL = {
     return true;
   }
   function replayStar() {
+    mapBig(false);                                 // the replay plays in the flame picture, so step out of the zoomed map
     var t = starOrClosest();
     if (t && !replayTest(t, $("flame").parentNode, $("stageCap"), false)) {
       notify("FLEX test " + t[0] + " cannot be replayed: NASA's record has no end diameter for it.", "info");
@@ -1871,6 +1981,7 @@ window.FLAME_MODEL = {
   }
   function openSim() {
     if (view.page !== "console" || SIM.open || !last) return;
+    mapBig(false);
     SIM.open = true; $("sim").hidden = false;
     simStart();
   }
@@ -1882,6 +1993,163 @@ window.FLAME_MODEL = {
   $("simClose").addEventListener("click", closeSim);
   $("simAgain").addEventListener("click", simStart);
 
+  /* ---------- oxygen map: what air did each investigation's tests burn in? ---------- */
+  // One mark per row of each investigation's Experimental Table on NASA PSI (console/tables.js, built by
+  // data/clean/build_tables.py). Three levels of detail: the range each investigation covered, every test, and
+  // every test against pressure, with the Moon Base air from the challenge brief marked.
+  var T = window.FLAME_TABLES || null;
+  var OX = { open: false, level: Math.min(3, Math.max(1, +load("oxlevel", 2) || 2)), sel: 0, stats: [] };
+  var OX_LEVELS = ["Ranges", "Every test", "With pressure"], OX_WARM = "#ff9d5c", OX_COOL = "#8a9bc4";
+  if (T) OX.stats = T.rows.map(function (row) {
+    var m = T.meta, o = row.pts.map(function (p) { return p[0]; }), ps = row.pts.filter(function (p) { return p[1] != null; });
+    var pv = ps.map(function (p) { return p[1]; }), amb = row.oxygen_is === "ambient";
+    return { n: row.pts.length, lo: Math.min.apply(null, o), hi: Math.max.apply(null, o), np: ps.length,
+      plo: pv.length ? Math.min.apply(null, pv) : null, phi: pv.length ? Math.max.apply(null, pv) : null,
+      rich: row.pts.filter(function (p) { return p[0] >= m.moon_o2_pct; }).length,
+      zone: amb ? ps.filter(function (p) { return p[0] >= m.moon_o2_pct && p[1] <= m.moon_atm + 1e-9; }).length : 0,
+      near: amb ? ps.filter(function (p) { return p[0] >= m.moon_o2_pct && p[1] > m.moon_atm + 1e-9 && p[1] <= m.near_atm + 1e-9; }).length : 0 };
+  });
+  function oxNum(v) { return (Math.round(v * 10) / 10).toString(); }
+  function oxDraw() {
+    var svg = $("oxSvg"), box = svg.getBoundingClientRect(), W = Math.max(640, Math.round(box.width)), H = Math.max(240, Math.round(box.height));
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var m = T.meta, rows = T.rows, n = rows.length, three = OX.level === 3;
+    var L = 218, top = 26, bot = 36, pw = W - L - 22, ph = H - top - bot, x0 = 10, x1 = three ? 100 : 90, rh = ph / n;
+    var X = function (o) { return L + (o - x0) / (x1 - x0) * pw; };
+    var Y = function (p) { return top + (1 - Math.log(p / 0.25) / Math.log(6 / 0.25)) * ph; };
+    var add = function (tag, attrs, text) { var e = svgEl(tag, attrs, text); svg.appendChild(e); return e; };
+    var tip = function (node, text) { node.appendChild(svgEl("title", {}, text)); return node; };
+
+    // Moon Base air (challenge brief): 30 % oxygen or more, and in the pressure view 10.2 psi or less
+    var zoneTop = three ? Y(m.moon_atm) : top;
+    add("rect", { x: X(m.moon_o2_pct), y: zoneTop, width: X(x1) - X(m.moon_o2_pct), height: top + ph - zoneTop, fill: "rgba(255,157,92,0.10)" });
+    add("line", { x1: X(m.moon_o2_pct), y1: zoneTop, x2: X(m.moon_o2_pct), y2: top + ph, stroke: OX_WARM, "stroke-width": 1.2, "stroke-dasharray": "5 4" });
+    if (three) add("line", { x1: X(m.moon_o2_pct), y1: zoneTop, x2: X(x1), y2: zoneTop, stroke: OX_WARM, "stroke-width": 1.2, "stroke-dasharray": "5 4" });
+    add("text", { x: X(m.moon_o2_pct) + 6, y: three ? top + ph - 8 : top - 8, "font-size": 12, style: "fill:" + OX_WARM },
+      three ? "Moon Base air: 30 % oxygen or more at 10.2 psi or less" : "Moon Base air: 30 % oxygen or more");
+    // Earth air
+    add("line", { x1: X(21), y1: top, x2: X(21), y2: top + ph, stroke: "rgba(200,215,245,0.45)", "stroke-width": 1, "stroke-dasharray": "2 4" });
+    add("text", { x: X(21) - 5, y: top - 8, "font-size": 12, "text-anchor": "end" }, "Earth air, 21 %");
+    // oxygen axis
+    for (var t = 10; t <= x1; t += 10) {
+      add("line", { x1: X(t), y1: top + ph, x2: X(t), y2: top + ph + 4, stroke: "rgba(200,215,245,0.5)" });
+      add("text", { x: X(t), y: top + ph + 17, "font-size": 12, "text-anchor": "middle" }, t + (t === x1 ? " %" : ""));
+    }
+    add("line", { x1: L, y1: top + ph, x2: L + pw, y2: top + ph, stroke: "rgba(200,215,245,0.35)" });
+    add("text", { x: L + pw / 2, y: H - 4, "font-size": 12, "text-anchor": "middle" }, "oxygen, % of the gas");
+
+    // the list of investigations: axis labels for levels 1 and 2, a legend to pick from for level 3
+    rows.forEach(function (row, i) {
+      var cy = top + (i + 0.5) * rh, on = i === OX.sel, st = OX.stats[i], faint = three && !st.np;
+      if (on) add("rect", { x: 4, y: cy - rh / 2 + 1, width: three ? L - 8 : W - 8, height: rh - 2, rx: 5, fill: "rgba(125,184,255,0.13)" });
+      if (i && row.oxygen_is !== rows[i - 1].oxygen_is) add("line", { x1: 8, y1: cy - rh / 2, x2: three ? L - 8 : W - 8, y2: cy - rh / 2, stroke: "rgba(200,215,245,0.25)" });
+      var label = add("text", { x: L - 12, y: cy + 1, "font-size": 12.5, "text-anchor": "end", "dominant-baseline": "middle",
+        style: "fill:" + (on ? "var(--ink)" : faint ? "var(--ink-3)" : "var(--ink-2)") + ";font-weight:" + (on ? 600 : 400) + ";cursor:pointer" }, row.name);
+      label.addEventListener("click", function () { OX.sel = i; oxRender(); });
+      if (three && !st.np) add("text", { x: L - 12, y: cy + 13, "font-size": 10, "text-anchor": "end", style: "fill:var(--ink-3)" }, "no pressure in its table");
+      if (row.oxygen_is === "burner" && !three) add("text", { x: L - 12, y: cy + 13, "font-size": 10, "text-anchor": "end", style: "fill:var(--ink-3)" }, "oxygen in the burner flow");
+    });
+
+    if (!three) {
+      rows.forEach(function (row, i) {
+        var cy = top + (i + 0.5) * rh, st = OX.stats[i], amb = row.oxygen_is === "ambient";
+        if (OX.level === 1) {                      // the span each investigation covered
+          var a = X(st.lo), b = Math.max(X(st.hi), a + 6), split = Math.min(Math.max(X(m.moon_o2_pct), a), b);
+          if (amb) {
+            if (split > a) add("rect", { x: a, y: cy - 4, width: split - a, height: 8, rx: 4, fill: OX_COOL });
+            if (b > split) add("rect", { x: split, y: cy - 4, width: b - split, height: 8, rx: 4, fill: OX_WARM });
+          } else add("rect", { x: a, y: cy - 4, width: b - a, height: 8, rx: 4, fill: "none", stroke: OX_COOL, "stroke-width": 1.5 });
+          add("text", { x: a - 6, y: cy + 4, "font-size": 11.5, "text-anchor": "end" }, oxNum(st.lo));
+          add("text", { x: b + 6, y: cy + 4, "font-size": 11.5 }, oxNum(st.hi) + " %  ·  " + st.n + " tests");
+        } else {                                   // every test: piles of dots, one pile per oxygen level
+          var bins = {}, cap = Math.max(3, Math.floor((rh - 6) / 4.2));
+          row.pts.forEach(function (p) { var k = Math.round(X(p[0]) / 4.2); (bins[k] = bins[k] || []).push(p); });
+          Object.keys(bins).forEach(function (k) {
+            var pile = bins[k], cols = Math.ceil(pile.length / cap);
+            pile.forEach(function (p, j) {
+              var col = Math.floor(j / cap), inCol = Math.min(cap, pile.length - col * cap), row2 = j % cap;
+              var cx = +k * 4.2 + (col - (cols - 1) / 2) * 4.2, y = cy + (row2 - (inCol - 1) / 2) * 4.2, warm = amb && p[0] >= m.moon_o2_pct;
+              tip(add("circle", amb ? { cx: cx, cy: y, r: 1.8, fill: warm ? OX_WARM : OX_COOL } : { cx: cx, cy: y, r: 1.5, fill: "none", stroke: OX_COOL, "stroke-width": 0.9 }),
+                row.name + ": " + oxNum(p[0]) + " % oxygen" + (p[1] != null ? ", " + p[1].toFixed(2) + " atm" : ""));
+            });
+          });
+        }
+      });
+    } else {
+      // pressure axis (log scale, so the low pressures that matter for a Moon Base are not squeezed flat)
+      [0.3, 0.5, 1, 2, 3, 5].forEach(function (p) {
+        add("line", { x1: L, y1: Y(p), x2: L + pw, y2: Y(p), stroke: "rgba(200,215,245,0.10)" });
+        add("text", { x: L + 6, y: Y(p) - 4, "font-size": 11 }, p + " atm");
+      });
+      add("text", { x: L + pw - 4, y: top + 12, "font-size": 12, "text-anchor": "end" }, "pressure of the gas (log scale)");
+      var dot = function (row, p, j, big) {
+        var amb = row.oxygen_is === "ambient", warm = amb && p[0] >= m.moon_o2_pct && p[1] <= m.moon_atm + 1e-9;
+        var cx = X(p[0]) + ((j * 7919) % 9 - 4) * 0.55, y = Y(p[1]) + ((j * 104729) % 9 - 4) * 0.55;
+        var a = amb ? { cx: cx, cy: y, r: big ? 3.4 : 2.3, fill: warm ? OX_WARM : OX_COOL, "fill-opacity": big ? 1 : 0.6 }
+                    : { cx: cx, cy: y, r: 3, fill: "none", stroke: OX_COOL, "stroke-width": 1.2 };
+        if (big && amb) { a.stroke = "#0a1124"; a["stroke-width"] = 1; }
+        tip(add("circle", a), row.name + ": " + oxNum(p[0]) + " % oxygen, " + p[1].toFixed(2) + " atm (" + (p[1] * 14.696).toFixed(1) + " psi)");
+      };
+      rows.forEach(function (row, i) {             // everything first, the picked investigation on top
+        if (i !== OX.sel && row.oxygen_is === "ambient") row.pts.forEach(function (p, j) { if (p[1] != null) dot(row, p, j, false); });
+      });
+      rows[OX.sel].pts.forEach(function (p, j) { if (p[1] != null) dot(rows[OX.sel], p, j, true); });
+      // the two atmospheres the brief names besides the Moon Base
+      [[21, 1.0, "Earth at sea level", "end", -8], [100, 4.3 / 14.696, "Spacesuit: 100 % oxygen at 4.3 psi", "end", -8]].forEach(function (ref) {
+        add("circle", { cx: X(ref[0]), cy: Y(ref[1]), r: 6, fill: "none", stroke: "var(--ink)", "stroke-width": 1.5 });
+        add("text", { x: X(ref[0]) + ref[4], y: Y(ref[1]) - 9, "font-size": 11.5, "text-anchor": ref[3], style: "fill:var(--ink)" }, ref[2]);
+      });
+    }
+    // where the Flame console is set right now
+    if (byKey.o2 && state.values.o2 >= x0 && state.values.o2 <= x1) {
+      var ux = X(state.values.o2);
+      if (three && byKey.p) {
+        var uy = Y(Math.min(6, Math.max(0.25, state.values.p)));
+        add("path", { d: "M" + ux + " " + (uy - 7) + " L" + (ux + 7) + " " + uy + " L" + ux + " " + (uy + 7) + " L" + (ux - 7) + " " + uy + " Z", fill: "none", stroke: "var(--flame)", "stroke-width": 2 });
+        add("text", { x: ux + 10, y: uy + 19, "font-size": 11.5, style: "fill:var(--flame)" }, "your console setting");
+      } else {
+        add("line", { x1: ux, y1: top, x2: ux, y2: top + ph, stroke: "var(--flame)", "stroke-width": 1.5 });
+        add("text", { x: ux + 5, y: top + ph - 5, "font-size": 11.5, style: "fill:var(--flame)" }, "your console setting");
+      }
+    }
+  }
+  function oxRender() {
+    if (!T || !OX.open) return;
+    var m = T.meta, row = T.rows[OX.sel], st = OX.stats[OX.sel];
+    var names = function (key) { return T.rows.filter(function (r, i) { return OX.stats[i][key] > 0; }).map(function (r) { return r.name; }).join("; "); };
+    Array.prototype.forEach.call($("oxLevels").querySelectorAll("button"), function (b, i) { b.setAttribute("aria-pressed", String(i + 1 === OX.level)); });
+    $("oxHead").textContent = "Of " + m.ambient_with_pressure + " microgravity tests whose NASA table records both the oxygen and the pressure of the surrounding gas, "
+      + m.in_moon_zone + " were run in Moon Base air (" + names("zone") + "). " + m.near_moon_zone + " more sit just above its pressure line, at 10.2 to 10.5 psi (" + names("near") + ").";
+    $("oxPick").textContent = row.name + " [" + row.id + "], " + row.what + ": " + row.rows + " rows in its PSI table, " + st.n + " with a readable oxygen value. Oxygen "
+      + oxNum(st.lo) + " to " + oxNum(st.hi) + " %. " + (st.np ? "Pressure " + st.plo.toFixed(2) + " to " + st.phi.toFixed(2) + " atm. " : "The table gives no pressure. ")
+      + (row.oxygen_is === "ambient"
+        ? "At 30 % oxygen or more: " + st.rich + "." + (st.np ? " In Moon Base air: " + st.zone + ". Just above its pressure line: " + st.near + "." : "")
+        : "This is the oxygen in the burner flow of an inverse flame, which burns inside fuel gas. It is not a cabin atmosphere, so it is left out of the counts above.");
+    oxDraw();
+  }
+  function oxLevel(n) { OX.level = Math.min(3, Math.max(1, n)); save("oxlevel", OX.level); sfx.preset(); oxRender(); }
+  function oxMove(d) { OX.sel = (OX.sel + d + T.rows.length) % T.rows.length; oxRender(); }
+  function openOx() {
+    if (!T || OX.open || SIM.open || AI.open || titleOn) return;
+    OX.open = true; $("ox").hidden = false; sfx.open(); oxRender();
+  }
+  function closeOx() { if (!OX.open) return; OX.open = false; $("ox").hidden = true; sfx.close(); }
+  if (T) {
+    OX_LEVELS.forEach(function (name, i) {
+      var b = el("button", "", (i + 1) + "  " + name); b.type = "button";
+      b.addEventListener("click", function () { oxLevel(i + 1); });
+      $("oxLevels").appendChild(b);
+    });
+    $("oxFine").textContent = "One mark is one row of an investigation's Experimental Table on NASA PSI (public data, read " + T.meta.fetched
+      + "). Rows whose oxygen cell is not a number are left out. Hollow marks are inverse flames. Moon Base air, the spacesuit and Earth come from the challenge brief. "
+      + "This shows where tests were run. It does not say how flammable anything is.";
+    $("oxBtn").hidden = false; $("oxBtn").addEventListener("click", openOx);
+    $("oxClose").addEventListener("click", closeOx);
+    Array.prototype.forEach.call(document.querySelectorAll(".hintOx"), function (s) { s.hidden = false; });
+    window.addEventListener("resize", function () { if (OX.open) oxDraw(); });
+  }
+
   /* ---------- pages ---------- */
   var PAGES = [];
   if (R) PAGES.push("research");                   // what the challenge asks for comes first: summarize and rank the investigations
@@ -1889,6 +2157,7 @@ window.FLAME_MODEL = {
   if (hasTests) PAGES.push("drill");
   function showPage(name) {
     if (PAGES.indexOf(name) < 0) return;
+    if (name !== "console") mapBig(false);
     view.page = name;
     ["Console", "Research", "Drill"].forEach(function (p) {
       var on = p.toLowerCase() === name;
@@ -2141,9 +2410,60 @@ window.FLAME_MODEL = {
     var W = 0, H = 0, pts = [], rand = rng(11), then = null;
     function size() { W = cv.width = window.innerWidth; H = cv.height = window.innerHeight; if (still) draw(0); }
     for (var i = 0; i < 120; i++) pts.push({ x: rand(), y: rand(), r: 0.4 + rand() * 1.1, v: 0.003 + rand() * 0.011, a: 0.2 + rand() * 0.55 });
+    // The scene follows the cabin-air preset: Earth-like air puts the Earth under you, as seen from orbit; Moon Base
+    // air the lunar surface; Mars base air the surface of Mars. Any other setting is open space. Drawn, not photographed.
+    var scene = { earth: 0, moon: 0, mars: 0 }, craters = [];
+    (function () { var r = rng(5); for (var i = 0; i < 30; i++) craters.push({ a: -0.44 + r() * 0.88, d: 0.004 + r() * 0.15, s: 0.005 + r() * 0.02 }); })();
+    function world(kind, a) {
+      if (a < 0.01 || !W) return;
+      var R = W * 1.15, cx = W * 0.6, cy = H + R - H * 0.24, g;   // a huge sphere whose top rises over the bottom of the screen
+      ctx.globalAlpha = 1;
+      if (kind === "earth") {
+        g = ctx.createRadialGradient(cx, cy, R * 0.9, cx, cy, R * 1.035);
+        g.addColorStop(0, "rgba(18,58,140," + (0.55 * a).toFixed(3) + ")"); g.addColorStop(0.62, "rgba(40,110,215," + (0.6 * a).toFixed(3) + ")");
+        g.addColorStop(0.735, "rgba(150,210,255," + (0.8 * a).toFixed(3) + ")"); g.addColorStop(0.75, "rgba(110,180,255," + (0.35 * a).toFixed(3) + ")");
+        g.addColorStop(1, "rgba(110,180,255,0)");
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, R * 1.035, 0, 6.2832); ctx.fill();
+        ctx.strokeStyle = "rgba(255,255,255," + (0.10 * a).toFixed(3) + ")"; ctx.lineCap = "round";          // cloud bands
+        for (var j = 0; j < 6; j++) {
+          var mid = -1.5708 + (j - 2.5) * 0.11, len = 0.05 + (j * 37 % 5) * 0.012;
+          ctx.lineWidth = R * (0.006 + (j % 3) * 0.004);
+          ctx.beginPath(); ctx.arc(cx, cy, R * (0.992 - 0.014 * (j * 53 % 5)), mid - len, mid + len); ctx.stroke();
+        }
+      } else if (kind === "mars") {
+        g = ctx.createRadialGradient(cx, cy, R * 0.9, cx, cy, R * 1.02);
+        g.addColorStop(0, "rgba(120,50,28," + (0.62 * a).toFixed(3) + ")"); g.addColorStop(0.6, "rgba(176,82,44," + (0.64 * a).toFixed(3) + ")");
+        g.addColorStop(0.83, "rgba(226,150,104," + (0.7 * a).toFixed(3) + ")"); g.addColorStop(0.84, "rgba(230,160,120," + (0.22 * a).toFixed(3) + ")");
+        g.addColorStop(1, "rgba(230,160,120,0)");          // a thin dusty haze, nothing like the Earth's glow
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, R * 1.02, 0, 6.2832); ctx.fill();
+        craters.forEach(function (c, i) {            // dark plains and a few craters
+          var th = -1.5708 + c.a, rr = R * (1 - c.d * 1.1), x = cx + rr * Math.cos(th), y = cy + rr * Math.sin(th), big = i % 3 === 0;
+          ctx.fillStyle = "rgba(66,26,16," + ((big ? 0.3 : 0.4) * a).toFixed(3) + ")";
+          ctx.beginPath(); ctx.ellipse(x, y, R * c.s * (big ? 3.2 : 0.8), R * c.s * (big ? 1.1 : 0.8) * (0.28 + c.d * 3.2), th + 1.5708, 0, 6.2832); ctx.fill();
+        });
+      } else {
+        g = ctx.createRadialGradient(cx, cy, R * 0.9, cx, cy, R);
+        g.addColorStop(0, "rgba(96,100,110," + (0.6 * a).toFixed(3) + ")"); g.addColorStop(0.8, "rgba(140,143,150," + (0.62 * a).toFixed(3) + ")");
+        g.addColorStop(1, "rgba(205,205,210," + (0.7 * a).toFixed(3) + ")");
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, R, 0, 6.2832); ctx.fill();
+        ctx.lineWidth = 1;
+        craters.forEach(function (c) {             // flatter the closer they sit to the horizon
+          var th = -1.5708 + c.a, rr = R * (1 - c.d), x = cx + rr * Math.cos(th), y = cy + rr * Math.sin(th);
+          ctx.fillStyle = "rgba(40,44,54," + (0.45 * a).toFixed(3) + ")"; ctx.strokeStyle = "rgba(225,225,230," + (0.25 * a).toFixed(3) + ")";
+          ctx.beginPath(); ctx.ellipse(x, y, R * c.s, R * c.s * (0.28 + c.d * 3.2), th + 1.5708, 0, 6.2832); ctx.fill(); ctx.stroke();
+        });
+      }
+    }
     function draw(now) {
       var dt = then == null ? 0 : Math.min(0.1, (now - then) / 1000); then = now;
       ctx.clearRect(0, 0, W, H);
+      var ps = activePreset(), want = ps ? ps.key : "";
+      ["earth", "moon", "mars"].forEach(function (k) {
+        var to = want === k ? 1 : 0;
+        scene[k] = still ? to : scene[k] + (to - scene[k]) * Math.min(1, dt * 2.2);
+        world(k, scene[k]);
+      });
+      window.__scene = scene;
       ctx.fillStyle = "#cfe0ff";
       for (var i = 0; i < pts.length; i++) {
         var p = pts[i];
@@ -2156,6 +2476,7 @@ window.FLAME_MODEL = {
     window.addEventListener("resize", size);
     size();
     if (!still) requestAnimationFrame(draw);
+    else setInterval(function () { draw(0); }, 700);   // no motion wanted: still follow the preset, without the drift
   })();
 
   /* ---------- keyboard ---------- */
@@ -2169,6 +2490,15 @@ window.FLAME_MODEL = {
     if (SIM.open) {                                // the Ignite screen: A or Enter runs it again, B or Esc closes
       if (e.key === "Escape" || e.key === "Backspace") { e.preventDefault(); closeSim(); }
       else if ((e.key === "Enter" || e.key === " " || e.key === "i" || e.key === "I") && !onButton) { e.preventDefault(); simStart(); }
+      return;
+    }
+    if (OX.open) {                                 // the oxygen map: up/down picks, left/right changes the detail
+      if (e.key === "Escape" || e.key === "Backspace" || e.key === "o" || e.key === "O") { e.preventDefault(); closeOx(); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); oxMove(-1); }
+      else if (e.key === "ArrowDown") { e.preventDefault(); oxMove(1); }
+      else if (e.key === "ArrowLeft") { e.preventDefault(); oxLevel(OX.level - 1); }
+      else if (e.key === "ArrowRight" || e.key === "x" || e.key === "X") { e.preventDefault(); oxLevel(e.key === "ArrowRight" ? OX.level + 1 : OX.level % 3 + 1); }
+      else if (e.key.length === 1 && "123".indexOf(e.key) >= 0) oxLevel(+e.key);
       return;
     }
     if (AI.open) {
@@ -2185,8 +2515,20 @@ window.FLAME_MODEL = {
       return;
     }
     if (typing) return;
-    if (e.key === "/" || e.key === "?") { e.preventDefault(); openAI(); return; }
+    if (MAP.big) {                                 // the zoomed star map takes the arrows, X and 1 to 3
+      var mk = e.key;
+      if (mk === "Escape" || mk === "Backspace" || mk === "z" || mk === "Z") { e.preventDefault(); mapBig(false); return; }
+      if (mk === "ArrowLeft") { e.preventDefault(); mapLevel(MAP.level - 1); return; }
+      if (mk === "ArrowRight") { e.preventDefault(); mapLevel(MAP.level + 1); return; }
+      if (mk === "ArrowUp") { e.preventDefault(); stepStar(-1); return; }
+      if (mk === "ArrowDown") { e.preventDefault(); stepStar(1); return; }
+      if (mk === "x" || mk === "X") { mapLevel(MAP.level % 3 + 1); return; }
+      if (mk.length === 1 && "123".indexOf(mk) >= 0) { mapLevel(+mk); return; }
+      if (mk === "Enter" || mk === " " || mk === "r" || mk === "R") return;
+    }
+    if (e.key === "/" || e.key === "?") { e.preventDefault(); mapBig(false); openAI(); return; }
     if (e.key === "m" || e.key === "M") { toggleSound(); return; }
+    if (e.key === "o" || e.key === "O") { openOx(); return; }
     if (e.key.length === 1 && "123".indexOf(e.key) >= 0) { if (PAGES[+e.key - 1]) goPage(PAGES[+e.key - 1]); return; }
     if (view.page === "drill") {
       switch (e.key) {
@@ -2221,6 +2563,7 @@ window.FLAME_MODEL = {
       case "]": stepStar(1); break;
       case "p": case "P": replayStar(); break;     // replay the picked test, or the closest one
       case "g": case "G": flyToStar(); break;      // move the settings onto it
+      case "z": case "Z": mapBig(); break;         // zoom the star map to the whole screen
       case "i": case "I": openSim(); break;        // Ignite: a full-screen run of the model
       case "d": case "D": downloadCsv(); break;    // the real tests as a CSV file, on this device
       case "s": case "S": sendCsv(); break;        // the same file, sent off this device
@@ -2261,6 +2604,33 @@ window.FLAME_MODEL = {
         requestAnimationFrame(poll);
         return;
       }
+      if (OX.open) {                               // the oxygen map: stick or d-pad, X for more detail, B or Y to leave
+        var oy = pad.axes[1] || 0, oxx = pad.axes[0] || 0;
+        fire("up", now, b(12) || oy < -0.6, 350, 200, function () { oxMove(-1); });
+        fire("down", now, b(13) || oy > 0.6, 350, 200, function () { oxMove(1); });
+        fire("left", now, b(14) || oxx < -0.6, 0, 0, function () { oxLevel(OX.level - 1); });
+        fire("right", now, b(15) || oxx > 0.6, 0, 0, function () { oxLevel(OX.level + 1); });
+        fire("x", now, b(2), 0, 0, function () { oxLevel(OX.level % 3 + 1); });
+        fire("b", now, b(1), 0, 0, closeOx);
+        fire("y", now, b(3), 0, 0, closeOx);
+        requestAnimationFrame(poll);
+        return;
+      }
+      if (MAP.big && !AI.open) {                   // the zoomed star map
+        var my = pad.axes[1] || 0, mx = pad.axes[0] || 0, qx = pad.axes[2] || 0, qy = pad.axes[3] || 0;
+        fire("up", now, b(12) || my < -0.6, 350, 160, function () { stepStar(-1); });
+        fire("down", now, b(13) || my > 0.6, 350, 160, function () { stepStar(1); });
+        fire("left", now, b(14) || mx < -0.6, 0, 0, function () { mapLevel(MAP.level - 1); });
+        fire("right", now, b(15) || mx > 0.6, 0, 0, function () { mapLevel(MAP.level + 1); });
+        fire("x", now, b(2), 0, 0, function () { mapLevel(MAP.level % 3 + 1); });
+        fire("b", now, b(1), 0, 0, function () { mapBig(false); });
+        fire("view", now, b(8), 0, 0, function () { mapBig(false); });
+        if (qx * qx + qy * qy > 0.12) pickStar(qx, qy);
+        fire("rt", now, b(7), 0, 0, replayStar);
+        fire("r3", now, b(11), 0, 0, flyToStar);
+        requestAnimationFrame(poll);
+        return;
+      }
       var ax = pad.axes[0] || 0, ay = pad.axes[1] || 0, ai = AI.open;
       var pg = ai ? "ai" : view.page, con = pg === "console";
       var aiMove = function (dir) { AI.sel = (AI.sel + dir + AI.qs.length) % AI.qs.length; renderAI(); };
@@ -2292,12 +2662,15 @@ window.FLAME_MODEL = {
       fire("b", now, b(1), 0, 0, function () {
         if (pg === "ai") closeAI(); else if (con) toggleSheet(false); else if (pg === "drill") goPage(PAGES[0]);
       });
-      fire("y", now, b(3), 0, 0, function () { if (pg === "ai") toggleVoice(); else if (con) reset(); else if (pg === "drill") drillStart(); });
+      fire("y", now, b(3), 0, 0, function () { if (pg === "ai") toggleVoice(); else if (con) reset(); else if (pg === "drill") drillStart(); else if (pg === "research") openOx(); });
       fire("x", now, b(2), 0, 0, function () { if (pg === "ai") cycleBrain(); else if (con) cyclePreset(); else if (pg === "research") toggleOrbit(); });
       fire("lb", now, b(4), 0, 0, function () { if (!ai) turnPage(-1); });
       fire("rb", now, b(5), 0, 0, function () { if (!ai) turnPage(1); });
       fire("menu", now, b(9), 0, 0, function () { if (ai) closeAI(); else openAI(); });             // Menu: Ember
-      fire("view", now, b(8), 0, 0, toggleSound);                                                    // View: sound on or off
+      fire("view", now, b(8), 0, 0, function () {                                                    // View: zoom this page's chart
+        if (ai) return;
+        if (con) mapBig(true); else if (pg === "research") openOx(); else toggleSound();
+      });
       fire("l3", now, b(10), 0, 0, function () { if (con && !ai) sendCsv(); });                      // left stick click: send the tests off this device
       // Right stick: point at a star on the map, or at an investigation in the orbit view. RT replays, R3 goes there.
       var rx = pad.axes[2] || 0, ry = pad.axes[3] || 0;
@@ -2322,7 +2695,7 @@ window.FLAME_MODEL = {
                      drill: function () { return drill; }, drillStart: drillStart, drillGuess: drillGuess, drillNext: drillNext, buzz: buzz,
                      pages: PAGES, sound: SND, voice: VOICE, title: function () { return titleOn; }, startGame: startGame,
                      map: MAP, orb: ORB, replay: REPLAY, pickStar: pickStar, stepStar: stepStar, flyToStar: flyToStar, replayStar: replayStar, pickOrbit: pickOrbit,
-                     notes: NOTES, notify: notify, base: BASE, sendCsv: sendCsv, refreshAI: refreshAI, sim: SIM, openSim: openSim, closeSim: closeSim, simStart: simStart, testsCsv: testsCsv, downloadCsv: downloadCsv };
+                     mapBig: mapBig, mapLevel: mapLevel, ox: OX, openOx: openOx, closeOx: closeOx, oxLevel: oxLevel, tables: T, notes: NOTES, notify: notify, base: BASE, sendCsv: sendCsv, refreshAI: refreshAI, sim: SIM, openSim: openSim, closeSim: closeSim, simStart: simStart, testsCsv: testsCsv, downloadCsv: downloadCsv };
   render();
   showPage(PAGES[0]);                              // the NASA research dashboard is the home page when its data is present
   window.addEventListener("resize", function () { showPage(view.page); });   // the two drawings size themselves to the space they get

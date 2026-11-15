@@ -14,7 +14,7 @@ Needs only the Python standard library, plus Ollama (https://ollama.com) running
 with a model pulled once:   ollama pull gemma4:12b      (on a handheld a small one, such as gemma4:e2b)
 
 What it does:
-  GET  /            the files in console/ (index.html, model.js, research.js), nothing else
+  GET  /            the files in console/ (index.html, model.js, research.js, tables.js), nothing else
   GET  /ai          which models can answer right now, here and on the peer machine
   POST /ask         builds a prompt from the NASA PSI records in this repo plus what the page sent,
                     asks the chosen model, and streams the answer back as plain text
@@ -49,8 +49,9 @@ ROOT = Path(__file__).resolve().parents[1]
 CONSOLE = ROOT / "console"
 RAW = ROOT / "data" / "raw" / "psi_search" / "combustion_investigations.json"
 NOTES = ROOT / "data" / "clean" / "research_notes.json"
+TABLES = ROOT / "data" / "clean" / "psi_tables_summary.json"   # counts from the PSI Experimental Tables (build_tables.py)
 OLLAMA = "http://127.0.0.1:11434"
-STATIC = {"/": "index.html", "/index.html": "index.html", "/model.js": "model.js", "/research.js": "research.js"}
+STATIC = {"/": "index.html", "/index.html": "index.html", "/model.js": "model.js", "/research.js": "research.js", "/tables.js": "tables.js"}
 TYPES = {".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8"}
 MAX_BODY = 16000
 EXPORTS_NOTE = ROOT / "exports-folder.txt"         # optional: first line names the folder to export into
@@ -105,6 +106,19 @@ def load_records():
     return records
 
 
+def table_facts():
+    """What this dashboard counted in the PSI Experimental Tables, as plain sentences. Empty if the summary file is missing."""
+    if not TABLES.is_file():
+        return ""
+    data = json.loads(TABLES.read_text(encoding="utf-8"))
+    meta, lines = data["meta"], [line for acc in sorted(data["lines"], key=lambda a: int(a.split("-")[1])) for line in data["lines"][acc]]
+    return ("\n\nTEST TABLE FACTS, counted by this dashboard from each investigation's Experimental Table on NASA PSI "
+            "(an investigation not listed has no oxygen value per test in its table):\n" + "\n".join(lines)
+            + f"\nAll together: {meta['ambient_with_pressure']} tests record both the oxygen and the pressure of the surrounding gas. "
+            f"{meta['in_moon_zone']} of them were run in Moon Base air (30 percent oxygen or more at 10.2 psi or less), "
+            f"and {meta['near_moon_zone']} more sit just above that pressure, at 10.2 to 10.5 psi.")
+
+
 def words(text):
     return [w for w in re.findall(r"[a-z0-9][a-z0-9\-]+", text.lower()) if len(w) > 2 and w not in STOP]
 
@@ -128,10 +142,17 @@ def research_material(records, question, selected, need):
     lines = ["CATALOG: every combustion investigation in NASA PSI (id | name | fuel | flight or ground | note written for this dashboard)"]
     lines += [f"{r['id']} | {r['name']} | {r['fuel']} | {r['kind']} | {r['summary']}" for r in records]
     chosen = pick(records, question, selected)
+    key = {"prevention": "prevention", "detection": "detection", "suppression": "suppression", "cabin air": "cabin"}.get(need.lower())
+    if key:                                                # the top of the dashboard's own ranking for that need always comes along
+        for r in sorted(records, key=lambda r: -r["scores"].get(key, 0))[:2]:
+            if r not in chosen:
+                chosen.append(r)
     lines.append("\nDETAILED NASA PSI RECORDS for the investigations closest to the question")
     for r in chosen:
         lines.append(f"\n{r['id']} {r['name']}: {r['title']} ({r['kind']})\nObjectives: {r['objectives']}\nApproach: {r['approach']}"
                      f"\nKeywords: {r['keywords']}\nHardware: {r['hardware']}")
+    if FACTS:
+        lines.append(FACTS)
     lines.append("\nBACKGROUND FROM THE 2026 NASA SPACE APPS CHALLENGE BRIEF (use it for questions about future missions and about what is "
                  "missing; its numbers do not belong to any investigation above): NASA's spacecraft fire-safety work is prevention, "
                  "detection and suppression. The Moon Base and pressurized rovers will likely have 30% oxygen or more at 10.2 psi or "
@@ -488,5 +509,6 @@ def main():
 
 
 GPU = ""
+FACTS = table_facts()
 if __name__ == "__main__":
     main()

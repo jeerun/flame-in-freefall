@@ -1,0 +1,39 @@
+{
+ "meta": {
+  "moon_o2_pct": 30.0,
+  "moon_psi": 10.2,
+  "moon_atm": 0.6941,
+  "near_psi": 10.5,
+  "near_atm": 0.7145,
+  "near_moon_zone": 17,
+  "fetched": "2026-11-14",
+  "ambient_tests": 887,
+  "ambient_with_pressure": 746,
+  "in_moon_zone": 20
+ },
+ "lines": {
+  "PSI-69": [
+   "FLEX [PSI-69]: 274 rows in its PSI Experimental Table, 274 with a readable oxygen value. Oxygen in the surrounding gas: 12 to 34 percent. Pressure: 0.69 to 3.05 atm. Rows at 30 percent oxygen or more: 24. Rows at 30 percent oxygen or more AND 10.2 psi or less (Moon Base air): 0. Rows at 30 percent oxygen or more just above that pressure, 10.2 to 10.5 psi: 17."
+  ],
+  "PSI-39": [
+   "CFI [PSI-39]: 87 rows in its PSI Experimental Table, 87 with a readable oxygen value. Oxygen in the surrounding gas: 17 to 21 percent. Pressure: 0.50 to 5.00 atm. Rows at 30 percent oxygen or more: 0. Rows at 30 percent oxygen or more AND 10.2 psi or less (Moon Base air): 0. Rows at 30 percent oxygen or more just above that pressure, 10.2 to 10.5 psi: 0."
+  ],
+  "PSI-159": [
+   "CFI-G, normal flames [PSI-159]: 179 rows in its PSI Experimental Table, 179 with a readable oxygen value. Oxygen in the surrounding gas: 18 to 40 percent. Pressure: 0.50 to 3.00 atm. Rows at 30 percent oxygen or more: 115. Rows at 30 percent oxygen or more AND 10.2 psi or less (Moon Base air): 20. Rows at 30 percent oxygen or more just above that pressure, 10.2 to 10.5 psi: 0.",
+   "CFI-G, inverse flames [PSI-159]: 154 rows in its PSI Experimental Table, 154 with a readable oxygen value. Oxygen in the burner flow (inverse flame, not a cabin atmosphere): 12 to 85 percent. Pressure: 0.49 to 3.27 atm. Rows at 30 percent oxygen or more: 115."
+  ],
+  "PSI-10": [
+   "Flame Design, normal flames [PSI-10]: 207 rows in its PSI Experimental Table, 207 with a readable oxygen value. Oxygen in the surrounding gas: 19.8 to 40 percent. Pressure: 0.93 to 1.30 atm. Rows at 30 percent oxygen or more: 131. Rows at 30 percent oxygen or more AND 10.2 psi or less (Moon Base air): 0. Rows at 30 percent oxygen or more just above that pressure, 10.2 to 10.5 psi: 0.",
+   "Flame Design, inverse flames [PSI-10]: 120 rows in its PSI Experimental Table, 109 with a readable oxygen value. Oxygen in the burner flow (inverse flame, not a cabin atmosphere): 21.2 to 85 percent. Pressure: 0.42 to 3.01 atm. Rows at 30 percent oxygen or more: 91."
+  ],
+  "PSI-25": [
+   "BASS-II [PSI-25]: 129 rows in its PSI Experimental Table, 129 with a readable oxygen value. Oxygen in the surrounding gas: 13.6 to 22.2 percent. The table gives no pressure. Rows at 30 percent oxygen or more: 0."
+  ],
+  "PSI-99": [
+   "Saffire-II [PSI-99]: 15 rows in its PSI Experimental Table, 9 with a readable oxygen value. Oxygen in the surrounding gas: 21.5 to 22.1 percent. The table gives no pressure. Rows at 30 percent oxygen or more: 0."
+  ],
+  "PSI-98": [
+   "Saffire-I [PSI-98]: 4 rows in its PSI Experimental Table, 2 with a readable oxygen value. Oxygen in the surrounding gas: 21.5 to 21.6 percent. The table gives no pressure. Rows at 30 percent oxygen or more: 0."
+  ]
+ }
+}
