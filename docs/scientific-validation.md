@@ -1,7 +1,9 @@
 # Second Toe — Scientific Validation Method & Review Notes
 
-**Project:** NASA Space Apps 2026 · Flame in Freefall  
-**Workstream:** Independent Scientific Validation · `feature/scientific-validation`  
+**Project:** NASA Space Apps 2026 · Flame in Freefall
+
+**Workstream:** Independent Scientific Validation · `feature/scientific-validation`
+
 **Status:** V2.1 implementation tested with synthetic fixtures; NASA FLEX rerun pending. Results are diagnostic, not certification.
 
 ## Purpose and scope
