@@ -21,8 +21,10 @@ def check_offline(page):
     expect(page.get_by_role("tab", name="Ask the table")).to_have_attribute("aria-selected", "true")
     expect(page.locator("#question")).to_be_disabled()
     expect(page.locator("#table-status")).to_contain_text("23 matching records")
+    expect(page.locator(".filter-note")).to_contain_text("initial to final")
     page.locator(".sensor-row summary").first.click()
     expect(page.locator(".raw-row")).to_contain_text("Original CSV fields · line 2")
+    expect(page.locator(".raw-row caption")).to_contain_text("Initial and final gas readings")
     expect(page.locator(".raw-row tr").filter(has_text="Final CO (ppm)")).to_contain_text("6")
     page.get_by_role("button", name="Next", exact=True).click()
     expect(page.locator(".result-pages")).to_contain_text("5–8 of 23")
@@ -79,7 +81,7 @@ def check_server(page):
     server_results.extend([(200, sample), (200, {"status": "unsupported"}), (503, {"error": "Ember is busy."})])
     for query, message in [
         ("What did the instruments record for B1?", "1 matching record"),
-        ("How many planets are there?", "could not be matched"),
+        ("Which tests had stable oxygen throughout the test?", "only those two measurements"),
         ("Find B3 for me", "Ember is busy."),
     ]:
         page.locator("#question").fill(query)

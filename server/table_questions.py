@@ -54,7 +54,7 @@ SYSTEM = (
     "\"o2\",\"change\":\"down\"}]}. For 'CO climbed while oxygen remained flat' use two filters, "
     "co/up and o2/same, and supported true. Without a specific test return test_id null. A named test can be returned with "
     "no filters to inspect all of its readings. Mark supported false for every other request, "
-    "including numeric thresholds, rankings, predictions, explanations, different datasets, "
+    "including continuous trends, timing, numeric thresholds, rankings, predictions, explanations, different datasets, "
     "OR, comparisons between tests, or questions you cannot translate fully. Never answer the "
     "question or invent measurements."
 )
@@ -69,7 +69,9 @@ UNSUPPORTED = re.compile(
     r"\b(or|not|never|except|either|without|why|cause\w*|predict\w*|mean|average|"
     r"median|sum|total amount|percent\w*|ratio|twice|half|below|above|than|threshold|least|most|"
     r"how much|how far|greater|less|exactly|maximum|minimum|largest|smallest|highest|lowest|"
-    r"biggest|steepest|peak|only|material|temperature|pressure|before ignition|between tests)\b"
+    r"biggest|steepest|peak|only|material|temperature|pressure|before ignition|between tests|"
+    r"throughout|all (?:the )?time|at (?:all|any) times?|from start to finish|what time|"
+    r"when (?:did|was|were|does)|initially)\b"
 )
 DIRECTION = {
     "up": r"up|ris(e|es|ing)|rose|risen|rais(e|ed)|increas(e|ed|es|ing)|higher|grew|gain(s|ed)?|climb(s|ed|ing)?",
@@ -89,7 +91,7 @@ how list look looking many me measurement measurements number numbers of on or p
 reading readings record recorded records remained remaining return round rounds row rows run
 runs saw see sensor sensors set show showed showing shows signal signals since start started
 starting stayed stays staying table tell test tested tests that the their them there these
-this those though throughout time to trial trials up use value values want was went were what
+this those though time to trial trials up use value values want was went were what
 when where whereas which while with within would yet you your concentration concentrations
 """.split())
 
