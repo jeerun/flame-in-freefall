@@ -20,6 +20,11 @@ ASSETS = (
     "ember-lab.html", "ember-lab.css", "table-lab.js", "lab-table-examples.js",
     "flex-film.js", "lab-media/flex-analysis.js", "lab-media/flex-iss.webm",
     "lab-media/flex-before.jpg", "lab-media/flex-after.jpg",
+    "lab-media/saffire-1.webm", "lab-media/saffire-1-poster.jpg",
+    "lab-media/flex-2.webm", "lab-media/flex-2-poster.jpg",
+    "lab-media/sofie-gel.webm", "lab-media/sofie-gel-poster.jpg",
+    "lab-media/saffire-5.webm", "lab-media/saffire-5-poster.jpg",
+    "lab-media/saffire-6.webm", "lab-media/saffire-6-poster.jpg",
 )
 POST_ROUTES = {"/lab/table", "/lab/table-plan", "/lab/film", "/lab/film-local"}
 
