@@ -23,15 +23,15 @@ URL = sys.argv[1] if len(sys.argv) > 1 else "http://localhost:8000"
 OUT = serve.ROOT / "docs" / "ember-check.md"
 
 MOON = ("Fuel: Heptane. Oxygen 30.0 %, Pressure 0.69 atm, Carbon dioxide 0 %, Helium 0 %, Droplet diameter 3.0 mm. Cabin air preset: Moon Base (expected).\n"
-        "Model output: chance the flame burns until the fuel is gone 99 %; chance it goes out before the fuel is gone 1 %; burning rate 0.75 mm2/s; "
+        "Model output conditional on completion or visible extinction (disruptions excluded): chance the flame burns until the fuel is gone 99 %; chance it goes out before the fuel is gone 1 %; burning rate 0.75 mm2/s; "
         "droplet gone in about 12 s if the flame lasts.\n"
-        "Confidence box: Inside the tested range. Every setting falls where experiments were run. But the 3 nearby real tests had no clear outcome, "
-        "so the percentage leans on tests farther away.\nOne-line reading: The model expects this flame to burn until the fuel is gone.")
+        "Confidence box: No clear outcome in nearby tests. Nearby FLEX rows: 3. All ended in disruption. The percentage relies on tests farther away.\n"
+        "One-line reading: Nearby tests cannot confirm the estimated outcome.")
 OUTSIDE = ("Fuel: Heptane. Oxygen 40.0 %, Pressure 0.69 atm, Carbon dioxide 0 %, Helium 0 %, Droplet diameter 3.0 mm.\n"
-           "Model output: chance the flame burns until the fuel is gone 99 %; chance it goes out before the fuel is gone 1 %; burning rate 0.96 mm2/s; "
+           "Model output conditional on completion or visible extinction (disruptions excluded): chance the flame burns until the fuel is gone 99 %; chance it goes out before the fuel is gone 1 %; burning rate 0.96 mm2/s; "
            "droplet gone in about 9 s if the flame lasts.\n"
            "Confidence box: Outside the tested range. No experiment was run at this oxygen setting. Do not rely on these numbers.\n"
-           "One-line reading: No experiment covers these settings. Treat the fire risk as unknown.")
+           "One-line reading: These settings exceed the model's scope.")
 
 # (question, page, selected investigation, need, reading)
 QUESTIONS = [

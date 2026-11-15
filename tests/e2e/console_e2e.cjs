@@ -52,7 +52,8 @@ async function assertDisplay(page,fuel,values){
   assert.equal((await page.locator('#pKeep').innerText()).trim(),String(e.keep));
   assert.equal((await page.locator('#pOut').innerText()).trim(),String(100-e.keep));
   assert.equal((await page.locator('#kVal').innerText()).trim(),e.K);
-  assert.match(await page.locator('#meter').getAttribute('aria-label'),new RegExp(`Estimated completion chance among clear outcomes: ${e.keep} percent`));
+  assert.equal(await page.locator('#meter').getAttribute('aria-label'),
+    `Estimated completion chance among clear outcomes: ${e.keep} percent`);
 }
 async function reset(page){
   await page.locator('body').click({position:{x:5,y:100}});
@@ -77,18 +78,24 @@ async function runCase(page,name,fn){
  try{
   await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
   browser=await chromium.launch({headless:true,...(process.env.E2E_BROWSER_PATH?{executablePath:process.env.E2E_BROWSER_PATH}:{})});
-  const url=`http://127.0.0.1:${server.address().port}/index.html#notitle`;
+  const url=`http://127.0.0.1:${server.address().port}/index.html`;
   for(const height of [680,800]){
    const context=await browser.newContext({viewport:{width:1280,height},reducedMotion:'reduce'});
    const page=await context.newPage();
    const errors=[];page.on('pageerror',e=>errors.push(e.message));
    await page.goto(url);await page.waitForFunction(()=>!!window.__flame);
-   await page.locator('#tabConsole').click();
    const label=n=>`${height}_${n}`;
    await runCase(page,label('default_and_real_model'),async()=>{
+    assert.equal(await page.locator('#title').isVisible(),false);
+    assert.equal(await page.locator('#tabResearch').getAttribute('aria-current'),'page');
+    await page.locator('#tabConsole').click();
     await assertDisplay(page,'heptane',defaults);
     assert.equal(await page.locator('#mockChip').isVisible(),false);
-    assert.match(await page.locator('#srcChip').innerText(),/NASA PSI-69 FLEX/);
+    await page.locator('#guideBtn').click();
+    try {
+     assert.equal(await page.locator('#srcChip').isVisible(),true);
+     assert.match(await page.locator('#srcChip').innerText(),/NASA PSI-69 FLEX/);
+    } finally { await page.locator('#guideClose').click(); }
    });
    for(const [key,value] of Object.entries({o2:26,p:.85,co2:10,he:10,d0:4})){
     await runCase(page,label('slider_'+key),async()=>{await reset(page);await setSlider(page,key,value);await assertDisplay(page,'heptane',{...defaults,[key]:value});});
@@ -186,11 +193,16 @@ async function runCase(page,name,fn){
    const context=await browser.newContext({viewport:{width:1280,height:800},reducedMotion:'reduce'});
    const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
    if(mock) await page.route('**/model.js',route=>route.abort());
-   await page.goto(pathToFileURL(path.join(web,'index.html')).href+'#notitle');
+   await page.goto(pathToFileURL(path.join(web,'index.html')).href);
    await page.waitForFunction(()=>!!window.__flame);await page.locator('#tabConsole').click();
    await runCase(page,mock?'file_missing_model_fallback':'file_real_model',async()=>{
     assert.equal(await page.locator('#mockChip').isVisible(),mock);
-    if(mock){assert.match(await page.locator('#mockText').innerText(),/Mock numbers/);assert.equal(await page.locator('#srcChip').isVisible(),false);}
+    if(mock){
+     assert.match(await page.locator('#mockText').innerText(),/Mock numbers/);
+     await page.locator('#guideBtn').click();
+     assert.equal(await page.locator('#srcChip').isVisible(),false);
+     await page.locator('#guideClose').click();
+    }
     else await assertDisplay(page,'heptane',defaults);
     assert.deepEqual(errors,[]);
    });

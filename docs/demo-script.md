@@ -3,18 +3,11 @@
 Rules from the challenge: up to 30 seconds, English subtitles, hosted outside the
 Space Apps site, public, no login.
 
-On Nov 15 the page as it was before the redesign was checked on the real handheld:
-rendering, controls, audio and rumble (`CLAUDE.md`). The redesigned page needs its own
-hands-on check before filming.
+The team recorded controller runs on the earlier dashboard and checked the per-fuel
+page on the physical Legion Go. Before filming the redesigned page, repeat the
+handheld checks below. [Device test record](../CLAUDE.md)
 
-No video of the current build exists yet. A 28-second captioned desktop recording was
-made for pull request 5 (`docs/crew-console-demo.mp4` at commit `93d2907`). It shows
-the model before the switch (35 % at the starting values, 90 % in Moon Base air), so it
-was taken out of the repository and must not be submitted. Its sequence is worth
-reusing for a new recording: the research ranking, the Saffire-II burn lengths at 0:09,
-the BASS-II sensor readings at 0:16, then FLEX tests 108 and 183 side by side at 0:22
-(the model now gives them 25.6 % and 25.7 %). The sequence below is for filming the
-handheld and Ember.
+The [28-second captioned desktop demo](crew-console-demo.mp4) opens on the research ranking, reveals the Saffire-II burn lengths at 0:09 and the BASS-II sensor readings at 0:16, then compares FLEX tests #108 and #183 at 0:22. The sequence below is an alternative if the team films its handheld and Ember.
 
 ## Before filming
 
@@ -57,7 +50,7 @@ RT the right trigger, Menu the small button with three lines.
 | 1 | 0:00 to 0:03 | Nothing, then press A. | Start screen "Flame in Freefall", then the NASA research page. | NASA has decades of microgravity fire data. It is hard to find, compare and read. |
 | 2 | 0:03 to 0:09 | D-pad Right three times (Cabin air). Press Y, wait a second, press D-pad Right. | "Ranked for cabin air: 8 of 24 investigations". Then the Oxygen map: every test of seven investigations as a dot, then the same tests against pressure with the Moon Base air marked in orange. Headline: 20 of 746 published rows meet both atmosphere thresholds. | Of 746 table rows with ambient oxygen and pressure, 20 meet the Moon Base thresholds. |
 | 3 | 0:09 to 0:14 | Press B, then Menu. | "Ask Ember" opens and answers by itself in a few seconds, aloud: which investigations matter most for a Moon Base cabin. It ends "Answered in ... s by Ember (gemma4:12b on this team's NVIDIA GeForce RTX 5080)". | Ember, an AI model on our own RTX 5080, interprets them. No cloud, no internet. |
-| 4 | 0:14 to 0:19 | Press B, then RB (Flame console). Press X. | "Moon Base" lights up, oxygen 30.0 %, pressure 0.69 atm, the big number jumps to 99 %, an amber warning explains that the nearby outcomes are inconclusive and the background becomes the lunar surface. Below, the star map: every star is a real NASA test. | Model estimate: 99% completion among clear outcomes. All three nearby FLEX results were inconclusive. |
+| 4 | 0:14 to 0:19 | Press B, then RB (Flame console). Press X. | "Moon Base" lights up. The heptane reading shows the fitted completion estimate and explains that all three nearby tests ended in disruption. | The model estimates completion among clear outcomes. All three nearby FLEX tests were inconclusive. |
 | 5 | 0:19 to 0:24 | Push the right stick toward a star, then press RT. | A yellow ring picks a star, the heading names that test, and the flame picture replays it: the droplet shrinks, a timer runs, the flame goes out. | Every star is a real test. Pick one and replay it from NASA's measurements. |
 | 6 | 0:24 to 0:28 | Press RB (Fire drill). Press Left or Right to guess. | The settings of a real NASA test, then the reveal: "Correct." or "Not this time.", the test replayed, the score "You" against "Model". | And it is a game: guess how a real test ended, and try to beat the model. |
 | 7 | 0:28 to 0:30 | Nothing. End card over the last frame. | Text card: "Flame in Freefall Crew Fire Console. Team Second Toe. Data: NASA PSI. AI runs locally." | Team Second Toe. NASA PSI data. AI on our own hardware. |

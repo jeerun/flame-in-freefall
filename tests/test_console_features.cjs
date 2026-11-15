@@ -37,11 +37,14 @@ const beforeReset=run('JSON.stringify(state.baseline)');run('reset()');assert.eq
 run('state.fuel="methanol";render()');assert.match(nodes.compareRows.textContent,/Methanol/);
 run('saveBaseline()');assert.equal(run('state.baseline.fuel'),'methanol');
 run('clearBaseline()');assert.equal(run('state.baseline'),null);assert.equal(nodes.openCompare.disabled,true);assert.equal(nodes.compareSheet.hidden,true);
-run('reset();renderSheet(last.r,last.rc)');assert.match(nodes.summaryPrediction.textContent,/57%/);
-// 57 % is the per-fuel model's reading at the starting values (the earlier model gave 35 %).
+run('reset();renderSheet(last.r,last.rc)');assert.match(nodes.summaryPrediction.textContent,/57% completion/);
 assert.ok(nodes.sheetList.children.length);assert.ok(nodes.testList.children.length);assert.match(nodes.sheetFine.textContent,/AUC/);
 // With the per-fuel model: the page never shows 100 %, and it says when the tests do not settle which way a setting pushes.
-run('reset();state.values.o2=30;state.values.p=.694;render();renderSheet(last.r,last.rc)');assert.match(nodes.summaryPrediction.textContent,/the model estimates 99% completion and 1% visible extinction/);
+run('reset();state.values.o2=30;state.values.p=.694;render();renderSheet(last.r,last.rc)');assert.match(nodes.summaryPrediction.textContent,/clear outcome.*99% completion and 1% visible extinction/);
+run('saveBaseline();state.values.o2=31;render()');
+const capped=nodes.compareRows.children.find(row=>row.children[0].textContent==='Burns to completion');
+assert.equal(capped.children[1].textContent,'99%');assert.match(capped.children[2].textContent,/99%0 pp vs A/);
+assert.notEqual(capped.className,'changed');run('clearBaseline()');
 run('reset();state.fuel="methanol";state.values.p=.7;render();renderSheet(last.r,last.rc)');assert.match(nodes.sheetList.textContent,/Pressure at 0\.70 atm[^.]*\. The tests do not settle which way this setting pushes for methanol/);
 run('reset();state.values.o2=24;render();renderSheet(last.r,last.rc)');assert.doesNotMatch(nodes.sheetList.textContent,/do not settle/,'oxygen is a settled slope for heptane');
 run('reset();renderSheet(last.r,last.rc)');
@@ -86,4 +89,4 @@ run(`var VOICE={on:true,spoken:0}, voices=[], spoken=[];
 assert.equal(run('spoken.length'),0);
 run('voices.push({name:"Local English",lang:"en-US",localService:true});say("local voice");');
 assert.equal(run('spoken.join()'),'Local English');
-console.log('PASS: baseline isolation, live deltas, unsupported A/B warnings, replace/clear/reset, fuel changes, disclosure persistence, unclear/far/Mars/mock summaries, 1-99 % display, unsettled-slope note, overlapping stars, replay inputs, local voice, Ember context wiring, syntax.');
+console.log('PASS: baseline and displayed deltas, unsupported A/B warnings, per-fuel estimates and uncertainty, 1–99% display, disclosures, FLEX stars and replay, Ember context and local speech.');

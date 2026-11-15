@@ -11,6 +11,7 @@ documented Ember setup uses a downloaded Gemma model on the team's hardware.
 
 Try it in a browser: the [published dashboard](https://jeerun.github.io/flame-in-freefall/),
 or open `console/index.html` from a checkout.
+[Watch the short desktop demo](docs/crew-console-demo.mp4).
 
 ![NASA research on the crew console, showing activities, investigation rankings and the selected NASA record.](docs/console-preview.png)
 
@@ -25,7 +26,8 @@ or open `console/index.html` from a checkout.
   against pressure with the Moon Base air from the challenge brief marked. Its
   headline counts published rows. Of 746 rows with ambient oxygen and pressure,
   20 CFI-G rows meet the brief’s thresholds. The CFI source repeats eight rows,
-  and FLEX has no flight/ground label per row.
+  and FLEX has no flight/ground label per row. Select an investigation to see its
+  measurements across all three views. [Mobile pressure chart](docs/oxygen-map-phone.png)
 - **Earth or orbit?** Pick which environment gave the longer burn for a Saffire-II
   material, then reveal the measured lengths side by side (Research, LT or E).
 - **Read the sensors.** See the initial and final oxygen readings from BASS-II,
@@ -62,12 +64,16 @@ or open `console/index.html` from a checkout.
 - **The real tests go with you.** One button downloads the 252 FLEX tests in use,
   with the model's prediction beside each, as a CSV file. Another sends that file to
   the computer that serves the dashboard, so it is not left on the handheld.
+- **Share view.** From a selected investigation or a FLEX reading, copy a link to
+  the same question, investigation and list/orbit view, or the same fuel, settings,
+  cabin preset and selected FLEX test. On a local file or localhost, copy the view
+  code and paste it under **Share view → Open a shared view** in another copy.
+  The receiving copy recalculates the reading from its bundled model.
 
-Why a gamepad: a crew member may be wearing gloves. Every function can be reached
-from the sticks and buttons, the left stick slides a setting across its whole range
+Why a gamepad: a crew member may be wearing gloves. The research activities,
+model controls and drill work from the sticks and buttons. The left stick slides a setting across its whole range
 in about a second, and warnings come as sound and vibration as well as text. We
-have not verified glove use. The controls were tried on a real Legion Go before the
-redesign of Nov 15 and not since.
+have not verified glove use or the new controls on a physical handheld.
 
 The console numbers come from two small models trained on FLEX (PSI-69), each with
 its own slopes for heptane and for methanol. The research summaries and ranks were written by an AI model from the PSI records and
@@ -79,13 +85,20 @@ Working on real data (Nov 15, 2026).
 
 - Done: data cleaned, models trained and reviewed, all pages and the local AI built
   and checked on the team's PC in a desktop browser, with keyboard and a simulated
-  gamepad. On Nov 15 the page as it was before the redesign was tried on the real
-  Lenovo Legion Go with the owner on the controller: the screen, every stick and
-  button the code uses, sound, rumble, Ember from the PC and from the handheld's own
-  small model. What was seen is in `CLAUDE.md`. Ember's answers to 18 fixed questions
-  are in `docs/ember-check.md`, with automatic checks but no human check yet.
-- Not done yet: trying the redesigned page on the real Legion Go, the demo video and
-  the official submission form.
+  gamepad. The two-machine set-up (PC plus handheld) was checked with two copies of
+  the server on the one PC. Ember's answers to 18 fixed questions are in
+  `docs/ember-check.md`, with automatic checks but no human check yet.
+- On Nov 15 the owner used a physical Legion Go to run the earlier pooled-model
+  dashboard from the PC over Tailscale. The controller, wheel, sound, rumble,
+  replay, baseline and comparison worked. After “Send to base”, the PC's
+  `/tests.csv` returned 252 rows. On the handheld’s own server, Ember answered
+  from both the PC and the handheld’s `gemma4:e2b`.
+- The per-fuel build at `f8374e5` had a separate 1280×800 handheld screen check.
+  The newer evidence activities, shared views and redesigned controls were checked
+  in desktop Edge with simulated gamepad input. Direct Wi-Fi operation and glove
+  use remain unverified. The preview demo was captured in desktop Edge.
+  [Device test record](CLAUDE.md)
+- The official submission form is still pending.
 
 ## Run it
 
@@ -116,18 +129,18 @@ The first time, Windows asks whether to let Python through the firewall: tick th
 kind of network the PC is on (Private, Public, or both) and allow it. When the
 handheld gets through, the PC window prints "New device connected". Step by step,
 with what to do when it does not connect: `docs/legion-go-setup.md`. The script
-needs only the Python standard library. If the PC is
-off or out of reach, open the file directly as above: everything except Ember still
-works.
+needs only the Python standard library. When the PC is unreachable, a local copy
+still runs the research, evidence activities, predictions and drill, and can save
+the CSV on the device. Ember and sending a CSV to base require a reachable server.
 
-**Two machines, each with its own model** (tried on the real handheld on Nov 15). On
+**Two machines, each with its own model.** On
 the Legion Go download this repo as a ZIP, double-click `Setup Legion Go.bat` once
 (it installs Python and Ollama with winget and downloads the 4.3 GB model
 `gemma4:e2b`), then double-click `Start on Legion Go.bat`. It asks once for the
-address the PC printed. Ember then shows where it is thinking, X switches between
-the machines, and if the PC stops answering the handheld answers by itself and a
-banner says so. Away from the Wi-Fi the same works over a private network such as
-Tailscale; do not use a public tunnel.
+address the PC printed. Ember shows which machine answered. The owner used X to
+switch from the PC to the handheld. A second handheld server configured with an
+unreachable peer also answered locally. The PC was kept running, so the owner
+did not observe the disconnect banner. The tested route to the PC used Tailscale.
 
 **Where the sent file goes.** "Send to base" stores the CSV in the folder `exports/`
 on the computer that runs the server (and passes it on to the PC when the handheld
@@ -192,35 +205,28 @@ the base export (ranges, sliders, test rows) with the earlier one-slope model, i
 re-run gives the same files. The fourth joins the PSI records with the notes in
 `data/clean/research_notes.json` and writes `console/research.js`. The fifth reads
 the oxygen and pressure of each test from the PSI test tables and writes
-`console/tables.js` and the counts Ember is given. The sixth writes the Saffire-II
-and BASS-II cases of the two evidence activities, `console/evidence-data.js`. The
-last verifies the original PSI hashes offline, restoring the downloads' CRLF line
-endings in memory where Git stored LF.
+`console/tables.js` and the counts Ember is given. The sixth builds the
+Saffire-II and BASS-II evidence cases. The last command checks the original download
+hashes offline, restoring CRLF line endings in memory when necessary.
 
-After changing the shipped model or the CSV layout, run `node server/export_digest.cjs`
-and put the digest it prints into `CSV_SHA256` in `server/serve.py`. The server
-stores, forwards and serves only a file with that digest.
+After changing the shipped model or CSV layout, run `node server/export_digest.cjs`, review the new export and update `CSV_SHA256` in `server/serve.py`. The server verifies the digest before storing or forwarding a file.
 
-Checks, all from the repo root:
-
-- `python model/compare_models.py` repeats the comparison of eight candidate models
-  on held-out tests (a few minutes), and `python model/verify_per_fuel.py` the
-  independent check of its result (about a minute).
-- `python -m unittest discover -s tests` runs the Python tests: the model export,
-  the page-versus-Python parity check and the server's export check (both need
-  Node.js on PATH), the audit and the evidence rows.
-- `python model/check_parity.py` rewrites the parity report (needs Node.js).
-- `python model/science_audit.py` repeats the audit of the earlier model.
-- `node tests/test_console_features.cjs` tests the explanation summary, the baseline
-  comparison, overlapping stars, replays and the voice choice against the page's own
-  code.
-- `node tests/e2e/console_e2e.cjs` drives the real page in a browser at 1280x680 and
-  1280x800 (sliders, buttons, presets, Reset, warnings) and checks every number it
-  shows against the exported coefficients: 40 scenarios. How to run it without npm
-  is in `docs/console-e2e.md`.
-- `python tests/browser_evidence.py --channel msedge` (needs Python Playwright and
-  Edge) goes through the three evidence activities with the keyboard and a simulated
-  gamepad.
+The comparison of eight candidate outcome models is in `model/compare_models.py`.
+Run `python model/verify_per_fuel.py` for a separately implemented check of the
+pooled and per-fuel models. `python model/science_audit.py` reproduces the audit of
+the earlier pooled model. `python model/check_parity.py` repeats the page-versus-Python check (needs Node.js).
+`node tests/test_console_features.cjs` tests the explanation summary and the baseline
+comparison against the page's own code.
+`node tests/test_view_link.cjs` checks shared view codes and exact slider values.
+`python -m unittest discover tests` also checks the source rows and server export.
+With Python Playwright and Edge installed, `python tests/browser_evidence.py --channel msedge`
+exercises the new activities with keyboard and simulated gamepad input.
+`python tests/browser_view_links.py --channel msedge` checks copying and reopening
+research and console views in Edge.
+`python tests/browser_dialogs.py --channel msedge` checks focus handling and interrupted
+Ember requests using simulated responses. The team's 40-scenario browser suite also
+checks the readout against the exported coefficients at 1280×680 and 1280×800.
+[Run the browser suite](docs/console-e2e.md)
 
 `python data/clean/fetch_psi_tables.py` downloads the PSI test tables again (it
 never overwrites a file that is already there). With the server running,
@@ -256,16 +262,17 @@ The chart is drawn from the cleaned table by `python docs/make_chart.py` (needs 
 
 ## How good is the model
 
-Measured on tests held out of training (5-fold cross-validation, repeated 20 times;
-`model/metrics.json`):
+Five-fold cross-validation repeated 20 times held out individual FLEX rows.
+Similar settings can occur on both sides of a split. The team selected the model
+family using this same dataset. [Evaluation results](model/metrics.json)
 
 | Model | Tests | Result |
 |---|---|---|
-| Does the flame go out before the fuel is gone (logistic regression, own slopes for each fuel) | 199 | AUC 0.90 (0.91 within heptane, 0.85 within methanol). Accuracy 0.915, against 0.864 for always answering "goes out". Read as a yes or no at 50 %, it finds 52 % of the tests that burned to completion. |
-| Burning rate in mm²/s (linear regression, own slopes for each fuel) | 252 | Mean absolute error 0.045, R² 0.73. The values spread about 0.14. |
+| Completion versus visible extinction, with separate slopes per fuel | 199 clear outcomes | AUC 0.902 (0.906 within heptane, 0.847 within methanol). Accuracy 0.915, against 0.864 for always predicting extinction. A 50% cutoff identifies 52.4% of completions. |
+| Burning rate in mm²/s, with separate slopes per fuel | 252 | Mean absolute error 0.045 mm²/s, R² 0.732. The measured rates have a standard deviation of 0.138 mm²/s. |
 
-Keeping all tests with the same fuel and gas mix together in one fold gives almost
-the same numbers (AUC 0.90, R² 0.72).
+Keeping each fuel and gas mixture in the same fold gave AUC 0.9005 and burning-rate
+R² 0.724. [Grouped evaluation](model/per_fuel/comparison.json)
 
 **How the model got here.** Until Nov 15 the console used a simpler model: one set
 of slopes for both fuels. It scored AUC 0.81 (0.60 within methanol) and found 22 %
@@ -284,29 +291,27 @@ of the completions. Three pieces of teammates' work changed that:
   own prediction code in Node against the Python model on 820 inputs: the same
   numbers to within rounding.
 
-Before switching, we re-ran all three on the team's PC (same results, 14 of 14 tests
-pass) and checked the gain a different way (`model/verify_per_fuel.py`): with models
-built separately from the proposal's code and held out one gas mix or one test day
-at a time, AUC still goes from 0.80 to 0.90, and the per-fuel model is ahead in more
-than 99 % of 4000 paired resamples of the tests.
+In a separate implementation with the per-fuel penalty fixed at C=10, leaving out
+one gas mix at a time gave AUC 0.903 versus 0.799 for the pooled model. Leaving
+out one test day at a time gave 0.905 versus 0.802. The paired bootstrap
+resampled individual rows and favoured the per-fuel AUC in 99.8% of 4,000
+resamples for the gas-mix evaluation. [Independent check](model/per_fuel/independent_check.json)
 
-Known limits: methanol has only 8 completions in 124 tests, so the tests do not
-settle which way droplet size and carbon dioxide push for methanol, nor pressure
-for either fuel (it sits at two levels). The explanation panel says so on the lines
-that lean on them. About half of the completions are still missed at 50 %, so a low
-percentage means "less likely", not "it will go out". The page shows no chance
-below 1 % or above 99 %. "Goes out" means the visible flame only. More in
-`docs/submission.md`.
+Only 8 of the 124 clear methanol outcomes completed. Bootstrap refits disagree
+on the direction of the methanol CO₂ and diameter effects and of pressure for
+both fuels. Pressures cluster near 0.7 and 1.0 atm. The main reading limits the
+displayed probability to 1–99%. Extinction refers to the visible flame.
+The dataset does not validate the model for a crewed cabin. [Model limitations](docs/submission.md)
 
 ## Folders, and who owns each
 
 | Folder | Owner (role) | What goes here |
 |---|---|---|
 | `data/raw/` | 1 Data | Files exactly as downloaded from NASA PSI. Never edit these. |
-| `data/clean/` | 1 Data | One tidy CSV built from the raw files, plus notes on each column. Also the research notes and the scripts that write `console/research.js`, `console/tables.js` and `console/evidence-data.js`. |
+| `data/clean/` | 1 Data | One tidy CSV built from the raw files, plus notes on each column. Also the research notes and the script that writes `console/research.js`. |
 | `model/` | 2 Model | `train.py` builds the base export and the earlier model in `pooled/`. `train_per_fuel.py` trains the console's model and writes `console/model.js` and `metrics.json`. `compare_models.py` and `verify_per_fuel.py` are the comparison and its independent check (results in `per_fuel/`). Also the audit (`science_audit.py`, results in `audit_v2_1/`) and the parity check (`check_parity.py`). |
-| `tests/` | 2 Model | Tests for the model export, the audit, the parity check, the evidence rows, the server's export check, and the page's explanation and comparison. `tests/e2e/` and `browser_evidence.py` hold the browser tests. |
-| `console/` | 3 Console | `index.html`, the page that runs on the Legion Go, with its three style sheets, its data (`model.js`, `research.js`, `tables.js`, `evidence-data.js`), the evidence activities (`evidence.js`, `counterexample.js`) and NASA's FLEX image. Keep the folder together. |
+| `tests/` | 2 Model | Tests for the model export, the audit, the parity check, and the page's explanation and comparison. `tests/e2e/` holds the browser tests of the console. |
+| `console/` | 3 Console | `index.html`, the page that runs on the Legion Go, with `model.js`, `research.js` and `tables.js`. |
 | `server/` | 3 Console | `serve.py`: serves the dashboard on the local network, passes questions for Ember to the language model, and keeps the sent CSV file. `ember_check.py`: asks Ember a fixed list of questions for checking. |
 | `docs/sources.md` | 4 Science | Every NASA dataset and source we use. |
 | `docs/submission.md` | 5 Submission | Draft text for the submission form. |
@@ -357,8 +362,8 @@ Claude. Its results were re-run on the team's PC and checked with a separate scr
 before the console was switched to it.
 
 OpenAI Codex also helped implement and test the three evidence activities, the
-responsive dashboard layout, and the console and server fixes. That work was then
-merged with the per-fuel model and tested again with Claude.
+responsive dashboard layout, the console and server fixes, and the captioned browser demonstration. Its scenes
+show the actual dashboard and NASA table values.
 
 A teammate contributed the independent audit, the parity check and the browser tests
 (`model/science_audit.py`, `model/check_parity.py`, `tests/e2e/console_e2e.cjs` and
@@ -367,7 +372,6 @@ that code and text as possibly AI-assisted. The audit was re-run on the team's P
 reproduced exactly. The browser tests were brought up to date with the per-fuel model
 and run there with Claude.
 
-No AI-generated images, video or audio are used, and no data value was generated or
-changed by AI. The image on the research page is NASA's (credit in `docs/sources.md`),
-and the measurements in the evidence activities come from the published tables. Keep
-this section current: the submission form asks where and how AI was used.
+The demo uses screen captures of the working dashboard. The NASA measurements
+come from the published tables. Keep this section current: the submission form asks where and how AI
+was used.

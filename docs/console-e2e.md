@@ -6,12 +6,19 @@ PC on 15 November 2026.
 
 ## Status
 
+After pull request 5 (the redesign) was merged, the suite passed all 40 scenarios
+again in Microsoft Edge 157.0.4341.46 with Playwright 1.65.1, on the page as merged
+(`index.html` SHA-256 `1eb219fa6baf0baa13bee8024dd8daf3749a3462dcda857a061d261502c7b449`
+in a Windows checkout). The suite now opens the default dashboard directly, reads the
+model source from Controls, and checks the completion meter’s conditional-outcome
+label. It retains the per-fuel numeric comparisons. The earlier run is recorded below.
+
 **40 of 40 scenarios pass.** Run on 15 November 2026:
 
 | | |
 |---|---|
-| Page tested | `console/` after the redesign of pull request 5 was merged with the per-fuel model |
-| `index.html` SHA-256 | `a173c38766d7b71c6d36a07bd751f29a9414e77889103f98f4d49048e3c80166` |
+| Page tested | `console/` at commit `f8374e5` |
+| `index.html` SHA-256 | `a0d568a3c6e6990be59ab428e6ce4e255006a4332e8756c0935d4d0ba873b731` |
 | `model.js` SHA-256 | `148248e0e18c84eb74747935bd59c59868acf7054a107242235aaa3591e15372` |
 | Browser | Microsoft Edge 157.0.4341.46, headless, Windows 11 |
 | Driver | Playwright 1.65.1, the copy inside Python's `playwright` package |
@@ -42,15 +49,10 @@ Added at the same time:
 
 No assertion was removed or loosened.
 
-Later the same day the page was redesigned (pull request 5). All 40 scenarios were run
-again on the merged page. One assertion followed a deliberate change of wording: the
-meter's label now reads "Estimated completion chance among clear outcomes: N percent".
-The other scenarios passed unchanged.
-
 ## Does the suite notice a broken page?
 
-Checked on 15 November 2026, before the redesign, by running it on four temporary
-copies of the page, each with one deliberate fault. All four were caught:
+Checked on 15 November 2026 by running it on four temporary copies of the page,
+each with one deliberate fault. All four were caught:
 
 | Fault put into the copy | Scenarios that failed, at both screen sizes |
 |---|---|
@@ -115,8 +117,9 @@ Fallback must show the Mock banner and hide the real-model source chip.
 
 Not covered yet: the explanation panel, Save baseline and Compare (their logic is
 tested by `tests/test_console_features.cjs`), the star map, the Oxygen map, the
-NASA research page, Fire drill and Ember. The evidence activities and the
-counterexample panel have their own browser test, `tests/browser_evidence.py`.
+NASA research page, Fire drill and Ember. The evidence activities, shared views and
+the Ignite and Ember dialogs have their own browser tests: `tests/browser_evidence.py`,
+`tests/browser_view_links.py` and `tests/browser_dialogs.py`.
 
 ## Oracle and scope
 

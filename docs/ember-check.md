@@ -4,6 +4,11 @@ Made by `server/ember_check.py` on 2026-11-15. Ember is the local AI model in th
 
 Automatic checks flagged none of the 18 answers. No person has checked any of them yet.
 
+These are archived model answers. In answers 1 and 2, the value 20 counts published
+CFI-G table rows meeting the challenge’s oxygen and pressure thresholds. The records
+do not establish that the experiments were designed specifically for a Moon Base.
+The dashboard reports these as matching rows. [Data and counting method](sources.md)
+
 How to use this page: read each answer, open the NASA PSI pages listed under it, and fill in the **Human verdict** line. The two automatic checks only catch invented numbers and mixed-up ids. An answer that passes them can still be wrong, vague or beside the point.
 
 ## 1. Which investigations matter most for a Moon Base cabin with 30 percent oxygen at 10.2 psi?
