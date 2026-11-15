@@ -20,6 +20,32 @@ commit messages) is in English.
 - Deadline: Sunday Nov 15, 11:59 PM (owner's local time, Pacific). Target: submit by
   9 PM. The feature freeze has passed: fixes only, no new features.
 
+## Update, Nov 15, about 4 AM: a second run is needed
+
+The first run (steps 1 to 7 below) was done on Nov 15 and is written up in `CLAUDE.md`
+under "Verified on the real Legion Go". After it the page changed twice: the console
+switched to the per-fuel model, and pull request 5 redesigned the page. Nothing of the
+redesigned page has been seen on this device. For the second run:
+
+- Bring the clone up to date first: `git fetch`, `git checkout main`, `git pull`. The
+  branch `handheld-nov15` is merged and no longer needed. `http://run/` serves the new
+  page once the PC's dashboard has been restarted after the merge. If the page looks
+  unstyled there, the PC is still running the old server: tell the owner.
+- What moved: the page opens on NASA research (the start screen is only at `#title`).
+  The controller chip, the sound button and the key hints are in the "Controls" dialog
+  in the top bar. The hint bars at the bottom are gone.
+- What is new: on the research page LT opens "Earth or orbit?" and RT opens "Read the
+  sensors" (D-pad up and down change the case, left and right choose an answer, A
+  reveals, B closes). On the Flame console, A in the zoomed star map opens "Find
+  counterexample".
+- Readings to expect: heptane at the starting values 57 %. X to Moon Base: 99 %, an
+  amber box "No clear outcome in nearby tests" and a banner.
+- "Send to base" only accepts the file of the page the server itself serves. From this
+  device's own dashboard (`Start on Legion Go.bat`) it reaches the PC only when both
+  checkouts are at the same commit.
+- Repeat steps 2 and 4, and the controller part of step 3 only if something behaves
+  differently, then step 7. The boxes in `docs/checklist.md` are all open again.
+
 ## Do these, in order, and report after each
 
 1. **Get the repo here.** If git is installed, clone
