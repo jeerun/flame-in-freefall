@@ -56,6 +56,23 @@ gas sensor and burn-length activities. [Download manifest](../data/raw/psi_table
 
 ## Other sources (papers, NASA pages)
 
+The evidence lab plays the unmodified FLEX experiment clip from NASA SVS release 11318.
+Credit: Science@NASA and NASA's Goddard Space Flight Center. The JPEG stills come from this
+movie. Times shown on the player are seconds from the start of the clip. A proposed frame
+pair describes the visibility of the flame rim. The public clip is linked at the investigation
+level because its release page gives no experimental-table test ID. [NASA video and credits](https://svs.gsfc.nasa.gov/11318/)
+
+The checked-in result from `gemma4:12b` compares 24 one-second samples. It marks 0:08 and
+0:09 as a candidate transition. Use `python server/analyze_flex_clip.py` with Ollama, Pillow
+and imageio-ffmpeg to regenerate the input crops, saved candidate frames and model metadata.
+
+The lab’s BASS-II answers come from the [original PSI-25 table](../data/raw/psi_tables/PSI-25_Experimental%20table_BASS-II.csv).
+Reported oxygen and carbon dioxide concentrations are volume percentages. Carbon monoxide is
+in ppm. Direction filters compare the recorded initial and final values of the requested gases.
+Rows with a missing or nonnumeric reading for a requested comparison are counted separately.
+Opening a result shows the original cells and CSV line. Run `python server/table_questions.py`
+to regenerate the three offline questions from the source table.
+
 The research home image is NASA’s colorized composite of a heptane droplet burning
 in microgravity. The yellow trace follows the droplet and the surrounding structures
 show soot. Image credit: NASA. The dashboard includes a resized WebP copy for offline
