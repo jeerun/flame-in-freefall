@@ -88,10 +88,17 @@ Working on real data (Nov 15, 2026).
   gamepad. The two-machine set-up (PC plus handheld) was checked with two copies of
   the server on the one PC. Ember's answers to 18 fixed questions are in
   `docs/ember-check.md`, with automatic checks but no human check yet.
-- A physical Legion Go reached the PC over Tailscale, received Ember answers and
-  sent a CSV. Running the model on the handheld, its controls and rumble, and
-  direct Wi-Fi operation remain unverified. The preview demo was captured in
-  desktop Edge. The official submission form is still pending.
+- On Nov 15 the owner used a physical Legion Go to run the earlier pooled-model
+  dashboard from the PC over Tailscale. The controller, wheel, sound, rumble,
+  replay, baseline and comparison worked. After “Send to base”, the PC's
+  `/tests.csv` returned 252 rows. On the handheld’s own server, Ember answered
+  from both the PC and the handheld’s `gemma4:e2b`.
+- The per-fuel build at `f8374e5` had a separate 1280×800 handheld screen check.
+  The newer evidence activities, shared views and redesigned controls were checked
+  in desktop Edge with simulated gamepad input. Direct Wi-Fi operation and glove
+  use remain unverified. The preview demo was captured in desktop Edge.
+  [Device test record](CLAUDE.md)
+- The official submission form is still pending.
 
 ## Run it
 
@@ -126,14 +133,14 @@ needs only the Python standard library. When the PC is unreachable, a local copy
 still runs the research, evidence activities, predictions and drill, and can save
 the CSV on the device. Ember and sending a CSV to base require a reachable server.
 
-**Two machines, each with its own model** (not yet tried on the real handheld). On
+**Two machines, each with its own model.** On
 the Legion Go download this repo as a ZIP, double-click `Setup Legion Go.bat` once
 (it installs Python and Ollama with winget and downloads the 4.3 GB model
 `gemma4:e2b`), then double-click `Start on Legion Go.bat`. It asks once for the
-address the PC printed. Ember then shows where it is thinking, X switches between
-the machines, and if the PC stops answering the handheld answers by itself and a
-banner says so. Away from the Wi-Fi the same works over a private network such as
-Tailscale; do not use a public tunnel.
+address the PC printed. Ember shows which machine answered. The owner used X to
+switch from the PC to the handheld. A second handheld server configured with an
+unreachable peer also answered locally. The PC was kept running, so the owner
+did not observe the disconnect banner. The tested route to the PC used Tailscale.
 
 **Where the sent file goes.** "Send to base" stores the CSV in the folder `exports/`
 on the computer that runs the server (and passes it on to the PC when the handheld
