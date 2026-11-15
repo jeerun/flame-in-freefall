@@ -40,6 +40,20 @@ owner's local time (confirm on the team page). "Submit for Judging" is final.
 - [ ] On the Moon Base preset, check the warning about three nearby disruptions.
       The line under the number reads "Disruption chance 98%".
       In Ignite or Ember, B should close the dialog and return to the previous control.
+- [ ] In full screen (F11) the browser reports 1280x800. On each page, check that the
+      small text is easy to read at arm's length and that a thumb hits the plus and minus
+      steps, the tabs, **Find**, **NASA source** and the CSV buttons the first time.
+- [ ] On NASA research press View (or tap **Take the tour**). Nine cards follow, each
+      with one part of the page outlined. A goes on, D-pad Left goes back, B ends it.
+      After the last card the page returns to NASA research.
+- [ ] On the Flame console press X for Moon Base, A for the explanation, then RT. "What
+      would put this flame out?" lists "Lower oxygen to 19 %" (25 %, under the watch
+      level) and marks carbon dioxide and helium "not enough alone". D-pad Down moves
+      between the changes, A tries one, B closes. Open it again (A, RT) and use
+      **Put it back**. Tapping **Put it out** beside **Explain reading** opens the same panel.
+- [ ] Oxygen map, third view: the pressure scale ("5 atm" to "0.3 atm") is on the right
+      of the chart and no label lies on another.
+- [ ] Fire drill: after an answer, a line for that round appears under the scoreboard.
 
 ## Earlier Legion Go runs recorded by the owner
 

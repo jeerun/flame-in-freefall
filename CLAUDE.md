@@ -42,6 +42,15 @@ Submission closes Sunday Nov 15, 11:59 PM in the team owner's local time
 
 ## Status
 
+Handheld pass (Nov 15, about 10:34 AM): the page is tuned for the Legion Go's full
+screen, 1280x800. No text is under 12 px and the controls are thumb-sized there; a lower
+window keeps the earlier sizes. **Take the tour** in the top bar (T on Research, or View)
+walks the three pages in nine steps. On the Flame console **Put it out** beside **Explain
+reading** (Q, or RT while the explanation is open) shows which single change of oxygen,
+carbon dioxide or helium takes the reading under the 30 % watch level, with the real tests
+near it. Fire drill lists the rounds played. Checked on the PC only, in desktop Edge with
+keyboard, touch emulation and a simulated gamepad. Not yet seen on the physical Legion Go.
+
 Research opens in Orbit view. The tools and investigation details open on demand.
 Four numbered rings and a visible key explain the AI relevance scores from 3 to 0.
 X switches between Orbit and List. Find (F) searches all 24 investigations by name, title
@@ -71,7 +80,7 @@ the handheld's IPv4 address. The local device log requires the per-run password
 printed on the PC. For a two-server setup, update the base first and then the
 handheld so both support one-hop peer requests. [Current setup](docs/legion-go-setup.md)
 
-Last updated Sunday Nov 15, about 5:20 AM by the owner's PC clock (British Columbia time, UTC-7).
+Last updated Sunday Nov 15, about 10:34 AM by the owner's PC clock (British Columbia time, UTC-7).
 
 Pull request 5, merged on Nov 15, includes shared research views and FLEX readings. Open a shared URL on
 the hosted dashboard, or paste a view code into another offline copy. The Oxygen
@@ -574,6 +583,61 @@ Not done:
     - NOT checked: the handheld. NOT done: the live copy on GitHub Pages and the PC's
       running dashboard still serve main. After a merge: restart the dashboard, run
       `git subtree push --prefix console origin gh-pages`, and pull on the handheld.
+    - Merged by the owner on GitHub as pull request 9 on Nov 15. Pull requests 7 to 13
+      (LAN boundaries, the evidence lab, this audit, orbit-first Research, the Moon
+      answer paths, Crew mode and its briefing) were all merged between about 4:40 and
+      7:10 AM by the PC clock.
+
+  - HANDHELD PASS, TOUR AND "PUT IT OUT" (Nov 15, about 10:00 to 10:34 AM by the PC clock,
+    at the owner's words "fix these, check it against the Legion Go, do E, B, then A, and
+    push; keep the old design", then "make it easy to use on the Lenovo" and "take plenty
+    of time to think"). Built on main at `208f6ad`, after pull requests 7 to 13.
+    - Measured first, at 1280x800 and 1280x680: text of 10 to 11.8 px in a dozen places,
+      "NASA source" 16 px tall, Find and List view 29 px, the CSV buttons 28 px, plus and
+      minus 33x32 px, and in the Oxygen map's pressure view "Earth at sea level" lying on
+      "1 atm". The amber edge beside the explanation panel was already gone on this main.
+    - Sizes (`console/console-ui.css`, last block; chart text in `console/index.html`):
+      no text under 12 px on the three pages, the Oxygen map and Ignite. The zoomed star
+      map keeps its 9.5 px test numbers. Under `@media (min-width: 821px) and (min-height:
+      760px)` the controls are 40 px or taller (tabs, plus and minus and their tracks,
+      fuel, Explain reading, Put it out, CSV, map and dialog buttons). Below 760 px of
+      height the earlier sizes stay, so 1280x680 looks as before and does not scroll.
+    - Oxygen map, pressure view: the pressure scale moved outside the plot, to the right.
+      Notes under names ("no pressure in its table") take a second 12 px line where a row
+      is at least 32 px high. The three floating labels have a dark outline.
+    - Fire drill: "Rounds played" under the scoreboard, one line per answered round.
+    - `console/advisor.js`, "What would put this flame out?". Doors: **Put it out** beside
+      Explain reading (also in Crew mode), a button in the explanation, key Q, and RT while
+      the explanation or the comparison is open (RT still replays a test otherwise). It
+      steps oxygen down, carbon dioxide up and helium up through the tested range, reads
+      every step off `assessAt()` in the page (so it shows the numbers the console shows),
+      and stops at the first step whose displayed reading is under 30 %. It leaves out a
+      gas whose direction the tests do not settle (`meta.unsure`), and one never tested
+      with a gas already present. Each change comes with the count of nearby real tests.
+      "Try it" moves the setting; opening the panel again offers "Put it back".
+      Readings: heptane at the starting values: oxygen 19 % gives 24 %, carbon dioxide
+      10 % gives 27 %, helium 19 % gives 28 %. Moon Base heptane: oxygen 19 % gives 25 %
+      (and the panel says that is under the 30 % of Moon Base air), carbon dioxide at 50 %
+      still reads 60 %, helium at 45 % still 98 %. The panel says it looks only at the
+      flame, does not check that the air stays breathable, and is not a crew procedure.
+    - `console/tour.js`: nine cards (four on Research, three on the Flame console, one on
+      Fire drill, one on Controls). It opens no dialog and changes no setting; it turns
+      pages and opens the research tools strip for one step. While it is open the arrows,
+      A and B go to it and no other key reaches the page. A dialog opened by touch ends it.
+      Doors: **Take the tour** in the top bar (accent border until it has been taken once
+      on that device), a button in Controls, T on Research, and View on Research. View
+      there used to open the Oxygen map as well as Y; Y still does.
+    - Research opens with one more line, "Fire safety for the Moon and Mars, from NASA's
+      microgravity experiments" (hidden below 725 px of height to keep the orbit's size).
+    - `render()` now takes its reading from `assess()`, the same code `assessAt()` runs
+      for other settings. No reading changed. `server/serve.py` serves the two new files.
+      The CSV and its digest are unchanged.
+    - New tests: `node tests/test_advisor.cjs` (the search, against an oracle written from
+      the formula and the test rows) and `python tests/browser_guides.py --channel msedge`
+      (sizes at 1280x800, Oxygen map labels, the round log, the panel by keyboard, touch
+      and simulated gamepad with undo, the tour by keyboard, gamepad, Controls and phone).
+    - NOT checked: the physical Legion Go, a real gamepad, real touch. The demo script and
+      the recorded video do not show the tour or the panel.
 
 Not done, or not verified:
 - Everything in the list above is unverified on the real Legion Go, with real

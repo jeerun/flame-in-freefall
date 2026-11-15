@@ -78,6 +78,17 @@ The team did not inspect the PC's export folder during the handheld test.
 Keep this route inside your tailnet. The dashboard and Ember accept requests from
 clients allowed through the proxy. The PC's device log has a separate password.
 
+## Built for this screen
+
+In full screen (F11) the Legion Go's browser is 1280x800. At that size the page uses no
+text under 12 px and makes its controls thumb-sized: tabs, the plus and minus steps and
+their tracks, fuel, **Explain reading**, **Put it out**, the CSV buttons and the dialog
+buttons. In a lower window it keeps the earlier sizes so that nothing scrolls. This was
+measured in desktop Edge at 1280x800 and 1280x680, not on the device.
+
+Two things help a first-time user on the handheld: **Take the tour** in the top bar
+(View on the research page) and, on the Flame console, **Put it out** (A, then RT).
+
 ## The Legion Go's extra controls
 
 On the earlier dashboard, the owner verified the physical wheel moved the

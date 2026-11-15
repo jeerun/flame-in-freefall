@@ -64,7 +64,9 @@ words. For replay, pick a test with a measured burn time and the required diamet
 Other things worth a few seconds if you would rather show them than the game: LT
 (Ignite, one run of the model drawn like FLEX footage), View on the Flame console
 (the star map zoomed to the whole screen with the model's 25, 50 and 75 % lines),
-or pressing the left stick (the real tests sent to the PC as a CSV file).
+pressing the left stick (the real tests sent to the PC as a CSV file), or, on the
+Moon Base reading, A then RT ("What would put this flame out?": oxygen has to fall to
+19 %, carbon dioxide and helium are not enough alone).
 
 One thing the video leaves out for time: with carbon dioxide and helium both above
 zero the console turns red, "Outside the tested range", and the controller buzzes.

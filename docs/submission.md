@@ -164,6 +164,18 @@ surface, or Mars. FLEX ran tests close to that pressure and oxygen level, so the
 can show both what the model expects there and that the nearest real tests were
 inconclusive.
 
+**What would put it out?** One button beside the explanation turns the model around.
+It moves oxygen, carbon dioxide and helium one at a time through the range FLEX tested
+and shows the first value at which the reading drops under the model's 30% watch level,
+together with what the real tests near that value did. For heptane in Earth-like air,
+two points less oxygen or ten percent carbon dioxide is enough. For the same fuel in Moon
+Base air neither carbon dioxide nor helium gets there within the tested range, and oxygen
+has to fall to 19%, which is no longer Moon Base air. The panel reads the flame model only: it does not
+check that the changed air is safe to breathe, and it is not a crew procedure.
+
+**A one-minute tour.** A button in the top bar walks a first-time user through the three
+pages in nine steps, with one part of the screen outlined at a time.
+
 **Ignite.** One button plays a single run of the model full screen. A droplet drawn
 with a scale bar shrinks at the predicted burning rate, and whether this run burns all
 its fuel is drawn at random with the model's odds, so pressing it a few times shows
@@ -179,7 +191,8 @@ console with the same inputs. A stick sweep moves
 a selected setting across its range. Banners and, on supported devices, sound and
 vibration report changes in the evidence, including leaving the input ranges,
 finding only inconclusive nearby tests or seeing nearby results disagree with the
-model. The team has not tested glove operation.
+model. At the handheld's full-screen size of 1280×800 the page uses no text under
+12 px and thumb-sized controls. The team has not tested glove operation.
 
 **Takes the data with you.** The challenge asks for data that supports predictive
 modelling. One button saves the 252 in-scope tests with their fitted predictions.

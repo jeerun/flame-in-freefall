@@ -75,9 +75,21 @@ or open `console/index.html` from a checkout.
   Pause and resume with P or controller X to inspect its diameter and time. The
   page warns, with a banner, a sound and a buzz, when the settings leave what the
   experiments actually tested. [Crew mode preview](docs/crew-training-preview.png) · [Paused model run](docs/ignite-preview.png)
+- **What would put it out?** **Put it out** beside **Explain reading** (Q, or RT while
+  the explanation is open) moves oxygen, carbon dioxide and helium one at a time through
+  the range FLEX tested. For each it shows the first value at which the model's reading
+  drops under its 30 % watch level, and what the real tests near that value did. It says
+  so when a change is not enough alone: for heptane in Moon Base air only less oxygen gets
+  there, at 19 %, which is no longer Moon Base air. **Try it** moves the setting and the
+  panel can put it back. It reads the flame model only. It does not check that the changed
+  air is safe to breathe, and it is not a crew procedure.
 - **Fire drill** is a ten-round game. It shows the settings of a real FLEX test and
   you guess how it ended. It then replays the test, shows NASA's recorded result and
-  keeps score, you against the model, with a streak, a rank and a best score.
+  keeps score, you against the model, with a streak, a rank and a best score. The rounds
+  played are listed under the scoreboard.
+- **A one-minute tour.** **Take the tour** in the top bar (T on the research page, or the
+  View button) walks through the three pages in nine steps, one highlighted part at a time.
+  A or Right goes on, Left goes back, B ends it.
 - **Ember**, the on-board AI, is on every page when the dashboard is served by
   `server/serve.py`. It is a language model running on the team's PC (RTX 5080), or
   a smaller one on the handheld itself. Left on "Auto" it uses the PC while the PC
@@ -122,6 +134,11 @@ Working on real data (Nov 15, 2026).
   in desktop Edge with simulated gamepad input. Direct Wi-Fi operation and glove
   use remain unverified. The preview demo was captured in desktop Edge.
   [Device test record](CLAUDE.md)
+- Later on Nov 15 the page was tuned for the handheld's full screen (1280×800): no
+  text under 12 px, thumb-sized controls, a pressure scale that no longer lies on the
+  data in the Oxygen map, plus the tour and "What would put it out?". These were checked
+  in desktop Edge with keyboard, touch emulation and a simulated gamepad, not yet on the
+  physical Legion Go.
 - The official submission form is still pending.
 - Open `console/index.html` from a checkout to try the orbit-first home,
   investigation search and Moon evidence check. [Pull request #10](https://github.com/jeerun/flame-in-freefall/pull/10)
@@ -191,12 +208,14 @@ B closes.
 
 | Where | Gamepad | Keyboard |
 |---|---|---|
-| NASA research | Left/Right change the question. Up/Down move through the ranked list. X switches between the list and the orbit view. In the orbit view the right stick points at an investigation. Y (or View) opens the Oxygen map. | Arrows, X, O, F to find an investigation, G for the Moon evidence check |
+| NASA research | Left/Right change the question. Up/Down move through the ranked list. X switches between the list and the orbit view. In the orbit view the right stick points at an investigation. Y opens the Oxygen map. View starts the tour. | Arrows, X, O, F to find an investigation, G for the Moon evidence check, T for the tour |
 | Research evidence activities | LT opens Earth or orbit?, RT opens Read the sensors. D-pad Up/Down changes case, Left/Right chooses an answer, A reveals, B closes. | E / N, arrows, Enter, Esc |
 | FLEX counterexample | A on the zoomed star map opens the panel. Left/Right moves between actions, A activates, B closes. | E, arrows, Enter, Esc |
 | Oxygen map | Up/Down pick an investigation. Left/Right or X change the level of detail. B or Y closes. | Arrows, 1 to 3, X, Esc |
 | Flame console | Up/Down pick a setting. The left stick slides it: a light push creeps, a full push sweeps. The d-pad moves it one step. A explain, B close a panel or toggle Crew mode, X cabin air (Earth, Moon Base, Mars base), Y reset. Right stick picks a star, RT replays that test, pressing the right stick moves the settings onto it. LT Ignite. View zooms the star map. Pressing the left stick sends the tests to the base computer. | Arrows, Enter, Esc, X, R, `[` and `]` pick a star, P replay, G go there, I Ignite, Z zoom the map, D download the tests, S send or share them |
-| Explanation (A) | Up/Down or the right stick scroll it. X opens "Why this prediction?", Y opens "Test details and sources". LT saves the settings as baseline A and opens the comparison. B closes. | W, T, H, Esc |
+| Explanation (A) | Up/Down or the right stick scroll it. X opens "Why this prediction?", Y opens "Test details and sources". LT saves the settings as baseline A and opens the comparison. RT asks what would put the flame out. B closes. | W, T, H, Q, Esc |
+| What would put it out? | Up/Down choose a change, A tries it (or puts the last one back), B closes. | Q on the Flame console, arrows, Enter, Esc |
+| Tour | A or Right goes on, Left goes back, B ends it. | T on the research page, arrows, Enter, Esc |
 | Comparison | The settings still change as usual and update B live. LT makes B the new baseline. The right stick scrolls. B closes. | H save or replace the baseline, C open or close, Esc |
 | Zoomed star map | Up/Down or the right stick pick a star. Left/Right or X change the level of detail. RT replay, right-stick press go there, B or View closes. | Arrows, 1 to 3, X, P, G, Esc |
 | Ignite | A or LT runs it again, B closes. | Enter, Esc |
@@ -254,13 +273,17 @@ the earlier pooled model. `python model/check_parity.py` repeats the page-versus
 `node tests/test_console_features.cjs` tests the explanation summary and the baseline
 comparison against the page's own code.
 `node tests/test_view_link.cjs` checks shared view codes and exact slider values.
+`node tests/test_advisor.cjs` checks the search behind "What would put it out?" against
+the exported model and test rows.
 `python -m unittest discover tests` also checks the source rows and server export.
 With Python Playwright and Edge installed, `python tests/browser_evidence.py --channel msedge`
 exercises the new activities with keyboard and simulated gamepad input.
 `python tests/browser_view_links.py --channel msedge` checks copying and reopening
 research and console views in Edge.
 `python tests/browser_dialogs.py --channel msedge` checks focus handling and interrupted
-Ember requests using simulated responses. The team's 40-scenario browser suite also
+Ember requests using simulated responses.
+`python tests/browser_guides.py --channel msedge` checks the text and control sizes at
+1280×800, the tour and "What would put it out?" with keyboard, touch and a simulated gamepad. The team's 40-scenario browser suite also
 checks the readout against the exported coefficients at 1280×680 and 1280×800.
 [Run the browser suite](docs/console-e2e.md)
 

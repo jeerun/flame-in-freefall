@@ -49,6 +49,23 @@ redesigned page has been seen on this device. For the second run:
   step 2, and the controller part of step 3 only if something behaves differently,
   then step 7.
 
+## Update, Nov 15, late morning: a handheld pass on the PC
+
+The PC session changed the page for this device. None of it has been seen here yet.
+
+- Sizes: at 1280x800 (full screen) no text is under 12 px and the controls are 40 px or
+  taller. Below 760 px of height the page keeps the earlier, smaller controls so that
+  nothing scrolls. If F11 here does not give 1280x800, say what it gives.
+- New: **Take the tour** in the top bar (View on the research page, or T). **Put it out**
+  beside **Explain reading** on the Flame console (A then RT, or Q). Fire drill lists the
+  rounds played. On the research page View no longer opens the Oxygen map (Y still does).
+- Readings to expect in "What would put this flame out?": heptane at the starting values:
+  oxygen 19 % gives 24 %, carbon dioxide 10 % gives 27 %. Moon Base: oxygen 19 % gives
+  25 %, carbon dioxide and helium are "not enough alone".
+- Go through the five new boxes at the end of "Handheld recheck of the redesigned page"
+  in `docs/checklist.md`. `http://run/` serves the new page once the PC's dashboard has
+  been restarted. A local copy needs `git pull` first.
+
 ## Do these, in order, and report after each
 
 1. **Get the repo here.** If git is installed, clone
