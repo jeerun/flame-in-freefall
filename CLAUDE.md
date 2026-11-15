@@ -42,7 +42,7 @@ Submission closes Sunday Nov 15, 11:59 PM in the team owner's local time
 
 ## Status
 
-Last updated Saturday Nov 14, about 11:00 PM Mountain Time.
+Last updated Saturday Nov 14, about 9:25 PM Mountain Time.
 
 Done:
 - Team created on the Space Apps site, challenge selected.
@@ -76,6 +76,10 @@ Done:
   readings in it were checked in a desktop browser, not on the Legion Go.
 - Step 9 done: `docs/checklist.md`. Repo confirmed Public on Nov 14 (opened without
   signing in). The remaining boxes are for the owner.
+
+- Stretch chart done: `docs/make_chart.py` draws `docs/flex_outcomes.png` from the
+  cleaned table (test outcome by oxygen and droplet size, one panel per fuel). It
+  is in the README. The local LLM stretch has not been started.
 
 Not done:
 - Step 4 is waiting for the owner to paste the official challenge page text. After
