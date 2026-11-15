@@ -86,7 +86,7 @@ SYSTEM_READING = (
     " The completion and visible-extinction percentages are conditional on a clear outcome. The classifier trained on "
     "199 FLEX tests with decisive outcomes and excluded 53 disruptions. It estimates a droplet outcome, never cabin fire risk. "
     "They are estimates, not physics and not a crew procedure, so do not present them as certain. "
-    "If the reading says the settings are outside the tested range, say that the fire risk there is unknown. "
+    "If the reading says the settings are outside the tested range, say that the flame outcome there is unknown. "
     "'Goes out' means the visible flame only."
 )
 STOP = set("the a an and or of to in on for with by is are was were be been it this that these those what which who how why "
