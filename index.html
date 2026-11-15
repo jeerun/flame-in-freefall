@@ -77,8 +77,8 @@
     cursor: pointer;
   }
   .row.sel { background: var(--panel-hi); border-left-color: var(--flame); }
-  .row .head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 0.7rem; min-width: 0; }
-  .row .name { font-size: 1.05rem; }
+  .row .head { display: flex; align-items: baseline; gap: 0 0.7rem; min-width: 0; }
+  .row .name { font-size: 1.05rem; white-space: nowrap; }
   .row .val { font-size: 1.45rem; font-weight: 600; text-align: right; white-space: nowrap; }
   .row .val small { font-size: 0.85rem; font-weight: 400; color: var(--ink-2); margin-left: 0.2rem; }
   .row .ctl { grid-column: 1 / -1; display: grid; grid-template-columns: auto 1fr auto; gap: 0.6rem; align-items: center; }
@@ -108,7 +108,7 @@
   }
   .row.out .track input[type=range]::-webkit-slider-thumb { background: var(--critical); }
   .row.out .track input[type=range]::-moz-range-thumb { background: var(--critical); }
-  .row .note { font-size: 0.8rem; color: var(--ink-3); }
+  .row .note { font-size: 0.8rem; color: var(--ink-3); min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .row.out .note { color: var(--ink); }
   .fuels { grid-column: 1 / -1; display: flex; gap: 0.5rem; flex-wrap: wrap; }
   .fuels button {
@@ -206,6 +206,18 @@
     .flamebox { width: 6.5rem; height: 6.5rem; }
     .big { font-size: 2.8rem; }
   }
+  /* Short screens (a 1280x680 browser window): tighten the spacing so six rows fit without scrolling. */
+  @media (max-height: 720px) and (min-width: 821px) {
+    .top { padding: 0.5rem 1.2rem; }
+    main { padding: 0.6rem 1.2rem; }
+    h2 { margin-bottom: 0.4rem; }
+    .rows { gap: 0.35rem; }
+    .row { padding: 0.35rem 0.8rem 0.4rem 1rem; }
+    .fuels button { padding: 0.35rem 0.9rem; }
+    .legend { margin-top: 0.35rem; }
+    .read { gap: 0.55rem; }
+    .hints { padding: 0.4rem 1.2rem; }
+  }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
@@ -236,10 +248,10 @@
         <div class="droplet" id="droplet"></div>
       </div>
       <div>
-        <div class="big-label">Chance the flame keeps burning</div>
+        <div class="big-label">Chance the flame burns until the fuel is gone</div>
         <div class="big"><span id="pKeep">50</span><small>%</small></div>
-        <div class="meter" id="meter" role="img" aria-label="Chance the flame keeps burning"><div id="meterFill"></div></div>
-        <div class="twin">Chance it goes out on its own: <span id="pOut">50</span>%</div>
+        <div class="meter" id="meter" role="img" aria-label="Chance the flame burns until the fuel is gone"><div id="meterFill"></div></div>
+        <div class="twin">Chance it goes out before the fuel is gone: <span id="pOut">50</span>%</div>
       </div>
       <div class="caption">Picture is an illustration, not a simulation. In microgravity a droplet flame forms a sphere instead of a teardrop.</div>
     </div>
@@ -286,7 +298,16 @@
   max of each column in the training data: the range warning depends on them.
 
   extinction: logistic regression. P(flame goes out) = sigmoid(intercept + fuel + sum(coef * value))
+              "Goes out" is FLEX "Extinction": the flame went out before the fuel was gone.
+              The other outcome is "Completion": it burned until the fuel was gone.
   burn_rate:  linear regression.  K in mm^2/s       = intercept + fuel + sum(coef * value)
+
+  Optional fields the real export adds (the page works without them):
+  meta.exclusive     pairs of settings no test ever combined, e.g. [["co2","he"]]
+  meta.far_distance  nearest-test distance above which a reading counts as far from the data
+  meta.auc, meta.burn_rate_mae, meta.rows_burn_rate   held-out accuracy, shown in the fine print
+  tests              one row per real test:
+                     [test, id, fuel, o2 %, pressure atm, co2 %, he %, droplet mm, test end, burning rate]
 -->
 <script>
 window.FLAME_MODEL = {
@@ -370,16 +391,61 @@ window.FLAME_MODEL = {
     var K = Math.max(0, linear(M.burn_rate));
     return { pOut: pOut, pKeep: 1 - pOut, K: K };
   }
+  var byKey = {};
+  M.features.forEach(function (f) { byKey[f.key] = f; });
+  var GAS = ["o2", "co2", "he"].filter(function (k) { return byKey[k]; });   // gases the user sets, in %
+  var lastGas = GAS.filter(function (k) { return k !== "o2"; }).pop();       // row that carries the nitrogen note
+  var hasTests = !!(M.tests && M.tests.length);
+  var TEST_COL = { o2: 3, p: 4, co2: 5, he: 6, d0: 7 };                      // where each setting sits in a tests row
+
+  // Closest real test with the same fuel. Each setting is scaled by its tested
+  // range, the same distance model/train.py used to set meta.far_distance.
+  function nearest() {
+    if (!hasTests) return null;
+    var limit = M.meta.far_distance || 0;
+    var best = null, bestD = Infinity, near = { n: 0, out: 0, done: 0, other: 0 };
+    M.tests.forEach(function (t) {
+      if (t[2] !== state.fuel) return;
+      var s = 0;
+      M.features.forEach(function (f) {
+        var c = TEST_COL[f.key];
+        if (c == null) return;
+        var z = (state.values[f.key] - t[c]) / ((f.data_max - f.data_min) || 1);
+        s += z * z;
+      });
+      var d = Math.sqrt(s);
+      if (d < bestD) { bestD = d; best = t; }
+      if (limit && d <= limit) {
+        near.n++;
+        if (t[8] === "Extinction") near.out++; else if (t[8] === "Completion") near.done++; else near.other++;
+      }
+    });
+    return best ? { test: best, dist: bestD, far: limit > 0 && bestD > limit, near: near } : null;
+  }
+
   function rangeCheck() {
-    var out = [], edge = [];
+    var out = [], edge = [], clash = {}, pairs = [];
     M.features.forEach(function (f) {
       var v = state.values[f.key], m = (f.data_max - f.data_min) * 0.1;
       if (v < f.data_min - 1e-9 || v > f.data_max + 1e-9) out.push(f);
-      else if ((f.data_min > f.min && v < f.data_min + m) || (f.data_max < f.max && v > f.data_max - m)) edge.push(f);
+      // Without the test list (mock model) fall back to a plain "close to the limit" rule.
+      else if (!hasTests && ((f.data_min > f.min && v < f.data_min + m) || (f.data_max < f.max && v > f.data_max - m))) edge.push(f);
     });
-    return { out: out, edge: edge, level: out.length ? "outside" : edge.length ? "edge" : "inside" };
+    // Settings no test ever combined: both above zero is untested ground.
+    (M.meta.exclusive || []).forEach(function (pair) {
+      var a = byKey[pair[0]], b = byKey[pair[1]];
+      if (!a || !b || !(state.values[a.key] > 1e-9) || !(state.values[b.key] > 1e-9)) return;
+      pairs.push([a, b]);
+      clash[a.key] = b.label.toLowerCase(); clash[b.key] = a.label.toLowerCase();
+    });
+    var gasSum = 0;
+    GAS.forEach(function (k) { gasSum += state.values[k]; });
+    var over = gasSum > 100 + 1e-9;
+    var near = nearest();
+    var level = (out.length || pairs.length || over) ? "outside" : (edge.length || (near && near.far)) ? "edge" : "inside";
+    return { out: out, edge: edge, clash: clash, pairs: pairs, gasSum: gasSum, over: over, near: near, level: level };
   }
-  // How far each setting pushes the flame toward surviving, measured from its default.
+  // How far each setting pushes the flame toward burning until the fuel is gone, measured from its default.
   function drivers() {
     var list = M.features.map(function (f) {
       return { label: f.label, f: f, push: -(M.extinction.coef[f.key] || 0) * (state.values[f.key] - f.default) };
@@ -395,38 +461,57 @@ window.FLAME_MODEL = {
   function names(arr) { return arr.map(function (f) { return f.label.toLowerCase(); }).join(", "); }
   function at(arr) { return arr.length === 1 ? "this " + names(arr) + " setting" : "these settings: " + names(arr); }
   function fuelLabel() { return M.fuels.filter(function (x) { return x.key === state.fuel; })[0].label; }
+  function trim(v) { return String(Math.round(v * 100) / 100); }
+  function gasNames() {
+    var n = GAS.map(function (k) { return byKey[k].label.toLowerCase(); });
+    return n.length > 1 ? n.slice(0, -1).join(", ") + " and " + n[n.length - 1] : n.join("");
+  }
+  // "21 % oxygen, 1 atm pressure, 3.2 mm droplet diameter". Gases a test did not use are left out.
+  function testSettings(t) {
+    return M.features.filter(function (f) {
+      var c = TEST_COL[f.key];
+      return c != null && (f.key === "o2" || GAS.indexOf(f.key) < 0 || t[c] > 0);
+    }).map(function (f) { return trim(t[TEST_COL[f.key]]) + " " + f.unit + " " + f.label.toLowerCase(); }).join(", ");
+  }
+  function testEnd(t) {
+    if (t[8] === "Extinction") return "Its flame went out before the fuel was gone.";
+    if (t[8] === "Completion") return "It burned until the fuel was gone.";
+    return "It was recorded as \"" + t[8] + "\", so it has no clear flame outcome.";
+  }
 
   function render() {
     var r = predict(), rc = rangeCheck();
+    // Real tests right next to these settings outrank the model: flag it when most of them went the other way.
+    var nb = rc.near ? rc.near.near : null, seen = nb ? nb.out + nb.done : 0;
+    rc.disagree = rc.level === "inside" && seen >= 2 &&
+      ((r.pKeep < 0.35 && nb.done * 2 > seen) || (r.pKeep >= 0.65 && nb.out * 2 > seen));
+    if (rc.disagree) rc.level = "edge";
 
     fuelVal.textContent = fuelLabel();
     Array.prototype.forEach.call(fuelBtns.children, function (b) { b.setAttribute("aria-pressed", String(b.dataset.fuel === state.fuel)); });
     fuelRow.classList.toggle("sel", state.sel === 0);
 
-    var inert = 100;
     M.features.forEach(function (f, i) {
       var v = state.values[f.key], R = numRows[i];
       R.val.innerHTML = ""; R.val.appendChild(document.createTextNode(fmt(f, v)));
       R.val.appendChild(el("small", "", f.unit));
       R.input.value = v;
-      var isOut = rc.out.indexOf(f) >= 0;
-      R.row.classList.toggle("out", isOut);
+      var isOut = rc.out.indexOf(f) >= 0, isGas = GAS.indexOf(f.key) >= 0;
+      var clash = rc.clash[f.key], tooMuch = isGas && rc.over && v > 0;
+      R.row.classList.toggle("out", isOut || !!clash || tooMuch);
       R.row.classList.toggle("sel", state.sel === i + 1);
-      R.note.textContent = isOut
-        ? "outside tested range, " + fmt(f, f.data_min) + " to " + fmt(f, f.data_max) + " " + f.unit
+      R.note.textContent = isOut ? "outside tested range, " + fmt(f, f.data_min) + " to " + fmt(f, f.data_max) + " " + f.unit
+        : tooMuch ? "gases add up to " + rc.gasSum.toFixed(1) + " %, over 100 %"
+        : clash ? "never tested together with " + clash
+        : (f.key === lastGas && GAS.indexOf("o2") >= 0) ? "rest of the air is nitrogen, " + (100 - rc.gasSum).toFixed(1) + " %"
         : "";
-      if (f.key === "o2" || f.key === "co2") inert -= v;
     });
-    var co2Row = numRows[M.features.map(function (f) { return f.key; }).indexOf("co2")];
-    if (co2Row && state.values.o2 != null && !co2Row.row.classList.contains("out")) {
-      co2Row.note.textContent = "rest of the air is nitrogen, " + inert.toFixed(1) + " %";
-    }
 
     var keep = Math.round(r.pKeep * 100);
     $("pKeep").textContent = keep; $("pOut").textContent = 100 - keep;
     $("meterFill").style.width = Math.max(2, keep) + "%";
     $("meter").className = "meter" + (r.pKeep >= 0.65 ? " high" : r.pKeep >= 0.35 ? " mid" : "");
-    $("meter").setAttribute("aria-label", "Chance the flame keeps burning: " + keep + " percent");
+    $("meter").setAttribute("aria-label", "Chance the flame burns until the fuel is gone: " + keep + " percent");
     $("kVal").textContent = r.K.toFixed(2);
     var d0 = state.values.d0;
     $("tVal").textContent = (r.K > 0.01 && d0) ? Math.round((d0 * d0) / r.K) : "–";
@@ -440,24 +525,46 @@ window.FLAME_MODEL = {
     conf.className = "conf" + (rc.level === "inside" ? "" : " " + rc.level);
     $("read").classList.toggle("untrusted", rc.level === "outside");
     if (rc.level === "outside") {
-      $("confIco").textContent = "✕"; $("confTitle").textContent = "Outside the tested range";
-      $("confText").textContent = "No experiment was run at " + at(rc.out) + ". Do not rely on these numbers.";
+      $("confIco").textContent = "✕";
+      $("confTitle").textContent = (rc.over && !rc.out.length && !rc.pairs.length) ? "Not a possible gas mix" : "Outside the tested range";
+      $("confText").textContent = outsideReasons(rc)[0] + " Do not rely on these numbers.";
     } else if (rc.level === "edge") {
-      $("confIco").textContent = "!"; $("confTitle").textContent = "Near the edge of the tested range";
-      $("confText").textContent = "Few experiments sit near " + at(rc.edge) + ". Read with care.";
+      $("confIco").textContent = "!";
+      if (rc.disagree) {
+        $("confTitle").textContent = "Nearby real tests disagree with the model";
+        $("confText").textContent = (r.pKeep < 0.35 ? nb.done + " of " + seen + " real tests close to these settings burned until the fuel was gone."
+          : nb.out + " of " + seen + " real tests close to these settings went out early.") + " Trust the tests over the model.";
+      } else if (rc.near && rc.near.far) {
+        $("confTitle").textContent = "Far from any real test";
+        $("confText").textContent = "The closest experiment, FLEX test " + rc.near.test[0] + ", is not close to these settings. Read with care.";
+      } else {
+        $("confTitle").textContent = "Near the edge of the tested range";
+        $("confText").textContent = "Few experiments sit near " + at(rc.edge) + ". Read with care.";
+      }
     } else {
       $("confIco").textContent = "✓"; $("confTitle").textContent = "Inside the tested range";
-      $("confText").textContent = "Every setting falls where experiments were run.";
+      $("confText").textContent = "Every setting falls where experiments were run."
+        + (seen >= 2 ? " Of " + seen + " nearby real tests with a clear outcome, " + nb.done + " burned until the fuel was gone."
+          : rc.near ? " Closest real test: FLEX test " + rc.near.test[0] + "." : "");
     }
 
     var line;
     if (rc.level === "outside") line = "No experiment covers these settings. Treat the fire risk as unknown.";
-    else if (r.pKeep >= 0.65) line = "The model expects this flame to keep burning.";
-    else if (r.pKeep >= 0.35) line = "Could go either way. The model is split on whether this flame survives.";
-    else line = "The model expects this flame to go out on its own.";
+    else if (r.pKeep >= 0.65) line = "The model expects this flame to burn until the fuel is gone.";
+    else if (r.pKeep >= 0.35) line = "Could go either way: burn until the fuel is gone, or go out first.";
+    else line = "The model expects this flame to go out before the fuel is gone.";
     $("oneLine").textContent = line;
 
     if (state.sheet) renderSheet(r, rc);
+  }
+
+  // Every reason the settings count as untested, most serious first.
+  function outsideReasons(rc) {
+    var why = [];
+    if (rc.over) why.push(gasNames().charAt(0).toUpperCase() + gasNames().slice(1) + " add up to " + rc.gasSum.toFixed(1) + " %, more than 100 %.");
+    if (rc.out.length) why.push("No experiment was run at " + at(rc.out) + ".");
+    rc.pairs.forEach(function (p) { why.push("No experiment mixed " + p[0].label.toLowerCase() + " and " + p[1].label.toLowerCase() + "."); });
+    return why;
   }
 
   function renderSheet(r, rc) {
@@ -467,16 +574,33 @@ window.FLAME_MODEL = {
     if (!ds.length) li("All settings are at their starting values, so nothing is pushing the result either way.");
     ds.slice(0, 3).forEach(function (d, n) {
       var what = d.f ? d.label + " at " + fmt(d.f, state.values[d.f.key]) + " " + d.f.unit : fuelLabel() + " as the fuel";
-      var dir = d.push > 0 ? "helps the flame keep burning" : "helps the flame go out";
+      var dir = d.push > 0 ? "pushes toward burning until the fuel is gone" : "pushes toward going out early";
       li((n === 0 ? "Biggest factor: " : "") + what + " " + dir + ".");
     });
     li("Burning rate " + r.K.toFixed(2) + " mm²/s means the droplet's diameter squared shrinks by that much every second.");
-    if (rc.level === "outside") li("Nothing in the data reaches " + at(rc.out) + ", so the model is guessing here.");
-    if (rc.level === "edge") li("The data thins out near " + at(rc.edge) + ", so expect a wider margin of error.");
-    $("sheetFine").textContent = (M.meta.mock
-      ? "These numbers come from a made-up stand-in model so the screen can be built and tested. "
-      : "Trained on " + (M.meta.source || "NASA data") + (M.meta.rows ? " (" + M.meta.rows + " tests). " : ". "))
-      + "This is a model reading for study and planning, not a crew procedure.";
+    if (rc.near) {
+      var t = rc.near.test, nb = rc.near.near;
+      li("Closest real test: FLEX test " + t[0] + " (" + t[1] + "), " + fuelLabel().toLowerCase() + " at " + testSettings(t) + ". "
+        + testEnd(t) + (t[9] != null ? " Measured burning rate " + t[9].toFixed(2) + " mm²/s." : ""));
+      if (rc.near.far) li("Even that test is far from these settings, so the model is filling a gap between experiments.");
+      else if (nb.n > 1 && rc.level !== "outside") li("Real tests close to these settings: " + nb.n + ". " + nb.out + " went out early, " + nb.done
+        + " burned until the fuel was gone" + (nb.other ? ", " + nb.other + " had no clear outcome" : "") + ".");
+    }
+    if (rc.disagree) li("The model and these tests point in different directions. Trust the tests: the model is weakest here.");
+    if (rc.level === "outside") li(outsideReasons(rc).join(" ") + " The model is guessing here.");
+    if (rc.level === "edge" && rc.edge.length) li("The data thins out near " + at(rc.edge) + ", so expect a wider margin of error.");
+
+    var fine;
+    if (M.meta.mock) fine = "These numbers come from a made-up stand-in model so the screen can be built and tested. ";
+    else {
+      fine = "Trained on " + (M.meta.source || "NASA data")
+        + (M.meta.rows ? " (" + M.meta.rows + " tests for the flame outcome"
+          + (M.meta.rows_burn_rate ? ", " + M.meta.rows_burn_rate + " for burning rate" : "") + "). " : ". ");
+      if (M.meta.auc != null) fine += "Checked on tests held out of training: AUC " + M.meta.auc.toFixed(2)
+        + " for telling the two outcomes apart (0.5 is a coin flip, 1 is perfect)"
+        + (M.meta.burn_rate_mae != null ? ", and burning rate off by " + M.meta.burn_rate_mae + " mm²/s on average" : "") + ". ";
+    }
+    $("sheetFine").textContent = fine + "This is a model reading for study and planning, not a crew procedure.";
   }
 
   /* ---------- actions ---------- */
