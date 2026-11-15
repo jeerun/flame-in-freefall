@@ -41,11 +41,14 @@ or open `console/index.html` from a checkout.
 - **Read the sensors.** See the initial and final oxygen readings from BASS-II,
   then reveal how CO and CO₂ changed in the same test (Research, RT or N).
 - **[Ember evidence lab](console/ember-lab.html).** Open **Research tools → Evidence lab**
-  (or press L or the left stick). In **Experiment footage**, choose **FLEX** to
-  inspect a droplet's visible flame rim or **Saffire-I** to compare a fabric
-  flame with the camera's green smoke illumination. In **Ask the table**, try “Which tests recorded unchanged oxygen
-  and rising CO?” and expand a match to inspect its original BASS-II row. Both NASA clips,
-  saved frame review and three sample questions work offline. A fresh film review or new
+  (or press L or the left stick). **Experiment footage** includes six offline NASA clips.
+  Compare the visible flame rim in FLEX with the soot in FLEX-2, or follow the blue
+  patches in SoFIE-GEL. Saffire-I shows a fabric sample, Saffire-V shows ribbed
+  acrylic and Saffire-VI shows acrylic from two camera angles. Related links open
+  NASA’s FLEX-2 oscillation and Saffire-IV fabric videos online. In **Ask the table**,
+  try “Which tests recorded unchanged oxygen and rising CO?” and expand a match
+  to inspect its original BASS-II row. The saved FLEX frame review and three
+  sample questions also work offline. A fresh FLEX review or new
   English question uses the Python dashboard with Ollama available here or on its configured peer.
 - **Find counterexample.** From a selected FLEX star, compare a real test with the
   same fuel and gas mix and the opposite outcome. The panel shows differences in

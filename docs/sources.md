@@ -91,6 +91,22 @@ bundled WebM preserves the timing of NASA's 574-frame GIF (22.96 seconds).
 The 0:02 and 0:22 buttons refer to the compilation clock. Credit: NASA.
 [NASA experiment and caption](https://www.nasa.gov/centers-and-facilities/glenn/nasa-ignites-fire-experiment-aboard-space-cargo-ship/) · [Original NASA sequence](https://www.nasa.gov/wp-content/uploads/2016/06/saffire-1-burn.gif)
 
+The additional offline clips retain the timing of the selected NASA footage. Cue
+times on the player are relative to the bundled clip and may differ from time
+elapsed in the experiment.
+
+| Clip | Footage, edits and credit |
+| --- | --- |
+| FLEX-2 | A silent excerpt from 02:08–02:40 of *Spherical Flames*. NASA's on-screen annotations identify soot. Credit: Science@NASA and NASA’s Goddard Space Flight Center. [NASA release](https://svs.gsfc.nasa.gov/11640/) |
+| SoFIE-GEL | The complete 46-second published sequence, transcoded to WebM. Blue patches appear to move around the sample as the visible flame fades. The camera records the changing light pattern. Credit: NASA Johnson Space Center. [NASA archive record](https://images.nasa.gov/details/SoFIE-GEL) |
+| Saffire-V | The complete published video of ribbed PMMA (acrylic) aboard Cygnus, transcoded to 24 fps. The 76-second player clock follows the release. NASA identifies the thinner ribs and thicker material on the right of the sample. Credit: NASA Glenn Research Center, GRC-2021-CN-00008. [NASA archive record](https://images.nasa.gov/details/GRC-2021-CN-00008) |
+| Saffire-VI | NASA's complete front and edge camera comparison of PMMA aboard Cygnus, transcoded without audio. The one-minute release shows the experiment at 20× speed and retains the original annotations. Credit: NASA. [NASA release](https://www.nasa.gov/centers-and-facilities/glenn/flame-burns-out-on-nasas-long-running-spacecraft-fire-experiment/) · [Source movie](https://www.nasa.gov/wp-content/uploads/2024/02/saf-vi-s8c3c4-1-sided-pmma-unmapped-jpeg-20x-plus-text-2.mp4) |
+
+Two related videos are available online. NASA Johnson’s FLEX-2 recording shows an
+opening in the flame shell appearing and closing repeatedly. NASA Glenn’s
+Saffire-IV video shows glowing char behind a flame spreading across cotton–fiberglass
+fabric. [NASA Johnson’s FLEX-2 recording](https://www.youtube.com/watch?v=qQQ1OHW1_F4) · [NASA Glenn’s Saffire-IV footage and caption](https://www.nasa.gov/humans-in-space/the-flame-of-discovery-grows-as-saffire-sets-new-fires-in-space/)
+
 The checked-in result from `gemma4:12b` compares 24 one-second samples. It marks 0:08 and
 0:09 as a candidate transition. Use `python server/analyze_flex_clip.py` with Ollama, Pillow
 and imageio-ffmpeg to regenerate the input crops, saved candidate frames and model metadata.

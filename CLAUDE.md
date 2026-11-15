@@ -53,9 +53,11 @@ The activity traces the 20 atmosphere matches among 746 eligible rows to the CFI
 normal-flame CSV. All 20 are gas flames and the rows provide no measured gravity.
 Rebuild the bundled rows with `python data/clean/build_moon_evidence.py`.
 
-The Ember evidence lab opens from Research with L or left-stick click. It includes original
-NASA FLEX footage, the NASA Saffire-I fabric sequence, a saved FLEX frame review and three BASS-II table questions,
-all bundled for offline use. Use the Python server with Ollama for fresh image reviews and custom English
+The Ember evidence lab opens from Research with L or left-stick click. Six NASA clips
+(FLEX, FLEX-2, SoFIE-GEL, Saffire-I, Saffire-V and Saffire-VI), a saved FLEX
+frame review and three BASS-II table questions are bundled for offline use.
+The lab also links to NASA’s online FLEX-2 oscillation and Saffire-IV fabric videos.
+Use the Python server with Ollama for fresh FLEX frame reviews and custom English
 table questions. Physical Legion Go testing of these activities is pending.
 
 Flame console has a handheld Crew training layout, photographed Earth/Moon/Mars
