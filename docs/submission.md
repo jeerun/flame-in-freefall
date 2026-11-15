@@ -91,8 +91,16 @@ oxygen, pressure, carbon dioxide, helium and droplet size, and the page shows:
 - the burning rate, and how long the droplet would last at that rate;
 - a confidence box: green inside the tested range, amber when no real test is close or
   when nearby real tests disagree with the model, red outside what FLEX tested;
-- an explanation: which settings push the result which way, the three closest real
-  tests, how the nearby tests ended, and the model's measured accuracy.
+- an explanation that opens with three short boxes, the prediction, the evidence from
+  nearby real tests and the limits, and keeps the detail one press away: which
+  settings push the result which way, the three closest real tests, how the nearby
+  tests ended, and the model's measured accuracy.
+
+**Compare two cabins.** Any set of settings can be saved as baseline A. From then on
+the controls change B, and a table shows both side by side: every setting, the two
+chances, the burning rate and how well the data supports each, with the difference in
+percentage points. The warnings of both stay on screen, and when either set is
+outside what NASA tested the difference is withheld instead of shown.
 
 **A star map of the real tests, and a replay.** Under the reading, every real FLEX
 test with the chosen fuel is drawn as a star: oxygen across, droplet size up. An
@@ -211,6 +219,7 @@ except Ember works, fully offline.
   outcome separately instead of one accuracy figure (`docs/scientific-validation.md`),
   and a test that runs the page's own prediction code against the Python model on 820
   inputs and finds the same numbers to within rounding (`docs/model-parity.md`).
+  Both were re-run on the team's PC.
 - AI-written text is labelled as AI-written, next to facts copied from PSI.
 - The Oxygen map counts rows of NASA's tables as published. A row whose oxygen cell
   is not a number is left out and reported as left out. Inverse gas flames, where the
@@ -365,6 +374,9 @@ While building it we used Claude (Anthropic), an AI assistant, for:
 - writing the dashboard (`console/index.html`) and the local server (`server/serve.py`);
 - writing the data-cleaning and training scripts, then reviewing them and re-running
   them to confirm the numbers;
+- (OpenAI ChatGPT/Codex, used by a team member) writing the summary-first
+  explanation panel and the baseline comparison, which were then reviewed, fitted to
+  the screen and tested with Claude;
 - reading the PSI-69 table from the NASA page into a file (checked page by page with
   SHA-256 hashes), downloading the other PSI test tables and writing the script that
   reads them, reading the official challenge page and finding the NASA sources
