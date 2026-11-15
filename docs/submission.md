@@ -120,6 +120,11 @@ burn time or an unrecorded endpoint for extinction or disruption prevents replay
 Zoom adds a grid, test numbers and contours for 25%, 50% and 75% modelled
 completion among clear outcomes at the current pressure and gas settings.
 
+**Reopen the same evidence.** A research link preserves the question and selected
+NASA investigation. A FLEX link preserves the fuel, five inputs, cabin preset and
+any selected test. On a local copy, a view code can be pasted into another copy
+of the dashboard. The receiving dashboard computes its own reading.
+
 **Plays like a handheld game.** It opens directly on NASA research and supports a gamepad,
 with sound effects made in the browser. The flame picture breathes
 faster as the burning rate rises. When the settings leave what NASA tested, the

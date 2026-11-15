@@ -26,7 +26,8 @@ The [published dashboard](https://jeerun.github.io/flame-in-freefall/) tracks th
   against pressure with the Moon Base air from the challenge brief marked. Its
   headline counts published rows. Of 746 rows with ambient oxygen and pressure,
   20 CFI-G rows meet the brief’s thresholds. The CFI source repeats eight rows,
-  and FLEX has no flight/ground label per row.
+  and FLEX has no flight/ground label per row. Select an investigation to see its
+  measurements across all three views. [Mobile pressure chart](docs/oxygen-map-phone.png)
 - **Earth or orbit?** Pick which environment gave the longer burn for a Saffire-II
   material, then reveal the measured lengths side by side (Research, LT or E).
 - **Read the sensors.** See the initial and final oxygen readings from BASS-II,
@@ -63,9 +64,14 @@ The [published dashboard](https://jeerun.github.io/flame-in-freefall/) tracks th
 - **The real tests go with you.** One button downloads the 252 FLEX tests in use,
   with the model's prediction beside each, as a CSV file. Another sends that file to
   the computer that serves the dashboard, so it is not left on the handheld.
+- **Share view.** From a selected investigation or a FLEX reading, copy a link to
+  the same question, investigation and list/orbit view, or the same fuel, settings,
+  cabin preset and selected FLEX test. On a local file or localhost, copy the view
+  code and paste it under **Share view → Open a shared view** in another copy.
+  The receiving copy recalculates the reading from its bundled model.
 
-Why a gamepad: a crew member may be wearing gloves. Every function can be reached
-from the sticks and buttons, the left stick slides a setting across its whole range
+Why a gamepad: a crew member may be wearing gloves. The research activities,
+model controls and drill work from the sticks and buttons. The left stick slides a setting across its whole range
 in about a second, and warnings come as sound and vibration as well as text. We
 have not verified glove use or the new controls on a physical handheld.
 
@@ -197,9 +203,12 @@ After changing the shipped model or CSV layout, run `node server/export_digest.c
 `python model/check_parity.py` repeats the page-versus-Python check (needs Node.js).
 `node tests/test_console_features.cjs` tests the explanation summary and the baseline
 comparison against the page's own code.
+`node tests/test_view_link.cjs` checks shared view codes and exact slider values.
 `python -m unittest discover tests` also checks the source rows and server export.
 With Python Playwright and Edge installed, `python tests/browser_evidence.py --channel msedge`
 exercises the new activities with keyboard and simulated gamepad input.
+`python tests/browser_view_links.py --channel msedge` checks copying and reopening
+research and console views in Edge.
 
 `python data/clean/fetch_psi_tables.py` downloads the PSI test tables again (it
 never overwrites a file that is already there). With the server running,
