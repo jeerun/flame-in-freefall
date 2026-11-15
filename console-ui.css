@@ -111,6 +111,7 @@
 #viewConsole .big-label { font-size: 1.02rem; color: #f2ede1; margin: 0 0 .14rem; }
 #viewConsole #read .prediction-value .big { font-weight: 600; font-size: clamp(2.8rem, 4vw, 3.95rem); color: var(--case-amber); letter-spacing: -.055em; }
 #viewConsole .prediction-value .big small { font-size: .48em; }
+#viewConsole #read .prediction-value .big .range { font-size: .84rem; font-weight: 500; letter-spacing: 0; color: var(--ink-2); margin-left: .7rem; white-space: nowrap; }
 #viewConsole .map.big { font-size: 1rem; line-height: 1.3; font-weight: 400; }
 #viewConsole #read .meter { height: .33rem; max-width: 28rem; margin: .34rem 0; background: #47443c; }
 #viewConsole #read .meter > div { background: var(--case-amber); }
