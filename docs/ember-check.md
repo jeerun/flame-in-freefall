@@ -1,5 +1,7 @@
 # Ember answer check
 
+This transcript predates the change that distinguishes a modelled disruption chance from the observed nearby count. Answers 17 and 18 below preserve the original model responses. The current dashboard withholds the disruption estimate outside the tested range.
+
 Made by `server/ember_check.py` on 2026-11-15. Ember is the local AI model in the dashboard. Every answer below was written by that model, not by a person.
 
 Automatic checks flagged none of the 18 answers. No person has checked any of them yet.

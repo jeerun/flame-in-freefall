@@ -88,8 +88,9 @@ SYSTEM_READING = (
     "They are estimates, not physics and not a crew procedure, so do not present them as certain. "
     "If the reading says the settings are outside the tested range, say that the flame outcome there is unknown. "
     "The reading may also give a modelled chance of disruption: an ending that NASA's table records without a clear outcome "
-    "and does not explain. When that chance is 50 percent or more, say first that most tests like this were disrupted and that "
-    "the completion percentage describes only the rest. When the reading gives a range from refits on resampled tests, "
+    "and does not explain. Attribute this chance to the fitted model. Describe observed disruptions only from the nearby "
+    "counts given in the reading. At a modelled chance of 50 percent or more, mention that chance first and explain that "
+    "the completion percentage applies only to clear outcomes. When the reading gives a range from refits on resampled tests, "
     "give that range together with the percentage. "
     "'Goes out' means the visible flame only."
 )

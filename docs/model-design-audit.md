@@ -65,7 +65,7 @@ fitted on all 252 tests: the chance that a test ends in a disruption.
 | Heptane at 16 % oxygen | 4 % | 4 % | 4 / 4 / 93 |
 
 On the page: "Disruption chance N%" sits under the main reading. At 50 % or more the
-evidence box turns amber ("Most tests like this were disrupted"), the one-line reading
+evidence box turns amber ("Elevated modelled disruption chance"), the one-line reading
 says so, and the meter loses its colour. The explanation, the comparison table, the
 CSV file (a new column) and Ember's instructions carry it too.
 
@@ -135,8 +135,9 @@ take up water as they burn, so for methanol the volume left is not all fuel.
 | 30 to 65 % | 14, 39 % | 5, 14 % |
 | 65 % or more | 10, 97 % | 2, 73 % |
 
-- Near-certain readings held up: when the model said under 1 % (76 tests per
-  split), 1.3 % burned to completion. Over 99 % (1 test per split): all did.
+- When the model said under 1% (76 held-out row predictions per repeat), 1.3%
+  completed. Above 99%, all completed, but this band averaged only one row
+  per repeat. Each repeat reuses the same underlying tests.
 - Burning rate: R² 0.732 overall, but 0.619 for heptane (MAE 0.069 mm²/s) and 0.873
   for methanol (MAE 0.026). It is least accurate for the tests that burned to
   completion (MAE 0.090, and 0.022 too low on average).
@@ -151,8 +152,10 @@ the middle of methanol's scale is not trustworthy: see the table above.
 Five of the 8 methanol completions are in gas with 15 to 30 % carbon dioxide, and 6
 are at about 0.7 atm. A straight-line formula cannot make much of that.
 
-**What was tried.** The same folds for every candidate, penalty as in the console's
-model (`model/per_fuel/design_audit.json`):
+**What was tried.** This exploratory comparison uses the same folds for every candidate
+and fixes the penalty at the value selected on the full dataset for the console model.
+The separate headline metrics select the penalty inside each outer training fold.
+[`model/per_fuel/design_audit.json`](../model/per_fuel/design_audit.json)
 
 | Candidate | AUC | Brier | Methanol AUC | Methanol, 30 to 65 % band: said / happened |
 |---|---|---|---|---|
@@ -163,8 +166,10 @@ model (`model/per_fuel/design_audit.json`):
 | Own slope for oxygen only | 0.809 | 0.0874 | 0.609 | 46 % / 35 % |
 | One set of slopes (the earlier model's shape) | 0.810 | 0.0860 | 0.603 | 46 % / 33 % |
 
-Every smaller model is better in that one band and worse everywhere else. The band
-holds about five tests per split, so the gain there is mostly noise. The console's
+Every smaller model has a lower overall AUC and higher overall Brier score in this
+comparison. Within the 30–65% methanol band, their mean estimates are closer to
+the observed completion frequencies. The band averages about five rows per repeat for the console's model, so
+this check cannot establish a calibration advantage there. The console's
 model stays, and the range on screen is wide where methanol is uncertain (40 to 97 %
 in Moon Base air).
 
