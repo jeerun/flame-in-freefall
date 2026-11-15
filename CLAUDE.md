@@ -60,8 +60,10 @@ The lab also links to NASA’s online FLEX-2 oscillation and Saffire-IV fabric v
 Use the Python server with Ollama for fresh FLEX frame reviews and custom English
 table questions. Physical Legion Go testing of these activities is pending.
 
-Flame console has a handheld Crew training layout, photographed Earth/Moon/Mars
-cabin presets and the same Share control as Research. Ignite shows model time,
+Flame console has photographed Earth/Moon/Mars cabin presets and the same Share
+control as Research. Crew mode opens a cabin briefing with current conditions and
+evidence limits above the FLEX estimate. Settings and the star map open on demand.
+Exiting restores the full console with the current inputs. Ignite shows model time,
 playback speed and droplet scale. P or controller X freezes and resumes a run.
 
 The security review branch defaults to a PC-only dashboard. Direct LAN use requires
