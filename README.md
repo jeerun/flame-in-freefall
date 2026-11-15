@@ -32,6 +32,12 @@ or open `console/index.html` from a checkout.
   material, then reveal the measured lengths side by side (Research, LT or E).
 - **Read the sensors.** See the initial and final oxygen readings from BASS-II,
   then reveal how CO and CO₂ changed in the same test (Research, RT or N).
+- **[Ember evidence lab](console/ember-lab.html).** On Research, select **Open evidence lab**
+  (L or left-stick click). In **FLEX footage**, compare two candidate frames with the original NASA
+  movie and select a timestamp to seek there. In **Ask the table**, try “Which tests recorded unchanged oxygen
+  and rising CO?” and expand a match to inspect its original BASS-II row. The saved frame review
+  and three sample questions open offline. Start the Python dashboard with Ollama available
+  here or on its configured peer for a fresh film review or a new English question.
 - **Find counterexample.** From a selected FLEX star, compare a real test with the
   same fuel and gas mix and the opposite outcome. The panel shows differences in
   pressure and droplet size alongside both fitted estimates (Console, E or A in the zoomed map).
@@ -106,7 +112,7 @@ There are three ways.
 
 **In a browser, nothing to install.** https://jeerun.github.io/flame-in-freefall/
 It is the `console/` folder, published with
-`git subtree push --prefix console origin gh-pages`. No Ember there.
+`git subtree push --prefix console origin gh-pages`. Live Ember inference requires the Python server.
 
 **Without the AI, fully offline.** Open `console/index.html` in Edge or Chrome and
 press F11. Keep all the files in `console/` together. Without `model.js` the page falls back to made-up numbers and shows a
@@ -333,8 +339,11 @@ One owner per folder. If you need a change in someone else's folder, ask them.
 
 ## Use of AI
 
-Inside the product, three kinds of AI, each labelled on screen:
+The dashboard uses AI in the following activities.
 
+- In the evidence lab, Ember examines sampled frames of NASA footage for a change in the
+  visible flame rim. For custom BASS-II questions it proposes filters. Python validates those
+  filters and returns measurements directly from the CSV. OpenAI Codex helped build and test the lab.
 - Ember ("Ask Ember"): Gemma 4 (12B, an open model from Google) run locally with Ollama on
   the team's RTX 5080 PC, or a smaller Gemma 4 on the handheld. `server/serve.py`
   gives it the NASA PSI text for the investigations closest to the question, the

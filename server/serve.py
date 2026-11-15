@@ -55,6 +55,11 @@ import webbrowser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
+if __package__:
+    from . import evidence_lab
+else:
+    import evidence_lab
+
 ROOT = Path(__file__).resolve().parents[1]
 CONSOLE = ROOT / "console"
 RAW = ROOT / "data" / "raw" / "psi_search" / "combustion_investigations.json"
@@ -66,6 +71,8 @@ STATIC = {"/": "index.html", **{"/" + name: name for name in (
     "interface.css", "research-ui.css", "console-ui.css", "flex-flame.webp", "view-link.js", "share-view.js")}}
 TYPES = {".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8",
          ".css": "text/css; charset=utf-8", ".webp": "image/webp"}
+STATIC.update({"/" + asset: asset for asset in evidence_lab.ASSETS})
+TYPES.update({".webm": "video/webm", ".jpg": "image/jpeg"})
 MAX_BODY = 16000
 EXPORTS_NOTE = ROOT / "exports-folder.txt"         # optional: first line names the folder to export into
 CSV_NAME = "flex_psi69_tests_with_predictions.csv"
@@ -525,6 +532,8 @@ class Handler(BaseHTTPRequestHandler):
                 devices = {ip: record.copy() for ip, record in self.server.seen.items()}
             return self.send_json({"this_machine": self.server.host, "devices": devices})
         self.note_visitor(path)
+        if path == "/lab/status":
+            return self.send_json({"table": True, "film": True})
         if path in ("/ai", "/peer/ai"):
             return self.send_json(ai_status(self.server, local_only=path == "/peer/ai"))
         if path == "/favicon.ico":                         # browsers ask for one; there is none
@@ -553,6 +562,8 @@ class Handler(BaseHTTPRequestHandler):
         file = CONSOLE / name if name else None
         if not file or not file.is_file():
             return self.send_error(404)
+        if file.suffix == ".webm":
+            return evidence_lab.send_film(self, file)
         data = file.read_bytes()
         self.send_response(200)
         self.send_header("Content-Type", TYPES[file.suffix])
@@ -610,6 +621,8 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         self.note_visitor(self.path)
+        if self.path in evidence_lab.POST_ROUTES:
+            return evidence_lab.handle_request(self, OLLAMA)
         if self.path in ("/export", "/peer/export"):
             return self.export(local_only=self.path == "/peer/export")
         if self.path not in ("/ask", "/peer/ask"):
