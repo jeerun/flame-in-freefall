@@ -211,8 +211,19 @@ def reading_material(records, reading):
             + f"\n\nNASA PSI RECORD PSI-69 FLEX: {flex['title']}\nObjectives: {flex['objectives']}\nApproach: {flex['approach']}"), ["PSI-69"]
 
 
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
+def open_direct(request, timeout):
+    """Contact only the configured Ollama or dashboard peer, bypassing system proxies."""
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect())
+    return opener.open(request, timeout=timeout)
+
+
 def ollama_json(path, timeout=4):
-    with urllib.request.urlopen(OLLAMA + path, timeout=timeout) as resp:
+    with open_direct(OLLAMA + path, timeout) as resp:
         return json.loads(resp.read().decode("utf-8"))
 
 
@@ -232,11 +243,6 @@ def local_models():
         return None
 
 
-class NoPeerRedirect(urllib.request.HTTPRedirectHandler):
-    def redirect_request(self, req, fp, code, msg, headers, newurl):
-        return None  # Only the configured machine may receive forwarded data.
-
-
 def peer_url(address, path):
     # The CLI normalizes the configured origin. Callers supply fixed route literals.
     return address.rstrip("/") + path
@@ -245,9 +251,8 @@ def peer_url(address, path):
 def open_peer(server, path, timeout, data=None, content_type=None):
     headers = {"Content-Type": content_type} if content_type else {}
     request = urllib.request.Request(peer_url(server.peer, path), data=data, headers=headers)
-    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoPeerRedirect())
     try:
-        return opener.open(request, timeout=timeout)
+        return open_direct(request, timeout)
     except urllib.error.HTTPError as err:
         err.close()
         raise
@@ -332,7 +337,7 @@ def ask_model(model, system, user):
         req = urllib.request.Request(OLLAMA + "/api/chat", data=json.dumps(body).encode("utf-8"),
                                      headers={"Content-Type": "application/json"})
         try:
-            resp = urllib.request.urlopen(req, timeout=180)
+            resp = open_direct(req, 180)
             break
         except urllib.error.HTTPError as err:
             detail = err.read().decode("utf-8", "replace")

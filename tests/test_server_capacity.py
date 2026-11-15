@@ -8,6 +8,26 @@ from unittest.mock import Mock, patch
 from server import serve
 
 
+class OllamaTransportTests(unittest.TestCase):
+    def test_status_and_generation_use_direct_loopback_transport(self):
+        with patch.object(serve.urllib.request, "build_opener") as build:
+            opener = build.return_value
+            opener.open.side_effect = [
+                io.BytesIO(b'{"models":[{"name":"ember"}]}'),
+                io.BytesIO(b'{"message":{"content":"Ready"},"done":true}\n'),
+            ]
+            self.assertEqual(serve.local_models(), ["ember"])
+            self.assertEqual(list(serve.ask_model("ember", "Answer briefly", "Ready?")), ["Ready"])
+        self.assertEqual(build.call_count, 2)
+        for call in build.call_args_list:
+            proxy, redirect = call.args
+            self.assertEqual(proxy.proxies, {})
+            self.assertIsInstance(redirect, serve.NoRedirect)
+        status, generation = opener.open.call_args_list
+        self.assertEqual(status.args[0], serve.OLLAMA + "/api/tags")
+        self.assertEqual(generation.args[0].full_url, serve.OLLAMA + "/api/chat")
+
+
 class CapacityTests(unittest.TestCase):
     def setUp(self):
         # Exercise admission without a listener, worker threads, or an Ollama service.
