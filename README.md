@@ -139,6 +139,10 @@ B closes.
 | Fire drill | Left "went out first", Right "burned all its fuel", A next test, Y new game, B home. | Arrows, Enter, R, Esc |
 | Ember | Up/Down pick a question, A asks, X switches the machine it thinks on, Y voice on or off, B closes. | Arrows, Enter, X, V, Esc |
 | Everywhere | RB/LB pages, Menu opens Ember. | 1, 2, 3 pages, `/` Ember, M sound on or off |
+| Mouse, trackpad, or the Legion Go's right controller in FPS mode | Point at a star to pick it, click to replay it, right-click to move the settings onto it. The wheel turns the selected setting, walks through the stars over the map, and moves through the lists. | |
+
+The Legion Go's six extra buttons can be set to these keys in Legion Space; a
+suggested layout is in `docs/legion-go-setup.md`.
 
 Banners with a sound and a buzz appear when: the settings leave what NASA tested
 (alarm and a strong buzz) or come back inside; the fire risk turns high; real tests

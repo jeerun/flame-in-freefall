@@ -67,7 +67,52 @@ directly. Not tried yet.
 3. On the Legion Go open that address in Edge. Or, for the handheld's own model with
    the PC as the big machine, give that address to `Start on Legion Go.bat`.
 
-Do not use a public tunnel: the dashboard has no login.
+If nobody is at the PC to answer the firewall question, Tailscale can pass the
+dashboard on by itself, with no firewall change. On the PC, in two windows:
+
+    py server/serve.py
+    tailscale serve --http=80 8000
+
+The second command prints the address, of the form `http://<pc-name>.<tailnet>.ts.net/`.
+Open it on the Legion Go. The numeric address does not work this way, only the
+name. It lasts until that window is closed. This was tried from the PC itself on
+Nov 15 and answered; the server lists a device that arrives this way under its
+Tailscale address in `http://localhost:8000/who`.
+
+Do not use a public tunnel (`tailscale funnel` is one): the dashboard has no login.
+
+## The Legion Go's extra controls
+
+Tried with a simulated mouse and wheel in a desktop browser, not on the device.
+
+- **The wheel on the back of the right controller** (or any mouse wheel). On the
+  Flame console it turns the selected setting, one step per notch; point at another
+  bar first and it selects that bar. Over the star map, and in the zoomed map, it
+  walks through the stars. On the research page and in the Oxygen map it moves
+  through the list.
+- **FPS mode, the trackpad, or a mouse.** The star map can be aimed at: pointing at
+  a star picks it, a click replays that test, a right-click moves the settings onto
+  it. With a finger: tap a star to pick it, tap it again to replay. The picked star
+  also gets two buttons, "Replay" and "Go there". Which controller buttons click in
+  FPS mode depends on the profile in Legion Space.
+- **The six extra buttons (Y1 to Y3, M1 to M3).** A browser only sees the standard
+  gamepad buttons, so these do nothing by themselves. In Legion Space, under the
+  controller settings, each can be set to a keyboard key, and the dashboard has a
+  key for every function. A layout that works well:
+
+  | Button | Set it to the key | What it does |
+  |---|---|---|
+  | Y1 | I | Ignite (Flame console) |
+  | Y2 | Z | Zoom the star map |
+  | Y3 | O | Oxygen map |
+  | M1 | P | Replay the picked test |
+  | M2 | G | Move the settings onto the picked test |
+  | M3 | / | Ask Ember |
+
+- **Detached controllers** behave like the attached ones: the browser still sees one
+  gamepad. Rumble comes through the same way.
+- There is no camera on the Legion Go, and the browser cannot read the controllers'
+  motion sensors, so neither is used.
 
 ## Where the sent file goes
 

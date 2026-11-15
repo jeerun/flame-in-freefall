@@ -209,6 +209,18 @@ Not done:
     start that points at the running dashboard instead of failing. This session
     cannot reach the Legion Go: no SSH and no Claude on it.
 
+  - For the Legion Go's own hardware (owner's photo, Nov 15): the mouse wheel turns
+    the selected setting and walks lists and stars; a pointer (FPS mode, trackpad,
+    mouse) picks a star by hovering, replays on click, moves the settings on
+    right-click; the picked star has "Replay" and "Go there" buttons; a suggested
+    key layout for the six extra buttons is in `docs/legion-go-setup.md`. Research
+    cards show counts from NASA's test tables, Ember lists the records it was given
+    and gets NASA's benefits text, overlays size against the screen.
+  - Tailscale: the PC and the Legion Go ("runma" in the owner's tailnet) are on one
+    tailnet since Nov 15. `tailscale serve --http=80 8000` on the PC passes the
+    dashboard on without a firewall change; it answered from the PC itself. The
+    server reads the proxy's X-Forwarded-For so `/who` shows the real device.
+
 Not done, or not verified:
 - Everything in the list above is unverified on the real Legion Go, with real
   gloves, and over real Wi-Fi.
