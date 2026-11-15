@@ -275,6 +275,11 @@ dashboard code, the server and the data-cleaning and training scripts, reviewing
 re-running them, reading the PSI-69 table and the challenge page, finding sources,
 and drafting the documentation.
 
+A teammate contributed the independent audit and the parity check (`model/science_audit.py`,
+`model/check_parity.py` and their documents). We could not confirm whether AI tools
+helped write them, so treat that code and text as possibly AI-assisted. The audit was
+re-run on the team's PC and reproduced exactly.
+
 No AI-generated images, video or audio are used, and no data value was generated or
 changed by AI. Keep this section current: the submission form asks where and how AI
 was used.
