@@ -33,7 +33,15 @@ def check(page):
     def pad(button):
         page.evaluate("index => window.pressPad(index)", button)
 
-    key("Enter")
+    expect(loc("#title")).to_be_hidden()
+    expect(loc("#tabResearch")).to_have_attribute("aria-current", "page")
+    loc("#guideBtn").click()
+    expect(loc("#controlGuide")).to_be_visible()
+    key("2")  # The open guide owns input.
+    expect(loc("#tabResearch")).to_have_attribute("aria-current", "page")
+    pad(1)
+    expect(loc("#controlGuide")).to_be_hidden()
+    expect(loc("#guideBtn")).to_be_focused()
     expect(loc("#gravityCase")).to_be_visible()
     loc("#gravityCase").focus()
     key("Enter")  # Native activation of the launcher.
@@ -104,6 +112,32 @@ def check(page):
     expect(loc("#tabResearch")).to_have_attribute("aria-pressed", "true")
 
 
+def check_phone(page):
+    page.set_viewport_size({"width": 390, "height": 844})
+    page.goto(CONSOLE.as_uri() + "#title")
+    expect(page.locator("#title")).to_be_visible()
+    page.get_by_role("button", name="Start exploring").click()
+    for tab in ("tabResearch", "tabDrill", "tabConsole"):
+        page.locator("#" + tab).click()
+        assert page.evaluate("document.documentElement.scrollWidth <= innerWidth"), tab
+    page.locator("#jumpReading").click()
+    expect(page.locator("#read .stage")).to_be_in_viewport()
+    page.locator("#jumpSettings").click()
+    expect(page.locator("#rows .row").first).to_be_in_viewport()
+    page.keyboard.press("1")
+    page.locator("#oxBtn").click()
+    expect(page.locator("#oxClose")).to_be_in_viewport()
+    page.locator("#oxClose").click()
+    expect(page.locator("#ox")).to_be_hidden()
+    expect(page.locator("#oxBtn")).to_be_focused()
+    page.set_viewport_size({"width": 320, "height": 568})
+    page.locator("#tabConsole").click()
+    assert page.evaluate("document.documentElement.scrollWidth <= document.documentElement.clientWidth")
+    page.keyboard.press("z")
+    expect(page.locator("#mapBox")).to_have_class("map big")
+    assert page.evaluate("document.documentElement.scrollWidth <= document.documentElement.clientWidth")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--channel", help="Installed Chromium channel, e.g. msedge or chrome")
@@ -114,6 +148,7 @@ if __name__ == "__main__":
         errors = []
         page.on("pageerror", lambda error: errors.append(str(error)))
         check(page)
+        check_phone(page)
         assert not errors, errors
         browser.close()
-    print("Evidence launchers, keyboard and gamepad controls, sourced readings, and FLEX counterexample passed.")
+    print("Evidence cases, sourced readings, keyboard and gamepad controls, direct entry and phone navigation passed.")

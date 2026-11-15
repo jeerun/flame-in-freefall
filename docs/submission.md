@@ -120,7 +120,7 @@ burn time or an unrecorded endpoint for extinction or disruption prevents replay
 Zoom adds a grid, test numbers and contours for 25%, 50% and 75% modelled
 completion among clear outcomes at the current pressure and gas settings.
 
-**Plays like a handheld game.** It opens on a start screen and supports a gamepad,
+**Plays like a handheld game.** It opens directly on NASA research and supports a gamepad,
 with sound effects made in the browser. The flame picture breathes
 faster as the burning rate rises. When the settings leave what NASA tested, the
 controller buzzes, an alarm sounds and the picture turns into a question mark. A
@@ -336,6 +336,8 @@ from each in `docs/sources.md`):
   https://www.nasa.gov/missions/station/iss-research/studying-combustion-and-fire-safety/
 - "Fire in Space", NASA Astronomy Picture of the Day, Aug 10, 2021.
   https://science.nasa.gov/image-article/apod-2021-august-10-fire-in-space/
+- "Burning in Microgravity", NASA, May 25, 2011. Colorized composite used on the research home page.
+  https://www.nasa.gov/image-article/burning-microgravity/
 - "Mechanisms of droplet combustion", NASA NTRS 19820015551.
   https://ntrs.nasa.gov/citations/19820015551
 
@@ -380,8 +382,8 @@ While building it we used Claude (Anthropic), an AI assistant, for:
 
 OpenAI ChatGPT/Codex helped write the summary-first explanation and baseline
 comparison, which the team reviewed and tested with Claude. Codex also helped
-implement and test the three evidence activities, revise evidence labels, fix
-controls and local server handling, and capture and caption the desktop demo.
+implement and test the three evidence activities and responsive dashboard layout,
+revise evidence labels, fix controls and local server handling, and capture and caption the desktop demo.
 The video shows the running dashboard. The measurements in these activities
 come directly from the cited PSI tables.
 

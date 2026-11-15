@@ -13,6 +13,8 @@ Open `console/index.html` from this checkout to try the three new evidence activ
 The [published dashboard](https://jeerun.github.io/flame-in-freefall/) tracks the deployed version.
 [Watch the short desktop demo](docs/crew-console-demo.mp4).
 
+![NASA research on the crew console, showing activities, investigation rankings and the selected NASA record.](docs/console-preview.png)
+
 - **NASA research** (the home page) summarizes the 24 combustion investigations in
   NASA's PSI database and ranks them for the question you pick: prevention,
   detection, suppression, or cabin air (the oxygen-rich, low-pressure air planned for
@@ -135,7 +137,10 @@ simply waits in the folder until that computer has internet.
 
 ## Controls
 
-Press A on the start screen. RB and LB turn the page. The Menu button opens Ember,
+The dashboard opens directly on NASA research. Select **Controls** for this page’s
+keyboard and gamepad guide, connection status and sound toggle. For a presentation
+with the optional start screen, open `console/index.html#title`.
+RB and LB turn the page. The Menu button opens Ember,
 who answers the first question straight away; Up/Down pick another, A asks it,
 B closes.
 
@@ -153,7 +158,7 @@ B closes.
 | Fire drill | Left "went out first", Right "burned all its fuel", A next test, Y new game, B home. | Arrows, Enter, R, Esc |
 | Ember | Up/Down pick a question, A asks, X switches the machine it thinks on, Y voice on or off, B closes. | Arrows, Enter, X, V, Esc |
 | Everywhere | RB/LB pages, Menu opens Ember. | 1, 2, 3 pages, `/` Ember, M sound on or off |
-| Mouse, trackpad, or the Legion Go's right controller in FPS mode | Point at a star to pick it, click to replay it, right-click to move the settings onto it. The wheel turns the selected setting, walks through the stars over the map, and moves through the lists. | |
+| Mouse, trackpad, or the Legion Go's right controller in FPS mode | Point at a star to pick it, click to replay it, right-click to move the settings onto it. Use the wheel over a setting to adjust it, over the star map to step through tests, or over the research ranking to move through investigations. | |
 
 The Legion Go's six extra buttons can be set to these keys in Legion Space; a
 suggested layout is in `docs/legion-go-setup.md`.
@@ -308,7 +313,7 @@ controller path and tested with Claude. The training code, the model coefficient
 the NASA data were not changed by it.
 
 OpenAI Codex also helped implement and test the three evidence activities, the
-console and server fixes, and the captioned browser demonstration. Its scenes
+responsive dashboard layout, the console and server fixes, and the captioned browser demonstration. Its scenes
 show the actual dashboard and NASA table values.
 
 A teammate contributed the independent audit and the parity check (`model/science_audit.py`,

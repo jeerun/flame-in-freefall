@@ -24,13 +24,13 @@ owner's local time (confirm on the team page). "Submit for Judging" is final.
 How to get it onto the handheld, three ways, with fixes for a connection that
 fails: `docs/legion-go-setup.md`.
 
-- [ ] Opens in Edge, F11, nothing needs scrolling.
-- [ ] Chip reads "Controller connected" after pressing a button. If the stick moves a
+- [ ] Opens in Edge, F11, with all six Flame console settings visible in landscape.
+- [ ] Controls reads "Controller connected" after pressing a button. If the stick moves a
       mouse pointer, switch the device to gamepad mode.
 - [ ] D-pad picks and changes settings one step at a time. The left stick slides the
       selected bar: a light push creeps, a full push sweeps. A opens the explanation,
       B closes it, Y resets.
-- [ ] The start screen appears and A starts. The first page is "NASA research".
+- [ ] The first page is "NASA research". At `/#title` the optional start screen appears and A starts.
 - [ ] RB goes to "Flame console", then "Fire drill"; LB goes back.
 - [ ] NASA research: Left and Right change the question (four of them), Up and Down
       move through the list, X switches to the orbit view, and there the right stick
@@ -65,8 +65,7 @@ fails: `docs/legion-go-setup.md`.
 - [ ] When the Legion Go opens the address, the PC window prints "New device
       connected", and `http://localhost:8000/who` on the PC lists it.
 - [ ] On the Legion Go, on the same Wi-Fi, the address the window printed opens the
-      dashboard, the start screen lists "Ember: the on-board AI", and the "Ask Ember"
-      button is in the top bar.
+      dashboard and the "Ask Ember" button is in the top bar.
 - [ ] The Menu button opens Ember and an answer appears within a few seconds, ending
       with the model name and the graphics card. With "Voice: on" it is read aloud.
 - [ ] In Fire drill, a line "Ember, the team's on-board AI, thinks: ..." appears

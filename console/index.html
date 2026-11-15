@@ -530,6 +530,9 @@
   }
 
 </style>
+<link rel="stylesheet" href="interface.css">
+<link rel="stylesheet" href="research-ui.css">
+<link rel="stylesheet" href="console-ui.css">
 </head>
 <body>
 
@@ -542,59 +545,61 @@
     <h1>Flame in Freefall</h1>
     <div class="tag">A dashboard that summarizes, ranks and interprets NASA's microgravity combustion investigations, for fire safety on the way to the Moon and Mars.</div>
     <div class="three"><span id="titleRes">NASA research</span><span>Flame console: predict a droplet flame</span><span>Fire drill: test yourself</span><span id="titleAI" hidden>Ember: the on-board AI</span></div>
-    <div class="go"><kbd>A</kbd> Press A to start</div>
+    <button type="button" class="go"><kbd>A</kbd> Start exploring</button>
     <div class="by">Team Second Toe · 2026 NASA Space Apps Challenge · Data: NASA Physical Sciences Informatics</div>
   </div>
 </div>
 
 <header class="top">
-  <h1>Flame in Freefall</h1>
+  <h1 class="brand"><span class="brand-mark" aria-hidden="true"></span>Flame in Freefall</h1>
   <nav class="tabs" id="tabs" aria-label="Pages" hidden>
     <button type="button" id="tabResearch" aria-pressed="false">NASA research</button>
     <button type="button" id="tabConsole" aria-pressed="true">Flame console</button>
     <button type="button" id="tabDrill" aria-pressed="false">Fire drill</button>
   </nav>
   <span class="spacer"></span>
-  <button type="button" class="chip snd" id="sndBtn" title="Sound on or off (key M)">♪ Sound</button>
-  <button type="button" class="chip aibtn" id="aiBtn" hidden><kbd class="wide">☰</kbd> Ask Ember</button>
+  <button type="button" class="chip aibtn" id="aiBtn" hidden>Ask Ember</button>
+  <button type="button" class="guide-button" id="guideBtn" aria-haspopup="dialog" aria-controls="controlGuide">Controls</button>
   <span class="chip mock" id="mockChip" hidden><span class="mark" aria-hidden="true">!</span><span id="mockText">Mock numbers, not NASA data yet</span></span>
-  <span class="chip" id="srcChip" hidden></span>
-  <span class="chip" id="padChip"><span class="dot" aria-hidden="true"></span><span id="padText">No controller</span></span>
 </header>
 
 <main id="viewConsole">
-  <section aria-labelledby="hSet">
+  <nav class="console-jumps" aria-label="Flame console sections">
+    <button type="button" id="jumpSettings" aria-controls="consoleSettings">Adjust settings</button>
+    <button type="button" id="jumpReading" aria-controls="read">View reading <span id="jumpValue"></span></button>
+  </nav>
+  <section class="console-settings" id="consoleSettings" aria-labelledby="hSet">
     <div class="sethead">
-      <h2 id="hSet">Cabin and fuel settings</h2>
-      <div class="presets" id="presets" aria-label="Cabin air presets" hidden></div>
+      <h2 id="hSet" tabindex="-1">Experiment settings</h2>
+      <div class="preset-group"><span>Cabin air</span><div class="presets" id="presets" aria-label="Cabin air presets" hidden></div></div>
     </div>
     <div class="rows" id="rows"></div>
-    <div class="legend"><i aria-hidden="true"></i> Range the experiments actually tested
+    <div class="legend export-row"><span class="range-key"><i aria-hidden="true"></i> Measured range</span>
       <button type="button" class="csv" id="csvBtn" hidden title="Key D. Saves the real tests on this device.">Download tests (CSV)</button>
       <button type="button" class="csv" id="sendBtn" hidden></button></div>
   </section>
 
   <section class="read" id="read" aria-labelledby="hRead" aria-live="polite">
-    <h2 id="hRead" style="margin:0">What the model expects</h2>
+    <h2 id="hRead" tabindex="-1">Model reading</h2>
 
     <div class="stage">
       <div class="flamebox" aria-hidden="true">
         <div class="flame" id="flame"></div>
         <div class="droplet" id="droplet"></div>
       </div>
-      <div>
-        <div class="big-label">Completion chance among flames with a clear outcome</div>
+      <div class="prediction-value">
+        <div class="big-label">Chance of burning all the fuel</div>
         <div class="big"><span id="pKeep">50</span><small>%</small></div>
         <div class="meter" id="meter" role="img" aria-label="Chance the flame burns until the fuel is gone"><div id="meterFill"></div></div>
-        <div class="twin">Visible extinction: <span id="pOut">50</span>% · Disruptions excluded</div>
+        <div class="twin"><span id="pOut">50</span>% visible extinction · Clear outcomes only</div>
       </div>
-      <div class="caption" id="stageCap">Picture is an illustration, not a simulation. In microgravity a droplet flame forms a sphere instead of a teardrop.</div>
+      <div class="caption" id="stageCap">Illustration of a spherical droplet flame in microgravity. Disrupted tests are excluded from the outcome model.</div>
     </div>
 
     <div class="facts three">
       <div class="fact"><div class="k">Burning rate</div><div class="v"><span id="kVal">0.00</span> <small>mm²/s</small></div></div>
-      <div class="fact"><div class="k">Droplet gone in about</div><div class="v"><span id="tVal">0</span> <small>s, if the flame lasts</small></div></div>
-      <button type="button" class="ignite" id="igniteBtn"><kbd class="wide">LT</kbd> Ignite</button>
+      <div class="fact"><div class="k">Time to consume the droplet</div><div class="v"><span id="tVal">0</span> <small>s, if the flame lasts</small></div></div>
+      <button type="button" class="ignite" id="igniteBtn" title="Play an illustrated run of the model">Ignite droplet <kbd class="wide">LT</kbd></button>
     </div>
 
     <div class="conf" id="conf">
@@ -604,16 +609,16 @@
 
     <div class="line">
       <div id="oneLine"></div>
-      <button type="button" id="openSheet"><kbd>A</kbd> Explain this reading</button>
+      <button type="button" id="openSheet">Explain reading <kbd>A</kbd></button>
     </div>
     <div class="map" id="mapBox">
       <div class="maphead">
         <span id="mapTitle"></span>
         <span class="maplegend" id="mapLegend"></span>
-        <span class="mapacts" id="mapActs" hidden><button type="button" id="mapReplay" title="RT, key P, or click the star again">Replay</button><button type="button" id="mapGo" title="Press the right stick, key G, or right-click the star">Go there</button></span>
+        <span class="mapacts" id="mapActs" hidden><button type="button" id="mapReplay" title="RT, key P, or click the star again">Replay test</button><button type="button" id="mapGo" title="Press the right stick, key G, or right-click the star">Use these settings</button></span>
         <span class="mapzoom" id="mapZoom" aria-label="Level of detail"></span>
         <button type="button" id="mapCounter" class="mapbtn" hidden title="Key E or controller A"><kbd>A</kbd> Find counterexample</button>
-        <button type="button" class="mapbtn" id="mapBigBtn" title="Key Z, or the View button on the controller"><span id="mapBigText">View: zoom in</span></button>
+        <button type="button" class="mapbtn" id="mapBigBtn" title="Key Z, or the View button on the controller"><span id="mapBigText">Expand map</span></button>
       </div>
       <svg id="map" role="img" aria-label="Star map of the real FLEX tests with this fuel: oxygen across, droplet size up"></svg>
       <p class="mapfine" id="mapFine" hidden></p>
@@ -652,38 +657,56 @@
 </main>
 
 <main id="viewResearch" class="research" hidden>
-  <section aria-labelledby="hNeed">
-    <h2 id="hNeed" style="margin:0">Which part of fire safety do you need?</h2>
-    <div class="legend" id="resSummary" style="margin:0.2rem 0 0.5rem"></div>
-    <div class="needs" id="needs"></div>
+  <header class="research-hero">
+    <div class="research-intro">
+      <div class="research-intro-copy">
+        <h2>NASA combustion research</h2>
+        <p id="resSummary"></p>
+      </div>
+      <span class="research-photo-credit">FLEX · NASA</span>
+    </div>
+    <nav class="research-tools" aria-label="Explore the experimental data">
+      <button type="button" id="oxBtn" hidden title="Open the Oxygen map (O or Y)">
+        <span class="tool-symbol" aria-hidden="true">O₂</span><kbd aria-hidden="true">Y</kbd>
+        <strong>Oxygen map</strong><small>Oxygen &amp; pressure</small>
+      </button>
+      <div class="case-launchers" id="caseLaunchers" hidden>
+        <button type="button" id="gravityCase" title="Compare Earth and orbital burn lengths (E or LT)">
+          <span class="tool-symbol" aria-hidden="true">1 g</span><kbd aria-hidden="true">LT</kbd>
+          <strong>Earth or orbit?</strong><small>Compare burn lengths</small>
+        </button>
+        <button type="button" id="sensorCase" title="Reveal measured gas concentrations (N or RT)">
+          <span class="tool-symbol" aria-hidden="true">CO</span><kbd aria-hidden="true">RT</kbd>
+          <strong>Read the sensors</strong><small>Compare gas readings</small>
+        </button>
+      </div>
+    </nav>
+  </header>
+  <section class="research-results" aria-labelledby="hRank">
+    <h2 class="research-label" id="hNeed">Rank by safety need</h2>
+    <div class="needs" id="needs" role="group" aria-labelledby="hNeed"></div>
     <div class="rankhead">
-      <h2 id="hRank" style="margin:0"></h2>
-      <button type="button" id="oxBtn" hidden title="Key O"><kbd>Y</kbd> Oxygen map</button>
-      <button type="button" id="orbitBtn"><kbd>X</kbd> <span id="orbitBtnText">Orbit view</span></button>
+      <div><h2 id="hRank">Ranked investigations</h2><span id="rankCount"></span></div>
+      <button type="button" id="orbitBtn" title="Switch between list and orbit (X)"><kbd aria-hidden="true">X</kbd> <span id="orbitBtnText">Orbit view</span></button>
     </div>
-    <div class="legend" id="rankFact" hidden style="margin:0 0 0.3rem"></div>
-    <div class="rank" id="rank"></div>
+    <p id="rankFact" hidden></p>
+    <div class="rank" id="rank" role="group" aria-labelledby="hRank"></div>
     <svg id="orbit" hidden role="img" aria-label="Orbit view: investigations closer to the centre are more relevant to the question"></svg>
-    <div class="legend" id="rankNote"></div>
+    <p id="rankNote"></p>
   </section>
-  <section aria-labelledby="hCard" aria-live="polite">
-    <h2 id="hCard">NASA combustion investigation, from the PSI database</h2>
-    <div class="card" id="card"></div>
-    <div class="case-launchers" id="caseLaunchers" hidden>
-      <button type="button" id="gravityCase" title="Key E"><kbd class="wide">LT</kbd> Earth or orbit?</button>
-      <button type="button" id="sensorCase" title="Key N"><kbd class="wide">RT</kbd> Read the sensors</button>
-    </div>
+  <section class="research-detail" aria-labelledby="hCard">
+    <div class="research-detail-top"><h2 id="hCard" class="research-label">Selected investigation</h2><a id="researchSource" target="_blank" rel="noopener noreferrer">NASA source ↗</a></div>
+    <article class="card" id="card" aria-labelledby="investigationName"></article>
   </section>
 </main>
 
 <main id="viewDrill" class="drill" hidden>
-  <section aria-labelledby="hDrill">
-    <h2 id="hDrill">Fire drill: a real NASA test, with these settings</h2>
+  <section class="drill-conditions" aria-labelledby="hDrill">
+    <h2 id="hDrill">FLEX test conditions</h2>
     <div class="dset" id="drillSet"></div>
-    <div class="board" id="drillBoard"></div>
   </section>
-  <section aria-live="polite">
-    <h2 id="hDrillRound"></h2>
+  <section class="drill-round" aria-labelledby="hDrillRound" aria-live="polite">
+    <div class="drill-heading"><h2 id="hDrillRound"></h2><button type="button" id="drillRestart">New game</button></div>
     <div class="stage dstage">
       <div class="flamebox" id="drillBox" aria-hidden="true">
         <div class="flame"></div>
@@ -692,11 +715,11 @@
       <div>
         <div class="dq" id="drillQ">What happened to the flame?</div>
         <div class="dbtns">
-          <button type="button" id="drillOut"><kbd class="wide">←</kbd> Went out first</button>
+          <button type="button" id="drillOut">Went out first <kbd class="wide">←</kbd></button>
           <button type="button" id="drillBurn">Burned all its fuel <kbd class="wide">→</kbd></button>
         </div>
       </div>
-      <div class="caption" id="drillCap">Picture is an illustration, not a recording of the test.</div>
+      <div class="caption" id="drillCap">Illustration of the test droplet.</div>
     </div>
     <div class="conf" id="drillConf" hidden>
       <div class="ico" id="drillIco" aria-hidden="true"></div>
@@ -705,41 +728,48 @@
     <div class="coach" id="drillCoach" hidden><small id="drillCoachBy"></small><span id="drillCoachText"></span></div>
     <div class="line">
       <div id="drillLine"></div>
-      <button type="button" id="drillNext" hidden><kbd>A</kbd> <span id="drillNextText">Next test</span></button>
+      <button type="button" id="drillNext" hidden><span id="drillNextText">Next test</span> <kbd>A</kbd></button>
     </div>
-    <div class="legend" id="drillNote">Ten real tests from NASA's FLEX table (PSI-69): five burned all their fuel and five went out first, in random order. The model was trained on these tests, so it has a head start.</div>
+  </section>
+  <section class="drill-score" aria-labelledby="hScore">
+    <h2 id="hScore">Scoreboard</h2>
+    <div class="board" id="drillBoard"></div>
+    <div class="legend" id="drillNote">Ten NASA FLEX tests (PSI-69), shuffled. Five burned to completion and five went out. The model trained on these tests, so it has a head start.</div>
   </section>
 </main>
 
-<footer class="hints" id="hintsDrill" aria-label="Controls" hidden>
-  <span><kbd class="wide">←</kbd> Went out first</span>
-  <span><kbd class="wide">→</kbd> Burned all its fuel</span>
-  <span><kbd>A</kbd> Next test</span>
-  <span><kbd>Y</kbd> New game</span>
-  <span><kbd class="wide">LB</kbd><kbd class="wide">RB</kbd> Other page</span>
-  <span class="hintAI" hidden><kbd class="wide">☰</kbd> Ask Ember (AI)</span>
-  <span>Keys: arrows, Enter, R, 1 to 3</span>
-</footer>
-<footer class="hints" id="hintsConsole" aria-label="Controls">
-  <span><kbd class="wide">↑↓</kbd> Pick a setting</span>
-  <span><kbd class="wide">←→</kbd> Change it</span>
-  <span><kbd>A</kbd> Explain</span>
-  <span><kbd>B</kbd> Close</span>
-  <span><kbd>X</kbd> Cabin air</span>
-  <span><kbd>Y</kbd> Reset</span>
-  <span id="hintPage"><kbd class="wide">LB</kbd><kbd class="wide">RB</kbd> Other page</span>
-  <span class="hintAI" hidden><kbd class="wide">☰</kbd> Ask Ember (AI)</span>
-  <span>Keys: arrows, Enter, Esc, X, R, 1 to 3</span>
-</footer>
-<footer class="hints" id="hintsResearch" aria-label="Controls" hidden>
-  <span><kbd class="wide">←→</kbd> Change the question</span>
-  <span><kbd class="wide">↑↓</kbd> Pick an investigation</span>
-  <span><kbd>X</kbd> Orbit view</span>
-  <span class="hintOx" hidden><kbd>Y</kbd> Oxygen map</span>
-  <span><kbd class="wide">LB</kbd><kbd class="wide">RB</kbd> Other page</span>
-  <span class="hintAI" hidden><kbd class="wide">☰</kbd> Ask Ember (AI)</span>
-  <span>Keys: arrows, 1 to 3, M sound</span>
-</footer>
+<dialog class="control-guide" id="controlGuide" aria-labelledby="controlTitle">
+  <div class="guide-title"><h2 id="controlTitle">Controls</h2><button type="button" id="guideClose" autofocus>Close</button></div>
+  <div class="guide-status"><span class="chip" id="padChip"><span class="dot" aria-hidden="true"></span><span id="padText">No controller</span></span><button type="button" class="chip snd" id="sndBtn" title="Toggle sound (M)">♪ Sound</button></div>
+  <h3 id="guidePage">NASA research</h3>
+  <p class="guide-legend">Keyboard / gamepad</p>
+  <div class="hints" id="hintsDrill" hidden>
+    <span>Choose an outcome <kbd>← → / D-pad</kbd></span>
+    <span>Next test <kbd>Enter / A</kbd></span>
+    <span>New game <kbd>R / Y</kbd></span>
+  </div>
+  <div class="hints" id="hintsConsole">
+    <span>Pick a setting <kbd>↑ ↓ / D-pad</kbd></span>
+    <span>Change its value <kbd>← → / D-pad</kbd></span>
+    <span>Explain reading <kbd>Enter / A</kbd></span>
+    <span>Cycle cabin air <kbd>X / X</kbd></span>
+    <span>Reset settings <kbd>R / Y</kbd></span>
+  </div>
+  <div class="hints" id="hintsResearch" hidden>
+    <span>Change the question <kbd>← → / D-pad</kbd></span>
+    <span>Pick an investigation <kbd>↑ ↓ / D-pad</kbd></span>
+    <span>Switch list or orbit <kbd>X / X</kbd></span>
+    <span class="hintOx" hidden>Oxygen map <kbd>O / Y</kbd></span>
+    <span class="hintCases" hidden>Earth or orbit? <kbd>E / LT</kbd></span>
+    <span class="hintCases" hidden>Read the sensors <kbd>N / RT</kbd></span>
+  </div>
+  <div class="hints guide-common">
+    <span id="hintPage">Change page <kbd>1–3 / LB, RB</kbd></span>
+    <span class="hintAI" hidden>Ask Ember <kbd>/ / Menu</kbd></span>
+    <span>Close controls <kbd>Esc / B</kbd></span>
+  </div>
+  <p class="guide-model" id="srcChip" hidden></p>
+</dialog>
 
 <div class="sim" id="sim" hidden role="dialog" aria-labelledby="simTitle">
   <div class="box">
@@ -766,20 +796,22 @@
   </div>
 </div>
 
-<div class="sim ox" id="ox" hidden role="dialog" aria-labelledby="oxTitle">
+<dialog class="sim ox" id="ox" hidden aria-labelledby="oxTitle">
   <div class="box">
     <div class="ahead">
       <h3 id="oxTitle">Oxygen map</h3>
-      <span class="who">What air did NASA's microgravity fire tests burn in?</span>
+      <span class="who">What air did NASA's microgravity fire tests burn in? <span class="ox-pan-hint">Swipe across the chart to see the full oxygen range.</span></span>
       <div class="levels" id="oxLevels" aria-label="Level of detail"><kbd class="wide">←→</kbd></div>
       <button type="button" class="close" id="oxClose"><kbd>B</kbd> Close</button>
     </div>
     <p class="headline" id="oxHead" aria-live="polite"></p>
-    <svg id="oxSvg" role="img" aria-label="Oxygen level of each test, by investigation"></svg>
+    <div class="ox-chart" tabindex="0" role="region" aria-label="Oxygen chart by investigation">
+      <svg id="oxSvg" role="img" aria-label="Oxygen level of each test, by investigation"></svg>
+    </div>
     <p class="pick" id="oxPick" aria-live="polite"></p>
     <p class="fine" id="oxFine"></p>
   </div>
-</div>
+</dialog>
 
 <div class="ai" id="ai" hidden role="dialog" aria-labelledby="aiTitle">
   <div class="box">
@@ -908,7 +940,7 @@ window.FLAME_MODEL = {
     else if (level === "good") sfx.good(1);
     else sfx.reply();
   }
-  function soundButton() { $("sndBtn").classList.toggle("off", !SND.on); $("sndBtn").textContent = SND.on ? "♪ Sound" : "♪ Muted"; }
+  function soundButton() { $("sndBtn").classList.toggle("off", !SND.on); $("sndBtn").setAttribute("aria-pressed", String(SND.on)); $("sndBtn").textContent = SND.on ? "Sound on" : "Sound off"; }
   function toggleSound() { SND.on = !SND.on; save("sound", SND.on); soundButton(); if (SND.on) sfx.open(); }
   $("sndBtn").addEventListener("click", toggleSound);
   soundButton();
@@ -1151,6 +1183,7 @@ window.FLAME_MODEL = {
 
     var keep = Math.round(r.pKeep * 100);
     $("pKeep").textContent = keep; $("pOut").textContent = 100 - keep;
+    $("jumpValue").textContent = rc.level === "outside" ? "Outside range" : rc.level === "edge" ? "Limited data" : keep + "%";
     $("meterFill").style.width = Math.max(2, keep) + "%";
     $("meter").className = "meter" + (rc.level !== "inside" ? "" : r.pKeep >= 0.65 ? " high" : r.pKeep >= 0.35 ? " mid" : "");
     $("meter").setAttribute("aria-label", "Estimated completion chance among clear outcomes: " + keep + " percent");
@@ -1461,9 +1494,11 @@ window.FLAME_MODEL = {
     for (var ox = Math.ceil(x0 / stepX) * stepX; ox <= x1; ox += stepX) {
       var lastX = ox + stepX > x1;
       if (lvl >= 2) svg.appendChild(svgEl("line", { x1: X(ox), y1: T, x2: X(ox), y2: H - B, stroke: "#f1f4ff", "stroke-opacity": ox % 5 ? 0.05 : 0.13 }));
-      svg.appendChild(svgEl("text", { x: X(ox), y: H - (big ? 8 : 3), "text-anchor": lastX && lvl < 2 ? "end" : "middle", "font-size": fs }, ox + (lastX && lvl < 2 ? " % oxygen" : "")));
+      if (lvl < 2 || W >= 650 || ox % 5 === 0) {
+        svg.appendChild(svgEl("text", { x: X(ox), y: H - (big ? 8 : 3), "text-anchor": lastX ? "end" : "middle", "font-size": fs }, String(ox)));
+      }
     }
-    if (lvl >= 2) svg.appendChild(svgEl("text", { x: W - Rt - 5, y: H - B - 7, "text-anchor": "end", "font-size": fs }, "% oxygen"));
+    svg.appendChild(svgEl("text", { x: W - Rt - 5, y: H - B - 7, "text-anchor": "end", "font-size": fs }, "Oxygen (%)"));
     for (var dy = Math.ceil(y0 / stepY) * stepY; dy <= y1; dy += stepY) {
       if (lvl >= 2) svg.appendChild(svgEl("line", { x1: L, y1: Y(dy), x2: W - Rt, y2: Y(dy), stroke: "#f1f4ff", "stroke-opacity": dy % 1 ? 0.05 : 0.13 }));
       svg.appendChild(svgEl("text", { x: L - 6, y: Y(dy) + 3.5, "text-anchor": "end", "font-size": fs }, String(dy)));
@@ -1537,11 +1572,11 @@ window.FLAME_MODEL = {
     var s = MAP.sel, title;
     if (s) {                                       // the picked star: a yellow ring, and its story in the heading
       svg.appendChild(svgEl("circle", { cx: X(s[3]), cy: Y(s[7]), r: 9, fill: "none", stroke: "#fab219", "stroke-width": 2 }));
-      title = "FLEX test " + s[0] + ": " + testSettings(s) + ". " + testEnd(s) + " RT replays it, R3 goes there.";
+      title = "FLEX #" + s[0] + " · " + testEnd(s) + " " + testSettings(s) + ".";
     } else {
-      title = MAP.stars.length + " real " + fuelLabel().toLowerCase() + " tests, one star each. Lines: your three closest. Right stick picks a star.";
+      title = "FLEX star map · " + MAP.stars.length + " " + fuelLabel().toLowerCase() + " tests";
     }
-    $("mapTitle").textContent = title; $("mapTitle").title = title;
+    $("mapTitle").textContent = title; $("mapTitle").title = title + " Each star is one test. Lines connect the three closest to your settings.";
     $("mapLegend").hidden = !!s && !big;           // in the small map the picked star's story takes the whole line
     $("mapActs").hidden = !s;
     if (big) {
@@ -1558,7 +1593,7 @@ window.FLAME_MODEL = {
     on = on == null ? !MAP.big : !!on;
     if (on === MAP.big || (on && (box.hidden || view.page !== "console" || !last))) return;
     if (on && state.sheet) toggleSheet(false);
-    MAP.big = on; box.classList.toggle("big", on); $("mapFine").hidden = !on; $("mapBigText").textContent = on ? "View: close" : "View: zoom in";
+    MAP.big = on; box.classList.toggle("big", on); $("mapFine").hidden = !on; $("mapBigText").textContent = on ? "Close map" : "Expand map";
     if (on) sfx.open(); else sfx.close();
     render();
   }
@@ -1722,21 +1757,23 @@ window.FLAME_MODEL = {
     ORB.dots = [];
     if (W < 260 || H < 150) return;
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
-    var cx = W / 2, cy = H / 2, rad = Math.min(H / 2 - 12, W / 2 - 112);
+    var compact = W < 450;
+    var cx = W / 2, cy = H / 2, rad = Math.min(H / 2 - (compact ? 27 : 12), W / 2 - (compact ? 26 : 112));
     ORB.cx = cx; ORB.cy = cy; ORB.rad = rad;
     var ring = { 3: 0.36 * rad, 2: 0.6 * rad, 1: 0.82 * rad, 0: rad };
     [[3, "direct"], [2, "strong"], [1, "related"], [0, "not about this"]].forEach(function (k) {
       svg.appendChild(svgEl("circle", { cx: cx, cy: cy, r: ring[k[0]], fill: k[0] === 3 ? "rgba(125,184,255,0.06)" : "none",
-        stroke: "#2b3b66", "stroke-width": 1, "stroke-dasharray": k[0] ? "none" : "2 5" }));
+        stroke: "var(--line)", "stroke-width": 1, "stroke-dasharray": k[0] ? "none" : "2 5" }));
       svg.appendChild(svgEl("text", { x: cx, y: cy - ring[k[0]] + 11, "text-anchor": "middle", "font-size": 9.5 }, k[1]));
     });
-    svg.appendChild(svgEl("circle", { cx: cx, cy: cy, r: 5, fill: "#7db8ff" }));
+    svg.appendChild(svgEl("circle", { cx: cx, cy: cy, r: 5, fill: "var(--flame)" }));
     svg.appendChild(svgEl("text", { x: cx, y: cy + 17, "text-anchor": "middle", "font-size": 10.5, style: "fill:#b9c3e0" }, need.label.toLowerCase()));
     var label = null;
     FUELS.forEach(function (fuel, s) {
       var a0 = (180 + 90 * s + 9) * Math.PI / 180, a1 = (180 + 90 * (s + 1) - 9) * Math.PI / 180;
       var left = s === 0 || s === 3, upper = s < 2;
-      var lx = left ? cx - rad - 14 : cx + rad + 14, ly = upper ? cy - rad * 0.74 : cy + rad * 0.8;
+      var lx = compact ? (left ? cx - 10 : cx + 10) : left ? cx - rad - 14 : cx + rad + 14;
+      var ly = compact ? (upper ? 15 : H - 9) : upper ? cy - rad * 0.74 : cy + rad * 0.8;
       svg.appendChild(fuelIcon(fuel, lx + (left ? 2 : -2), ly - 4, 0.8, FUEL_COLOR[fuel]));
       svg.appendChild(svgEl("text", { x: lx + (left ? -9 : 9), y: ly, "text-anchor": left ? "end" : "start", "font-size": 11, style: "fill:#b9c3e0" }, FUEL_SHORT[fuel]));
       [3, 2, 1, 0].forEach(function (score) {
@@ -1775,47 +1812,95 @@ window.FLAME_MODEL = {
     for (var i = 1; i <= 3; i++) s.appendChild(el("i", i <= n ? "on" : ""));
     return s;
   }
+  function renderRankList(box, list, need) {
+    var hadFocus = box.contains(document.activeElement);
+    if (box.dataset.need !== need.key) {
+      box.dataset.need = need.key;
+      box.replaceChildren();
+      list.forEach(function (it, i) {
+        var row = el("button", "item");
+        row.type = "button";
+        row.setAttribute("aria-controls", "card");
+        row.appendChild(el("span", "n", String(i + 1)));
+        var name = el("span", "nm", it.name);
+        var kind = el("small", "", it.fuel);
+        name.appendChild(kind);
+        row.appendChild(name);
+        var level = el("span", "lv", LEVEL[it.scores[need.key]]);
+        level.dataset.score = it.scores[need.key];
+        row.appendChild(level);
+        var arrow = el("span", "rank-arrow", "›");
+        arrow.setAttribute("aria-hidden", "true");
+        row.appendChild(arrow);
+        row.addEventListener("click", function () {
+          view.sel = i;
+          renderResearch();
+          if (window.matchMedia("(max-width: 820px)").matches) {
+            $("hCard").scrollIntoView({ block: "start" });
+          }
+        });
+        box.appendChild(row);
+      });
+      box.dataset.selected = "";
+    }
+    Array.prototype.forEach.call(box.children, function (row, i) {
+      var selected = i === view.sel;
+      row.classList.toggle("sel", selected);
+      row.setAttribute("aria-pressed", String(selected));
+      row.tabIndex = selected ? 0 : -1;
+    });
+    var current = box.children[view.sel];
+    if (box.hidden || !current) return;
+    if (hadFocus && document.activeElement !== current) current.focus({ preventScroll: true });
+    if (box.dataset.selected === String(view.sel)) return;
+    box.dataset.selected = String(view.sel);
+    var rowBounds = current.getBoundingClientRect(), listBounds = box.getBoundingClientRect();
+    if (rowBounds.top < listBounds.top) box.scrollTop -= listBounds.top - rowBounds.top;
+    else if (rowBounds.bottom > listBounds.bottom) box.scrollTop += rowBounds.bottom - listBounds.bottom;
+  }
   function renderResearch() {
     var need = R.needs[view.need], list = ranked();
     view.sel = Math.max(0, Math.min(view.sel, list.length - 1));
     Array.prototype.forEach.call($("needs").children, function (b, i) { b.setAttribute("aria-pressed", String(i === view.need)); });
-    $("hRank").textContent = "Ranked for " + need.label.toLowerCase() + ": " + list.length + " of " + R.items.length + " investigations";
+    $("rankCount").textContent = list.length + " of " + R.items.length;
     // For the cabin-air question, the count from NASA's own test tables comes first: it is the short answer.
     var note = $("rankFact"), showNote = !!T && need.key === "cabin" && !view.orbit;
     note.hidden = !showNote;
     if (showNote) note.textContent = "Of " + T.meta.ambient_with_pressure + " table rows with ambient oxygen and pressure, "
-      + T.meta.in_moon_zone + " meet the Moon Base thresholds. Y opens the Oxygen map.";
-    var box = $("rank"); box.innerHTML = "";
-    list.forEach(function (it, i) {
-      var row = el("div", "item" + (i === view.sel ? " sel" : ""));
-      row.appendChild(el("span", "n", String(i + 1)));
-      var nm = el("span", "nm", it.name), kind = el("small"), pic = svgEl("svg", { viewBox: "-10 -10 20 20", "class": "fpic", "aria-hidden": "true" });
-      pic.appendChild(fuelIcon(it.fuel, 0, 0, 1, FUEL_COLOR[it.fuel] || "#898781"));
-      kind.appendChild(pic); kind.appendChild(document.createTextNode(it.fuel)); nm.appendChild(kind); row.appendChild(nm);
-      var lv = el("span", "lv", LEVEL[it.scores[need.key]]); lv.appendChild(dots(it.scores[need.key])); row.appendChild(lv);
-      row.addEventListener("click", function () { view.sel = i; renderResearch(); });
-      box.appendChild(row);
-    });
+      + T.meta.in_moon_zone + " meet the Moon Base thresholds.";
+    var box = $("rank");
     box.hidden = view.orbit;
+    renderRankList(box, list, need);
     if (view.orbit) $("orbit").removeAttribute("hidden"); else $("orbit").setAttribute("hidden", "");   // an svg has no .hidden property
     $("orbitBtnText").textContent = view.orbit ? "List view" : "Orbit view";
+    $("orbitBtn").setAttribute("aria-pressed", String(view.orbit));
     if (view.orbit) drawOrbit(list, need);
-    var cur = box.children[view.sel];
-    if (cur) box.scrollTop = Math.max(0, cur.offsetTop - box.offsetTop - box.clientHeight / 2 + cur.offsetHeight / 2);
-    $("rankNote").textContent = (R.items.length - list.length) + " other investigations are not about " + need.label.toLowerCase() + ".";
+    $("rankNote").textContent = "AI relevance ranking · " + (R.items.length - list.length) + " investigations outside this topic.";
 
-    var it = list[view.sel], card = $("card"); card.innerHTML = "";
+    var it = list[view.sel], card = $("card");
     if (!it) return;
-    var head = el("div", "chead"); head.appendChild(el("h3", "", it.name)); head.appendChild(el("span", "pid", it.id)); card.appendChild(head);
+    if (card.dataset.investigation === it.id) return;
+    card.dataset.investigation = it.id;
+    card.replaceChildren();
+    card.scrollTop = 0;
+    $("researchSource").href = "https://" + R.meta.url + it.id;
+    $("researchSource").setAttribute("aria-label", "Open " + it.id + " on NASA PSI in a new tab");
+    var head = el("div", "chead"), name = el("h3", "", it.name);
+    name.id = "investigationName";
+    head.appendChild(name); head.appendChild(el("span", "pid", it.id)); card.appendChild(head);
     card.appendChild(el("div", "full", it.title));
     var tags = el("div", "tags");
     [it.fuel, it.type === "Microgravity Investigation" ? "Flight experiment" : "Ground study"].forEach(function (t) { tags.appendChild(el("span", "", t)); });
     card.appendChild(tags);
+    card.appendChild(el("p", "research-description", it.summary));
     var dl = el("dl");
-    function pair(k, v) { dl.appendChild(el("dt", "", k)); var dd = el("dd", "", typeof v === "string" ? v : null); if (typeof v !== "string") dd.appendChild(v); dl.appendChild(dd); }
-    pair("What it did", it.summary);
+    function pair(k, v, style) {
+      var group = el("div", style || ""), dd = el("dd", "", typeof v === "string" ? v : null);
+      if (typeof v !== "string") dd.appendChild(v);
+      group.appendChild(el("dt", "", k)); group.appendChild(dd); dl.appendChild(group);
+    }
+    pair("Why it matters", it.why, "research-why");
     pair("What varied", it.varied);
-    pair("Why it matters", it.why);
     pair("Hardware", it.hardware || "Not listed in PSI");
     if (T) {                                       // counted from this investigation's own test table, not AI-written
       var facts = T.rows.map(function (row, i) { return { row: row, st: OX.stats[i] }; }).filter(function (x) { return x.row.id === it.id; }).map(function (x) {
@@ -1828,14 +1913,14 @@ window.FLAME_MODEL = {
     }
     var rel = el("span", "rel");
     R.needs.forEach(function (nd) {
-      var one = el("span", "", nd.label); one.appendChild(dots(it.scores[nd.key])); rel.appendChild(one);
+      var one = el("span", "", nd.label); one.appendChild(dots(it.scores[nd.key]));
+      one.setAttribute("aria-label", nd.label + ": " + LEVEL[it.scores[nd.key]]);
+      one.title = nd.label + ": " + LEVEL[it.scores[nd.key]];
+      rel.appendChild(one);
     });
     pair("Relevance", rel);
-    pair("Find it", R.meta.url + it.id);
     card.appendChild(dl);
-    card.appendChild(el("p", "fine", "Summary, \"why it matters\" and the ranks were written by an AI model (Claude) from this investigation's NASA PSI page, "
-      + "and are stored here so the page works offline. Title, type and hardware are copied from PSI (read " + R.meta.retrieved + "). "
-      + "Check the PSI page before relying on them."));
+    card.appendChild(el("p", "fine", "Summaries and ranks by Claude. Title, type and hardware from NASA PSI, retrieved " + R.meta.retrieved + "."));
   }
   /* ---------- Fire drill: guess how a real FLEX test ended ---------- */
   // Ten real tests from model.js: five that burned all their fuel and five that went out first, shuffled.
@@ -1940,7 +2025,7 @@ window.FLAME_MODEL = {
     $("hDrillRound").textContent = "Round " + (drill.i + 1) + " of " + n;
     if (REPLAY.box !== $("drillBox")) $("drillBox").className = "flamebox" + (done ? (truth === "burn" ? " ended-burn" : " ended-out") : "");
     if (!done) {                                    // a fresh round: the picture gives nothing away
-      $("drillCap").textContent = "Picture is an illustration, not a recording of the test.";
+      $("drillCap").textContent = "Illustration of the test droplet.";
       var pic = $("drillBox");
       pic.querySelector(".flame").style.setProperty("--size", "0.8");
       pic.querySelector(".flame").style.setProperty("--glow", "0.85");
@@ -1966,10 +2051,13 @@ window.FLAME_MODEL = {
     $("drillLine").textContent = (done && lastRound)
       ? "Final score: you " + you + " of " + n + ", the model " + mod + ". " + (you > mod ? "You beat the model." : you === mod ? "A draw." : "The model wins this time.")
         + " Rank: " + drillRank(you) + "." + (drill.newBest ? " New best score!" : "")
-      : done ? "" : "Left: it went out first. Right: it burned all its fuel.";
+      : "";
     coachLine();
   }
   $("drillOut").addEventListener("click", function () { drillGuess("out"); });
+  $("drillRestart").addEventListener("click", function () { drillStart(); });
+  $("jumpSettings").addEventListener("click", function () { $("hSet").focus({preventScroll: true}); $("hSet").scrollIntoView({block: "start"}); });
+  $("jumpReading").addEventListener("click", function () { $("hRead").focus({preventScroll: true}); $("hRead").scrollIntoView({block: "start"}); });
   $("drillBurn").addEventListener("click", function () { drillGuess("burn"); });
   $("drillNext").addEventListener("click", drillNext);
   // The current drill test as plain text, for Ask the AI (only offered after the answer is shown).
@@ -2369,9 +2457,18 @@ window.FLAME_MODEL = {
   function oxMove(d) { OX.sel = (OX.sel + d + T.rows.length) % T.rows.length; oxRender(); }
   function openOx() {
     if (!T || OX.open || SIM.open || AI.open || titleOn) return;
-    OX.open = true; $("ox").hidden = false; sfx.open(); oxRender();
+    OX.open = true;
+    $("ox").hidden = false;
+    $("ox").showModal();
+    sfx.open(); oxRender();
   }
-  function closeOx() { if (!OX.open) return; OX.open = false; $("ox").hidden = true; sfx.close(); }
+  function closeOx() {
+    if (!OX.open) return;
+    OX.open = false;
+    $("ox").close();
+    $("ox").hidden = true;
+    sfx.close();
+  }
   if (T) {
     OX_LEVELS.forEach(function (name, i) {
       var b = el("button", "", (i + 1) + "  " + name); b.type = "button";
@@ -2383,6 +2480,7 @@ window.FLAME_MODEL = {
       + "This shows where tests were run. It does not say how flammable anything is.";
     $("oxBtn").hidden = false; $("oxBtn").addEventListener("click", openOx);
     $("oxClose").addEventListener("click", closeOx);
+    $("ox").addEventListener("cancel", function (e) { e.preventDefault(); closeOx(); });
     Array.prototype.forEach.call(document.querySelectorAll(".hintOx"), function (s) { s.hidden = false; });
     window.addEventListener("resize", function () { if (OX.open) oxDraw(); });
   }
@@ -2400,16 +2498,26 @@ window.FLAME_MODEL = {
       if (state.comparing) toggleComparison(false);
     }
     view.page = name;
+    document.body.dataset.page = name;
     ["Console", "Research", "Drill"].forEach(function (p) {
       var on = p.toLowerCase() === name;
       $("view" + p).hidden = !on; $("hints" + p).hidden = !on;
       $("tab" + p).setAttribute("aria-pressed", String(on));
+      if (on) {
+        $("tab" + p).setAttribute("aria-current", "page");
+        $("guidePage").textContent = $("tab" + p).textContent;
+      } else $("tab" + p).removeAttribute("aria-current");
     });
     if (name === "research") renderResearch();
     else if (name === "drill") { if (drill.rounds.length) renderDrill(); else drillStart(); }
     else render();
   }
-  function goPage(name) { if (name !== view.page && PAGES.indexOf(name) >= 0) { sfx.page(); showPage(name); } }
+  function goPage(name) {
+    if (name === view.page || PAGES.indexOf(name) < 0) return;
+    sfx.page();
+    showPage(name);
+    if (window.matchMedia("(max-width: 820px)").matches) window.scrollTo(0, 0);
+  }
   function turnPage(dir) { goPage(PAGES[(PAGES.indexOf(view.page) + dir + PAGES.length) % PAGES.length]); }
   function researchMove(dir) { view.sel += dir; sfx.move(); renderResearch(); }
   function researchNeed(dir) { view.need = (view.need + dir + R.needs.length) % R.needs.length; view.sel = 0; sfx.preset(); renderResearch(); }
@@ -2423,14 +2531,15 @@ window.FLAME_MODEL = {
     var tally = function (fn) { var c = {}; R.items.forEach(function (it) { var k = fn(it); c[k] = (c[k] || 0) + 1; }); return c; };
     var byFuel = tally(function (it) { return it.fuel.toLowerCase(); });
     var flown = R.items.filter(function (it) { return it.type === "Microgravity Investigation"; }).length;
-    $("resSummary").textContent = R.items.length + " NASA combustion investigations: "
-      + Object.keys(byFuel).sort(function (a, b) { return byFuel[b] - byFuel[a]; }).map(function (k) { return byFuel[k] + " on " + k; }).join(", ")
-      + ". " + flown + " are flight experiments, " + (R.items.length - flown) + " are ground studies.";
-    $("needs").style.gridTemplateColumns = "repeat(" + R.needs.length + ", minmax(0, 1fr))";
+    $("resSummary").textContent = R.items.length + " investigations · " + flown + " flight · " + (R.items.length - flown) + " ground";
+    $("resSummary").appendChild(el("span", "research-fuels", Object.keys(byFuel)
+      .sort(function (a, b) { return byFuel[b] - byFuel[a]; })
+      .map(function (k) { return byFuel[k] + " " + k; }).join(" · ")));
     $("titleRes").textContent = "NASA research: " + R.items.length + " investigations, ranked";
     R.needs.forEach(function (nd, i) {
       var b = el("button"); b.type = "button";
       b.appendChild(el("b", "", nd.label)); b.appendChild(el("span", "", nd.hint));
+      b.setAttribute("aria-controls", "rank");
       b.addEventListener("click", function () { view.need = i; view.sel = 0; renderResearch(); });
       $("needs").appendChild(b);
     });
@@ -2654,7 +2763,14 @@ window.FLAME_MODEL = {
     titleOn = false; $("title").hidden = true; document.body.classList.remove("titled");
     sfx.start();
   }
-  if (location.hash !== "#notitle") { titleOn = true; $("title").hidden = false; document.body.classList.add("titled"); }
+  function syncStartScreen() {
+    titleOn = location.hash === "#title";
+    $("title").hidden = !titleOn;
+    document.body.classList.toggle("titled", titleOn);
+    if (titleOn) $("title").querySelector("button").focus({ preventScroll: true });
+  }
+  syncStartScreen();
+  window.addEventListener("hashchange", syncStartScreen);
   $("title").addEventListener("click", startGame);
   (function () {
     var cv = $("stars"), ctx = cv.getContext && cv.getContext("2d");
@@ -2733,7 +2849,18 @@ window.FLAME_MODEL = {
   })();
 
   /* ---------- mouse wheel: the thumb wheel on the Legion Go's right controller, or any mouse ---------- */
+  var guide = $("controlGuide");
+  $("guideBtn").addEventListener("click", function () { guide.showModal(); });
+  $("guideClose").addEventListener("click", function () { guide.close(); });
+  var guidePanel = { handle: function (action) {
+    if (action === "back") guide.close();
+    else if (action === "confirm") document.activeElement.click();
+    else if (action === "up" || action === "down" || action === "left" || action === "right") {
+      (document.activeElement === $("guideClose") ? $("sndBtn") : $("guideClose")).focus();
+    }
+  } };
   function activeCasePanel() {
+    if (guide.open) return guidePanel;
     if (window.FLAME_EVIDENCE && window.FLAME_EVIDENCE.isOpen()) return window.FLAME_EVIDENCE;
     if (window.FLAME_COUNTER && window.FLAME_COUNTER.isOpen()) return window.FLAME_COUNTER;
     return null;
@@ -2748,6 +2875,7 @@ window.FLAME_MODEL = {
     });
   }
   $("caseLaunchers").hidden = !(window.FLAME_EVIDENCE && window.FLAME_EVIDENCE_DATA);
+  document.querySelectorAll(".hintCases").forEach(function (s) { s.hidden = $("caseLaunchers").hidden; });
   $("mapCounter").hidden = $("sheetCounter").hidden = !(window.FLAME_COUNTER && hasTests);
   $("gravityCase").addEventListener("click", function () { openEvidence("gravity"); });
   $("sensorCase").addEventListener("click", function () { openEvidence("sensors"); });
@@ -2760,7 +2888,11 @@ window.FLAME_MODEL = {
     if (activeCasePanel()) return;
     var t = e.target && e.target.closest ? e.target : document.body;
     if (titleOn || SIM.open || AI.open || e.ctrlKey || (state.sheet && !MAP.big) || t.closest(".sheet")) return;   // those scroll, or do nothing, by themselves
-    if (view.page === "drill" || (view.page === "research" && !OX.open && (view.orbit || t.closest("#card")))) return;
+    if (OX.open && (!t.closest("#oxSvg") || e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY))) return;
+    if ((!OX.open && view.page === "drill") || (view.page === "research" && !OX.open &&
+        (view.orbit || !t.closest("#rank") || window.matchMedia("(max-width: 820px)").matches))) return;
+    var row = t.closest("#rows .row");
+    if (view.page === "console" && !OX.open && !MAP.big && !row && !t.closest("#mapBox")) return;
     e.preventDefault();
     var d = e.deltaMode === 1 ? e.deltaY * 40 : e.deltaY, now = Date.now(), steps;
     if (now - wheelAt > 300 || (d > 0) !== (wheelAcc > 0)) wheelAcc = 0;
@@ -2774,7 +2906,6 @@ window.FLAME_MODEL = {
     if (view.page === "research") { researchMove(dir); return; }
     if (view.page !== "console") return;
     if (t.closest("#mapBox")) { stepStar(dir); return; }
-    var row = t.closest("#rows .row");
     if (row && +row.dataset.i !== state.sel) select(+row.dataset.i);
     nudge(-dir, 1);                                // rolling up raises the value
   }, { passive: false });
@@ -2803,6 +2934,8 @@ window.FLAME_MODEL = {
       return;
     }
     if (OX.open) {                                 // the oxygen map: up/down picks, left/right changes the detail
+      if (e.target && e.target.classList && e.target.classList.contains("ox-chart") &&
+          e.target.scrollWidth > e.target.clientWidth && (e.key === "ArrowLeft" || e.key === "ArrowRight")) return;
       if (e.key === "Escape" || e.key === "Backspace" || e.key === "o" || e.key === "O") { e.preventDefault(); closeOx(); }
       else if (e.key === "ArrowUp") { e.preventDefault(); oxMove(-1); }
       else if (e.key === "ArrowDown") { e.preventDefault(); oxMove(1); }

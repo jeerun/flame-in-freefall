@@ -56,6 +56,11 @@ gas sensor and burn-length activities. [Download manifest](../data/raw/psi_table
 
 ## Other sources (papers, NASA pages)
 
+The research home image is NASA’s colorized composite of a heptane droplet burning
+in microgravity. The yellow trace follows the droplet and the surrounding structures
+show soot. Image credit: NASA. The dashboard includes a resized WebP copy for offline
+viewing. [Burning in Microgravity, May 25, 2011](https://www.nasa.gov/image-article/burning-microgravity/)
+
 | Title | Link | What we took from it |
 |---|---|---|
 | NASA Space Apps Challenge 2026, challenge brief "Flame in Freefall: SI-Powered Fire Safety Insights from Microgravity Combustion Data" (read Nov 14, 2026) | https://www.spaceappschallenge.org/2026/challenges/flame-in-freefall/ | What the challenge asks for. The three parts of spacecraft fire safety: prevention, detection, suppression. The Moon Base atmosphere: oxygen likely 30% or greater at 10.2 psi or less, against 14.7 psi at sea level on Earth. |

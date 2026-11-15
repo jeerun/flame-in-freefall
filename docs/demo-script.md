@@ -15,14 +15,15 @@ The [28-second captioned desktop demo](crew-console-demo.mp4) opens on the resea
    network the PC is on (Private, Public, or both) and choose Allow. Leave the window
    open. If the Legion Go cannot connect, see `docs/legion-go-setup.md`.
 2. On the Legion Go, on the same Wi-Fi, open Edge at the address the window printed
-   for the Legion Go (it looks like `http://192.168.x.x:8000`) and press F11.
+   for the Legion Go (it looks like `http://192.168.x.x:8000`). Add `/#title`
+   for the optional opening shot and press F11.
 3. The start screen must list four things, the last one "Ember: the on-board AI". If
    Ember is missing, the Legion Go is not reaching the PC: check the Wi-Fi and the
    firewall answer.
 4. Press A. If nothing happens and the stick moves a mouse pointer instead, the device
-   is in desktop mode: switch it to gamepad mode. Top right must read "Controller
-   connected".
-5. Check that nothing needs scrolling on any of the three pages (RB turns the page).
+   is in desktop mode: switch it to gamepad mode. Open Controls to check for
+   "Controller connected", then close it.
+5. Check that all six settings fit on the Flame console in landscape (RB turns the page).
    On the research page press Y: the Oxygen map must open with "2 Every test" lit.
    If another level is lit, press Left or Right until it is, then B. The page
    remembers the level.
