@@ -232,6 +232,19 @@ Not done:
     questions to Ember all answered (slowest 2.1 s), 4 CSV files received, no server
     errors. What the screen, sound, rumble and buttons did was not visible from here.
 
+  - The owner's zip of Nov 15 (made with ChatGPT/Codex, based on the then-current
+    main) is merged: the explanation opens with Prediction, Real-test evidence and
+    Limitations, with "Why this prediction?" (X, key W) and "Test details and
+    sources" (Y, key T) as sections that open; "Save baseline" and "Compare" (keys H
+    and C) show two sets of settings side by side and withhold the difference when
+    either is outside the tested range. Changed on the way in: the two buttons sat
+    under the settings and pushed the page past the screen (43 px at 680, 18 px at
+    800), so they moved into the explanation panel; LT there saves and compares, LT
+    in the comparison replaces the baseline, the right stick scrolls an open panel;
+    tighter spacing on short screens. `tests/test_console_features.cjs` and the
+    teammate's parity tests run here with the Node.js bundled in Playwright
+    (`<venv>/Lib/site-packages/playwright/driver/node.exe`): all pass.
+
 Not done, or not verified:
 - Everything in the list above is unverified on the real Legion Go, with real
   gloves, and over real Wi-Fi, except what the previous point says.
