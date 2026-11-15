@@ -5,11 +5,11 @@ owner's local time (confirm on the team page). "Submit for Judging" is final.
 
 ## Repo
 
-- [x] Repo is Public. Checked Nov 14 without being signed in:
+- [ ] Repo is Public. Checked Nov 14 without being signed in:
       https://github.com/jeerun/flame-in-freefall opens and shows the files.
-- [x] `console/model.js`, `console/research.js` and `console/tables.js` are committed,
+- [ ] `console/model.js`, `console/research.js` and `console/tables.js` are committed,
       so a fresh download shows real numbers, the NASA research page and the Oxygen map.
-- [x] The live copy opens without signing in (checked Nov 15):
+- [ ] The live copy opens without signing in (checked Nov 15):
       https://jeerun.github.io/flame-in-freefall/ . After any later change to
       `console/`, republish it: `git subtree push --prefix console origin gh-pages`.
 - [ ] Final check from a clean copy: on github.com use Code > Download ZIP, unzip,
@@ -24,44 +24,46 @@ owner's local time (confirm on the team page). "Submit for Judging" is final.
 How to get it onto the handheld, three ways, with fixes for a connection that
 fails: `docs/legion-go-setup.md`.
 
-Ticked on Nov 15 from the run on the real handheld, with the owner pressing the
-controls: see "Verified on the real Legion Go" in `CLAUDE.md` for what was seen and how.
-Both controller runs were on the page before the model switch of Nov 15. The page with
-the per-fuel model has had a screen check on the handheld, not a controller run.
+Every box in this section and the next is open again. On Nov 15 the owner and a
+Claude session on the handheld went through this list on the page as it was before
+the redesign (pull request 5), and 17 boxes were ticked: what was seen then, and how,
+is in "Verified on the real Legion Go" in `CLAUDE.md`. The redesign moved controls and
+changed wording, and the server now checks the sent file differently, so the new page
+needs its own run. Notes in brackets that begin "Nov 15" are from that earlier run.
 
-- [x] Opens in Edge, F11, nothing needs scrolling. (Full screen came from Edge's
-      start-fullscreen switch, not the F11 key: 1280x800, no page scrolls.)
-- [x] Chip reads "Controller connected" after pressing a button. If the stick moves a
+- [ ] Opens in Edge, F11, with all six Flame console settings visible in landscape.
+- [ ] Controls reads "Controller connected" after pressing a button. If the stick moves a
       mouse pointer, switch the device to gamepad mode.
-- [x] D-pad picks and changes settings one step at a time. The left stick slides the
+- [ ] D-pad picks and changes settings one step at a time. The left stick slides the
       selected bar: a light push creeps, a full push sweeps. A opens the explanation,
       B closes it, Y resets.
-- [x] The start screen appears and A starts. The first page is "NASA research".
-- [x] RB goes to "Flame console", then "Fire drill"; LB goes back.
-- [x] NASA research: Left and Right change the question (four of them), Up and Down
+- [ ] The first page is "NASA research". At `/#title` the optional start screen appears and A starts.
+- [ ] RB goes to "Flame console", then "Fire drill"; LB goes back.
+- [ ] NASA research: Left and Right change the question (four of them), Up and Down
       move through the list, X switches to the orbit view, and there the right stick
       points at an investigation. Y opens the Oxygen map: Up and Down pick an
       investigation, Left and Right change the level of detail, B closes.
-- [x] Flame console: X steps the cabin air through "Earth air", "Moon Base" and "Mars
+- [ ] Flame console: X steps the cabin air through "Earth air", "Moon Base" and "Mars
       (assumed)", and the background becomes the Earth, the Moon or Mars. The star map
       shows under the reading. The right stick picks a star
       (yellow ring), RT replays that test in the flame picture, pressing the right
       stick moves the settings onto it.
-- [x] Flame console: LT opens Ignite (A runs it again, B closes). The View button
+- [ ] Flame console: LT opens Ignite (A runs it again, B closes). The View button
       zooms the star map to the whole screen (Left and Right change the detail, B
       closes).
-- [x] A banner appears at the top, with a sound and a buzz, when the settings leave
+- [ ] Research: LT opens Earth or orbit?, RT opens Read the sensors, A reveals and B returns. In the zoomed FLEX map, A opens Find counterexample.
+- [ ] A banner appears at the top, with a sound and a buzz, when the settings leave
       what NASA tested (set carbon dioxide and helium both above zero) and when the
-      risk turns high (press X for Moon Base).
-- [x] Flame console: A opens the explanation with three boxes (prediction, evidence,
+      Moon preset has only inconclusive nearby outcomes (press X at the default heptane settings).
+- [ ] Flame console: A opens the explanation with three boxes (prediction, evidence,
       limitations). There, X and Y open the two sections and LT saves a baseline and
       opens the comparison. Changing a bar updates column B; B closes.
-- [x] Fire drill: Left and Right guess, the test replays, A goes on, Y starts a new game.
-- [x] Sound plays after the first touch or key press, and M mutes it. The controller
+- [ ] Fire drill: Left and Right guess, the test replays, A goes on, Y starts a new game.
+- [ ] Sound plays after the first touch or key press, and M mutes it. The controller
       buzzes when the red box appears and on a wrong Fire drill answer. If sound or
       rumble is missing, nothing is broken: not every browser and controller has them.
-      (On the handheld the sound started from the A button alone, with no touch. Key M
-      was not tried, there is no keyboard: the Sound button on screen muted it.)
+      (Nov 15 on the handheld: the sound started from the A button alone, with no
+      touch. Key M was not tried, there is no keyboard: the Sound button muted it.)
 
 ## Local AI, PC and Legion Go together (owner only)
 
@@ -71,16 +73,14 @@ the per-fuel model has had a screen check on the handheld, not a controller run.
       A VPN on the PC can keep the handheld out: pause it for the test.
 - [ ] When the Legion Go opens the address, the PC window prints "New device
       connected", and `http://localhost:8000/who` on the PC lists it.
-- [x] On the Legion Go, on the same Wi-Fi, the address the window printed opens the
-      dashboard, the start screen lists "Ember: the on-board AI", and the "Ask Ember"
-      button is in the top bar. (Seen on Nov 15 over Tailscale at `http://run/`, not
-      over the Wi-Fi address.)
-- [x] The Menu button opens Ember and an answer appears within a few seconds, ending
+- [ ] On the Legion Go, on the same Wi-Fi, the address the window printed opens the
+      dashboard and the "Ask Ember" button is in the top bar.
+- [ ] The Menu button opens Ember and an answer appears within a few seconds, ending
       with the model name and the graphics card. With "Voice: on" it is read aloud.
-      (2.2 s on Nov 15.)
-- [x] In Fire drill, a line "Ember, the team's on-board AI, thinks: ..." appears
+      (Nov 15 on the handheld: 2.2 s.)
+- [ ] In Fire drill, a line "Ember, the team's on-board AI, thinks: ..." appears
       after each answer.
-- [x] On the Flame console, pressing the left stick (or the "Send to base" button)
+- [ ] On the Flame console, pressing the left stick (or the "Send to base" button)
       shows "Sent 252 real FLEX tests to ...", and the file
       `flex_psi69_tests_with_predictions.csv` is in the folder `exports` on the PC.
       (Nov 15 on the handheld: the banner read "Sent 252 real FLEX tests to RUN,
@@ -91,7 +91,6 @@ the per-fuel model has had a screen check on the handheld, not a controller run.
       was given the PC's address. In Ember, a row "Ember thinks on:" offers both
       machines and X switches. Close the window on the PC: within about 20 seconds a
       banner says the big machine is out of reach, and Ember still answers.
-      This has only been tried with two copies of the server on the PC.
       (Nov 15 on the handheld: the setup ran to the end after a fix to its two winget
       lines, both machines are offered and X on the controller switches, the handheld's
       model answered in 3.7 to 14.5 s, and a copy with a peer that cannot answer
@@ -102,12 +101,13 @@ the per-fuel model has had a screen check on the handheld, not a controller run.
       wherever Ember's accuracy comes up.
 - [ ] With the PC window closed, `console/index.html` opened as a file still works,
       without Ember.
-- [x] The red "Outside the tested range" box appears with carbon dioxide and helium
+- [ ] The red "Outside the tested range" box appears with carbon dioxide and helium
       both above zero.
 
 ## Demo video (owner only)
 
-- [ ] Filmed following `docs/demo-script.md`.
+- [ ] Record the demo (`docs/demo-script.md`). The desktop recording made for pull
+      request 5 shows the earlier model (35 % and 90 %) and must not be used.
 - [ ] 30 seconds or less.
 - [ ] English subtitles burned into the picture.
 - [ ] Hosted outside the Space Apps site.
