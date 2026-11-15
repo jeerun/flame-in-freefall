@@ -18,9 +18,10 @@ Challenge: "Flame in Freefall: SI-Powered Fire Safety Insights from Microgravity
 Combustion Data" (the site spells it SI-Powered).
 
 A handheld fire-safety console for spacecraft crew. The user sets fuel, oxygen,
-pressure, carbon dioxide and droplet size. The console shows the chance a droplet
-flame keeps burning, the burning rate, a plain-language explanation, and a clear
-warning when the settings fall outside what the experiments tested.
+pressure, carbon dioxide, helium and droplet size. The console shows the chance a
+droplet flame burns until the fuel is gone, the burning rate, a plain-language
+explanation, and a clear warning when the settings fall outside what the
+experiments tested.
 
 Hardware the team wants to show off:
 - RTX 5080 PC: data cleaning and model training in Python.
@@ -41,25 +42,31 @@ Submission closes Sunday Nov 15, 11:59 PM in the team owner's local time
 
 ## Status
 
-Last updated Saturday Nov 14, about 9:10 PM Mountain Time.
+Last updated Saturday Nov 14, about 10:00 PM Mountain Time.
 
 Done:
 - Team created on the Space Apps site, challenge selected.
 - This repo created (public) with the folder skeleton.
-- `console/index.html` works on mock numbers. Checked in headless Chrome with
-  keyboard input and a simulated gamepad. Fits 1280x680 and 1280x800.
 - FLEX data is in `data/raw/psi69_flex_experimental_table.tsv` (see Data below
   for how it was obtained).
 - `data/clean/build_clean.py` builds `data/clean/flex_clean.csv` (274 tests).
 - Step 1 done: `model/train.py` and `model/metrics.json` reviewed, both scripts
   re-run. See "Review of the first run" under Data for what was checked and the
   caveats that must go into the docs.
+- Step 2 done: `console/index.html` is wired to the real model (see Console below
+  for what it now does).
+- Step 3 done: `console/model.js` is committed. With it present the mock banner is
+  gone and the header reads "Model: NASA PSI-69 FLEX, 199 tests". Checked in
+  headless Edge at 1280x680 and 1280x800: no scrolling, no clipped text, no page
+  errors, numbers match the Python model, every warning fires, keyboard and a
+  simulated standard gamepad (d-pad, left stick, A, B, Y, hold to repeat) all work.
+  Without `model.js` the page still falls back to the mock model and its banner.
 
 Not done:
-- `console/model.js` is NOT committed on purpose. The console has not been wired
-  to the real model or checked with it, so it must keep showing the mock banner.
-- Console has not been tried on the real Legion Go yet. If the gamepad moves the
-  mouse instead, the device is in desktop mode and needs gamepad mode.
+- Console has not been tried on the real Legion Go yet (a simulated gamepad is not
+  the real one). If the gamepad moves the mouse instead, the device is in desktop
+  mode and needs gamepad mode.
+- `README.md` still describes the mock stage. Step 7 fixes it.
 - Teammates still need to join the team on the Space Apps site. Join requests only
   work while the team's "looking for members" box is ticked; untick it after all
   five are in. Teammates must also be invited to this repo as collaborators.
@@ -68,29 +75,31 @@ Not done:
 
 ## Next steps, in order
 
-1. DONE. Review `model/train.py` and `model/metrics.json`. Then run, from the repo root:
-   `python data/clean/build_clean.py` and `python model/train.py`
-   (needs pandas, numpy, scikit-learn). This writes `console/model.js`.
-2. Wire the console to the real model. The model now has a fifth input, helium,
-   and extra fields. In `console/index.html`:
-   - The helium row appears by itself (rows are built from `features`), but the
-     "rest of the air is nitrogen" note must subtract helium too, and should warn
-     if the gases add up to more than 100%.
-   - Use `meta.exclusive` ([["co2","he"]]): no test mixed CO2 and helium, so both
-     above zero counts as outside the tested range.
-   - Use `tests` and `meta.far_distance` to find the closest real test (same fuel,
-     range-normalised distance). Show it in the explanation panel, and warn when
-     the closest test is farther than `far_distance`.
-   - Fix the wording. "Extinction" in FLEX means the flame went out before the
-     fuel was gone; "Completion" means it burned until the fuel was gone. The
-     headline should say "burns until the fuel is gone", not "keeps burning".
-   - Show the held-out accuracy (`meta.auc`, `meta.burn_rate_mae`) in the fine print.
-   - Check that six rows still fit at 1280x680.
-3. Open the console in a browser with `model.js` present, check the numbers and
-   warnings make sense, then commit `console/model.js`.
-4. Fill `docs/sources.md` and `docs/submission.md`, including the accuracy numbers.
-5. Try the console on the Legion Go.
-6. Film the 30-second demo on the Legion Go.
+The repo owner set this list on Nov 14. Commit and push to main after each step,
+and update Status above each time.
+
+1. DONE. Review `model/train.py` and `model/metrics.json` for leaks, then run from
+   the repo root `python data/clean/build_clean.py` and `python model/train.py`
+   (needs pandas, numpy, scikit-learn). The numbers must match `metrics.json`.
+2. DONE. Wire `console/index.html` to the real model.
+3. DONE. Check the console in a browser with `model.js`, then commit `model.js`.
+4. Ask the owner for the text of the official challenge page, compare it with what
+   we built, and propose the smallest thing that closes any gap.
+5. Fill `docs/sources.md`: NASA dataset, DOI, link, download date, and a source for
+   every sentence shown on screen.
+6. Fill `docs/submission.md` in English, every form field, with the accuracy
+   numbers and the use of AI.
+7. Update `README.md`: real status, how to run, data used, use of AI.
+8. Write the 30-second demo script with English subtitles, shot by shot, with the
+   buttons to press on the Legion Go.
+9. Pre-submission checklist: repo is Public, demo link opens without login, every
+   form field is in English.
+
+Only the owner can do these: try the console on the Legion Go, film the demo, fill
+in the Space Apps site. Stop and list them when they come up.
+
+Stretch, only if steps 1 to 7 are done before 2 PM Sunday: one chart from the real
+data for the README; a local LLM on the RTX 5080 that summarizes NASA papers.
 
 ## Data
 
@@ -175,6 +184,29 @@ First run, held out by repeated 5-fold cross-validation:
 It has a built-in mock model and a yellow "Mock numbers" banner. If `console/model.js`
 exists next to it and sets `window.FLAME_MODEL`, that replaces the mock and the
 banner becomes a "Model: ..." label.
+
+What the wired console does (all of it reads from `model.js`, nothing is hard-coded):
+- Headline is the chance the flame burns until the fuel is gone (FLEX "Completion"),
+  with the chance it goes out first (FLEX "Extinction") under it.
+- Red "outside the tested range" state, which also dims the numbers, when a setting
+  is past its `data_min`/`data_max`, when CO2 and helium are both above zero
+  (`meta.exclusive`), or when O2 + CO2 + helium add up to more than 100%.
+- The nitrogen note sits on the helium row and is 100 minus O2, CO2 and helium.
+- Amber "far from any real test" when the closest same-fuel test is farther than
+  `meta.far_distance`, for example pressure between the 0.7 and 1.0 atm clusters.
+- Amber "nearby real tests disagree with the model" when most nearby tests with a
+  clear outcome went the other way from the model.
+- The green state says how many nearby real tests burned until the fuel was gone.
+- The explanation panel names the closest real test and how it ended, counts how
+  the nearby tests ended, and shows the held-out AUC and burning-rate error.
+- Below 720 px of height the spacing tightens so six rows fit at 1280x680.
+
+How it was checked: a Playwright script driving headless Edge (kept outside the
+repo). Held-out model percentages were also compared with what the tests did:
+under 10% predicted, 4% completed (115 tests); 10 to 20%, 7% (30); 20 to 35%, 13%
+(30); 35 to 65%, 67% (21); above 65%, 2 of 3. The model rarely goes above 65%.
+It misses four methanol tests at 0.7 atm with 20 to 30% CO2 that burned to
+completion (it gives them under 5%); the nearby-test count on screen shows them.
 
 Controls: Up/Down pick a setting, Left/Right change it (hold to repeat), A explain,
 B close, Y reset. Touch and keyboard (arrows, Enter, Esc, R) also work.
