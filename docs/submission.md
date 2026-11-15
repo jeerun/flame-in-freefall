@@ -18,9 +18,10 @@ Flame in Freefall Crew Fire Console
 The console ranks 24 investigations from NASA’s Physical Sciences Informatics (PSI)
 repository for prevention, detection, suppression or cabin atmosphere. Its Oxygen map
 compares nine tables across seven investigations. Of 746 rows with ambient oxygen and
-pressure, 20 meet the Moon Base thresholds in the challenge brief. Three activities
-let users inspect the underlying evidence: compare Earth and orbital burn lengths,
-reveal gas sensor readings and find a comparable droplet test with the opposite outcome.
+pressure, 20 meet the Moon Base thresholds in the challenge brief. The Moon evidence
+check traces all 20 to gas-flame tests. Other activities compare Earth and orbital
+burn lengths, reveal gas sensor readings and find a comparable droplet test with
+the opposite outcome.
 
 Two models use the Flame Extinguishment Experiment (FLEX). One estimates completion
 versus visible extinction from 199 tests with a clear outcome. The other estimates
@@ -36,8 +37,11 @@ The public GitHub repo. No login needed to view.
 
 https://github.com/jeerun/flame-in-freefall
 
-Published browser copy without Ember: https://jeerun.github.io/flame-in-freefall/
-It is the `console/` folder of the repository, the build the linked demo shows.
+Published browser copy without live Ember inference: https://jeerun.github.io/flame-in-freefall/
+
+Team note for this draft: the investigation search and Moon evidence check are
+in the PR checkout. Check the published build before copying its link into the
+final form. [Draft pull request](https://github.com/jeerun/flame-in-freefall/pull/10)
 
 ## Detailed project description
 What it does, how it works, what benefit it has, what tools and languages we used.
@@ -50,8 +54,9 @@ fire safety. Here is how each word is answered.
 investigations that the PSI repository returns for "combustion" (BASS, Saffire, SAME,
 FLEX, FLEX-2, the ACME experiments and others). For each one it shows what the
 experiment did, what changed between tests, the kind of fuel, the hardware, and why it
-matters for fire safety, in plain language, with the PSI identifier to find it. One
-line at the top counts the whole collection by kind of fuel and by flight or ground.
+matters for fire safety, in plain language. **Find** searches all 24 records by
+name, title or PSI identifier. Research tools shows the collection counts by
+kind of fuel and by flight or ground.
 
 **Ranks: by the question you bring.** NASA's fire-safety work is prevention, detection
 and suppression. For Moon Base cabin air the brief anticipates 30% oxygen or more
@@ -77,6 +82,13 @@ meets both. Seventeen FLEX rows meet the oxygen threshold at pressures above 10.
 through 10.5 psi. The counts retain eight repeated CFI rows, and FLEX has no
 flight/ground label for individual rows. The BASS-II and Saffire tables used here
 give no pressure and their recorded oxygen values reach 22.2% at most.
+
+**Moon evidence check.** Could a crew use those 20 rows to choose a solid cabin
+panel? The offline activity lets readers inspect every matching CFI-G test's
+fuel, original oxygen fraction, approximate pressure and CSV line, then open the
+NASA investigation. All 20 concern gas flames, and the table has no measured
+gravity per row. A solid panel's behaviour in lunar gravity remains unknown
+from this comparison. [Open the activity](../console/moon-evidence.html)
 
 **Earth or orbit?** Four Saffire-II cases show a material's 1-g burn length. Choose
 whether the Earth sample burned farther, both burned equally or the orbital sample
@@ -423,7 +435,8 @@ Inside the product:
 
 - The Ember evidence lab uses the locally installed vision model to identify a candidate
   change in the visible flame rim in NASA's [FLEX footage](https://svs.gsfc.nasa.gov/11318/).
-  A viewer can inspect the saved frames or request another review. For English questions
+  Viewers can play the bundled NASA clip and inspect the saved frames offline. A fresh review
+  uses the Python server and an available Ollama vision model. For English questions
   about BASS-II gas readings, Ember proposes a filter and the dashboard returns original
   CSV rows. OpenAI Codex helped implement and test both activities.
 - Ember, the on-board assistant, is Gemma 4 12B, an open language model from Google,
@@ -458,7 +471,7 @@ While building it we used Claude (Anthropic), an AI assistant, for:
 
 OpenAI ChatGPT/Codex helped write the summary-first explanation and baseline
 comparison, which the team reviewed and tested with Claude. Codex also helped
-implement and test the three evidence activities and responsive dashboard layout,
+implement and test the evidence activities, the investigation search and the responsive dashboard layout,
 revise evidence labels, fix controls and local server handling, and capture and caption the desktop demo.
 The video shows the running dashboard. The measurements in these activities
 come directly from the cited PSI tables.

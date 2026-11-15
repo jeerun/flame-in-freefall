@@ -123,6 +123,7 @@ textarea:disabled { opacity: .72; }
 footer { border-top: 1px solid var(--line); padding: .8rem clamp(1rem, 3.8vw, 4rem); color: var(--muted); font-size: .78rem; }
 footer span { color: var(--ink); font-weight: 600; margin-right: .5rem; }
 footer b { margin: 0 .2rem; }
+#lab-moon-link { display: inline-flex; align-items: center; min-height: 44px; margin-inline: 14px; }
 @media (max-width: 760px) {
   .lab-heading { align-items: flex-start; flex-direction: column; }
   .film-layout, .table-layout { grid-template-columns: minmax(0,1fr); }
