@@ -662,6 +662,7 @@
       <div class="research-intro-copy">
         <h2>NASA combustion research</h2>
         <p id="resSummary"></p>
+        <a id="evidenceLab" href="ember-lab.html">Open evidence lab <kbd>L / L3</kbd></a>
       </div>
       <span class="research-photo-credit">FLEX · NASA</span>
     </div>
@@ -777,6 +778,7 @@
     <span class="hintOx" hidden>Oxygen map <kbd>O / Y</kbd></span>
     <span class="hintCases" hidden>Earth or orbit? <kbd>E / LT</kbd></span>
     <span class="hintCases" hidden>Read the sensors <kbd>N / RT</kbd></span>
+    <span>Open evidence lab <kbd>L / L3</kbd></span>
   </div>
   <div class="hints guide-common">
     <span id="hintPage">Change page <kbd>1–3 / LB, RB</kbd></span>
@@ -3209,6 +3211,7 @@ window.FLAME_MODEL = {
     if (typing) return;
     if (!e.ctrlKey && !e.altKey && !e.metaKey && !e.repeat) {
       var letter = e.key.toLowerCase();
+      if (view.page === "research" && letter === "l") { e.preventDefault(); $("evidenceLab").click(); return; }
       if (view.page === "research" && (letter === "e" || letter === "n")) {
         e.preventDefault(); openEvidence(letter === "e" ? "gravity" : "sensors"); return;
       }
@@ -3397,7 +3400,10 @@ window.FLAME_MODEL = {
         if (ai) return;
         if (con) mapBig(true); else if (pg === "research") openOx(); else toggleSound();
       });
-      fire("l3", now, b(10), 0, 0, function () { if (con && !ai) sendCsv(); });                      // left stick click: send the tests off this device
+      fire("l3", now, b(10), 0, 0, function () {
+        if (pg === "research") $("evidenceLab").click();
+        else if (con) sendCsv();
+      });
       // Right stick: point at a star on the map, or at an investigation in the orbit view. RT replays, R3 goes there.
       var rx = pad.axes[2] || 0, ry = pad.axes[3] || 0;
       if (!ai && rx * rx + ry * ry > 0.12) {

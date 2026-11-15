@@ -32,6 +32,12 @@ or open `console/index.html` from a checkout.
   material, then reveal the measured lengths side by side (Research, LT or E).
 - **Read the sensors.** See the initial and final oxygen readings from BASS-II,
   then reveal how CO and CO₂ changed in the same test (Research, RT or N).
+- **[Ember evidence lab](console/ember-lab.html).** On Research, select **Open evidence lab**
+  (L or left-stick click). In **FLEX footage**, compare two candidate frames with the original NASA
+  movie and select a timestamp to seek there. In **Ask the table**, try “Which tests recorded unchanged oxygen
+  and rising CO?” and expand a match to inspect its original BASS-II row. The saved frame review
+  and three sample questions open offline. Start the Python dashboard with Ollama available
+  here or on its configured peer for a fresh film review or a new English question.
 - **Find counterexample.** From a selected FLEX star, compare a real test with the
   same fuel and gas mix and the opposite outcome. The panel shows differences in
   pressure and droplet size alongside both fitted estimates (Console, E or A in the zoomed map).
@@ -106,7 +112,7 @@ There are three ways.
 
 **In a browser, nothing to install.** https://jeerun.github.io/flame-in-freefall/
 It is the `console/` folder, published with
-`git subtree push --prefix console origin gh-pages`. No Ember there.
+`git subtree push --prefix console origin gh-pages`. Live Ember inference requires the Python server.
 
 **Without the AI, fully offline.** Open `console/index.html` in Edge or Chrome and
 press F11. Keep all the files in `console/` together. Without `model.js` the page falls back to made-up numbers and shows a
@@ -118,22 +124,26 @@ install Ollama from https://ollama.com and pull the model.
 
     ollama pull gemma4:12b
 
-Then double-click `Start dashboard.bat` in the repo folder on that PC. It opens the
-dashboard in the browser and prints the address to open on the Legion Go. The same
-thing by hand, from the repo root:
+Double-click `Start dashboard.bat` for use on the PC. It opens
+`http://localhost:8000` and accepts loopback connections only.
+For a Legion Go on your trusted private LAN, stop the PC-only server, replace
+`192.168.1.42` below with the **handheld’s** IPv4 address, and run from the repo root:
 
-    py server/serve.py           (this PC only: open http://localhost:8000)
-    py server/serve.py --lan     (also the Legion Go on the same Wi-Fi)
+    py server/serve.py --lan --allow-device 192.168.1.42 --open
 
-The first time, Windows asks whether to let Python through the firewall: tick the
-kind of network the PC is on (Private, Public, or both) and allow it. When the
-handheld gets through, the PC window prints "New device connected". Step by step,
-with what to do when it does not connect: `docs/legion-go-setup.md`. The script
-needs only the Python standard library. When the PC is unreachable, a local copy
+Open the PC address printed by the server on the handheld. If Windows requests
+firewall access, allow the Private profile only and scope the inbound rule to
+the handheld address. The setup guide also covers Tailscale Serve with the
+dashboard bound to loopback. [Legion Go setup](docs/legion-go-setup.md)
+
+The server needs only the Python standard library. When the PC is unreachable, a local copy
 still runs the research, evidence activities, predictions and drill, and can save
 the CSV on the device. Ember and sending a CSV to base require a reachable server.
 
-**Two machines, each with its own model.** On
+**Two machines, each with its own model.** Update the base PC first, then the handheld.
+They use one-hop peer requests for model discovery, answers and CSV exports.
+A handheld running this version uses its local fallback if the base still has the older service.
+On
 the Legion Go download this repo as a ZIP, double-click `Setup Legion Go.bat` once
 (it installs Python and Ollama with winget and downloads the 4.3 GB model
 `gemma4:e2b`), then double-click `Start on Legion Go.bat`. It asks once for the
@@ -348,8 +358,11 @@ One owner per folder. If you need a change in someone else's folder, ask them.
 
 ## Use of AI
 
-Inside the product, three kinds of AI, each labelled on screen:
+The dashboard uses AI in the following activities.
 
+- In the evidence lab, Ember examines sampled frames of NASA footage for a change in the
+  visible flame rim. For custom BASS-II questions it proposes filters. Python validates those
+  filters and returns measurements directly from the CSV. OpenAI Codex helped build and test the lab.
 - Ember ("Ask Ember"): Gemma 4 (12B, an open model from Google) run locally with Ollama on
   the team's RTX 5080 PC, or a smaller Gemma 4 on the handheld. `server/serve.py`
   gives it the NASA PSI text for the investigations closest to the question, the

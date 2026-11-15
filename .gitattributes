@@ -1,2 +1,2 @@
 # Windows batch files must keep CRLF line endings, also in a ZIP download.
-*.bat -text
+*.bat -text whitespace=trailing-space,space-before-tab,cr-at-eol

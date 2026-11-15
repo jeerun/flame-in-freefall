@@ -42,6 +42,16 @@ Submission closes Sunday Nov 15, 11:59 PM in the team owner's local time
 
 ## Status
 
+The Ember evidence lab opens from Research with L or left-stick click. It includes original
+NASA FLEX footage with a saved local-model frame review and three offline BASS-II table
+questions. Use the Python server with Ollama for fresh image reviews and custom English
+table questions. Physical Legion Go testing of these activities is pending.
+
+The security review branch defaults to a PC-only dashboard. Direct LAN use requires
+the handheld's IPv4 address. The local device log requires the per-run password
+printed on the PC. For a two-server setup, update the base first and then the
+handheld so both support one-hop peer requests. [Current setup](docs/legion-go-setup.md)
+
 Last updated Sunday Nov 15, about 5:20 AM by the owner's PC clock (British Columbia time, UTC-7).
 
 Pull request 5, merged on Nov 15, includes shared research views and FLEX readings. Open a shared URL on
