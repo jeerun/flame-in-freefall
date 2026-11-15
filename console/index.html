@@ -578,13 +578,14 @@
     <div class="sethead">
       <div class="settings-heading">
         <h2 id="hSet" tabindex="-1">Experiment settings</h2>
-        <button type="button" id="crewMode" aria-pressed="false" title="Crew training layout. Press B on the console with panels closed.">Crew mode <kbd aria-hidden="true">B</kbd></button>
+        <button type="button" id="crewMode" aria-pressed="false" title="Crew training layout. Press B on the console with panels closed."><span id="crewModeLabel">Crew mode</span> <kbd aria-hidden="true">B</kbd></button>
       </div>
       <span class="preset-status" id="cabinContext" hidden>Cabin air presets</span>
       <div class="presets" id="presets" role="group" aria-label="Cabin air presets" hidden></div>
+      <button type="button" id="crewSettingsToggle" aria-expanded="false" aria-controls="rows settingsExport" hidden>Edit settings</button>
     </div>
     <div class="rows" id="rows"></div>
-    <div class="legend export-row"><span class="range-key"><i aria-hidden="true"></i> Measured range</span>
+    <div class="legend export-row" id="settingsExport"><span class="range-key"><i aria-hidden="true"></i> Measured range</span>
       <button type="button" class="csv" id="csvBtn" hidden title="Key D. Saves the real tests on this device.">Download tests (CSV)</button>
       <button type="button" class="csv" id="sendBtn" hidden></button></div>
   </section>
@@ -592,7 +593,11 @@
   <section class="read" id="read" aria-labelledby="hRead" aria-live="polite">
     <div class="reading-heading">
       <div><h2 id="hRead" tabindex="-1">Model reading</h2>
-        <p id="crewContext" hidden>Crew training · <strong id="crewAir"></strong></p>
+        <div id="crewContext" hidden>
+          <span class="crew-kicker">Crew training · Cabin briefing</span>
+          <strong id="crewAir"></strong>
+          <small id="crewConditions"></small>
+        </div>
       </div>
       <button type="button" class="view-action" id="shareReading" hidden aria-label="Share view" title="Share view" aria-haspopup="dialog" aria-controls="shareViewDialog">
         <svg width="18" height="18" aria-hidden="true" focusable="false"><use href="#shareIcon"></use></svg>
@@ -629,6 +634,7 @@
       <div id="oneLine"></div>
       <button type="button" id="openSheet">Explain reading <kbd>A</kbd></button>
     </div>
+    <button type="button" id="crewMapToggle" aria-expanded="false" aria-controls="mapBox" hidden>Show FLEX star map</button>
     <div class="map" id="mapBox">
       <div class="maphead">
         <span id="mapTitle"></span>
@@ -1184,6 +1190,8 @@ window.FLAME_MODEL = {
   var GAS =["o2", "co2", "he"].filter(function (k) { return byKey[k]; });   // gases the user sets, in %
   var lastGas = GAS.filter(function (k) { return k !== "o2"; }).pop();       // row that carries the nitrogen note
   var hasTests = !!(M.tests && M.tests.length);
+  var hasStarMap = !!(hasTests && byKey.o2 && byKey.d0);
+  var crew = { on: false, mapOpen: false };
   var TEST_COL = { o2: 3, p: 4, co2: 5, he: 6, d0: 7 };                      // where each setting sits in a tests row
 
   // Closest real test with the same fuel. Each setting is scaled by its tested
@@ -1282,6 +1290,17 @@ window.FLAME_MODEL = {
     if (t[8] === "Completion") return "Burned until the fuel was gone.";
     return t[8] + ", no clear outcome.";
   }
+  function renderCrewBriefing(preset) {
+    if (!crew.on) return;
+    $("crewAir").textContent = preset ? preset.label : "Custom cabin air";
+    var conditions = M.features.filter(function (f) {
+      return GAS.indexOf(f.key) < 0 || f.key === "o2" || state.values[f.key] > 0;
+    }).map(function (f) {
+      var suffix = SHORT[f.key] == null ? " " + f.label.toLowerCase() : SHORT[f.key];
+      return Number(state.values[f.key].toFixed(3)) + (f.unit === "%" ? "" : " ") + f.unit + suffix;
+    });
+    $("crewConditions").textContent = [fuelLabel()].concat(conditions).join(" · ");
+  }
 
   function render() {
     if (REPLAY.box && REPLAY.box === $("flame").parentNode) stopReplay();   // any change ends a replay on this page
@@ -1299,7 +1318,7 @@ window.FLAME_MODEL = {
     fuelVal.textContent = fuelLabel();
     Array.prototype.forEach.call(fuelBtns.children, function (b) { b.setAttribute("aria-pressed", String(b.dataset.fuel === state.fuel)); });
     var ap = activePreset();
-    $("crewAir").textContent = ap ? ap.label : "Custom cabin air";
+    renderCrewBriefing(ap);
     $("cabinContext").textContent = ap ? "Cabin air presets" : "Custom cabin air";
     Array.prototype.forEach.call(presetBox.querySelectorAll("button"), function (b) {
       b.setAttribute("aria-pressed", String(!!ap && ap.key === b.dataset.preset));
@@ -1575,9 +1594,10 @@ window.FLAME_MODEL = {
   // Up and Down: pick a setting, or scroll the explanation panel while it is open.
   function move(dir) {
     if (state.sheet) $("sheet").scrollTop += dir * 70;
-    else { sfx.move(); select(state.sel + dir); }
+    else { revealCrewSettings(); sfx.move(); select(state.sel + dir); }
   }
   function nudge(dir, mult) {
+    revealCrewSettings();
     if (state.sel === 0) {
       var keys = M.fuels.map(function (x) { return x.key; });
       state.fuel = keys[(keys.indexOf(state.fuel) + dir + keys.length) % keys.length];
@@ -1654,11 +1674,11 @@ window.FLAME_MODEL = {
   // stars, plot: what the last drawing put where. sel: the star picked with the right stick. big, level: the zoomed view.
   function drawMap(rc) {
     var box = $("mapBox"), svg = $("map");
-    if (!hasTests || !byKey.o2 || !byKey.d0) { box.hidden = true; return; }
+    if (MAP.sel && MAP.sel[2] !== state.fuel) MAP.sel = null;
+    if (!hasStarMap || box.hidden) { MAP.stars = []; MAP.plot = null; return; }
     var W = svg.clientWidth, H = svg.clientHeight;
     while (svg.firstChild) svg.removeChild(svg.firstChild);
     MAP.stars = []; MAP.plot = null;
-    if (MAP.sel && MAP.sel[2] !== state.fuel) MAP.sel = null;
     if (W < 220 || H < 60) return;                 // no room: leave the panel empty rather than squeeze it
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
     // The plot covers the tested range plus a small margin, so the stars use the space.
@@ -1774,11 +1794,19 @@ window.FLAME_MODEL = {
   function mapBig(on) {
     var box = $("mapBox");
     on = on == null ? !MAP.big : !!on;
-    if (on === MAP.big || (on && (box.hidden || view.page !== "console" || !last))) return;
+    if (on === MAP.big || (on && (!hasStarMap || view.page !== "console" || !last))) return;
     if (on && state.sheet) toggleSheet(false);
+    if (on) MAP.returnFocus = document.activeElement;
     MAP.big = on; box.classList.toggle("big", on); $("mapFine").hidden = !on; $("mapBigText").textContent = on ? "Close map" : "Expand map";
+    syncCrewMap();
     if (on) sfx.open(); else sfx.close();
     render();
+    if (on) $("mapBigBtn").focus({preventScroll: true});
+    else {
+      var target = MAP.returnFocus;
+      if (!target || target === document.body || !target.getClientRects().length) target = box.hidden ? $("crewMapToggle") : $("mapBigBtn");
+      target.focus({preventScroll: true});
+    }
   }
   function mapLevel(n) { MAP.level = Math.min(3, Math.max(1, n)); save("maplevel", MAP.level); sfx.preset(); render(); }
   ["Stars", "Grid and test numbers", "Model lines"].forEach(function (name, i) {
@@ -1831,6 +1859,7 @@ window.FLAME_MODEL = {
   }
   // Keyboard: [ and ] walk through the stars, the ones nearest the cross first.
   function stepStar(dir) {
+    revealCrewMap();
     if (!MAP.stars.length || !last) return;
     var ux = null, uy = null, near = last.rc.near;
     var order = MAP.stars.slice();
@@ -2383,16 +2412,57 @@ window.FLAME_MODEL = {
   $("drillRestart").addEventListener("click", function () { drillStart(); });
   $("jumpSettings").addEventListener("click", function () { $("hSet").focus({preventScroll: true}); $("hSet").scrollIntoView({block: "start"}); });
   function showCrewMode(on) {
+    crew.on = on;
+    crew.mapOpen = false;
     $("viewConsole").classList.toggle("crew-mode", on);
     $("crewMode").setAttribute("aria-pressed", String(on));
+    $("crewModeLabel").textContent = on ? "Exit Crew mode" : "Crew mode";
+    $("hSet").textContent = on ? "Select cabin" : "Experiment settings";
+    $("hRead").textContent = on ? "Cabin briefing" : "Model reading";
     $("crewContext").hidden = !on;
+    var reading = $("read");
+    reading.insertBefore($("conf"), reading.querySelector(on ? ".stage" : ".line"));
+    $("crewSettingsToggle").hidden = !on;
+    setCrewSettings(false);
+    syncCrewMap();
   }
+  function setCrewSettings(expanded) {
+    $("rows").hidden = $("settingsExport").hidden = crew.on && !expanded;
+    $("crewSettingsToggle").setAttribute("aria-expanded", String(expanded));
+    $("crewSettingsToggle").textContent = expanded ? "Hide settings" : "Edit settings";
+  }
+  function revealCrewSettings() {
+    if (crew.on && $("rows").hidden) setCrewSettings(true);
+  }
+  function syncCrewMap() {
+    $("crewMapToggle").hidden = !crew.on || !hasStarMap;
+    $("mapBox").hidden = !hasStarMap || (crew.on && !crew.mapOpen && !MAP.big);
+    $("crewMapToggle").setAttribute("aria-expanded", String(crew.mapOpen || MAP.big));
+    $("crewMapToggle").textContent = crew.mapOpen ? "Hide FLEX star map" : "Show FLEX star map";
+  }
+  function revealCrewMap() {
+    if (crew.on && hasStarMap && $("mapBox").hidden) {
+      crew.mapOpen = true;
+      syncCrewMap();
+      if (last) drawMap(last.rc);
+      $("mapBox").scrollIntoView({block: "nearest"});
+    }
+  }
+  $("crewSettingsToggle").addEventListener("click", function () { setCrewSettings($("rows").hidden); });
+  $("crewMapToggle").addEventListener("click", function () {
+    crew.mapOpen = !crew.mapOpen;
+    syncCrewMap();
+    if (last) drawMap(last.rc);
+  });
   showCrewMode(load("crewMode", false) === true);
   $("crewMode").addEventListener("click", function () {
     var on = this.getAttribute("aria-pressed") !== "true";
     showCrewMode(on);
     save("crewMode", on);
+    renderCrewBriefing(activePreset());
     if (last) drawMap(last.rc);
+    this.focus({preventScroll: true});
+    this.scrollIntoView({block: "nearest"});
   });
   $("jumpReading").addEventListener("click", function () { $("hRead").focus({preventScroll: true}); $("hRead").scrollIntoView({block: "start"}); });
   $("drillBurn").addEventListener("click", function () { drillGuess("burn"); });
@@ -3430,6 +3500,10 @@ window.FLAME_MODEL = {
       state.values = Object.assign({}, spec.values);
       state.place = spec.preset;
       MAP.sel = pickedTest || null;
+      if (pickedTest && crew.on) {
+        crew.mapOpen = true;
+        syncCrewMap();
+      }
     }
     showPage(spec.page);
     var heading = $(spec.page === "research" ? "hCard" : "hRead");
@@ -3550,6 +3624,7 @@ window.FLAME_MODEL = {
       if (view.page === "console" && letter === "e") { e.preventDefault(); openCounterexample(); return; }
     }
     if (MAP.big) {                                 // the zoomed star map takes the arrows, X and 1 to 3
+      cycleDialogTab(e, $("mapBox"));
       var mk = e.key;
       if (mk === "Escape" || mk === "Backspace" || mk === "z" || mk === "Z") { e.preventDefault(); mapBig(false); return; }
       if (mk === "ArrowLeft") { e.preventDefault(); mapLevel(MAP.level - 1); return; }
@@ -3748,7 +3823,7 @@ window.FLAME_MODEL = {
       var rx = pad.axes[2] || 0, ry = pad.axes[3] || 0;
       if (!ai && rx * rx + ry * ry > 0.12) {
         if (con && (state.comparing || state.sheet)) $(state.comparing ? "compareSheet" : "sheet").scrollTop += ry * 14;   // an open panel scrolls
-        else if (con) pickStar(rx, ry);
+        else if (con) { revealCrewMap(); pickStar(rx, ry); }
         else if (pg === "research" && $("investigationDetails") && $("investigationDetails").open) {
           if (window.matchMedia("(max-width: 820px)").matches) window.scrollBy(0, ry * 14);
           else $("card").scrollTop += ry * 14;
