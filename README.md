@@ -54,6 +54,10 @@ Read from the table shown on that page on Nov 14, 2026: 274 droplet combustion t
 droplet size. Details in `data/raw/README.md` and `data/clean/README.md`. Every
 source, and where each sentence on screen comes from, is in `docs/sources.md`.
 
+![How the 252 in-scope FLEX tests ended, by oxygen and droplet size, for heptane and methanol](docs/flex_outcomes.png)
+
+The chart is drawn from the cleaned table by `python docs/make_chart.py` (needs matplotlib).
+
 ## How good is the model
 
 Measured on tests held out of training (5-fold cross-validation, repeated 20 times):
