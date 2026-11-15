@@ -188,8 +188,9 @@ application may transfer the file once connected.
 - The predictions on the console page come from machine-learning models trained on
   NASA data.
 
-If the PC is switched off, the dashboard still opens as a plain file and everything
-except Ember works, fully offline.
+With the PC switched off, a local copy still runs the research, evidence activities,
+predictions and drill and can save the CSV on the device. Ember and sending a CSV
+to base require a reachable server.
 
 **How it works.**
 

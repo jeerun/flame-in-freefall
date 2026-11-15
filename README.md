@@ -122,9 +122,9 @@ The first time, Windows asks whether to let Python through the firewall: tick th
 kind of network the PC is on (Private, Public, or both) and allow it. When the
 handheld gets through, the PC window prints "New device connected". Step by step,
 with what to do when it does not connect: `docs/legion-go-setup.md`. The script
-needs only the Python standard library. If the PC is
-off or out of reach, open the file directly as above: everything except Ember still
-works.
+needs only the Python standard library. When the PC is unreachable, a local copy
+still runs the research, evidence activities, predictions and drill, and can save
+the CSV on the device. Ember and sending a CSV to base require a reachable server.
 
 **Two machines, each with its own model** (not yet tried on the real handheld). On
 the Legion Go download this repo as a ZIP, double-click `Setup Legion Go.bat` once
