@@ -7,10 +7,12 @@ owner's local time (confirm on the team page). "Submit for Judging" is final.
 
 - [x] Repo is Public. Checked Nov 14 without being signed in:
       https://github.com/jeerun/flame-in-freefall opens and shows the files.
-- [x] `console/model.js` is committed, so a fresh download shows real numbers.
+- [x] `console/model.js` and `console/research.js` are committed, so a fresh download
+      shows real numbers and the NASA research page.
 - [ ] Final check from a clean copy: on github.com use Code > Download ZIP, unzip,
       open `console/index.html`. The header must read "Model: NASA PSI-69 FLEX,
-      199 tests" with no yellow banner.
+      199 tests" with no yellow banner, and show the tabs "Flame console" and
+      "NASA research".
 - [ ] README status section matches reality on the day.
 - [ ] No file in `data/raw/` was edited.
 
@@ -21,6 +23,9 @@ owner's local time (confirm on the team page). "Submit for Judging" is final.
       mouse pointer, switch the device to gamepad mode.
 - [ ] D-pad and left stick pick and change settings, A opens the explanation, B closes
       it, Y resets.
+- [ ] X switches the cabin air between "Earth-like air" and "Moon Base (expected)".
+- [ ] LB or RB opens the "NASA research" page; Left and Right change the question,
+      Up and Down move through the list, B goes back.
 - [ ] The red "Outside the tested range" box appears with carbon dioxide and helium
       both above zero.
 
@@ -42,7 +47,8 @@ Copy each field from `docs/submission.md`.
 - [ ] Link to project demo.
 - [ ] Link to final project: https://github.com/jeerun/flame-in-freefall
 - [ ] Detailed project description, in English.
-- [ ] NASA data: names PSI-69 FLEX with its link. Needed to be eligible for global awards.
+- [ ] NASA data: names the PSI repository and PSI-69 FLEX with their links. Needed to
+      be eligible for global awards.
 - [ ] Space agency partner and other data: "None".
 - [ ] Use of artificial intelligence, in English, including anything teammates did
       with AI outside this repo.
