@@ -41,7 +41,7 @@ Submission closes Sunday Nov 15, 11:59 PM in the team owner's local time
 
 ## Status
 
-Last updated Saturday Nov 14, about 9:00 PM Mountain Time.
+Last updated Saturday Nov 14, about 9:10 PM Mountain Time.
 
 Done:
 - Team created on the Space Apps site, challenge selected.
@@ -51,8 +51,9 @@ Done:
 - FLEX data is in `data/raw/psi69_flex_experimental_table.tsv` (see Data below
   for how it was obtained).
 - `data/clean/build_clean.py` builds `data/clean/flex_clean.csv` (274 tests).
-- `model/train.py` has been run once. Numbers are in `model/metrics.json`.
-  Nobody has reviewed that script or its output yet.
+- Step 1 done: `model/train.py` and `model/metrics.json` reviewed, both scripts
+  re-run. See "Review of the first run" under Data for what was checked and the
+  caveats that must go into the docs.
 
 Not done:
 - `console/model.js` is NOT committed on purpose. The console has not been wired
@@ -67,7 +68,7 @@ Not done:
 
 ## Next steps, in order
 
-1. Review `model/train.py` and `model/metrics.json`. Then run, from the repo root:
+1. DONE. Review `model/train.py` and `model/metrics.json`. Then run, from the repo root:
    `python data/clean/build_clean.py` and `python model/train.py`
    (needs pandas, numpy, scikit-learn). This writes `console/model.js`.
 2. Wire the console to the real model. The model now has a fifth input, helium,
@@ -130,7 +131,25 @@ Decisions made in `model/train.py` (change them if the team disagrees, and say s
 - Disruption tests are left out of the "goes out" model (the outcome is unknown) but
   kept for the burning-rate model.
 
-First run, held out by repeated 5-fold cross-validation, not yet reviewed:
+Review of the first run (Nov 14, step 1):
+- No leak. The only inputs are fuel, O2, pressure, CO2, helium and initial droplet
+  diameter. Burn time, extinction diameter and burning rate are never inputs.
+- Re-running both scripts reproduces `flex_clean.csv` and `metrics.json` exactly.
+- The exported raw-unit coefficients give the same predictions as the fitted
+  scikit-learn models (differences below 0.00002, from rounding).
+- Replicates do not inflate the score: keeping all tests with the same fuel and gas
+  mix in one fold gives AUC 0.80 and R2 0.70, close to the reported numbers.
+- In-scope ranges: O2 12 to 34%, pressure 0.69 to 1.02 atm, CO2 0 to 50%,
+  helium 0 to 45%, droplet 1.1 to 4.67 mm. The 22 tests left out are 9 above
+  1.1 atm, 1 with no pressure and 12 with no droplet size.
+- Caveat to state in the docs: the "goes out" model separates heptane tests well
+  (AUC about 0.81 within heptane, 56 went out, 19 completed) but barely separates
+  methanol tests (about 0.60 within methanol, 116 went out, only 8 completed).
+- Caveat: pressure only sits at about 0.7 and 1.0 atm, so its effect is weakly known.
+- The straight-line burning-rate model can dip just below zero at the far corner of
+  the sliders. The console clamps it at zero, and that corner is outside the tested range.
+
+First run, held out by repeated 5-fold cross-validation:
 - "Goes out" model: 199 tests (172 went out, 27 burned to completion). AUC 0.81.
   Accuracy 0.887, against 0.864 for always guessing "goes out". The classes are
   lopsided, so accuracy says little. Quote the AUC and the baseline together.
