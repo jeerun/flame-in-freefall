@@ -1,4 +1,4 @@
-﻿# Project context
+# Project context
 
 Handoff notes so a new Claude session can pick this project up without the
 earlier conversation. Written Saturday Nov 14, 2026, about 8:35 PM Mountain Time.
@@ -42,7 +42,7 @@ Submission closes Sunday Nov 15, 11:59 PM in the team owner's local time
 
 ## Status
 
-Last updated Saturday Nov 14, about 9:49 PM Mountain Time.
+Last updated Saturday Nov 14, about 10:19 PM Mountain Time.
 
 Done:
 - Team created on the Space Apps site, challenge selected.
@@ -99,8 +99,28 @@ Done:
   `docs/sources.md` were rewritten around the challenge wording. The demo script was
   replayed with a simulated gamepad and each shot shows what the script says.
 
+- Local AI done (the owner asked for real AI on the RTX 5080 to earn "SI-powered").
+  "Ask the AI" (Menu button, or key /) appears on every page when the dashboard is
+  served by `server/serve.py`. That script, standard library only, serves `console/`
+  and passes each question to Gemma 4 12B running in Ollama on the owner's PC, with
+  the PSI text of the four records closest to the question, or the reading on screen.
+  The model is told to answer only from that and to cite PSI ids. Tested on that PC:
+  model 100% on the GPU, answers in 1 to 4 seconds after warm-up, it declined a
+  question the records cannot answer, the panel works with keyboard and simulated
+  gamepad. `Start dashboard.bat` starts it with `--lan --open`.
+- Game feel done (the owner asked for simple, easy, playful, game-like). A third page,
+  "Fire drill": ten real FLEX tests, five of each outcome, guess with Left or Right,
+  score against the model. The flame picture pulses with the burning rate and turns
+  into a question mark outside the tested range. The controller buzzes on the red
+  state and on a wrong guess. Opening "Ask the AI" asks its first question by itself.
+  All checked in headless Edge at 1280x680 and 1280x800 with a simulated gamepad.
+
 Not done:
 - Nobody on the team has reviewed the AI-written research notes line by line.
+- "Ask the AI" answers were spot-checked by hand (about ten), not evaluated formally.
+- Reaching the PC from the Legion Go over Wi-Fi has not been tried. It needs the
+  owner to answer the Windows firewall prompt on the PC (Allow, private networks).
+- Rumble has only been tried with a simulated gamepad.
 - Console has not been tried on the real Legion Go yet (a simulated gamepad is not
   the real one). If the gamepad moves the mouse instead, the device is in desktop
   mode and needs gamepad mode.
@@ -141,8 +161,11 @@ What closes the gaps (owner approved all three on Nov 14):
   relevance to prevention, detection or suppression. Summaries and ranks are
   written by an AI model from the PSI records and labelled as such. Done.
 
-Still not covered, and not planned: comparing raw data across investigations,
-partial-gravity data (PSI has none yet), a live AI model running on the device.
+Added after the owner asked whether this was enough for "SI-powered": a language
+model running on the team's own RTX 5080 PC ("Ask the AI"), and a game page.
+
+Still not covered, and not planned: comparing raw data across investigations, and
+partial-gravity data (PSI has none yet).
 
 ## Next steps, in order
 
@@ -280,12 +303,29 @@ under 10% predicted, 4% completed (115 tests); 10 to 20%, 7% (30); 20 to 35%, 13
 It misses four methanol tests at 0.7 atm with 20 to 30% CO2 that burned to
 completion (it gives them under 5%); the nearby-test count on screen shows them.
 
+Three pages, in this order: Flame console, NASA research, Fire drill. RB goes
+forward, LB back, keys 1 to 3 jump. Menu (or key /) opens "Ask the AI" when the page
+is served by `server/serve.py`.
+
 Controls on the Flame console page: Up/Down pick a setting (or scroll the
 explanation while it is open), Left/Right change it (hold to repeat), A explain,
-B close, X switch cabin air (Earth-like air, Moon Base), Y reset. LB or RB switches
-page. On the NASA research page: Left/Right change the question, Up/Down move through
-the ranked list, B goes back. Touch and keyboard (arrows, Enter, Esc, X, R, 1, 2)
-also work.
+B close, X switch cabin air (Earth-like air, Moon Base), Y reset. On the NASA
+research page: Left/Right change the question, Up/Down move through the ranked list,
+B goes back. On Fire drill: Left "went out first", Right "burned all its fuel",
+A next, Y new game, B back. In "Ask the AI": Up/Down pick a question, A asks, B
+closes. Touch and keyboard (arrows, Enter, Esc, X, R) also work.
+
+Running the local AI: Ollama 0.40 and the model `gemma4:12b` (8 GB) are installed
+on the owner's PC (ASUS ROG, RTX 5080 16 GB). `py server/serve.py` serves
+http://localhost:8000; add `--lan` for the Legion Go, `--open` to open the browser;
+`Start dashboard.bat` does both. Opened as a file, the page has no AI button and
+everything else works. Keep it that way: the AI must stay an extra, never a
+requirement.
+
+Fire drill honesty rules: the tests and outcomes are real PSI-69 rows; the ten are
+five "Completion" and five "Extinction", so one answer every time cannot win; the
+model was trained on these tests and the page says its score there is a head start,
+not accuracy.
 
 The Moon Base button sets oxygen 30% and 10.2 psi from the challenge brief. It
 stores 0.694 atm, not the slider step 0.69, because 0.69 falls just under the
@@ -295,7 +335,8 @@ The flame picture is an illustration, not a simulation, and says so on screen.
 The explanation panel says it is a model reading, not a crew procedure. Keep both.
 
 Agreed features: range and confidence warning, gamepad control, explanation panel,
-cabin-air presets, ranked closest tests, the NASA research page.
+cabin-air presets, ranked closest tests, the NASA research page, "Ask the AI" on a
+local model, the Fire drill game, rumble and the animated flame picture.
 Deliberately cut: flame video analysis, combining the raw data of several experiments.
 
 ## Submission requirements

@@ -5,8 +5,8 @@ Challenge: Flame in Freefall: SI-Powered Fire Safety Insights from Microgravity 
 
 ## What it is
 
-An offline, gamepad-driven dashboard that turns NASA's microgravity combustion data
-into fire-safety answers. It has two pages.
+A gamepad-driven dashboard that turns NASA's microgravity combustion data into
+fire-safety answers. It plays like a handheld game and has three pages.
 
 - **NASA research** summarizes and ranks the 24 combustion investigations in NASA's
   PSI database by what you need: preventing a fire, detecting it, or putting it out.
@@ -17,6 +17,14 @@ into fire-safety answers. It has two pages.
   button switches the cabin air to the Moon Base case from the challenge brief. It
   warns when the settings fall outside what the experiments actually tested.
 
+- **Fire drill** is a ten-round game. It shows the settings of a real FLEX test and
+  you guess how it ended: Left for "went out first", Right for "burned all its fuel".
+  It then shows NASA's recorded result and keeps score, you against the model.
+- **Ask the AI** is on every page when the dashboard is served from the team's PC. A
+  language model running on that PC's RTX 5080 answers questions from the NASA PSI
+  records and the numbers on screen, and cites the PSI ids it used. Nothing leaves
+  the local network.
+
 The console numbers come from two small models trained on FLEX (PSI-69). The
 research summaries and ranks were written by an AI model from the PSI records and
 are labelled as such. It is a study and planning tool, not a crew procedure.
@@ -25,22 +33,49 @@ are labelled as such. It is a study and planning tool, not a crew procedure.
 
 Working on real data (Nov 14, 2026).
 
-- Done: data cleaned, models trained and reviewed, both pages built and checked in a
-  desktop browser with keyboard and a simulated gamepad.
-- Not done yet: trying it on the real Lenovo Legion Go, the demo video, the
-  submission form.
+- Done: data cleaned, models trained and reviewed, all three pages and the local AI built
+  and checked on the team's PC in a desktop browser, with keyboard and a simulated
+  gamepad.
+- Not done yet: trying it on the real Lenovo Legion Go (alone and over Wi-Fi to the
+  PC), the demo video, the submission form.
 
 ## Run it
 
-Open `console/index.html` in Edge or Chrome and press F11. No install, no internet.
-Keep `console/model.js` and `console/research.js` next to it. Without `model.js` the
-page falls back to made-up numbers and shows a yellow "Mock numbers" banner. Without
-`research.js` the NASA research page is hidden.
+There are two ways.
 
-Controls on the Flame console page: Up/Down pick a setting, Left/Right change it
-(hold to repeat), A explain, B close, X switch cabin air, Y reset. LB or RB switches
-page. On the NASA research page: Left/Right change the question, Up/Down move through
-the list, B goes back. Touch and keyboard also work (arrows, Enter, Esc, X, R, 1, 2).
+**Without the AI, fully offline.** Open `console/index.html` in Edge or Chrome and
+press F11. No install, no internet. Keep `console/model.js` and `console/research.js`
+next to it. Without `model.js` the page falls back to made-up numbers and shows a
+yellow "Mock numbers" banner. Without `research.js` the NASA research page is hidden.
+
+**With the AI, served from the team's PC.** One-time setup on the PC with the GPU:
+install Ollama from https://ollama.com and pull the model.
+
+    ollama pull gemma4:12b
+
+Then double-click `Start dashboard.bat` in the repo folder on that PC. It opens the
+dashboard in the browser and prints the address to open on the Legion Go. The same
+thing by hand, from the repo root:
+
+    py server/serve.py           (this PC only: open http://localhost:8000)
+    py server/serve.py --lan     (also the Legion Go on the same Wi-Fi) The first time, Windows asks
+whether to let Python through the firewall: allow it on private networks. The script
+needs only the Python standard library. If the PC is off or out of reach, open the
+file directly as above: everything except the "Ask the AI" button still works.
+
+Controls. LB and RB turn the page. The Menu button (☰) opens "Ask the AI", which
+answers its first question straight away; Up/Down pick another, A asks it, B closes.
+
+- Flame console: Up/Down pick a setting, Left/Right change it (hold to repeat),
+  A explain, B close, X switch cabin air, Y reset. The controller buzzes and the flame
+  picture turns into a question mark when the settings leave what NASA tested.
+- NASA research: Left/Right change the question, Up/Down move through the list,
+  B goes back.
+- Fire drill: Left "went out first", Right "burned all its fuel", A next test,
+  Y new game. The controller buzzes harder on a wrong answer.
+
+Touch and keyboard also work (arrows, Enter, Esc, X, R, 1 to 3 for the pages, and /
+for the AI).
 
 ## Rebuild
 
@@ -98,6 +133,7 @@ Known limits: the outcome model is much weaker for methanol than for heptane (on
 | `data/clean/` | 1 Data | One tidy CSV built from the raw files, plus notes on each column. Also the research notes and the script that writes `console/research.js`. |
 | `model/` | 2 Model | Training script. It writes `console/model.js`. |
 | `console/` | 3 Console | `index.html`, the page that runs on the Legion Go, with `model.js` and `research.js`. |
+| `server/` | 3 Console | `serve.py`: serves the dashboard on the local network and passes "Ask the AI" questions to the language model on the PC. |
 | `docs/sources.md` | 4 Science | Every NASA dataset and source we use. |
 | `docs/submission.md` | 5 Submission | Draft text for the submission form. |
 | `docs/demo-script.md`, `docs/checklist.md` | 5 Submission | Demo video script and the pre-submission checklist. |
@@ -113,18 +149,24 @@ One owner per folder. If you need a change in someone else's folder, ask them.
 
 ## Use of AI
 
-We used Claude (Anthropic), an AI assistant.
+Inside the product, three kinds of AI, each labelled on screen:
 
-Inside the product: the summaries, "why it matters" lines and 0 to 3 relevance scores
-on the NASA research page were written by Claude from each investigation's PSI
-record (`data/clean/research_notes.json`). The page labels them as AI-written.
-Titles, project type and hardware are copied from PSI unchanged. The predictions on
-the Flame console page come from plain logistic and linear regression, which is
-machine learning but not generative AI. No AI model runs on the device.
+- "Ask the AI": Gemma 4 (12B, an open model from Google) run locally with Ollama on
+  the team's RTX 5080 PC. `server/serve.py` gives it the NASA PSI text for the
+  investigations closest to the question, or the reading on screen, and tells it to
+  answer only from that and to cite PSI ids. Its answers are written on the spot and
+  can be wrong. Nothing is sent to the internet.
+- The summaries, "why it matters" lines and 0 to 3 relevance scores on the NASA
+  research page were written ahead of time by Claude (Anthropic) from each
+  investigation's PSI record (`data/clean/research_notes.json`). Titles, project type
+  and hardware are copied from PSI unchanged.
+- The predictions on the Flame console page come from plain logistic and linear
+  regression, which is machine learning but not generative AI.
 
-While building it: planning, writing the dashboard code and the data-cleaning and
-training scripts, reviewing and re-running them, reading the PSI-69 table and the
-challenge page, finding sources, and drafting the documentation.
+While building it we used Claude (Anthropic), an AI assistant: planning, writing the
+dashboard code, the server and the data-cleaning and training scripts, reviewing and
+re-running them, reading the PSI-69 table and the challenge page, finding sources,
+and drafting the documentation.
 
 No AI-generated images, video or audio are used, and no data value was generated or
 changed by AI. Keep this section current: the submission form asks where and how AI
