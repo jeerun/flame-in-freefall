@@ -137,7 +137,9 @@
   .maphead > span:first-child { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .maplegend { display: flex; gap: 0.7rem; color: var(--ink-3); white-space: nowrap; flex: none; }
   .maplegend span { display: inline-flex; align-items: center; gap: 0.2rem; }
-  .mapbtn, .mapzoom button {
+  .mapacts { display: inline-flex; gap: 0.3rem; flex: none; }
+  .mapacts[hidden] { display: none; }
+  .mapbtn, .mapzoom button, .mapacts button {
     flex: none; border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 0.05rem 0.6rem; cursor: pointer;
     font-size: 0.78rem; color: var(--ink-2); white-space: nowrap;
   }
@@ -153,7 +155,8 @@
   .map.big .maphead > span:first-child { flex: 1 1 100%; color: var(--ink); }
   .map.big .mapzoom { margin-left: auto; }
   .map.big .mapzoom { display: inline-flex; }
-  .map.big .mapbtn, .map.big .mapzoom button { font-size: 0.85rem; padding: 0.2rem 0.75rem; }
+  .map.big .mapbtn, .map.big .mapzoom button, .map.big .mapacts button { font-size: 0.85rem; padding: 0.2rem 0.75rem; }
+  #map g { cursor: pointer; }
   .maplegend svg { width: 1.1rem; height: 1.1rem; }
   #map, #orbit { width: 100%; height: 100%; min-height: 0; display: block; }
   #map text, #orbit text { font-family: inherit; fill: var(--ink-3); }
@@ -570,6 +573,7 @@
       <div class="maphead">
         <span id="mapTitle"></span>
         <span class="maplegend" id="mapLegend"></span>
+        <span class="mapacts" id="mapActs" hidden><button type="button" id="mapReplay" title="RT, key P, or click the star again">Replay</button><button type="button" id="mapGo" title="Press the right stick, key G, or right-click the star">Go there</button></span>
         <span class="mapzoom" id="mapZoom" aria-label="Level of detail"></span>
         <button type="button" class="mapbtn" id="mapBigBtn" title="Key Z, or the View button on the controller"><span id="mapBigText">View: zoom in</span></button>
       </div>
@@ -1336,7 +1340,6 @@ window.FLAME_MODEL = {
         var cx = X(t[3]), cy = Y(t[7]), star;
         star = starMark(cx, cy, t, big ? 1.35 : 1);
         star.appendChild(svgEl("title", {}, "FLEX test " + t[0] + ": " + testSettings(t) + ". " + testEnd(t)));
-        star.addEventListener("click", function () { selectStar(t); });
         svg.appendChild(star);
         MAP.stars.push({ x: cx, y: cy, t: t });
       });
@@ -1378,6 +1381,7 @@ window.FLAME_MODEL = {
     }
     $("mapTitle").textContent = title; $("mapTitle").title = title;
     $("mapLegend").hidden = !!s && !big;           // in the small map the picked star's story takes the whole line
+    $("mapActs").hidden = !s;
     if (big) {
       Array.prototype.forEach.call($("mapZoom").querySelectorAll("button"), function (bt, i) { bt.setAttribute("aria-pressed", String(i + 1 === lvl)); });
       $("mapFine").textContent = "Up and down or the right stick picks a star, RT replays it, R3 moves the settings onto it, X or left and right changes the detail, B closes. "
@@ -1408,6 +1412,35 @@ window.FLAME_MODEL = {
     if (MAP.sel === t) return;
     MAP.sel = t; sfx.move(); render();
   }
+  // Aiming with a pointer: the Legion Go's right controller in FPS mode, its trackpad, or any mouse. Pointing at a
+  // star picks it, a click replays it, a right-click moves the settings onto it. With a finger: tap to pick, tap
+  // again to replay.
+  function starAt(ev, reach) {
+    var svg = $("map"), box = svg.getBoundingClientRect(), vb = svg.viewBox.baseVal, best = null, bd = reach * reach;
+    if (!box.width || !vb || !vb.width) return null;
+    var x = (ev.clientX - box.left) * vb.width / box.width, y = (ev.clientY - box.top) * vb.height / box.height;
+    MAP.stars.forEach(function (st) { var d = (st.x - x) * (st.x - x) + (st.y - y) * (st.y - y); if (d < bd) { bd = d; best = st; } });
+    return best ? best.t : null;
+  }
+  $("map").addEventListener("pointermove", function (ev) {
+    if (ev.pointerType !== "mouse") return;
+    var t = starAt(ev, MAP.big ? 16 : 11);
+    if (t && t !== MAP.sel) selectStar(t);
+  });
+  $("map").addEventListener("click", function (ev) {
+    var t = starAt(ev, MAP.big ? 20 : 14);
+    if (!t) return;
+    if (t === MAP.sel) replayStar(); else selectStar(t);
+  });
+  $("map").addEventListener("contextmenu", function (ev) {
+    var t = starAt(ev, MAP.big ? 20 : 14) || MAP.sel;
+    if (!t) return;
+    ev.preventDefault();
+    if (t !== MAP.sel) selectStar(t);
+    flyToStar();
+  });
+  $("mapReplay").addEventListener("click", function () { replayStar(); });
+  $("mapGo").addEventListener("click", function () { flyToStar(); });
   // Right stick: its position on the pad points at a place on the map, and the star nearest to that place is picked.
   function pickStar(ax, ay) {
     var p = MAP.plot, best = null, bd = Infinity;
@@ -2528,6 +2561,32 @@ window.FLAME_MODEL = {
     else setInterval(function () { draw(0); }, 700);   // no motion wanted: still follow the preset, without the drift
   })();
 
+  /* ---------- mouse wheel: the thumb wheel on the Legion Go's right controller, or any mouse ---------- */
+  // On the console it turns the selected setting (point at a bar first to select it); over the star map and in the
+  // zoomed map it walks through the stars; on the research page and in the oxygen map it moves through the list.
+  var wheelAcc = 0, wheelAt = 0;
+  window.addEventListener("wheel", function (e) {
+    var t = e.target && e.target.closest ? e.target : document.body;
+    if (titleOn || SIM.open || AI.open || e.ctrlKey || (state.sheet && !MAP.big)) return;      // those scroll, or do nothing, by themselves
+    if (view.page === "drill" || (view.page === "research" && !OX.open && (view.orbit || t.closest("#card")))) return;
+    e.preventDefault();
+    var d = e.deltaMode === 1 ? e.deltaY * 40 : e.deltaY, now = Date.now(), steps;
+    if (now - wheelAt > 300 || (d > 0) !== (wheelAcc > 0)) wheelAcc = 0;
+    wheelAt = now;
+    if (Math.abs(d) >= 50) { steps = d > 0 ? 1 : -1; wheelAcc = 0; }       // one notch of a real wheel is one step, whatever its size
+    else { wheelAcc += d; steps = wheelAcc > 0 ? Math.floor(wheelAcc / 50) : Math.ceil(wheelAcc / 50); wheelAcc -= steps * 50; }   // a trackpad adds up
+    if (!steps) return;
+    var dir = steps > 0 ? 1 : -1;                  // rolling down moves down a list
+    if (OX.open) { oxMove(dir); return; }
+    if (MAP.big) { stepStar(dir); return; }
+    if (view.page === "research") { researchMove(dir); return; }
+    if (view.page !== "console") return;
+    if (t.closest("#mapBox")) { stepStar(dir); return; }
+    var row = t.closest("#rows .row");
+    if (row && +row.dataset.i !== state.sel) select(+row.dataset.i);
+    nudge(-dir, 1);                                // rolling up raises the value
+  }, { passive: false });
+
   /* ---------- keyboard ---------- */
   document.addEventListener("keydown", function (e) {
     var onButton = e.target && e.target.tagName === "BUTTON";
@@ -2744,7 +2803,7 @@ window.FLAME_MODEL = {
                      drill: function () { return drill; }, drillStart: drillStart, drillGuess: drillGuess, drillNext: drillNext, buzz: buzz,
                      pages: PAGES, sound: SND, voice: VOICE, title: function () { return titleOn; }, startGame: startGame,
                      map: MAP, orb: ORB, replay: REPLAY, pickStar: pickStar, stepStar: stepStar, flyToStar: flyToStar, replayStar: replayStar, pickOrbit: pickOrbit,
-                     mapBig: mapBig, mapLevel: mapLevel, ox: OX, openOx: openOx, closeOx: closeOx, oxLevel: oxLevel, tables: T, notes: NOTES, notify: notify, base: BASE, sendCsv: sendCsv, refreshAI: refreshAI, sim: SIM, openSim: openSim, closeSim: closeSim, simStart: simStart, testsCsv: testsCsv, downloadCsv: downloadCsv };
+                     mapBig: mapBig, mapLevel: mapLevel, starAt: starAt, ox: OX, openOx: openOx, closeOx: closeOx, oxLevel: oxLevel, tables: T, notes: NOTES, notify: notify, base: BASE, sendCsv: sendCsv, refreshAI: refreshAI, sim: SIM, openSim: openSim, closeSim: closeSim, simStart: simStart, testsCsv: testsCsv, downloadCsv: downloadCsv };
   render();
   showPage(PAGES[0]);                              // the NASA research dashboard is the home page when its data is present
   window.addEventListener("resize", function () { showPage(view.page); });   // the two drawings size themselves to the space they get

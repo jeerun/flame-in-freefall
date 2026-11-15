@@ -296,9 +296,16 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
+    def visitor(self):
+        """The device that asked. Behind a proxy on this machine (Tailscale Serve), that is the address the proxy passes on."""
+        ip = self.client_address[0]
+        passed = self.headers.get("X-Forwarded-For") if ip in ("127.0.0.1", "::1") else None
+        passed = re.sub(r"[^0-9A-Fa-f:.]", "", (passed or "").split(",")[0])[:45]
+        return passed or ip
+
     def note_visitor(self, path):
         """Remember which devices have asked for something, so the person at the PC can see that the handheld got through."""
-        ip, seen = self.client_address[0], self.server.seen
+        ip, seen = self.visitor(), self.server.seen
         new = ip not in seen
         entry = seen.setdefault(ip, {"first": time.strftime("%H:%M:%S"), "requests": 0, "asked_ember": 0, "sent_csv": 0})
         entry["requests"] += 1
@@ -311,7 +318,7 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         path = self.path.split("?", 1)[0]
         if path == "/who":                                 # for the person at this machine only
-            if self.client_address[0] not in ("127.0.0.1", "::1"):
+            if self.visitor() not in ("127.0.0.1", "::1"):
                 return self.send_error(404)
             return self.send_json({"this_machine": self.server.host, "devices": self.server.seen})
         self.note_visitor(path)
