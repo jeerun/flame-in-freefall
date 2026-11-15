@@ -42,7 +42,7 @@ Submission closes Sunday Nov 15, 11:59 PM in the team owner's local time
 
 ## Status
 
-Last updated Sunday Nov 15, about 12:15 AM by the owner's PC clock (Pacific Time).
+Last updated Sunday Nov 15, about 3:17 AM by the owner's PC clock (Pacific Time).
 
 Done:
 - Team created on the Space Apps site, challenge selected.
@@ -248,9 +248,41 @@ Not done:
     teammate's parity tests run here with the Node.js bundled in Playwright
     (`<venv>/Lib/site-packages/playwright/driver/node.exe`): all pass.
 
-  - Verified on the real Legion Go on Nov 15, 00:37 to 02:08 by the handheld's clock
-    (Pacific Standard Time, 08:37 to 10:08 UTC), by a Claude session running on the
+  - MODEL SWITCHED (Nov 15, early morning, at the owner's word "pick the better one and
+    merge the good things"). A teammate's pull request #3 proposed a per-fuel model:
+    each fuel has its own slope for every setting, and the logistic model's penalty is
+    picked by cross-validation inside the training rows. It was additive. Before
+    switching the console to it, on the owner's PC: its training and its
+    eight-candidate comparison reproduced byte for byte; its six tests passed; and
+    `model/verify_per_fuel.py`, written without its code, agreed (held out one gas mix
+    or one test day at a time AUC goes 0.80 to 0.90; ahead in more than 99 % of 4000
+    paired resamples; accuracy peaks near the chosen penalty and falls beyond it).
+    Held out, new against earlier: AUC 0.902 against 0.813, methanol 0.847 against
+    0.605, Brier 0.0676 against 0.0865, completions found at 50 % 52.4 % against
+    21.7 %, burning-rate R² 0.732 against 0.705, MAE 0.045 against 0.048.
+    What the switch changed:
+    - `model/train.py` now writes the base export and the earlier model to
+      `model/pooled/` and never touches the console. `model/train_per_fuel.py` writes
+      `console/model.js` and `model/metrics.json`. Run them in that order.
+    - `console/index.html`: the teammate's 11-edit patch (per-fuel slopes in
+      `linear()`, in the "pushes toward" lines and in the map's model lines; "could go
+      either way" from `meta.watch` = 30 %; a "Watch" banner), plus two additions:
+      no chance is shown below 1 % or above 99 % (`shown()`), and the "pushes toward"
+      line says so when the tests do not settle the direction for that fuel
+      (`meta.unsure`: pressure for both fuels, droplet size and CO2 for methanol).
+    - `model/check_parity.py` refits the per-fuel recipe; `tests/test_per_fuel_model.py`
+      and `tests/test_console_features.cjs` follow the new layout and readings.
+    - Readings changed: heptane at the starting values 35 % to 57 %, methanol 8 % to
+      3 %, heptane in Moon Base air 90 % to 99 % (the model says 99.9 %). The demo
+      script, the Ember check and every document that quotes the model were updated.
+    - Checked after the switch: 14 Python tests, the Node test, the parity report, all
+      twelve browser suites at 1280x680 and 1280x800, and the demo sequence.
+
+  - Verified on the real Legion Go on Nov 15, 00:37 to 02:25 by the handheld's clock
+    (Pacific Standard Time, 08:37 to 10:25 UTC), by a Claude session running on the
     handheld with the owner pressing the controls (`docs/handheld-agent-brief.md`).
+    Every time in this point is by that clock. The PC's clock, used in the other
+    points, reads one hour later (British Columbia time, UTC-7).
     How: a second Edge window (Edge 157, guest mode) opened full screen at `http://run/`
     (Tailscale) and read over the DevTools protocol, so every line below is a control
     the owner pressed and a state the page reported. Full screen came from Edge's
@@ -260,7 +292,10 @@ Not done:
     summary-first explanation and Save baseline / Compare, 08:48 to 08:57 UTC). The
     00:41 screen check saw the page before that merge; the checklist run at 01:13 came
     after those commits; a second screen check at 01:50 ran on the page as it is at
-    commit `dd72ee2` (the served file matched it line for line).
+    commit `dd72ee2` (the served file matched it line for line). After that the console
+    switched to the per-fuel model (the point above). Both controller runs (01:13 and
+    02:04) were on the page before the switch. A third screen check at 02:25 ran on the
+    page after it, as it is at commit `f8374e5` (the served page matched main).
     - Screen (00:41): `innerWidth` 1280, `innerHeight` 800, `devicePixelRatio` 2. On the
       start screen, on the three pages and with each overlay open (explanation, Ember,
       Ignite, Oxygen map and zoomed star map at their three levels) `scrollHeight` was
@@ -271,6 +306,12 @@ Not done:
       exactly (674 px). With "Why this prediction?" or "Test details" open, and in the
       comparison, the panel scrolls inside itself (content 702 to 1079 px, comparison
       938 px) and stays inside the screen.
+    - Screen a third time (02:25, 10:25 UTC), on the page with the per-fuel model, as
+      it is at commit `f8374e5`: 1280x800, `devicePixelRatio` 2. No page or overlay
+      needs scrolling, the top bar is one line, and there were no console errors. The
+      explanation with its three boxes fits its panel (674 px). With both sections open
+      the panel scrolls inside itself (content 1097 px). The comparison is 938 px.
+      Heptane at the starting values read 57 %.
     - Controller (00:58): Edge reports "Xbox 360 Controller for Windows (STANDARD
       GAMEPAD)", mapping "standard", 17 buttons, 4 axes, sticks at 0 at rest. Every index
       the code assumes was seen from the real control: 0 A, 1 B, 2 X, 3 Y, 4 LB, 5 RB,
@@ -344,6 +385,9 @@ Not done:
       Radeon graphics with 3 GB, Windows 11 Home build 22631, power plan Balanced, on
       mains power during the tests.
     Not verified there, or different from what the code assumes:
+    - The page with the per-fuel model has not been tried with the controller on the
+      handheld. Both controller runs (01:13 and 02:04) were on the page before the
+      model switch. Only the 02:25 screen check saw the page after it.
     - Windows on this Legion Go has "Animation effects" switched off, so Edge reports
       `prefers-reduced-motion: reduce` and the page turns off every CSS animation and
       transition: the flame picture does not pulse and the starfield stands still.
@@ -369,16 +413,20 @@ Not done:
       lines at 1280x800 in real Edge. Cosmetic.
     - The hardware volume keys reach the page as key presses ("AudioVolumeUp"). On the
       start screen any plain key starts, so a volume key would too. Harmless.
-    - Git is not installed on the handheld: the repo was downloaded as `main.zip` at
-      00:37 and brought up to `dd72ee2` at 01:51 from a second download, so
-      `Start on Legion Go.bat` there serves the same page as the PC.
+    - Git was not installed on the handheld during the runs: the repo was downloaded
+      as `main.zip` at 00:37 and brought up to `dd72ee2` at 01:51 from a second
+      download, so until the model switch `Start on Legion Go.bat` there served the
+      same page as the PC. Git 2.56 was installed there at 02:17, and the Desktop
+      folder is now a clone on branch `handheld-nov15`. That clone still holds the page
+      from before the model switch until it pulls.
 
 Not done, or not verified:
 - Everything in the list above is unverified on the real Legion Go, with real
   gloves, and over real Wi-Fi, except what the two points about the real Legion Go
   above say.
 - The share sheet ("Share" button) cannot be tested in a headless browser.
-- `gemma4:e2b` exists in the Ollama library (checked Nov 14) but was never run here.
+- `gemma4:e2b` exists in the Ollama library (checked Nov 14) but was never run on the
+  PC. (It ran on the real handheld on Nov 15, see "Verified on the real Legion Go".)
 - Owner or teammate: read `docs/ember-check.md` and fill in the verdict lines.
 
 ## Challenge fit (step 4)
@@ -516,8 +564,12 @@ First run, held out by repeated 5-fold cross-validation:
 - Inputs are only things known before ignition. Never use burn time, extinction
   diameter or anything measured after the burn: that leaks the answer.
 - Two small models: logistic regression for "flame goes out", linear regression
-  for burning rate (mm^2/s). Coefficients must apply to raw values in the console's
-  units. Shape of the export is in `model/README.md` and `model/model.example.js`.
+  for burning rate (mm^2/s). Since Nov 15 each fuel has its own slopes (`fuel_coef`
+  in the export). `model/train.py` builds the base export in `model/pooled/`, then
+  `model/train_per_fuel.py` writes `console/model.js`: never run only the first and
+  copy its output over the console's file. Coefficients must apply to raw values in
+  the console's units. Shape of the export is in `model/README.md` and
+  `model/model.example.js`.
 - `data_min` and `data_max` in the export are the real column min and max.
 - Hold out data, report accuracy on the held-out part, put the numbers in
   `docs/submission.md` whether they are good or bad.

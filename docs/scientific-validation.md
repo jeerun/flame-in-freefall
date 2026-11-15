@@ -1,5 +1,11 @@
 # Second Toe — Scientific Validation Method & Review Notes
 
+> **Note added 15 November 2026.** This audit refitted the model the console used at the time: one set of
+> slopes for both fuels. Its main finding, that accuracy hid a weak Completion recall (23.7 % at a 50 %
+> cut-off), is what led to the per-fuel model the console uses now. On the same kind of held-out tests that
+> model finds 52 % of the completions (`docs/per-fuel-model.md`, `model/metrics.json`). The numbers below
+> describe the earlier model and are kept as they were written.
+
 **Project:** NASA Space Apps 2026 · Flame in Freefall
 
 **Workstream:** Independent Scientific Validation · `feature/scientific-validation`

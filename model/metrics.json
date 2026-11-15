@@ -5,18 +5,44 @@
     "rows": 199,
     "went_out": 172,
     "burned_to_completion": 27,
-    "cv": "5-fold stratified, repeated 20 times",
-    "auc": 0.813,
-    "accuracy": 0.887,
+    "cv": "5-fold stratified, repeated 20 times; penalty strength picked inside each training fold",
+    "penalty_c_grid": [
+      0.3,
+      1.0,
+      3.0,
+      10.0
+    ],
+    "penalty_c_chosen": 10.0,
+    "auc": 0.902,
+    "auc_by_fuel": {
+      "heptane": 0.906,
+      "methanol": 0.847
+    },
+    "accuracy": 0.915,
     "accuracy_if_always_guessing_went_out": 0.864,
-    "brier": 0.0865,
-    "brier_if_always_guessing_base_rate": 0.1173
+    "brier": 0.0676,
+    "brier_if_always_guessing_base_rate": 0.1173,
+    "completions_found_at_50_pct": 0.524,
+    "watch_level": 0.3,
+    "completions_at_or_above_watch": 0.641,
+    "went_out_at_or_above_watch": 0.078,
+    "bootstrap_refits": 1000,
+    "slopes_whose_sign_is_not_stable": {
+      "heptane": [
+        "p"
+      ],
+      "methanol": [
+        "p",
+        "co2",
+        "d0"
+      ]
+    }
   },
   "burn_rate": {
     "rows": 252,
     "cv": "5-fold, repeated 20 times",
-    "r2": 0.705,
-    "mean_abs_error_mm2_s": 0.048,
+    "r2": 0.732,
+    "mean_abs_error_mm2_s": 0.045,
     "target_std_mm2_s": 0.138
   }
 }
