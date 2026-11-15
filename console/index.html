@@ -141,11 +141,25 @@
     opacity: var(--glow, 0.8);
     outline: 1px dashed rgba(185,195,224,0.45); outline-offset: 0.25rem;
     transition: width .2s, height .2s, opacity .2s;
+    animation: breathe var(--beat, 2.4s) ease-in-out infinite;      /* faster when the burning rate is higher */
   }
   .droplet {
     position: absolute; width: calc(var(--drop, 0.12) * 100%); height: calc(var(--drop, 0.12) * 100%);
     border-radius: 50%; background: #c9b27a; transition: width .2s, height .2s;
   }
+  @keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+  @keyframes burnout { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(0); opacity: 0; } }
+  @keyframes fadeaway { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0.06; transform: scale(0.55); } }
+  /* outside the tested range the picture is a question mark, not a flame */
+  .flamebox.unknown .flame { animation: none; filter: grayscale(1); opacity: 0.25; }
+  .flamebox.unknown::after {
+    content: "?"; position: absolute; font-size: 3.2rem; font-weight: 700; color: var(--ink); line-height: 1;
+  }
+  .flamebox.unknown .droplet { opacity: 0; }
+  /* Fire drill reveal: the droplet is consumed, or the flame dies around it */
+  .flamebox.ended-burn .droplet { animation: burnout 1.6s ease-in forwards; }
+  .flamebox.ended-burn .flame { opacity: 1; }
+  .flamebox.ended-out .flame { animation: fadeaway 1.2s ease-out forwards; }
   .big { font-size: 3.3rem; font-weight: 700; line-height: 1; }
   .big small { font-size: 1.4rem; font-weight: 500; }
   .big-label { font-size: 1.05rem; color: var(--ink-2); margin-bottom: 0.2rem; }
@@ -247,6 +261,72 @@
   .card .rel { display: flex; flex-wrap: wrap; gap: 0.2rem 1.1rem; }
   .card .fine { margin: 0.7rem 0 0; font-size: 0.8rem; color: var(--ink-3); }
 
+  /* ---------- Fire drill (guess how a real test ended) ---------- */
+  main.drill { grid-template-rows: minmax(0, 1fr); }
+  .drill > section { display: grid; min-height: 0; align-content: start; gap: 0.6rem; }
+  .drill h2 { margin: 0; }
+  .dset { display: grid; gap: 0.35rem; }
+  .dset div {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+    padding: 0.4rem 1rem; background: var(--panel); border-radius: 0.6rem; font-size: 1.05rem;
+  }
+  .dset b { font-size: 1.4rem; font-weight: 600; }
+  .dset small { font-size: 0.85rem; font-weight: 400; color: var(--ink-2); margin-left: 0.2rem; }
+  .board { display: grid; grid-template-columns: auto 1fr auto; gap: 0.3rem 0.8rem; align-items: center; padding: 0.5rem 1rem; background: var(--panel); border-radius: 0.6rem; }
+  .board .who { color: var(--ink-2); font-size: 0.95rem; }
+  .board .pts { font-size: 1.4rem; font-weight: 700; text-align: right; }
+  .pips { display: flex; gap: 0.3rem; }
+  .pips i { width: 1.05rem; height: 1.05rem; border-radius: 50%; border: 1px solid var(--line); display: grid; place-items: center; font-style: normal; font-size: 0.7rem; font-weight: 700; }
+  .pips i.hit { background: var(--good); border-color: var(--good); color: #fff; }
+  .pips i.miss { background: var(--critical); border-color: var(--critical); color: #fff; }
+  .pips i.now { border-color: var(--flame); }
+  .dstage { grid-template-columns: auto 1fr; }
+  .dq { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.7rem; }
+  .dbtns { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+  .dbtns button {
+    padding: 0.7rem 0.8rem; border-radius: 0.6rem; border: 1px solid var(--line); background: var(--panel-hi);
+    cursor: pointer; font-size: 1.05rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+  }
+  .dbtns button.picked { border-color: var(--flame); background: #2a4184; }
+  .dbtns button:disabled { cursor: default; opacity: 0.75; }
+  .drill .line button[hidden] { display: none; }
+
+  /* ---------- Ask the AI ---------- */
+  .aibtn { cursor: pointer; background: transparent; color: var(--ink); border-color: var(--flame); font: inherit; font-size: 0.85rem; }
+  .aibtn kbd { height: 1.2rem; min-width: 1.2rem; font-size: 0.75rem; }
+  .ai { position: fixed; inset: 0; z-index: 5; background: rgba(6, 10, 24, 0.8); display: grid; place-items: center; padding: 1rem; }
+  .ai .box {
+    width: min(66rem, 100%); height: min(42rem, 100%); background: var(--panel-hi); border: 1px solid var(--flame);
+    border-radius: 0.6rem; padding: 0.9rem 1.2rem; display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto; gap: 0.6rem;
+  }
+  .ai .ahead { display: flex; align-items: baseline; gap: 0.8rem; }
+  .ai h3 { margin: 0; font-size: 1.25rem; font-weight: 600; white-space: nowrap; }
+  .ai .who { color: var(--ink-2); font-size: 0.85rem; flex: 1; }
+  .ai .close {
+    border: 1px solid var(--line); background: transparent; border-radius: 0.5rem; padding: 0.3rem 0.7rem; cursor: pointer;
+    display: inline-flex; gap: 0.4rem; align-items: center; font-size: 0.9rem; white-space: nowrap;
+  }
+  .ai .qs { display: grid; gap: 0.3rem; margin-bottom: 0.4rem; }
+  .ai .q {
+    text-align: left; padding: 0.32rem 0.8rem; border-radius: 0.5rem; border: 1px solid var(--line);
+    border-left: 0.3rem solid transparent; background: var(--panel); cursor: pointer; font-size: 0.98rem;
+  }
+  .ai .q.sel { border-left-color: var(--flame); background: #263a70; }
+  .ai .own { display: grid; grid-template-columns: 1fr auto; gap: 0.5rem; margin: 0; }
+  .ai .own input {
+    font: inherit; font-size: 0.95rem; color: var(--ink); background: #0a1124; border: 1px solid var(--line);
+    border-radius: 0.5rem; padding: 0.35rem 0.7rem; min-width: 0;
+  }
+  .ai .own button { border: 1px solid var(--line); background: transparent; border-radius: 0.5rem; padding: 0.35rem 1rem; cursor: pointer; }
+  .ai .ans {
+    background: var(--panel); border-radius: 0.5rem; padding: 0.7rem 1rem; overflow: auto;
+    white-space: pre-wrap; font-size: 1.05rem; line-height: 1.4;
+  }
+  .ai .ans .asked, .ai .ans .took { display: block; color: var(--ink-2); font-size: 0.88rem; }
+  .ai .ans .asked { margin-bottom: 0.4rem; }
+  .ai .ans .took { margin-top: 0.5rem; }
+  .ai .fine { margin: 0; font-size: 0.8rem; color: var(--ink-3); }
+
   /* ---------- hints ---------- */
   .hints {
     display: flex; flex-wrap: wrap; gap: 0.3rem 1.4rem; padding: 0.5rem 1.2rem;
@@ -274,22 +354,23 @@
     .read { gap: 0.55rem; }
     .hints { padding: 0.4rem 1.2rem; }
   }
-  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 </head>
 <body>
 
 <header class="top">
   <h1>Flame in Freefall</h1>
-  <span class="sub">Crew fire console</span>
   <nav class="tabs" id="tabs" aria-label="Pages" hidden>
     <button type="button" id="tabConsole" aria-pressed="true">Flame console</button>
     <button type="button" id="tabResearch" aria-pressed="false">NASA research</button>
+    <button type="button" id="tabDrill" aria-pressed="false">Fire drill</button>
   </nav>
   <span class="spacer"></span>
+  <button type="button" class="chip aibtn" id="aiBtn" hidden><kbd class="wide">☰</kbd> Ask the AI</button>
   <span class="chip mock" id="mockChip" hidden><span class="mark" aria-hidden="true">!</span><span id="mockText">Mock numbers, not NASA data yet</span></span>
   <span class="chip" id="srcChip" hidden></span>
-  <span class="chip" id="padChip"><span class="dot" aria-hidden="true"></span><span id="padText">No controller: press any button on it</span></span>
+  <span class="chip" id="padChip"><span class="dot" aria-hidden="true"></span><span id="padText">No controller: press a button</span></span>
 </header>
 
 <main id="viewConsole">
@@ -357,6 +438,49 @@
   </section>
 </main>
 
+<main id="viewDrill" class="drill" hidden>
+  <section aria-labelledby="hDrill">
+    <h2 id="hDrill">Fire drill: a real NASA test, with these settings</h2>
+    <div class="dset" id="drillSet"></div>
+    <div class="board" id="drillBoard"></div>
+  </section>
+  <section aria-live="polite">
+    <h2 id="hDrillRound"></h2>
+    <div class="stage dstage">
+      <div class="flamebox" id="drillBox" aria-hidden="true">
+        <div class="flame"></div>
+        <div class="droplet"></div>
+      </div>
+      <div>
+        <div class="dq" id="drillQ">What happened to the flame?</div>
+        <div class="dbtns">
+          <button type="button" id="drillOut"><kbd class="wide">←</kbd> Went out first</button>
+          <button type="button" id="drillBurn">Burned all its fuel <kbd class="wide">→</kbd></button>
+        </div>
+      </div>
+      <div class="caption">Picture is an illustration, not a recording of the test.</div>
+    </div>
+    <div class="conf" id="drillConf" hidden>
+      <div class="ico" id="drillIco" aria-hidden="true"></div>
+      <div><b id="drillTitle"></b><span id="drillText"></span></div>
+    </div>
+    <div class="line">
+      <div id="drillLine"></div>
+      <button type="button" id="drillNext" hidden><kbd>A</kbd> <span id="drillNextText">Next test</span></button>
+    </div>
+    <div class="legend" id="drillNote">Ten real tests from NASA's FLEX table (PSI-69): five burned all their fuel and five went out first, in random order. The model was trained on these tests, so it has a head start.</div>
+  </section>
+</main>
+
+<footer class="hints" id="hintsDrill" aria-label="Controls" hidden>
+  <span><kbd class="wide">←</kbd> Went out first</span>
+  <span><kbd class="wide">→</kbd> Burned all its fuel</span>
+  <span><kbd>A</kbd> Next test</span>
+  <span><kbd>Y</kbd> New game</span>
+  <span><kbd class="wide">LB</kbd><kbd class="wide">RB</kbd> Other page</span>
+  <span class="hintAI" hidden><kbd class="wide">☰</kbd> Ask the AI</span>
+  <span>Keys: arrows, Enter, R, 1 to 3</span>
+</footer>
 <footer class="hints" id="hintsConsole" aria-label="Controls">
   <span><kbd class="wide">↑↓</kbd> Pick a setting</span>
   <span><kbd class="wide">←→</kbd> Change it</span>
@@ -365,15 +489,36 @@
   <span><kbd>X</kbd> Cabin air</span>
   <span><kbd>Y</kbd> Reset</span>
   <span id="hintPage"><kbd class="wide">LB</kbd><kbd class="wide">RB</kbd> Other page</span>
-  <span>Keys: arrows, Enter, Esc, X, R, 2</span>
+  <span class="hintAI" hidden><kbd class="wide">☰</kbd> Ask the AI</span>
+  <span>Keys: arrows, Enter, Esc, X, R, 1 to 3</span>
 </footer>
 <footer class="hints" id="hintsResearch" aria-label="Controls" hidden>
   <span><kbd class="wide">←→</kbd> Change the question</span>
   <span><kbd class="wide">↑↓</kbd> Pick an investigation</span>
   <span><kbd>B</kbd> Back to the console</span>
   <span><kbd class="wide">LB</kbd><kbd class="wide">RB</kbd> Other page</span>
-  <span>Keys: arrows, Esc, 1</span>
+  <span class="hintAI" hidden><kbd class="wide">☰</kbd> Ask the AI</span>
+  <span>Keys: arrows, Esc, 1 to 3</span>
 </footer>
+
+<div class="ai" id="ai" hidden role="dialog" aria-labelledby="aiTitle">
+  <div class="box">
+    <div class="ahead">
+      <h3 id="aiTitle">Ask the AI</h3>
+      <span class="who" id="aiWho"></span>
+      <button type="button" class="close" id="aiClose"><kbd>B</kbd> Close</button>
+    </div>
+    <div>
+      <div class="qs" id="aiQs"></div>
+      <form class="own" id="aiForm">
+        <input id="aiInput" type="text" maxlength="300" autocomplete="off" aria-label="Your own question" placeholder="Or type your own question and press Enter">
+        <button type="submit">Ask</button>
+      </form>
+    </div>
+    <div class="ans" id="aiAns" aria-live="polite"></div>
+    <p class="fine">Written on the spot by a language model running on the team's own PC, from the NASA PSI records and the numbers on this screen. It can be wrong: check the PSI ids it cites. Not a crew procedure.</p>
+  </div>
+</div>
 
 <!--
   MODEL
@@ -418,6 +563,8 @@ window.FLAME_MODEL = {
   var M = window.FLAME_MODEL;
   var $ = function (id) { return document.getElementById(id); };
   var state = { sel: 0, fuel: M.fuels[0].key, values: {}, sheet: false };
+  var last = null;                                // the reading on screen: { r: prediction, rc: range check }
+  var lastLevel = null;                           // confidence level of the previous reading
   var byKey = {};
   M.features.forEach(function (f) { state.values[f.key] = f.default; byKey[f.key] = f; });
   var rowCount = M.features.length + 1;           // fuel row + numeric rows
@@ -501,15 +648,30 @@ window.FLAME_MODEL = {
   }
 
   /* ---------- model ---------- */
-  function linear(part) {
-    var z = part.intercept + (part.fuel[state.fuel] || 0);
-    M.features.forEach(function (f) { z += (part.coef[f.key] || 0) * state.values[f.key]; });
+  function linear(part, fuel, values) {
+    var z = part.intercept + (part.fuel[fuel] || 0);
+    M.features.forEach(function (f) { z += (part.coef[f.key] || 0) * values[f.key]; });
     return z;
   }
-  function predict() {
-    var pOut = 1 / (1 + Math.exp(-linear(M.extinction)));
-    var K = Math.max(0, linear(M.burn_rate));
+  function predictFor(fuel, values) {
+    var pOut = 1 / (1 + Math.exp(-linear(M.extinction, fuel, values)));
+    var K = Math.max(0, linear(M.burn_rate, fuel, values));
     return { pOut: pOut, pKeep: 1 - pOut, K: K };
+  }
+  function predict() { return predictFor(state.fuel, state.values); }
+  // Controller rumble, where the browser and the gamepad support it. Silent otherwise.
+  function buzz(ms, strong) {
+    try {
+      var pads = navigator.getGamepads ? navigator.getGamepads() : [];
+      for (var i = 0; i < pads.length; i++) {
+        var act = pads[i] && pads[i].connected && pads[i].vibrationActuator;
+        if (act && act.playEffect) {
+          act.playEffect("dual-rumble", { startDelay: 0, duration: ms, weakMagnitude: strong ? 0.8 : 0.4, strongMagnitude: strong ? 0.9 : 0.15 });
+          return true;
+        }
+      }
+    } catch (err) { /* no rumble on this device */ }
+    return false;
   }
   var GAS =["o2", "co2", "he"].filter(function (k) { return byKey[k]; });   // gases the user sets, in %
   var lastGas = GAS.filter(function (k) { return k !== "o2"; }).pop();       // row that carries the nitrogen note
@@ -607,6 +769,7 @@ window.FLAME_MODEL = {
     rc.disagree = rc.level === "inside" && seen >= 2 &&
       ((r.pKeep < 0.35 && nb.done * 2 > seen) || (r.pKeep >= 0.65 && nb.out * 2 > seen));
     if (rc.disagree) rc.level = "edge";
+    last = { r: r, rc: rc };
 
     fuelVal.textContent = fuelLabel();
     Array.prototype.forEach.call(fuelBtns.children, function (b) { b.setAttribute("aria-pressed", String(b.dataset.fuel === state.fuel)); });
@@ -644,6 +807,10 @@ window.FLAME_MODEL = {
     var flame = $("flame");
     flame.style.setProperty("--size", Math.min(1, 0.45 + r.K * 0.6).toFixed(2));
     flame.style.setProperty("--glow", (0.12 + 0.88 * r.pKeep).toFixed(2));
+    flame.style.setProperty("--beat", Math.max(1.1, 3.2 - r.K * 2.4).toFixed(2) + "s");
+    flame.parentNode.classList.toggle("unknown", rc.level === "outside");
+    if (rc.level === "outside" && lastLevel && lastLevel !== "outside") buzz(260, true);   // the controller buzzes on leaving tested ground
+    lastLevel = rc.level;
     if (d0) $("droplet").style.setProperty("--drop", (0.04 + d0 * 0.022).toFixed(3));
 
     var conf = $("conf");
@@ -825,38 +992,282 @@ window.FLAME_MODEL = {
       + "and are stored here so the page works offline. Title, type and hardware are copied from PSI (read " + R.meta.retrieved + "). "
       + "Check the PSI page before relying on them."));
   }
+  /* ---------- Fire drill: guess how a real FLEX test ended ---------- */
+  // Ten real tests from model.js: five that burned all their fuel and five that went out first, shuffled.
+  // The player answers with Left or Right; the dashboard's model answers too, and both are scored.
+  var drill = { rounds: [], i: 0, you: [], model: [], guess: null };
+  function rng(seed) {                             // small seeded generator, so a test can replay a game
+    return function () {
+      seed = (seed + 0x6D2B79F5) | 0;
+      var t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function shuffle(a, rand) {
+    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(rand() * (i + 1)), x = a[i]; a[i] = a[j]; a[j] = x; }
+    return a;
+  }
+  function drillStart(seed) {
+    var rand = rng(seed == null ? Date.now() : seed);
+    var take = function (end) { return shuffle(M.tests.filter(function (t) { return t[8] === end; }), rand).slice(0, 5); };
+    drill = { rounds: shuffle(take("Completion").concat(take("Extinction")), rand), i: 0, you: [], model: [], guess: null };
+    renderDrill();
+  }
+  function drillValues(t) {
+    var v = {};
+    M.features.forEach(function (f) { if (TEST_COL[f.key] != null) v[f.key] = t[TEST_COL[f.key]]; });
+    return v;
+  }
+  function drillGuess(g) {
+    var t = drill.rounds[drill.i];
+    if (!t || drill.guess) return;
+    var truth = t[8] === "Completion" ? "burn" : "out";
+    var m = predictFor(t[2], drillValues(t)).pKeep >= 0.5 ? "burn" : "out";
+    drill.guess = g; drill.you.push(g === truth); drill.model.push(m === truth);
+    buzz(g === truth ? 90 : 320, g !== truth);
+    renderDrill();
+  }
+  function drillNext() {
+    if (!drill.guess) return;
+    if (drill.i >= drill.rounds.length - 1) return drillStart();
+    drill.i++; drill.guess = null; renderDrill();
+  }
+  function count(a) { return a.filter(Boolean).length; }
+  function renderDrill() {
+    var t = drill.rounds[drill.i], n = drill.rounds.length, done = !!drill.guess, lastRound = drill.i === n - 1;
+    var truth = t[8] === "Completion" ? "burn" : "out";
+    var set = $("drillSet"); set.innerHTML = "";
+    function line(k, v, unit) { var d = el("div"); d.appendChild(el("span", "", k)); var b = el("b", "", v); if (unit) b.appendChild(el("small", "", unit)); d.appendChild(b); set.appendChild(d); }
+    line("Fuel", t[2].charAt(0).toUpperCase() + t[2].slice(1));
+    M.features.forEach(function (f) { if (TEST_COL[f.key] != null) line(f.label, trim(t[TEST_COL[f.key]]), f.unit); });
+
+    var board = $("drillBoard"); board.innerHTML = "";
+    [["You", drill.you], ["Model", drill.model]].forEach(function (row) {
+      board.appendChild(el("span", "who", row[0]));
+      var pips = el("span", "pips");
+      for (var i = 0; i < n; i++) {
+        var hit = row[1][i];
+        pips.appendChild(el("i", hit === true ? "hit" : hit === false ? "miss" : i === drill.i ? "now" : "", hit === true ? "✓" : hit === false ? "✕" : ""));
+      }
+      board.appendChild(pips);
+      board.appendChild(el("span", "pts", String(count(row[1]))));
+    });
+
+    $("hDrillRound").textContent = "Round " + (drill.i + 1) + " of " + n;
+    $("drillBox").className = "flamebox" + (done ? (truth === "burn" ? " ended-burn" : " ended-out") : "");
+    $("drillQ").textContent = done ? (truth === "burn" ? "It burned until the fuel was gone." : "It went out before the fuel was gone.") : "What happened to the flame?";
+    [["drillOut", "out"], ["drillBurn", "burn"]].forEach(function (b) {
+      $(b[0]).disabled = done; $(b[0]).classList.toggle("picked", drill.guess === b[1]);
+    });
+    $("drillConf").hidden = !done; $("drillNext").hidden = !done;
+    if (done) {
+      var right = drill.you[drill.i], p = Math.round(predictFor(t[2], drillValues(t)).pKeep * 100);
+      $("drillConf").className = "conf" + (right ? "" : " outside");
+      $("drillIco").textContent = right ? "✓" : "✕";
+      $("drillTitle").textContent = right ? "Correct." : "Not this time.";
+      $("drillText").textContent = "This was FLEX test " + t[0] + (t[9] != null ? ", measured burning rate " + t[9].toFixed(2) + " mm²/s" : "")
+        + ". The model gave it " + p + " % to burn all its fuel, so it answered \"" + (p >= 50 ? "burned all its fuel" : "went out first")
+        + "\": " + (drill.model[drill.i] ? "right" : "wrong") + ".";
+      $("drillNextText").textContent = lastRound ? "Play again" : "Next test";
+    }
+    var you = count(drill.you), mod = count(drill.model);
+    $("drillLine").textContent = (done && lastRound)
+      ? "Final score: you " + you + " of " + n + ", the model " + mod + " of " + n + ". " + (you > mod ? "You beat the model." : you === mod ? "A draw." : "The model wins this time.")
+      : done ? "" : "Left: it went out first. Right: it burned all its fuel.";
+  }
+  $("drillOut").addEventListener("click", function () { drillGuess("out"); });
+  $("drillBurn").addEventListener("click", function () { drillGuess("burn"); });
+  $("drillNext").addEventListener("click", drillNext);
+  // The current drill test as plain text, for Ask the AI (only offered after the answer is shown).
+  function drillText() {
+    var t = drill.rounds[drill.i], p = Math.round(predictFor(t[2], drillValues(t)).pKeep * 100);
+    return "Fire drill page: the player is looking at one real test from the NASA FLEX table (PSI-69).\n"
+      + "FLEX test " + t[0] + " (" + t[1] + "): " + t[2] + " at " + testSettings(t) + ".\n"
+      + "NASA's recorded outcome: " + (t[8] === "Completion" ? "it burned until the fuel was gone" : "the flame went out before the fuel was gone")
+      + (t[9] != null ? ". Measured burning rate " + t[9].toFixed(2) + " mm2/s" : "") + ".\n"
+      + "The dashboard's model gave this test a " + p + " % chance to burn until the fuel is gone.";
+  }
+
+  /* ---------- pages ---------- */
+  var PAGES = ["console"];
+  if (R) PAGES.push("research");
+  if (hasTests) PAGES.push("drill");
   function showPage(name) {
-    if (name === "research" && !R) return;
+    if (PAGES.indexOf(name) < 0) return;
     view.page = name;
-    ["Console", "Research"].forEach(function (p) {
+    ["Console", "Research", "Drill"].forEach(function (p) {
       var on = p.toLowerCase() === name;
       $("view" + p).hidden = !on; $("hints" + p).hidden = !on;
       $("tab" + p).setAttribute("aria-pressed", String(on));
     });
-    if (name === "research") renderResearch(); else render();
+    if (name === "research") renderResearch();
+    else if (name === "drill") { if (drill.rounds.length) renderDrill(); else drillStart(); }
+    else render();
   }
-  function otherPage() { showPage(view.page === "console" ? "research" : "console"); }
+  function turnPage(dir) { showPage(PAGES[(PAGES.indexOf(view.page) + dir + PAGES.length) % PAGES.length]); }
   function researchMove(dir) { view.sel += dir; renderResearch(); }
   function researchNeed(dir) { view.need = (view.need + dir + R.needs.length) % R.needs.length; view.sel = 0; renderResearch(); }
+  $("tabs").hidden = PAGES.length < 2;
+  $("tabResearch").hidden = !R; $("tabDrill").hidden = !hasTests;
+  $("hintPage").hidden = PAGES.length < 2;
+  $("tabConsole").addEventListener("click", function () { showPage("console"); });
+  $("tabDrill").addEventListener("click", function () { showPage("drill"); });
   if (R) {
-    $("tabs").hidden = false;
     R.needs.forEach(function (nd, i) {
       var b = el("button"); b.type = "button";
       b.appendChild(el("b", "", nd.label)); b.appendChild(el("span", "", nd.hint));
       b.addEventListener("click", function () { view.need = i; view.sel = 0; renderResearch(); });
       $("needs").appendChild(b);
     });
-    $("tabConsole").addEventListener("click", function () { showPage("console"); });
     $("tabResearch").addEventListener("click", function () { showPage("research"); });
-  } else {
-    $("hintPage").hidden = true;
+  }
+
+  /* ---------- Ask the AI ---------- */
+  // A language model on the team's own PC, reached through server/serve.py. The page only shows the
+  // button when it was opened from that server and the model is ready; opened as a file, nothing changes.
+  var AI = { ok: false, model: "", gpu: "", open: false, busy: false, sel: 0, qs: [] };
+  function aiQuestions() {
+    if (view.page === "research" && R) {
+      var list = ranked(), it = list[view.sel], need = R.needs[view.need].label.toLowerCase();
+      var other = list.filter(function (x) { return x !== it; })[0];
+      return [
+        it ? "Explain " + it.name + " to a new crew member in simple words." : null,
+        "For a Moon Base cabin with about 30% oxygen at low pressure, which investigations matter most, and why?",
+        it && other ? "Compare " + it.name + " with " + other.name + ": what does each add for fire " + need + "?" : null,
+        "What do these investigations still leave unknown about fire safety on the Moon or Mars?"
+      ].filter(Boolean);
+    }
+    if (view.page === "drill") {
+      return drill.guess ? [                       // no hints before the answer is shown
+        "Explain in simple words why this test may have ended this way.",
+        "What does this test tell a crew about fire safety?"
+      ] : [];
+    }
+    return [
+      "Interpret this reading for the crew in three sentences.",
+      "How much should I trust this reading, and why?",
+      "Which setting would I change to make this flame less likely to burn all its fuel?",
+      "What did the real FLEX tests closest to these settings show?"
+    ];
+  }
+  // Everything the Flame console page currently shows, as plain text for the model.
+  function readingText() {
+    renderSheet(last.r, last.rc);                 // fills the explanation list even while its panel is closed
+    var t = function (id) { return $(id).textContent; };
+    var bullets = Array.prototype.map.call($("sheetList").children, function (li) {
+      var sub = li.querySelector("ol");
+      if (!sub) return "- " + li.textContent;
+      return "- " + li.firstChild.textContent + " " + Array.prototype.map.call(sub.children, function (x, i) { return (i + 1) + ") " + x.textContent; }).join(" ");
+    }).join("\n");
+    var ap = activePreset();
+    return "Fuel: " + fuelLabel() + ". " + M.features.map(function (f) { return f.label + " " + fmt(f, state.values[f.key]) + " " + f.unit; }).join(", ") + "."
+      + (ap ? " Cabin air preset: " + ap.label + "." : "")
+      + "\nModel output: chance the flame burns until the fuel is gone " + t("pKeep") + " %; chance it goes out before the fuel is gone " + t("pOut")
+      + " %; burning rate " + t("kVal") + " mm2/s; droplet gone in about " + t("tVal") + " s if the flame lasts."
+      + "\nConfidence box: " + t("confTitle") + ". " + t("confText")
+      + "\nOne-line reading: " + t("oneLine")
+      + "\nExplanation panel:\n" + bullets
+      + "\nFine print: " + t("sheetFine");
+  }
+  function renderAI() {
+    var box = $("aiQs"); box.innerHTML = "";
+    AI.qs.forEach(function (q, i) {
+      var b = el("button", "q" + (i === AI.sel ? " sel" : ""), q); b.type = "button";
+      b.addEventListener("click", function () { AI.sel = i; renderAI(); askAI(q); });
+      box.appendChild(b);
+    });
+  }
+  function openAI() {
+    if (!AI.ok || AI.open) return;
+    var qs = aiQuestions();
+    if (!qs.length) return;
+    AI.open = true; AI.sel = 0; AI.qs = qs; renderAI();
+    $("ai").hidden = false;
+    askAI(AI.qs[0]);                               // one press is enough: the first question is asked straight away
+  }
+  function closeAI() { AI.open = false; $("ai").hidden = true; $("aiInput").blur(); }
+  function askAI(q) {
+    q = (q || "").trim();
+    if (!q || AI.busy) return;
+    AI.busy = true;
+    var box = $("aiAns"); box.innerHTML = "";
+    box.appendChild(el("span", "asked", q));
+    var out = el("span", "", "Thinking on the " + (AI.gpu || "team's PC") + " ..."); box.appendChild(out);
+    var body = { page: view.page === "research" ? "research" : "console", question: q };
+    if (view.page === "research" && R) {
+      var it = ranked()[view.sel];
+      body.selected = it ? it.id : ""; body.need = R.needs[view.need].label.toLowerCase();
+    } else {
+      body.reading = view.page === "drill" ? drillText() : readingText();
+    }
+    var t0 = Date.now(), got = "";
+    fetch("/ask", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
+      .then(function (resp) {
+        if (!resp.ok || !resp.body) throw new Error("HTTP " + resp.status);
+        var reader = resp.body.getReader(), dec = new TextDecoder();
+        function pump() {
+          return reader.read().then(function (x) {
+            if (x.done) return;
+            got += dec.decode(x.value, { stream: true });
+            out.textContent = got; box.scrollTop = box.scrollHeight;
+            return pump();
+          });
+        }
+        return pump();
+      })
+      .then(function () {
+        if (!got.trim()) throw new Error("empty answer");
+        box.appendChild(el("span", "took", "Answered in " + ((Date.now() - t0) / 1000).toFixed(1) + " s by " + AI.model
+          + (AI.gpu ? " on this team's " + AI.gpu : "") + "."));
+        box.scrollTop = box.scrollHeight;
+      })
+      .catch(function (err) { out.textContent = "The AI did not answer (" + err.message + "). The rest of the dashboard still works."; })
+      .then(function () { AI.busy = false; });
+  }
+  $("aiBtn").addEventListener("click", openAI);
+  $("aiClose").addEventListener("click", closeAI);
+  $("aiForm").addEventListener("submit", function (ev) { ev.preventDefault(); askAI($("aiInput").value); });
+  if (/^https?:$/.test(location.protocol) && window.fetch) {
+    fetch("/ai").then(function (resp) { return resp.json(); }).then(function (j) {
+      if (!j || !j.ok) return;
+      AI.ok = true; AI.model = j.model; AI.gpu = j.gpu || "";
+      $("aiBtn").hidden = false;
+      Array.prototype.forEach.call(document.querySelectorAll(".hintAI"), function (s) { s.hidden = false; });
+      $("aiWho").textContent = j.model + ", a language model running on this team's own PC" + (AI.gpu ? " (" + AI.gpu + ")" : "") + ". Nothing leaves the local network.";
+    }).catch(function () {});
   }
 
   /* ---------- keyboard ---------- */
   document.addEventListener("keydown", function (e) {
     var onButton = e.target && e.target.tagName === "BUTTON";
+    var typing = e.target && e.target.tagName === "INPUT" && e.target.type === "text";
+    if (AI.open) {
+      var n = AI.qs.length;
+      if (e.key === "Escape") { e.preventDefault(); closeAI(); }
+      else if (!typing) {
+        if (e.key === "ArrowUp") { e.preventDefault(); AI.sel = (AI.sel - 1 + n) % n; renderAI(); }
+        else if (e.key === "ArrowDown") { e.preventDefault(); AI.sel = (AI.sel + 1) % n; renderAI(); }
+        else if ((e.key === "Enter" || e.key === " ") && !onButton) { e.preventDefault(); askAI(AI.qs[AI.sel]); }
+        else if (e.key === "Backspace") closeAI();
+      }
+      return;
+    }
+    if (typing) return;
+    if (e.key === "/" || e.key === "?") { e.preventDefault(); openAI(); return; }
     if (e.key === "1") { showPage("console"); return; }
     if (e.key === "2") { showPage("research"); return; }
+    if (e.key === "3") { showPage("drill"); return; }
+    if (view.page === "drill") {
+      switch (e.key) {
+        case "ArrowLeft": e.preventDefault(); drillGuess("out"); break;
+        case "ArrowRight": e.preventDefault(); drillGuess("burn"); break;
+        case "Enter": case " ": if (!onButton) { e.preventDefault(); drillNext(); } break;
+        case "r": case "R": drillStart(); break;
+        case "Escape": case "Backspace": showPage("console"); break;
+      }
+      return;
+    }
     if (view.page === "research") {
       switch (e.key) {
         case "ArrowUp": e.preventDefault(); researchMove(-1); break;
@@ -880,7 +1291,7 @@ window.FLAME_MODEL = {
   });
 
   /* ---------- gamepad ---------- */
-  // Standard mapping: 0=A 1=B 2=X 3=Y 4=LB 5=RB 12=up 13=down 14=left 15=right, axes 0/1 = left stick.
+  // Standard mapping: 0=A 1=B 2=X 3=Y 4=LB 5=RB 8=View 9=Menu 12=up 13=down 14=left 15=right, axes 0/1 = left stick.
   var held = {};
   function fire(name, now, isDown, firstDelay, repeatMs, fn) {
     var h = held[name];
@@ -895,20 +1306,35 @@ window.FLAME_MODEL = {
     for (var i = 0; i < pads.length; i++) if (pads[i] && pads[i].connected) { pad = pads[i]; break; }
     var chip = $("padChip");
     chip.classList.toggle("on", !!pad);
-    $("padText").textContent = pad ? "Controller connected" : "No controller: press any button on it";
+    $("padText").textContent = pad ? "Controller connected" : "No controller: press a button";
     if (pad) {
       var b = function (n) { return !!(pad.buttons[n] && pad.buttons[n].pressed); };
-      var ax = pad.axes[0] || 0, ay = pad.axes[1] || 0, res = view.page === "research";
-      fire("up", now, b(12) || ay < -0.6, 350, 200, function () { if (res) researchMove(-1); else move(-1); });
-      fire("down", now, b(13) || ay > 0.6, 350, 200, function () { if (res) researchMove(1); else move(1); });
-      fire("left", now, b(14) || ax < -0.6, 350, res ? 0 : 90, function (m) { if (res) researchNeed(-1); else nudge(-1, m); });
-      fire("right", now, b(15) || ax > 0.6, 350, res ? 0 : 90, function (m) { if (res) researchNeed(1); else nudge(1, m); });
-      fire("a", now, b(0), 0, 0, function () { if (!res) toggleSheet(); });
-      fire("b", now, b(1), 0, 0, function () { if (res) showPage("console"); else toggleSheet(false); });
-      fire("y", now, b(3), 0, 0, function () { if (!res) reset(); });
-      fire("x", now, b(2), 0, 0, function () { if (!res) cyclePreset(); });
-      fire("lb", now, b(4), 0, 0, function () { otherPage(); });
-      fire("rb", now, b(5), 0, 0, function () { otherPage(); });
+      var ax = pad.axes[0] || 0, ay = pad.axes[1] || 0, ai = AI.open;
+      var pg = ai ? "ai" : view.page, con = pg === "console";
+      var aiMove = function (dir) { AI.sel = (AI.sel + dir + AI.qs.length) % AI.qs.length; renderAI(); };
+      fire("up", now, b(12) || ay < -0.6, 350, 200, function () {
+        if (pg === "ai") aiMove(-1); else if (pg === "research") researchMove(-1); else if (con) move(-1);
+      });
+      fire("down", now, b(13) || ay > 0.6, 350, 200, function () {
+        if (pg === "ai") aiMove(1); else if (pg === "research") researchMove(1); else if (con) move(1);
+      });
+      fire("left", now, b(14) || ax < -0.6, 350, con ? 90 : 0, function (m) {
+        if (pg === "research") researchNeed(-1); else if (pg === "drill") drillGuess("out"); else if (con) nudge(-1, m);
+      });
+      fire("right", now, b(15) || ax > 0.6, 350, con ? 90 : 0, function (m) {
+        if (pg === "research") researchNeed(1); else if (pg === "drill") drillGuess("burn"); else if (con) nudge(1, m);
+      });
+      fire("a", now, b(0), 0, 0, function () {
+        if (pg === "ai") askAI(AI.qs[AI.sel]); else if (pg === "drill") drillNext(); else if (con) toggleSheet();
+      });
+      fire("b", now, b(1), 0, 0, function () {
+        if (pg === "ai") closeAI(); else if (con) toggleSheet(false); else showPage("console");
+      });
+      fire("y", now, b(3), 0, 0, function () { if (con) reset(); else if (pg === "drill") drillStart(); });
+      fire("x", now, b(2), 0, 0, function () { if (con) cyclePreset(); });
+      fire("lb", now, b(4), 0, 0, function () { if (!ai) turnPage(-1); });
+      fire("rb", now, b(5), 0, 0, function () { if (!ai) turnPage(1); });
+      fire("menu", now, b(9) || b(8), 0, 0, function () { if (ai) closeAI(); else openAI(); });   // Menu or View button
     }
     requestAnimationFrame(poll);
   }
@@ -919,7 +1345,9 @@ window.FLAME_MODEL = {
   else { $("srcChip").hidden = false; $("srcChip").textContent = "Model: " + (M.meta.source || "NASA data") + (M.meta.rows ? ", " + M.meta.rows + " tests" : ""); }
 
   window.__flame = { state: state, predict: predict, rangeCheck: rangeCheck, nudge: nudge, select: select, toggleSheet: toggleSheet, reset: reset,
-                     cyclePreset: cyclePreset, activePreset: activePreset, view: view, showPage: showPage };
+                     cyclePreset: cyclePreset, activePreset: activePreset, view: view, showPage: showPage,
+                     AI: AI, openAI: openAI, askAI: askAI, readingText: readingText,
+                     drill: function () { return drill; }, drillStart: drillStart, drillGuess: drillGuess, drillNext: drillNext, buzz: buzz };
   render();
 })();
 </script>
