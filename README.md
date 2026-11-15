@@ -216,6 +216,10 @@ With Python Playwright and Edge installed, `python tests/browser_evidence.py --c
 exercises the new activities with keyboard and simulated gamepad input.
 `python tests/browser_view_links.py --channel msedge` checks copying and reopening
 research and console views in Edge.
+`python tests/browser_dialogs.py --channel msedge` checks focus handling and interrupted
+Ember requests using simulated responses. The team's 40-scenario browser suite also
+checks the readout against the exported coefficients at 1280×680 and 1280×800.
+[Run the browser suite](docs/console-e2e.md)
 
 `python data/clean/fetch_psi_tables.py` downloads the PSI test tables again (it
 never overwrites a file that is already there). With the server running,
@@ -299,7 +303,7 @@ The dataset does not validate the model for a crewed cabin. [Model limitations](
 | `data/raw/` | 1 Data | Files exactly as downloaded from NASA PSI. Never edit these. |
 | `data/clean/` | 1 Data | One tidy CSV built from the raw files, plus notes on each column. Also the research notes and the script that writes `console/research.js`. |
 | `model/` | 2 Model | `train.py` builds the base export and the earlier model in `pooled/`. `train_per_fuel.py` trains the console's model and writes `console/model.js` and `metrics.json`. `compare_models.py` and `verify_per_fuel.py` are the comparison and its independent check (results in `per_fuel/`). Also the audit (`science_audit.py`, results in `audit_v2_1/`) and the parity check (`check_parity.py`). |
-| `tests/` | 2 Model | Tests for the model export, the audit, the parity check, and the page's explanation and comparison. |
+| `tests/` | 2 Model | Tests for the model export, the audit, the parity check, and the page's explanation and comparison. `tests/e2e/` holds the browser tests of the console. |
 | `console/` | 3 Console | `index.html`, the page that runs on the Legion Go, with `model.js`, `research.js` and `tables.js`. |
 | `server/` | 3 Console | `serve.py`: serves the dashboard on the local network, passes questions for Ember to the language model, and keeps the sent CSV file. `ember_check.py`: asks Ember a fixed list of questions for checking. |
 | `docs/sources.md` | 4 Science | Every NASA dataset and source we use. |
@@ -354,10 +358,12 @@ OpenAI Codex also helped implement and test the three evidence activities, the
 responsive dashboard layout, the console and server fixes, and the captioned browser demonstration. Its scenes
 show the actual dashboard and NASA table values.
 
-A teammate contributed the independent audit and the parity check (`model/science_audit.py`,
-`model/check_parity.py` and their documents). We could not confirm whether AI tools
-helped write them, so treat that code and text as possibly AI-assisted. The audit was
-re-run on the team's PC and reproduced exactly.
+A teammate contributed the independent audit, the parity check and the browser tests
+(`model/science_audit.py`, `model/check_parity.py`, `tests/e2e/console_e2e.cjs` and
+their documents). We could not confirm whether AI tools helped write them, so treat
+that code and text as possibly AI-assisted. The audit was re-run on the team's PC and
+reproduced exactly. The browser tests were brought up to date with the per-fuel model
+and run there with Claude.
 
 The demo uses screen captures of the working dashboard. The NASA measurements
 come from the published tables. Keep this section current: the submission form asks where and how AI
