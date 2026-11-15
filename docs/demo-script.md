@@ -11,11 +11,12 @@ The [28-second captioned desktop demo](crew-console-demo.mp4) opens on the resea
 
 ## Before filming
 
-1. On the PC with the RTX 5080: double-click `Start dashboard.bat` in the repo folder
-   (or run `py server/serve.py --lan`). The window prints two addresses and
-   "AI: ready". The first time, Windows asks about the firewall: tick the kind of
-   network the PC is on (Private, Public, or both) and choose Allow. Leave the window
-   open. If the Legion Go cannot connect, see `docs/legion-go-setup.md`.
+1. For a PC-only demo, double-click `Start dashboard.bat`. For filming with the
+   handheld on a trusted private LAN, stop the PC-only server and run
+   `py server/serve.py --lan --allow-device 192.168.1.42 --open` from the repo
+   folder. Replace the example IP with the handheld’s IPv4 address. Check for
+   “AI: ready”. Allow only the Private firewall profile and limit the rule to
+   that device. [Connection and Tailscale setup](legion-go-setup.md)
 2. On the Legion Go, on the same Wi-Fi, open Edge at the address the window printed
    for the Legion Go (it looks like `http://192.168.x.x:8000`). Add `/#title`
    for the optional opening shot and press F11.
