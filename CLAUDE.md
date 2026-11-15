@@ -42,7 +42,7 @@ Submission closes Sunday Nov 15, 11:59 PM in the team owner's local time
 
 ## Status
 
-Last updated Saturday Nov 14, about 10:58 PM Mountain Time.
+Last updated Sunday Nov 15, about 12:15 AM by the owner's PC clock (Pacific Time).
 
 Done:
 - Team created on the Space Apps site, challenge selected.
@@ -150,6 +150,63 @@ Not done:
 - Teammates still need to join the team on the Space Apps site. Join requests only
   work while the team's "looking for members" box is ticked; untick it after all
   five are in. Teammates must also be invited to this repo as collaborators.
+
+- Night of Nov 14 to 15, at the owner's request (send the data off the handheld,
+  choose where the AI runs with a fallback, notifications, a truer simulation, the
+  stick slides the bars because a crew may wear gloves, a detailed chart with levels
+  of detail, more NASA data, the scene follows the place, zoom the star map). All of
+  it checked in headless Edge at 1280x680 and 1280x800 with a simulated gamepad;
+  the server parts with real Ollama on the owner's PC:
+  - More NASA data. `data/clean/fetch_psi_tables.py` downloaded the Experimental
+    Table of every combustion investigation from PSI (25 files, unchanged, in
+    `data/raw/psi_tables/` with `MANIFEST.json`). `data/clean/build_tables.py` reads
+    the oxygen and pressure of each test from nine of them into `console/tables.js`
+    and `data/clean/psi_tables_summary.json`. Counted: 746 tests with oxygen and
+    pressure of the surrounding gas, 20 in Moon Base air (all CFI-G normal flames),
+    17 more just above the pressure line at 10.2 to 10.5 psi (all FLEX).
+  - Oxygen map (research page: Y, View, or key O). Three levels of detail. Inverse
+    flames are hollow and not counted. Works only when `tables.js` is present.
+  - Star map zoom (console: View button or key Z). Levels: stars, grid and test
+    numbers (labels never overlap; left-out numbers are counted in the fine print),
+    the model's 25/50/75 % lines. View no longer toggles sound on the console and
+    research pages (M and the chip still do).
+  - Cabin air has three buttons: Earth air, Moon Base, Mars (assumed). Mars uses the
+    Moon Base air and the explanation says it is an assumption. The background
+    scene (drawn, behind solid panels) is the Earth, the Moon or Mars.
+  - Ignite (LT or key I): one run of the model, drawn like FLEX footage.
+  - Notifications: banner, sound and buzz when the reading leaves or re-enters the
+    tested range, the risk turns high (65 % or more), nearby tests disagree, Ember
+    loses or regains a machine, a file is saved or sent, a new best score.
+  - The left stick slides the selected bar (analog); the d-pad still steps.
+  - CSV: "Download tests (CSV)" saves on the device (key D). "Send to base" (left
+    stick press, key S) posts it to the server, which keeps it in `exports/` (or the
+    folder in `exports-folder.txt` / `--exports`, e.g. a synced Drive folder), passes
+    it to the peer machine and serves it at `/tests.csv`. Opened as a file or from
+    GitHub Pages the second button is "Share" (the device's share sheet) instead.
+  - Ember on two machines: every local Ollama model is a "brain"; `--peer <address>`
+    adds the bigger machine's and prefers them; if the peer does not answer the
+    question is answered locally and the page says so; the page re-checks every
+    20 seconds. `Start on Legion Go.bat` sets this up (asks for the PC address once,
+    keeps it in `pc-address.txt`, expects `gemma4:e2b` on the handheld). Checked
+    with two servers on the one PC (ports 8000 and 8001), never on a real handheld.
+  - Ember is also given the test-table counts and the top two records of the
+    dashboard's own ranking for the need on screen. `server/ember_check.py` asks 18
+    fixed questions and writes `docs/ember-check.md` with two automatic checks
+    (numbers present in the material, PSI ids next to the right names). All 18 pass.
+    No person has read them yet.
+  - Live copy: https://jeerun.github.io/flame-in-freefall/ , the `console/` folder
+    on the `gh-pages` branch. Republish after changing `console/`:
+    `git subtree push --prefix console origin gh-pages`.
+  - Docs brought up to date: README, `docs/submission.md`, `docs/sources.md`,
+    `docs/demo-script.md` (shot 2 is now the Oxygen map), `docs/checklist.md`, the
+    two data READMEs.
+
+Not done, or not verified:
+- Everything in the list above is unverified on the real Legion Go, with real
+  gloves, and over real Wi-Fi.
+- The share sheet ("Share" button) cannot be tested in a headless browser.
+- `gemma4:e2b` exists in the Ollama library (checked Nov 14) but was never run here.
+- Owner or teammate: read `docs/ember-check.md` and fill in the verdict lines.
 
 ## Challenge fit (step 4)
 
