@@ -28,6 +28,7 @@ class ParityTests(unittest.TestCase):
 
             for p in [
                 "model/train.py",
+                "model/train_per_fuel.py",
                 "console/model.js",
                 "console/index.html",
                 "data/clean/flex_clean.csv",

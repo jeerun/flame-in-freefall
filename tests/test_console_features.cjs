@@ -20,10 +20,11 @@ const document={getElementById:id=>{assert.ok(nodes[id],'missing element '+id);r
 const c=vm.createContext({window:{},document,console});
 vm.runInContext(fs.readFileSync(path.join(root,'console/model.js'),'utf8'),c);
 vm.runInContext(`var M=window.FLAME_MODEL, $=id=>document.getElementById(id), state={fuel:'heptane',values:{},baseline:null,sheet:false,comparing:false},last,MAP={big:false};
+var WATCH=(M.meta&&M.meta.watch)||0.35;
 var byKey={}, hasTests=true, TEST_COL={o2:3,p:4,co2:5,he:6,d0:7};M.features.forEach(f=>{byKey[f.key]=f;state.values[f.key]=f.default});var GAS=['o2','co2','he'];
 var SHORT={o2:' oxygen',co2:' carbon dioxide',he:' helium',p:'',d0:' droplet'}; var preset=null;function activePreset(){return preset} function mapBig(x){MAP.big=x} var sfx={close(){}};
 `,c);
-for(const name of ['el','linear','predictFor','predict','nearest','rangeCheck','drivers','fmt','names','at','fuelLabel','trim','gasNames','testSettings','testEnd','outsideReasons','readingSummary','renderSheet','comparisonSnapshot','saveBaseline','clearBaseline','toggleComparison','renderComparison','toggleExplanationDetail','reset']) vm.runInContext(source(name),c);
+for(const name of ['el','shown','linear','predictFor','predict','nearest','rangeCheck','drivers','fmt','names','at','fuelLabel','trim','gasNames','testSettings','testEnd','outsideReasons','readingSummary','renderSheet','comparisonSnapshot','saveBaseline','clearBaseline','toggleComparison','renderComparison','toggleExplanationDetail','reset']) vm.runInContext(source(name),c);
 vm.runInContext(`function render(){var r=predict(),rc=rangeCheck();last={r:r,rc:rc};$('confTitle').textContent=rc.level==='outside'?'Outside the tested range':rc.near.far?'Far from any real test':'Inside the tested range';renderComparison();} render();`,c);
 const run=s=>vm.runInContext(s,c);
 run('saveBaseline()');const saved=run('JSON.stringify(state.baseline)');
@@ -36,7 +37,12 @@ const beforeReset=run('JSON.stringify(state.baseline)');run('reset()');assert.eq
 run('state.fuel="methanol";render()');assert.match(nodes.compareRows.textContent,/Methanol/);
 run('saveBaseline()');assert.equal(run('state.baseline.fuel'),'methanol');
 run('clearBaseline()');assert.equal(run('state.baseline'),null);assert.equal(nodes.openCompare.disabled,true);assert.equal(nodes.compareSheet.hidden,true);
-run('reset();renderSheet(last.r,last.rc)');assert.match(nodes.summaryPrediction.textContent,/35%/);assert.ok(nodes.sheetList.children.length);assert.ok(nodes.testList.children.length);assert.match(nodes.sheetFine.textContent,/AUC/);
+run('reset();renderSheet(last.r,last.rc)');assert.match(nodes.summaryPrediction.textContent,/57%/);   // the per-fuel model's reading at the starting values (the earlier model gave 35%)assert.ok(nodes.sheetList.children.length);assert.ok(nodes.testList.children.length);assert.match(nodes.sheetFine.textContent,/AUC/);
+// With the per-fuel model: the page never shows 100 %, and it says when the tests do not settle which way a setting pushes.
+run('reset();state.values.o2=30;state.values.p=.694;render();renderSheet(last.r,last.rc)');assert.match(nodes.summaryPrediction.textContent,/^99% estimated chance.*; 1% of going out/);
+run('reset();state.fuel="methanol";state.values.p=.7;render();renderSheet(last.r,last.rc)');assert.match(nodes.sheetList.textContent,/Pressure at 0\.70 atm[^.]*\. The tests do not settle which way this setting pushes for methanol/);
+run('reset();state.values.o2=24;render();renderSheet(last.r,last.rc)');assert.doesNotMatch(nodes.sheetList.textContent,/do not settle/,'oxygen is a settled slope for heptane');
+run('reset();renderSheet(last.r,last.rc)');
 run('toggleExplanationDetail("whyDetails");renderSheet(last.r,last.rc)');assert.equal(nodes.whyDetails.open,true,'rerender preserves expanded state');
 run('state.values.p=.694;state.values.o2=30;state.values.d0=3.2;preset={key:"mars"};render();renderSheet(last.r,last.rc)');assert.match(nodes.summaryLimits.textContent,/no clear flame outcome/);assert.match(nodes.summaryLimits.textContent,/assumed scenario/);
 run('state.values.co2=33;state.values.p=.94;preset=null;render();renderSheet(last.r,last.rc)');assert.match(nodes.summaryLimits.textContent,/no close experimental match/);
@@ -57,4 +63,4 @@ run('state.sheet=true;state.comparing=false');key('w');assert.equal(nodes.whyDet
 const fixed=run('JSON.stringify(state.baseline)');run('state.values.o2=28;render()');key('h','BODY',{ctrlKey:true});assert.equal(run('JSON.stringify(state.baseline)'),fixed,'Ctrl+H must not replace baseline');
 key('Enter','SUMMARY'); // Browser owns native summary toggle; global handler must not close the sheet.
 assert.equal(run('state.sheet'),true);
-console.log('PASS: baseline isolation, live deltas, unsupported A/B warnings, replace/clear/reset, fuel changes, disclosure persistence, unclear/far/Mars/mock summaries, Ember context wiring, syntax.');
+console.log('PASS: baseline isolation, live deltas, unsupported A/B warnings, replace/clear/reset, fuel changes, disclosure persistence, unclear/far/Mars/mock summaries, 1-99 % display, unsettled-slope note, Ember context wiring, syntax.');

@@ -1,7 +1,16 @@
-"""Train the two console models on the cleaned FLEX table and export console/model.js.
+"""Step 1 of 2. Build the base export from the cleaned FLEX table, with the console's earlier, one-slope models.
 
-Run from the repo root:  python model/train.py
+Run from the repo root:  python model/train.py        then:  python model/train_per_fuel.py
 Needs: pandas, numpy, scikit-learn.
+
+Writes model/pooled/model.js and model/pooled/metrics.json. It does not write the console's files.
+
+What is in the export
+  - the scope (which tests count), the tested range of every input, the slider settings,
+    the nearest-test distance and the test rows the console shows: all reused by step 2
+  - the earlier version of the two models, where both fuels share one slope per setting.
+    The console used it until Nov 15, 2026. It is kept as the baseline that
+    model/compare_models.py measures the console's per-fuel model against.
 
 Model 1  logistic regression: does the flame go out before the fuel is gone?
          (test_end "Extinction" = 1, "Completion" = 0, "Disruption" left out)
@@ -23,8 +32,9 @@ from sklearn.preprocessing import StandardScaler
 
 ROOT = Path(__file__).resolve().parents[1]
 CLEAN = ROOT / "data" / "clean" / "flex_clean.csv"
-OUT_JS = ROOT / "console" / "model.js"
-OUT_METRICS = ROOT / "model" / "metrics.json"
+OUT_DIR = ROOT / "model" / "pooled"
+OUT_JS = OUT_DIR / "model.js"            # the base export; model/train_per_fuel.py builds console/model.js from it
+OUT_METRICS = OUT_DIR / "metrics.json"   # held-out accuracy of the earlier, one-slope models
 
 NUM = ["o2_pct", "pressure_atm", "co2_pct", "he_pct", "d0_mm"]
 KEYS = {"o2_pct": "o2", "pressure_atm": "p", "co2_pct": "co2", "he_pct": "he", "d0_mm": "d0"}
@@ -155,6 +165,7 @@ def main():
             "target_std_mm2_s": round(float(np.std(yb)), 3),
         },
     }
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
     OUT_METRICS.write_text(json.dumps(metrics, indent=2) + "\n", encoding="utf-8")
 
     model = {

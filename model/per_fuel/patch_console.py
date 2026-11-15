@@ -1,4 +1,8 @@
-"""The change console/index.html needs to read the per-fuel export. Not applied by anything in this branch.
+"""The change console/index.html needed to read the per-fuel export.
+
+APPLIED on 15 November 2026, when the console was switched to the per-fuel model. The page now carries
+these edits, so this script refuses to run on it ("already patched"). It is kept as the exact record of
+what the switch changed on the page. The rest of this text is as it was written before the switch.
 
     python model/per_fuel/patch_console.py --check    say whether the page can be patched; write nothing
     python model/per_fuel/patch_console.py            patch console/index.html in place
@@ -92,7 +96,7 @@ def main():
         print(f"{PAGE.name} can be patched ({len(EDITS)} edits). Nothing written.")
         return 0
     PAGE.write_text(text, encoding="utf-8", newline="\n")
-    print(f"Patched {PAGE.name} ({len(EDITS)} edits). Now copy model/per_fuel/model.js over console/model.js.")
+    print(f"Patched {PAGE.name} ({len(EDITS)} edits). Now run model/train.py and then model/train_per_fuel.py to write console/model.js.")
     return 0
 
 

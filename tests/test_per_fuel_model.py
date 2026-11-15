@@ -1,8 +1,12 @@
-"""Tests for the per-fuel model: the export reproduces, the page computes the same numbers, nothing else changes.
+"""Tests for the console's per-fuel model: the export reproduces, the page computes the same numbers, nothing else changed.
 
 Run from the repo root:  python -m unittest discover -s tests -p test_per_fuel_model.py -v
 Needs numpy, pandas and scikit-learn. The two page tests also need Node.js on PATH and are
 skipped without it. Everything runs in temporary folders: no file in the repo is written.
+
+Written for the pull request that proposed the model. On Nov 15, 2026 the console was switched to it, so
+"the export" is now console/model.js, the base it is compared with is model/pooled/model.js, and the page
+is tested as it is instead of through the patch.
 """
 import contextlib
 import importlib.util
@@ -15,6 +19,9 @@ import unittest
 
 import numpy as np
 import pandas as pd
+from sklearn.linear_model import LinearRegression, LogisticRegression
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
 
 ROOT = Path(__file__).resolve().parents[1]
 HAVE_NODE = bool(shutil.which("node"))
@@ -49,14 +56,14 @@ def cases_for(model, scope):
     return cases
 
 
-def page_predictions(page_html, model_js, cases, patched):
-    """Run the page's own prediction code in Node, from a temporary copy, optionally patched by patch_console.py."""
+def page_predictions(page_html, model_js, cases):
+    """Run the page's own prediction code in Node, from a temporary copy that is given model_js as its export."""
     with tempfile.TemporaryDirectory() as d:
         root = Path(d)
         (root / "console").mkdir()
         (root / "tests").mkdir()
         text = Path(page_html).read_text(encoding="utf-8")
-        (root / "console" / "index.html").write_text(patch_console.patched(text) if patched else text, encoding="utf-8")
+        (root / "console" / "index.html").write_text(text, encoding="utf-8")
         shutil.copyfile(model_js, root / "console" / "model.js")
         shutil.copyfile(ROOT / "tests" / "console_prediction_runner.cjs", root / "tests" / "console_prediction_runner.cjs")
         proc = subprocess.run(["node", str(root / "tests" / "console_prediction_runner.cjs")], input=json.dumps(cases),
@@ -69,8 +76,8 @@ class PerFuelModelTests(unittest.TestCase):
     def setUpClass(cls):
         df = pd.read_csv(per_fuel.CLEAN)
         cls.scope = per_fuel.scope_of(df)
-        cls.export = read_export(per_fuel.OUT_JS)
-        cls.current = read_export(ROOT / "console" / "model.js")
+        cls.export = read_export(per_fuel.OUT_JS)        # console/model.js
+        cls.base = read_export(per_fuel.BASE_JS)         # model/pooled/model.js: the base export with the earlier, one-slope formulas
 
     def test_rerun_reproduces_the_committed_files(self):
         """main() again, with its outputs pointed at a temporary folder: same export, same metrics."""
@@ -88,12 +95,13 @@ class PerFuelModelTests(unittest.TestCase):
             finally:
                 per_fuel.ROOT, per_fuel.OUT_DIR, per_fuel.OUT_JS, per_fuel.OUT_METRICS = saved
 
-    def test_only_the_two_formulas_and_their_accuracy_differ_from_the_current_export(self):
-        new, old = self.export, self.current
+    def test_only_the_two_formulas_and_their_accuracy_differ_from_the_base_export(self):
+        new, old = self.export, self.base
         for key in ("fuels", "features", "tests"):
             self.assertEqual(new[key], old[key], key)
         changed = {k for k in set(new["meta"]) | set(old["meta"]) if new["meta"].get(k) != old["meta"].get(k)}
-        self.assertLessEqual(changed, {"auc", "burn_rate_mae", "watch"})
+        self.assertEqual(changed, {"auc", "burn_rate_mae", "watch", "unsure"})
+        self.assertNotIn("fuel_coef", old["extinction"])
         for part in ("extinction", "burn_rate"):
             self.assertEqual(set(new[part]), {"intercept", "fuel", "coef", "fuel_coef"})
             self.assertEqual(set(new[part]["fuel_coef"]), {k for k, _ in train.FUELS})
@@ -122,9 +130,9 @@ class PerFuelModelTests(unittest.TestCase):
         self.assertLess(np.max(np.abs(k - reg.predict(per_fuel.design(scope)))), 1e-4)
 
     @unittest.skipUnless(HAVE_NODE, "needs Node.js on PATH")
-    def test_patched_page_computes_the_per_fuel_model(self):
+    def test_page_computes_the_per_fuel_model(self):
         cases = cases_for(self.export, self.scope)
-        got = page_predictions(ROOT / "console" / "index.html", per_fuel.OUT_JS, cases, patched=True)
+        got = page_predictions(ROOT / "console" / "index.html", per_fuel.OUT_JS, cases)
         frame = pd.DataFrame([{"fuel": c["fuel"], **{col: c["values"][train.KEYS[col]] for col in train.NUM}} for c in cases])
         scope = self.scope
         ext = scope[scope["test_end"].isin(["Extinction", "Completion"])]
@@ -137,25 +145,30 @@ class PerFuelModelTests(unittest.TestCase):
         self.assertLess(np.max(np.abs(raw_k - reg.predict(per_fuel.design(frame)))), 1e-4)
         self.assertLess(np.max(np.abs(np.array([g["pKeep"] for g in got]) - (1 - p_out))), 1e-12)
         self.assertLess(np.max(np.abs(np.array([g["K"] for g in got]) - np.maximum(0, raw_k))), 1e-12)
-        # The unpatched page ignores "fuel_coef": it must not be mistaken for a page that already supports the model.
-        plain = page_predictions(ROOT / "console" / "index.html", per_fuel.OUT_JS, cases, patched=False)
+        # The two models must really differ on these inputs, or the check above would pass for the wrong export.
+        plain = page_predictions(ROOT / "console" / "index.html", per_fuel.BASE_JS, cases)
         self.assertGreater(np.max(np.abs(np.array([g["pOut"] for g in plain]) - p_out)), 0.05)
 
     @unittest.skipUnless(HAVE_NODE, "needs Node.js on PATH")
-    def test_patched_page_leaves_the_current_model_unchanged(self):
-        cases = cases_for(self.current, self.scope)
-        before = page_predictions(ROOT / "console" / "index.html", ROOT / "console" / "model.js", cases, patched=False)
-        after = page_predictions(ROOT / "console" / "index.html", ROOT / "console" / "model.js", cases, patched=True)
-        self.assertEqual(before, after)
+    def test_page_still_reads_an_export_without_fuel_slopes(self):
+        """Given the base export, the page computes the earlier, one-slope model: the page change is backward compatible."""
+        cases = cases_for(self.base, self.scope)
+        got = page_predictions(ROOT / "console" / "index.html", per_fuel.BASE_JS, cases)
+        frame = pd.DataFrame([{"fuel": c["fuel"], **{col: c["values"][train.KEYS[col]] for col in train.NUM}} for c in cases])
+        scope = self.scope
+        ext = scope[scope["test_end"].isin(["Extinction", "Completion"])]
+        rate = scope[scope["burn_rate_mm2_s"].notna()]
+        clf = make_pipeline(StandardScaler(), LogisticRegression(C=1.0, max_iter=2000)).fit(train.design(ext), (ext["test_end"] == "Extinction").to_numpy(int))
+        reg = make_pipeline(StandardScaler(), LinearRegression()).fit(train.design(rate), rate["burn_rate_mm2_s"].to_numpy(float))
+        self.assertLess(np.max(np.abs(np.array([g["pOut"] for g in got]) - clf.predict_proba(train.design(frame))[:, 1])), 1e-4)
+        self.assertLess(np.max(np.abs(np.array([g["rawK"] for g in got]) - reg.predict(train.design(frame)))), 1e-4)
 
-    def test_patch_refuses_a_page_it_does_not_recognise(self):
+    def test_patch_refuses_the_page_it_has_already_changed(self):
+        """The patch that taught the page the per-fuel export was applied on Nov 15, 2026. It must not apply twice."""
         page = (ROOT / "console" / "index.html").read_text(encoding="utf-8")
-        once = patch_console.patched(page)
-        self.assertNotEqual(once, page)
-        with self.assertRaises(ValueError):
-            patch_console.patched(once)                      # already patched
-        with self.assertRaises(ValueError):
-            patch_console.patched(page.replace("pKeep >= 0.35", "pKeep >= 0.4"))   # a line it edits has changed
+        with self.assertRaises(ValueError) as caught:
+            patch_console.patched(page)
+        self.assertIn("already patched", str(caught.exception))
 
 
 if __name__ == "__main__":
