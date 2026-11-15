@@ -65,7 +65,7 @@ Asked from the research page (looking at PSI-69, list ranked for Suppression).
 > 3. Suppressant concentrations (using gases such as CO2, He, and SF6)
 > 4. Droplet size (using a smaller size of approximately 3 mm)
 
-- Answered by: gemma4:12b on this team's NVIDIA GeForce RTX 5080, in 4.0 s
+- Answered by: gemma4:12b on this team's NVIDIA GeForce RTX 5080, in 3.9 s
 - NASA PSI records the model was given in full: [PSI-69](https://psi.nasa.gov/physci/repo/data/investigations/PSI-69), [PSI-117](https://psi.nasa.gov/physci/repo/data/investigations/PSI-117), [PSI-47](https://psi.nasa.gov/physci/repo/data/investigations/PSI-47), [PSI-21](https://psi.nasa.gov/physci/repo/data/investigations/PSI-21), [PSI-26](https://psi.nasa.gov/physci/repo/data/investigations/PSI-26)
 - Automatic check: every number in the answer is in the material it was given; every PSI id sits next to its own investigation name.
 - Human verdict (correct / wrong / unsure, and why): 
@@ -92,7 +92,7 @@ Asked from the research page (looking at PSI-68).
 > 2. FLEX-2 [PSI-68] extends FLEX to mimic real engine conditions, focusing on bi-component droplets and droplet interactions.
 > 3. CFI [PSI-39] specifically investigates cool flames and the effects of helium dilution on n-dodecane and related fuels.
 
-- Answered by: gemma4:12b on this team's NVIDIA GeForce RTX 5080, in 4.1 s
+- Answered by: gemma4:12b on this team's NVIDIA GeForce RTX 5080, in 4.0 s
 - NASA PSI records the model was given in full: [PSI-68](https://psi.nasa.gov/physci/repo/data/investigations/PSI-68), [PSI-69](https://psi.nasa.gov/physci/repo/data/investigations/PSI-69), [PSI-117](https://psi.nasa.gov/physci/repo/data/investigations/PSI-117), [PSI-39](https://psi.nasa.gov/physci/repo/data/investigations/PSI-39)
 - Automatic check: every number in the answer is in the material it was given; every PSI id sits next to its own investigation name.
 - Human verdict (correct / wrong / unsure, and why): 
@@ -103,7 +103,7 @@ Asked from the research page (looking at PSI-101, list ranked for Detection).
 
 > SAME [PSI-102] and SAME-R [PSI-101] studied the sizes of liquid smoke particulates in low gravity and how those droplet size distributions relate to smoke generation and transport conditions. This research matters because it provides quantitative data on the sensitivity of detectors to reduced gravity smokes. These results help evaluate the adequacy of existing technologies and provide the foundation for developing advanced fire detectors for future long-duration spacecraft missions.
 
-- Answered by: gemma4:12b on this team's NVIDIA GeForce RTX 5080, in 3.8 s
+- Answered by: gemma4:12b on this team's NVIDIA GeForce RTX 5080, in 3.7 s
 - NASA PSI records the model was given in full: [PSI-101](https://psi.nasa.gov/physci/repo/data/investigations/PSI-101), [PSI-115](https://psi.nasa.gov/physci/repo/data/investigations/PSI-115), [PSI-102](https://psi.nasa.gov/physci/repo/data/investigations/PSI-102), [PSI-47](https://psi.nasa.gov/physci/repo/data/investigations/PSI-47)
 - Automatic check: every number in the answer is in the material it was given; every PSI id sits next to its own investigation name.
 - Human verdict (correct / wrong / unsure, and why): 
@@ -141,7 +141,7 @@ Asked from the research page (looking at PSI-98, list ranked for Prevention).
 > 3. Validating NASA’s material selection criteria.
 > 4. Measuring how limited oxygen and microgravity affect flame size.
 
-- Answered by: gemma4:12b on this team's NVIDIA GeForce RTX 5080, in 3.9 s
+- Answered by: gemma4:12b on this team's NVIDIA GeForce RTX 5080, in 4.0 s
 - NASA PSI records the model was given in full: [PSI-98](https://psi.nasa.gov/physci/repo/data/investigations/PSI-98), [PSI-99](https://psi.nasa.gov/physci/repo/data/investigations/PSI-99), [PSI-100](https://psi.nasa.gov/physci/repo/data/investigations/PSI-100), [PSI-20](https://psi.nasa.gov/physci/repo/data/investigations/PSI-20), [PSI-25](https://psi.nasa.gov/physci/repo/data/investigations/PSI-25)
 - Automatic check: every number in the answer is in the material it was given; every PSI id sits next to its own investigation name.
 - Human verdict (correct / wrong / unsure, and why): 
@@ -152,7 +152,7 @@ Asked from the research page (looking at PSI-20, list ranked for Prevention).
 
 > ACME BRE [PSI-20] measured the burning conditions of materials in a quiescent microgravity ambient to map when a material can keep burning in still air. It specifically observed the burning behavior of CH4/N2 and C2H4/N2 mixtures on porous circular burners with diameters of 25 and 50 mm. The experiment used a gas burner that imitates a burning solid or liquid surface. The hardware used for this investigation was the Combustion Integrated Rack (CIR) ACME.
 
-- Answered by: gemma4:12b on this team's NVIDIA GeForce RTX 5080, in 3.9 s
+- Answered by: gemma4:12b on this team's NVIDIA GeForce RTX 5080, in 3.8 s
 - NASA PSI records the model was given in full: [PSI-20](https://psi.nasa.gov/physci/repo/data/investigations/PSI-20), [PSI-21](https://psi.nasa.gov/physci/repo/data/investigations/PSI-21), [PSI-23](https://psi.nasa.gov/physci/repo/data/investigations/PSI-23), [PSI-10](https://psi.nasa.gov/physci/repo/data/investigations/PSI-10), [PSI-25](https://psi.nasa.gov/physci/repo/data/investigations/PSI-25)
 - Automatic check: every number in the answer is in the material it was given; every PSI id sits next to its own investigation name.
 - Human verdict (correct / wrong / unsure, and why): 
@@ -185,7 +185,7 @@ Asked from the research page (looking at PSI-39).
 > 3. Cool-flame limits [PSI-142]
 > 4. ACME CFI-G [PSI-159]
 
-- Answered by: gemma4:12b on this team's NVIDIA GeForce RTX 5080, in 3.7 s
+- Answered by: gemma4:12b on this team's NVIDIA GeForce RTX 5080, in 3.6 s
 - NASA PSI records the model was given in full: [PSI-39](https://psi.nasa.gov/physci/repo/data/investigations/PSI-39), [PSI-10](https://psi.nasa.gov/physci/repo/data/investigations/PSI-10), [PSI-21](https://psi.nasa.gov/physci/repo/data/investigations/PSI-21), [PSI-142](https://psi.nasa.gov/physci/repo/data/investigations/PSI-142)
 - Automatic check: every number in the answer is in the material it was given; every PSI id sits next to its own investigation name.
 - Human verdict (correct / wrong / unsure, and why): 
@@ -209,7 +209,7 @@ Asked from the research page (nothing picked, list ranked for Suppression).
 
 > The material does not contain any data at Moon or Mars gravity. According to the 2026 NASA Space Apps Challenge Brief, there is a known gap because PSI has no partial-gravity combustion data yet. No investigations in the records were measured at Moon or Mars gravity; instead, the records contain microgravity and normal-gravity results, which can only be used to bound what happens in between.
 
-- Answered by: gemma4:12b on this team's NVIDIA GeForce RTX 5080, in 3.7 s
+- Answered by: gemma4:12b on this team's NVIDIA GeForce RTX 5080, in 3.6 s
 - NASA PSI records the model was given in full: [PSI-60](https://psi.nasa.gov/physci/repo/data/investigations/PSI-60), [PSI-47](https://psi.nasa.gov/physci/repo/data/investigations/PSI-47), [PSI-20](https://psi.nasa.gov/physci/repo/data/investigations/PSI-20), [PSI-115](https://psi.nasa.gov/physci/repo/data/investigations/PSI-115)
 - Automatic check: every number in the answer is in the material it was given; every PSI id sits next to its own investigation name.
 - Human verdict (correct / wrong / unsure, and why): 
@@ -233,14 +233,14 @@ Asked from the Flame console with this reading on screen:
 
 ```
 Fuel: Heptane. Oxygen 30.0 %, Pressure 0.69 atm, Carbon dioxide 0 %, Helium 0 %, Droplet diameter 3.0 mm. Cabin air preset: Moon Base (expected).
-Model output: chance the flame burns until the fuel is gone 90 %; chance it goes out before the fuel is gone 10 %; burning rate 0.70 mm2/s; droplet gone in about 13 s if the flame lasts.
+Model output: chance the flame burns until the fuel is gone 99 %; chance it goes out before the fuel is gone 1 %; burning rate 0.75 mm2/s; droplet gone in about 12 s if the flame lasts.
 Confidence box: Inside the tested range. Every setting falls where experiments were run. But the 3 nearby real tests had no clear outcome, so the percentage leans on tests farther away.
 One-line reading: The model expects this flame to burn until the fuel is gone.
 ```
 
-> The model estimates a 90% chance that the heptane flame will burn until the fuel is exhausted. If the flame lasts, the 3.0 mm droplet is expected to be gone in about 13 seconds with a burning rate of 0.70 mm2/s. These percentages are estimates from a statistical model and are not certain physics, especially since nearby real tests had no clear outcome.
+> The model estimates a 99% chance that the heptane flame will burn until the fuel is exhausted. Based on the FLEX [PSI-69] data, the droplet is expected to be consumed in approximately 12 seconds if the flame persists. Please note that these percentages are estimates from a statistical model and are not certain physics or official crew procedures.
 
-- Answered by: gemma4:12b on this team's NVIDIA GeForce RTX 5080, in 2.9 s
+- Answered by: gemma4:12b on this team's NVIDIA GeForce RTX 5080, in 2.8 s
 - NASA PSI records the model was given in full: [PSI-69](https://psi.nasa.gov/physci/repo/data/investigations/PSI-69)
 - Automatic check: every number in the answer is in the material it was given; every PSI id sits next to its own investigation name.
 - Human verdict (correct / wrong / unsure, and why): 
@@ -251,14 +251,14 @@ Asked from the Flame console with this reading on screen:
 
 ```
 Fuel: Heptane. Oxygen 40.0 %, Pressure 0.69 atm, Carbon dioxide 0 %, Helium 0 %, Droplet diameter 3.0 mm.
-Model output: chance the flame burns until the fuel is gone 99 %; chance it goes out before the fuel is gone 1 %; burning rate 0.89 mm2/s; droplet gone in about 10 s if the flame lasts.
+Model output: chance the flame burns until the fuel is gone 99 %; chance it goes out before the fuel is gone 1 %; burning rate 0.96 mm2/s; droplet gone in about 9 s if the flame lasts.
 Confidence box: Outside the tested range. No experiment was run at this oxygen setting. Do not rely on these numbers.
 One-line reading: No experiment covers these settings. Treat the fire risk as unknown.
 ```
 
-> The current settings for Heptane and 40.0% oxygen are outside the tested range of the FLEX [PSI-69] investigation. Because no experiment was conducted at this specific oxygen level, the fire risk is unknown. Do not rely on the model estimates for burning rates or extinction chances.
+> The current settings for Heptane and 40.0% oxygen are outside the tested range of the FLEX [PSI-69] investigation. Because no experiment was conducted at this specific oxygen level, the fire risk is unknown. Do not rely on the model's estimates of a 99% chance of burning to completion or the 0.96 mm2/s burning rate.
 
-- Answered by: gemma4:12b on this team's NVIDIA GeForce RTX 5080, in 2.7 s
+- Answered by: gemma4:12b on this team's NVIDIA GeForce RTX 5080, in 2.8 s
 - NASA PSI records the model was given in full: [PSI-69](https://psi.nasa.gov/physci/repo/data/investigations/PSI-69)
 - Automatic check: every number in the answer is in the material it was given; every PSI id sits next to its own investigation name.
 - Human verdict (correct / wrong / unsure, and why): 

@@ -1,5 +1,22 @@
 # Per-fuel model: a proposed replacement for the two console models
 
+> **Update, 15 November 2026: the console now uses this model.** The switch was made the same day, after
+> the training and the comparison below were re-run on the team's PC (identical files) and the gain was
+> checked with separate code and stricter hold-outs (`model/verify_per_fuel.py`, results in
+> `model/per_fuel/independent_check.json`): held out one gas mix or one test day at a time, AUC goes from
+> 0.80 to 0.90, and this model is ahead of the earlier one in more than 99 % of 4000 paired resamples.
+>
+> What moved with the switch: `model/train_per_fuel.py` now writes `console/model.js` and
+> `model/metrics.json`; `model/train.py` writes the base export and the earlier model into `model/pooled/`
+> (run it first); `model/per_fuel/model.js` and `metrics.json` are gone, their content is in those two
+> files; `patch_console.py` has been applied and now refuses to run again; in `comparison.json` the earlier
+> model is called `one_slope` and the keys no longer say "proposed". Two things were added on the way in:
+> the page shows no chance below 1 % or above 99 %, and the export lists the slopes whose sign is not
+> stable (`meta.unsure`), which the explanation panel now flags.
+>
+> The text below is the proposal as it was written. Where it says "the current model" it means the
+> earlier, one-slope model, and its "not done in this branch" section has since been done.
+
 Written 15 November 2026 against repository commit
 `dd72ee287b1cfebc28253f00956d6106b9704145`, branch `feature/per-fuel-model`.
 

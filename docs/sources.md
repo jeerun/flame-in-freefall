@@ -66,7 +66,8 @@ What is in the FLEX table and what we used:
 ## Claims shown in the console, and where each comes from
 
 Wording in quotes is the text on screen. "Our model" means the two regressions in
-`model/train.py`, trained only on the PSI-69 table.
+`model/train_per_fuel.py` (own slopes for each fuel; the console's model since
+Nov 15, 2026), trained only on the PSI-69 table.
 
 | Text on screen | Source |
 |---|---|
@@ -84,9 +85,12 @@ Wording in quotes is the text on screen. "Our model" means the two regressions i
 | "Disruption, no clear outcome." and "But the ... nearby real tests had no clear outcome, so the percentage leans on tests farther away." | "Disruption" is a value of the PSI-69 "Test end" column. The page has no Read Me that defines it. Treating it as "no clear outcome" is our reading. |
 | "Earth-like air" (button): oxygen 21 %, pressure 1.00 atm | Sea-level air. The challenge brief gives Earth's sea-level pressure as 14.7 psi, which is 1 atm. |
 | "Moon Base (expected)" (button) and "Cabin air is the Moon Base case from the challenge brief: oxygen 30 % or more at 10.2 psi (0.69 atm) or less." | The Space Apps challenge brief, section on spacesuits and oxygen concentration. The button sets oxygen 30 % and 10.2 psi, which is 0.694 atm and is shown as 0.69. FLEX ran tests at that pressure and oxygen level. |
-| "... pushes toward going out early" and "... pushes toward burning until the fuel is gone" | The sign and size of our model's coefficients. Not a NASA statement. Three directions agree with the FLEX documents: more oxygen favours burning to completion, larger droplets favour (radiative) extinction, CO2 and helium act as suppressants. The pressure direction rests on only two pressure levels. |
+| "... pushes toward going out early" and "... pushes toward burning until the fuel is gone" | The sign and size of our model's coefficients for the chosen fuel. Not a NASA statement. For heptane the directions agree with the FLEX documents: more oxygen favours burning to completion, larger droplets favour (radiative) extinction, CO2 and helium act as suppressants. For methanol only the oxygen and helium directions are settled by the tests. Pressure rests on two levels and is settled for neither fuel. Where a direction is not settled the page says so (see the row on that sentence). |
 | "Nearby real tests disagree with the model" | Our rule: most nearby PSI-69 tests with a clear outcome ended the other way. |
-| "Checked on tests held out of training: AUC 0.81 ... burning rate off by 0.048 mm²/s on average" | `model/metrics.json`: 5-fold cross-validation repeated 20 times. |
+| "Checked on tests held out of training: AUC 0.90 ... burning rate off by 0.045 mm²/s on average" | `model/metrics.json`, written by `model/train_per_fuel.py`: 5-fold cross-validation repeated 20 times, with the penalty strength picked inside each training fold. |
+| "No chance is shown below 1 % or above 99 %: 199 tests cannot support more certainty than that." | Our display rule. The model itself can come out at 0.1 % or 99.9 %; held out, 3 % of the tests it put under 10 % did burn to completion (`model/per_fuel/comparison.json`). The CSV file keeps the model's unrounded output. |
+| "The tests do not settle which way this setting pushes for methanol, so do not lean on this line." (or "for heptane") | `meta.unsure` in the export: the settings whose slope changes sign in more than one in ten of 1000 refits on resampled tests (`model/train_per_fuel.py`). Pressure for both fuels; droplet size and carbon dioxide for methanol. |
+| "Watch: this flame has a real chance of burning all its fuel." and "Could go either way ..." from 30 % | `meta.watch` in the export, 0.30, our threshold. Held out, 64 % of the tests that burned to completion and about 8 % of those that went out sit at or above it (`model/metrics.json`). |
 | ""Goes out" means the visible flame: FLEX found that fuel can keep reacting after it, in a cool flame." | NASA "Studying Combustion and Fire Safety". The PSI-69 column is named "Visible flame extinction diameter". |
 | "This is a model reading for study and planning, not a crew procedure." | Our own statement. |
 | NASA research page: "Prevention", "Detection", "Suppression" | The three parts of NASA's spacecraft fire-safety work named in the Space Apps challenge brief. |
@@ -118,7 +122,7 @@ Wording in quotes is the text on screen. "Our model" means the two regressions i
 | Zoomed star map: test numbers, grid, and the dashed lines "model 25 %", "model 50 %", "model 75 %" | Test numbers are the PSI-69 "FLEX Test #". The dashed lines are our outcome model solved for those chances at the pressure, carbon dioxide and helium set now. They are not NASA's. |
 | Ignite: "This run: the flame went out after ... s, with the droplet at ... mm (stopping size borrowed from real FLEX test N)", "it burned all its fuel in ... s", the tally | Our model: the droplet follows the d-squared law at the modelled burning rate, the outcome of a run is drawn at random with the modelled chance, and the stopping size is the end-to-start diameter ratio of one of the eight closest real PSI-69 tests that went out. A run of the model, not a measurement. |
 | Ignite picture: igniter wires, thin spherical flame, soot shell in a heptane flame, faint haze after a heptane flame goes out, "illustration, not footage" | Our own drawing, made to resemble FLEX footage. The haze stands for the cool flame FLEX found (NASA "Studying Combustion and Fire Safety"); it is not modelled. |
-| Banners: "Outside what NASA tested. Treat the fire risk as unknown.", "Back inside what NASA tested.", "High fire risk: this flame is likely to burn all its fuel.", "Real tests nearby disagree with the model. Trust the tests." | The same rules as the confidence box. "High" is our threshold: a modelled chance of 65 % or more to burn all the fuel, the top of the range the model was checked in. |
+| Banners: "Outside what NASA tested. Treat the fire risk as unknown.", "Back inside what NASA tested.", "High fire risk: this flame is likely to burn all its fuel.", "Real tests nearby disagree with the model. Trust the tests." | The same rules as the confidence box. "High" is our threshold: a modelled chance of 65 % or more to burn all the fuel. Held out, 93 % of the tests the model put there did burn to completion (`model/per_fuel/comparison.json`). |
 | "Download tests (CSV)", "Send to base", "Sent N real FLEX tests to ..." | The file holds the 252 in-scope PSI-69 tests as recorded, with two extra columns that are ours (the model's chance and burning rate) and a source column naming PSI-69 and its DOI. |
 | "Ask Ember": answers that quote counts such as "20 test rows that match the Moon Base air" | The counts `build_tables.py` made from the PSI test tables, which the server gives the model as text (`data/clean/psi_tables_summary.json`). |
 
@@ -134,7 +138,7 @@ Wording in quotes is the text on screen. "Our model" means the two regressions i
 - That every row is a space experiment. The PSI-69 page says the investigation used
   both space-based data and ground-based tests, and the table has no column that
   tells them apart.
-- That the model is physics. It is two straight-line fits to 252 tests.
+- That the model is physics. It is two straight-line fits to 252 tests, with one set of slopes per fuel.
 - That a flame that "goes out" is safe. The outcome is about the visible flame.
 - Anything outside the tested ranges. The console marks those readings as unknown.
 - That the Oxygen map says how flammable anything is. It shows where tests were run.
