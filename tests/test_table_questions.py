@@ -67,6 +67,20 @@ class TestTableQuestions(unittest.TestCase):
             self.assertEqual(ids, [] if test_id == "B999" else [test_id])
         self.assertEqual(table.answer_question("Which tests had rising O₂?")["status"], "unavailable")
 
+    def test_within_test_trajectory_and_time_are_unsupported(self):
+        translate = Mock()
+        for question in ("Which tests had stable oxygen throughout the test?",
+                         "Which tests had oxygen falling throughout?",
+                         "Which tests had continuously rising CO?",
+                         "Which runs showed a monotonic increase in CO?",
+                         "Which tests had steady CO all the time?",
+                         "When did oxygen first fall in test B1?"):
+            with self.subTest(question=question):
+                self.assertEqual(table.answer_question(question, translate), {"status": "unsupported"})
+        translate.assert_not_called()
+        sample = table.answer_question("Which tests recorded unchanged oxygen and rising CO?")
+        self.assertEqual((sample["matched"], sample["excluded"]), (23, 11))
+
     def test_partial_or_invalid_plans_decline_without_applying_filters(self):
         bad = [
             plan(("co", "up")), plan(("co", "down"), ("o2", "up")),

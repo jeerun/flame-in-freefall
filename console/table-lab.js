@@ -108,7 +108,7 @@
   function rawSource(row) {
     const wrapper = element("div", undefined, "raw-row");
     const raw = element("table");
-    raw.append(element("caption", "Original CSV fields · line " + row.line));
+    raw.append(element("caption", "Original CSV fields · line " + row.line + " · Initial and final gas readings"));
     const body = element("tbody");
     for (const [name, value] of row.source) {
       const tr = element("tr");
@@ -168,7 +168,7 @@
   function display(query, result) {
     results.replaceChildren();
     if (result?.status === "unsupported") {
-      status.textContent = "This question could not be matched to a test ID or a supported gas change. Try one of the examples.";
+      status.textContent = "This question could not be matched. Ask for a test ID or a change between the initial and final readings. The table records only those two measurements for each gas.";
       return;
     }
     if (result?.status === "unavailable") {
@@ -183,7 +183,8 @@
     results.append(element("h3", query, "result-question"));
     const terms = result.filters.map(filter => gases[filter.gas] + " " + changes[filter.change]);
     if (result.test_id) terms.unshift("Test " + result.test_id);
-    if (terms.length) results.append(element("p", "Filter applied · " + terms.join(" and "), "filter-note"));
+    if (terms.length) results.append(element("p", "Filter applied · " + terms.join(" and ") +
+      (result.filters.length ? " (initial to final)" : ""), "filter-note"));
     if (result.excluded) results.append(element("p", result.excluded +
       (result.excluded === 1 ? " record lacks" : " records lack") +
       " two exact readings for a requested comparison.", "lab-subtle"));
