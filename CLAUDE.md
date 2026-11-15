@@ -42,7 +42,7 @@ Submission closes Sunday Nov 15, 11:59 PM in the team owner's local time
 
 ## Status
 
-Last updated Saturday Nov 14, about 10:00 PM Mountain Time.
+Last updated Saturday Nov 14, about 11:00 PM Mountain Time.
 
 Done:
 - Team created on the Space Apps site, challenge selected.
@@ -67,12 +67,24 @@ Done:
   NTRS and NASA pages). The explanation panel gained one sourced sentence: "goes
   out" means the visible flame, and FLEX found cool flames after it.
 
+- Step 6 done: `docs/submission.md` drafted for every form field. Two lines are
+  marked TO ADD for the owner (demo link, teammates' AI use). The project name
+  "Flame in Freefall Crew Fire Console" is a proposal: the owner can change it.
+- Step 7 done: `README.md` shows the real status, how to run and rebuild, the data,
+  the accuracy and the use of AI.
+- Step 8 done: `docs/demo-script.md`, six shots with buttons and subtitles. The
+  readings in it were checked in a desktop browser, not on the Legion Go.
+- Step 9 done: `docs/checklist.md`. Repo confirmed Public on Nov 14 (opened without
+  signing in). The remaining boxes are for the owner.
+
 Not done:
-- Step 4 is waiting for the owner to paste the official challenge page text.
+- Step 4 is waiting for the owner to paste the official challenge page text. After
+  it, revisit the summary and description in `docs/submission.md`.
 - Console has not been tried on the real Legion Go yet (a simulated gamepad is not
   the real one). If the gamepad moves the mouse instead, the device is in desktop
   mode and needs gamepad mode.
-- `README.md` still describes the mock stage. Step 7 fixes it.
+- Owner only: try the console on the Legion Go, film and upload the demo, fill in
+  the Space Apps form (see `docs/checklist.md`).
 - Teammates still need to join the team on the Space Apps site. Join requests only
   work while the team's "looking for members" box is ticked; untick it after all
   five are in. Teammates must also be invited to this repo as collaborators.
@@ -94,13 +106,12 @@ and update Status above each time.
 5. DONE. Fill `docs/sources.md`: NASA dataset, DOI, link, download date, and a source
    for every sentence shown on screen. If the wording on screen changes, update the
    claims table in that file too.
-6. Fill `docs/submission.md` in English, every form field, with the accuracy
-   numbers and the use of AI.
-7. Update `README.md`: real status, how to run, data used, use of AI.
-8. Write the 30-second demo script with English subtitles, shot by shot, with the
-   buttons to press on the Legion Go.
-9. Pre-submission checklist: repo is Public, demo link opens without login, every
-   form field is in English.
+6. DONE (draft, revisit after step 4). Fill `docs/submission.md` in English, every
+   form field, with the accuracy numbers and the use of AI.
+7. DONE. Update `README.md`: real status, how to run, data used, use of AI.
+8. DONE. Write the 30-second demo script with English subtitles, shot by shot, with
+   the buttons to press on the Legion Go: `docs/demo-script.md`.
+9. DONE. Pre-submission checklist: `docs/checklist.md`.
 
 Only the owner can do these: try the console on the Legion Go, film the demo, fill
 in the Space Apps site. Stop and list them when they come up.
