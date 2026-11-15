@@ -21,7 +21,8 @@ owner's local time (confirm on the team page). "Submit for Judging" is final.
 
 ## Handheld recheck of the redesigned page
 
-- [ ] Open the dashboard in landscape. NASA research opens directly. Check the
+- [ ] Open the dashboard in landscape. NASA research opens in Orbit view. Select a point,
+      open its investigation details and use the magnifying glass to share it. Check the
       controller status under Controls and all six settings on the Flame console.
       The optional `/#title` presentation screen still accepts A.
 - [ ] In the Oxygen map, select an investigation and switch between the three chart
