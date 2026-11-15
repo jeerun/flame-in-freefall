@@ -13,7 +13,7 @@ in `docs/checklist.md` as you go.
    kind of network the PC is on (Private, Public, or both) and choose Allow. If you
    are not sure which kind it is, tick both.
 3. On the Legion Go, on the same Wi-Fi or router, open Edge at that address and
-   press F11. Press A on the start screen.
+   press F11. NASA research opens immediately. Open Controls to check the gamepad connection.
 4. Proof that it got through: the PC window prints `New device connected: ...`, and
    on the PC `http://localhost:8000/who` lists the handheld with a count of its
    requests, its questions to Ember and the files it sent.

@@ -57,8 +57,10 @@ NOTES = ROOT / "data" / "clean" / "research_notes.json"
 TABLES = ROOT / "data" / "clean" / "psi_tables_summary.json"   # counts from the PSI Experimental Tables (build_tables.py)
 OLLAMA = "http://127.0.0.1:11434"
 STATIC = {"/": "index.html", **{"/" + name: name for name in (
-    "index.html", "model.js", "research.js", "tables.js", "counterexample.js", "evidence.js", "evidence-data.js")}}
-TYPES = {".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8"}
+    "index.html", "model.js", "research.js", "tables.js", "counterexample.js", "evidence.js", "evidence-data.js",
+    "interface.css", "research-ui.css", "console-ui.css", "flex-flame.webp")}}
+TYPES = {".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8",
+         ".css": "text/css; charset=utf-8", ".webp": "image/webp"}
 MAX_BODY = 16000
 EXPORTS_NOTE = ROOT / "exports-folder.txt"         # optional: first line names the folder to export into
 CSV_NAME = "flex_psi69_tests_with_predictions.csv"
