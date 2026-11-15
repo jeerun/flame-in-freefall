@@ -536,6 +536,12 @@
 </head>
 <body>
 
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="shareIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+    <path d="m7.5 10.6 8.8-5.1m-8.8 7.9 8.8 5.1"></path>
+    <circle cx="5" cy="12" r="2.8"></circle><circle cx="19" cy="4" r="2.8"></circle><circle cx="19" cy="20" r="2.8"></circle>
+  </symbol>
+</svg>
 <canvas id="stars" aria-hidden="true"></canvas>
 <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
 
@@ -570,8 +576,12 @@
   </nav>
   <section class="console-settings" id="consoleSettings" aria-labelledby="hSet">
     <div class="sethead">
-      <h2 id="hSet" tabindex="-1">Experiment settings</h2>
-      <div class="preset-group"><span>Cabin air</span><div class="presets" id="presets" aria-label="Cabin air presets" hidden></div></div>
+      <div class="settings-heading">
+        <h2 id="hSet" tabindex="-1">Experiment settings</h2>
+        <button type="button" id="crewMode" aria-pressed="false" title="Crew training layout. Press B on the console with panels closed.">Crew mode <kbd aria-hidden="true">B</kbd></button>
+      </div>
+      <span class="preset-status" id="cabinContext" hidden>Cabin air presets</span>
+      <div class="presets" id="presets" role="group" aria-label="Cabin air presets" hidden></div>
     </div>
     <div class="rows" id="rows"></div>
     <div class="legend export-row"><span class="range-key"><i aria-hidden="true"></i> Measured range</span>
@@ -580,7 +590,15 @@
   </section>
 
   <section class="read" id="read" aria-labelledby="hRead" aria-live="polite">
-    <div class="reading-heading"><h2 id="hRead" tabindex="-1">Model reading</h2><button type="button" class="view-action" id="shareReading" hidden aria-haspopup="dialog">Share view</button></div>
+    <div class="reading-heading">
+      <div><h2 id="hRead" tabindex="-1">Model reading</h2>
+        <p id="crewContext" hidden>Crew training · <strong id="crewAir"></strong></p>
+      </div>
+      <button type="button" class="view-action" id="shareReading" hidden aria-label="Share view" title="Share view" aria-haspopup="dialog" aria-controls="shareViewDialog">
+        <svg width="18" height="18" aria-hidden="true" focusable="false"><use href="#shareIcon"></use></svg>
+        <span>Share</span>
+      </button>
+    </div>
 
     <div class="stage">
       <div class="flamebox" aria-hidden="true">
@@ -706,8 +724,17 @@
     </div>
     <p id="rankFact" hidden></p>
     <div class="rank" id="rank" hidden role="group" aria-labelledby="hRank"></div>
-    <svg id="orbit" tabindex="0" role="listbox" aria-label="Research investigations by relevance" aria-describedby="rankNote"></svg>
-    <p id="rankNote"></p>
+    <svg id="orbit" tabindex="0" role="listbox" aria-label="Research investigations by relevance" aria-describedby="orbitLegend"></svg>
+    <div id="orbitLegend">
+      <p>Each mark is one investigation. Rings show AI-rated relevance to <strong id="orbitTopic">Prevention</strong>.</p>
+      <dl>
+        <div><dt><b>3</b> Direct</dt><dd>Stated objective</dd></div>
+        <div><dt><b>2</b> Strong</dt><dd>Directly useful measurements</dd></div>
+        <div><dt><b>1</b> Related</dt><dd>Indirect link</dd></div>
+        <div><dt><b>0</b> Outside topic</dt><dd>Dotted outer ring</dd></div>
+      </dl>
+    </div>
+    <p id="rankNote" hidden></p>
   </section>
   <div class="research-sidebar">
     <section class="research-detail" aria-labelledby="hCard">
@@ -715,10 +742,7 @@
         <h2 id="hCard" class="research-label" tabindex="-1">Selected investigation</h2>
         <span class="research-actions">
           <button type="button" class="view-action" id="shareResearch" hidden aria-label="Share view" title="Share view" aria-haspopup="dialog" aria-controls="shareViewDialog">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false">
-              <path d="m7.5 10.6 8.8-5.1m-8.8 7.9 8.8 5.1"></path>
-              <circle cx="5" cy="12" r="2.8"></circle><circle cx="19" cy="4" r="2.8"></circle><circle cx="19" cy="20" r="2.8"></circle>
-            </svg>
+            <svg width="18" height="18" aria-hidden="true" focusable="false"><use href="#shareIcon"></use></svg>
             <span>Share</span>
           </button>
           <a id="researchSource" target="_blank" rel="noopener noreferrer">NASA source ↗</a>
@@ -800,6 +824,7 @@
     <span>New game <kbd>R / Y</kbd></span>
   </div>
   <div class="hints" id="hintsConsole">
+    <span>Crew mode with panels closed <kbd>B</kbd></span>
     <span>Pick a setting <kbd>↑ ↓ / D-pad</kbd></span>
     <span>Change its value <kbd>← → / D-pad</kbd></span>
     <span>Explain reading <kbd>Enter / A</kbd></span>
@@ -833,10 +858,14 @@
       <h3 id="simTitle">Ignite</h3>
       <span class="who" id="simWho"></span>
       <button type="button" class="again" id="simAgain"><kbd>A</kbd> Ignite again</button>
+      <button type="button" class="again" id="simPause" title="Pause or resume playback (P or X on a controller)"><kbd>X</kbd> <span>Pause</span></button>
       <button type="button" class="close" id="simClose"><kbd>B</kbd> Close</button>
     </div>
     <div class="simgrid">
-      <canvas id="simCanvas" aria-hidden="true"></canvas>
+      <div class="sim-camera">
+        <div class="sim-camera-status"><span id="simPhase"></span><span id="simSpeed"></span></div>
+        <canvas id="simCanvas" aria-hidden="true"></canvas>
+      </div>
       <div class="simside">
         <div class="simnums">
           <div>Time<b><span id="simT">0.0</span><small>s</small></b></div>
@@ -848,7 +877,7 @@
         <div class="simtally" id="simTally"></div>
       </div>
     </div>
-    <p class="fine">A run of the model, not of physics. The droplet shrinks along the d-squared law at the burning rate the model predicts. Whether this run burns all its fuel is drawn at random with the model's odds, and when it goes out, the size it stops at is borrowed from a real FLEX test close to these settings. The flame, igniter wires, soot shell and the faint haze after a heptane flame goes out (FLEX found that a cool flame can carry on there) are drawn to look like the experiment. They are illustration, not footage and not modelled.</p>
+    <p class="fine"><strong>FLEX droplet model.</strong> Diameter follows the d-squared law at the predicted burning rate. The model samples an outcome among clear FLEX outcomes. The scale bar applies to the droplet. Flame light, wires, soot and haze are illustrations. <span id="simScope"></span></p>
   </div>
 </dialog>
 
@@ -1016,10 +1045,10 @@ window.FLAME_MODEL = {
   // Cabin atmospheres to jump to with X. The Moon Base case is from the 2026 Space Apps challenge brief:
   // oxygen "30% or greater" at "10.2 psi or less" (10.2 psi = 0.69 atm). Suppressant gases go to zero.
   var PRESETS = (byKey.o2 && byKey.p) ? [
-    { key: "earth", label: "Earth-like air", chip: "Earth air", values: { o2: 21, p: 1.0, co2: 0, he: 0 } },
-    { key: "moon", label: "Moon Base (expected)", chip: "Moon Base", values: { o2: 30, p: 0.694, co2: 0, he: 0 } },  // 10.2 / 14.696
+    { key: "earth", label: "Earth-like air", world: "Earth", air: "Reference air", values: { o2: 21, p: 1.0, co2: 0, he: 0 } },
+    { key: "moon", label: "Moon Base (expected)", world: "Moon", air: "Expected cabin air", values: { o2: 30, p: 0.694, co2: 0, he: 0 } },  // 10.2 / 14.696
     // The brief names bases on Mars too but gives no cabin air for them, so the Moon Base air is assumed and said to be assumed.
-    { key: "mars", label: "Mars base (assumed)", chip: "Mars (assumed)", values: { o2: 30, p: 0.694, co2: 0, he: 0 } }
+    { key: "mars", label: "Mars base (assumed)", world: "Mars", air: "Assumed cabin air", values: { o2: 30, p: 0.694, co2: 0, he: 0 } }
   ] : [];
 
   /* ---------- build rows ---------- */
@@ -1071,9 +1100,11 @@ window.FLAME_MODEL = {
   var presetBox = $("presets");
   if (PRESETS.length) {
     presetBox.hidden = false;
-    presetBox.appendChild(el("kbd", "", "X"));
+    $("cabinContext").hidden = false;
     PRESETS.forEach(function (ps) {
-      var b = el("button", "", ps.chip); b.type = "button"; b.dataset.preset = ps.key; b.title = ps.label; b.style.whiteSpace = "nowrap";
+      var b = el("button"); b.type = "button"; b.dataset.preset = ps.key; b.title = ps.label;
+      b.appendChild(el("strong", "", ps.world));
+      b.appendChild(el("small", "", ps.air));
       b.addEventListener("click", function () { applyPreset(ps); });
       presetBox.appendChild(b);
     });
@@ -1268,6 +1299,8 @@ window.FLAME_MODEL = {
     fuelVal.textContent = fuelLabel();
     Array.prototype.forEach.call(fuelBtns.children, function (b) { b.setAttribute("aria-pressed", String(b.dataset.fuel === state.fuel)); });
     var ap = activePreset();
+    $("crewAir").textContent = ap ? ap.label : "Custom cabin air";
+    $("cabinContext").textContent = ap ? "Cabin air presets" : "Custom cabin air";
     Array.prototype.forEach.call(presetBox.querySelectorAll("button"), function (b) {
       b.setAttribute("aria-pressed", String(!!ap && ap.key === b.dataset.preset));
     });
@@ -1966,6 +1999,31 @@ window.FLAME_MODEL = {
         name.setAttribute("x", label.x + (right ? -15 : 15));
       }
     }
+    // Keep the scale on the rings while leaving every investigation and its selected name legible.
+    var bounds = svg.getBoundingClientRect();
+    var occupied = Array.from(svg.querySelectorAll(":scope > text, :scope > g")).map(function (node) {
+      var box = node.getBoundingClientRect();
+      return { x: box.left - bounds.left, y: box.top - bounds.top, width: box.width, height: box.height };
+    });
+    [3, 2, 1, 0].forEach(function (score) {
+      var best, minOverlap = Infinity;
+      for (var i = 0; i < 90 && minOverlap > 0; i++) {
+        var offset = Math.ceil(i / 2) * (i % 2 ? 1 : -1) * Math.PI / 45;
+        var angle = (score % 2 ? -1 : 1) * Math.PI / 2 + offset;
+        var x = cx + Math.cos(angle) * ring[score], y = cy + Math.sin(angle) * ring[score];
+        var overlap = occupied.reduce(function (sum, box) {
+          return sum + Math.max(0, Math.min(x + 9, box.x + box.width) - Math.max(x - 9, box.x)) *
+            Math.max(0, Math.min(y + 9, box.y + box.height) - Math.max(y - 9, box.y));
+        }, 0);
+        if (overlap < minOverlap) { minOverlap = overlap; best = { x: x, y: y }; }
+      }
+      var badge = svgEl("g", { "data-ring-score": score, transform: "translate(" + best.x + " " + best.y + ")",
+        "aria-hidden": "true", "pointer-events": "none" });
+      badge.appendChild(svgEl("rect", { x: -7.5, y: -7.5, width: 15, height: 15, rx: 3 }));
+      badge.appendChild(svgEl("text", { y: 3.5, "text-anchor": "middle" }, String(score)));
+      svg.appendChild(badge);
+      occupied.push({ x: best.x - 8, y: best.y - 8, width: 16, height: 16 });
+    });
   }
   function toggleOrbit() {
     var focused = document.activeElement, moveFocus = focused === $("orbit") || $("rank").contains(focused);
@@ -2121,9 +2179,14 @@ window.FLAME_MODEL = {
     if (view.orbit) $("orbit").removeAttribute("hidden"); else $("orbit").setAttribute("hidden", "");   // an svg has no .hidden property
     $("hRank").textContent = view.orbit ? "Investigation orbits" : "Ranked investigations";
     $("orbitBtnText").textContent = view.orbit ? "List view" : "Orbit view";
-    if (view.orbit) drawOrbit(list, need);
-    $("rankNote").textContent = view.orbit ? "Inner orbits indicate higher AI-ranked relevance." :
-      "AI relevance ranking · " + (R.items.length - list.length) + " investigations outside this topic.";
+    $("orbitLegend").hidden = !view.orbit;
+    $("rankNote").hidden = view.orbit;
+    if (view.orbit) {
+      $("orbitTopic").textContent = need.label;
+      drawOrbit(list, need);
+    } else {
+      $("rankNote").textContent = "AI relevance ranking · " + (R.items.length - list.length) + " investigations outside this topic.";
+    }
 
     var it = list[view.sel], card = $("card");
     if (!it) return;
@@ -2319,6 +2382,18 @@ window.FLAME_MODEL = {
   $("drillOut").addEventListener("click", function () { drillGuess("out"); });
   $("drillRestart").addEventListener("click", function () { drillStart(); });
   $("jumpSettings").addEventListener("click", function () { $("hSet").focus({preventScroll: true}); $("hSet").scrollIntoView({block: "start"}); });
+  function showCrewMode(on) {
+    $("viewConsole").classList.toggle("crew-mode", on);
+    $("crewMode").setAttribute("aria-pressed", String(on));
+    $("crewContext").hidden = !on;
+  }
+  showCrewMode(load("crewMode", false) === true);
+  $("crewMode").addEventListener("click", function () {
+    var on = this.getAttribute("aria-pressed") !== "true";
+    showCrewMode(on);
+    save("crewMode", on);
+    if (last) drawMap(last.rc);
+  });
   $("jumpReading").addEventListener("click", function () { $("hRead").focus({preventScroll: true}); $("hRead").scrollIntoView({block: "start"}); });
   $("drillBurn").addEventListener("click", function () { drillGuess("burn"); });
   $("drillNext").addEventListener("click", drillNext);
@@ -2401,7 +2476,7 @@ window.FLAME_MODEL = {
   function simKey() { return state.fuel + "|" + M.features.map(function (f) { return state.values[f.key]; }).join("|"); }
   function simPlan() {
     var r = last.r, rc = last.rc, d0 = state.values.d0, K = r.K;
-    if (rc.level === "outside") return { blocked: "No experiment covers these settings, so there is nothing honest to simulate. Move back inside the tested range and ignite again." };
+    if (rc.level === "outside") return { blocked: "These settings are outside the FLEX model range. Move the settings back inside the tested range and ignite again." };
     if (!(K > 0.01) || !(d0 > 0)) return { blocked: "The model gives no burning rate here, so there is nothing to simulate." };
     var burns = SIM.rand() < r.pKeep, dEnd = 0, from = null;
     if (!burns) {                                  // borrow where it stops from a real test that went out, as close as possible
@@ -2438,22 +2513,25 @@ window.FLAME_MODEL = {
   // wires that pull back, a thin spherical flame that grows relative to the droplet as it burns, a soot shell inside a
   // heptane flame, and a faint haze after a heptane flame goes out, where FLEX found a cool flame can carry on.
   // Only the droplet size and the clock come from numbers. Everything else here is illustration.
-  function simDraw(run, tau, fade, now, sinceEnd) {
+  function simDraw(run, tau, fade, sinceEnd) {
     var cv = $("simCanvas"), c = cv.getContext("2d"), dpr = cv.width / Math.max(1, cv.clientWidth), W = cv.width, H = cv.height;
     var cx = W / 2, cy = H / 2, unit = Math.min(W, H) / 2;
     c.globalCompositeOperation = "source-over"; c.globalAlpha = 1;
     c.clearRect(0, 0, W, H);
     if (!run || run.blocked) return;
-    var mm = unit / 15;                             // pixels per millimetre: the view is about 30 mm across
+    var mm = unit / Math.max(8, run.d0 * 2.8);      // fixed magnification for this run; shared by the droplet and scale bar
     var d = Math.sqrt(Math.max(run.d0 * run.d0 - run.K * tau, 0)), rd = d * mm / 2, prog = run.Tfull > 0 ? Math.min(1, tau / run.Tfull) : 0;
     var heptane = run.fuel === "heptane", lit = Math.min(1, tau / (run.Tfull * 0.04 + 0.05));   // the flame takes a moment to wrap the droplet
     var standoff = (heptane ? 3.4 : 2.6) + 3.2 * prog;                                         // the flame sits further out as the droplet shrinks
-    var rf = Math.max(rd * standoff, mm * 1.2) * lit * (1 + 0.012 * Math.sin(now / 210));
+    var rf = Math.max(rd * standoff, mm * 1.2) * lit;
     var bright = Math.min(1, 0.4 + (run.o2 - 12) / 26) * fade * lit;
 
-    // the support fibre the droplet sits on
-    c.strokeStyle = "rgba(190,200,225,0.28)"; c.lineWidth = Math.max(1, dpr * 0.8);
-    c.beginPath(); c.moveTo(0, cy); c.lineTo(W, cy); c.stroke();
+    // Fine support fibre, with local light from the droplet.
+    var fibre = c.createLinearGradient(0, cy, W, cy);
+    fibre.addColorStop(0, "#243035"); fibre.addColorStop(.46, "#64706c");
+    fibre.addColorStop(.52, "#9b9b8a"); fibre.addColorStop(1, "#243035");
+    c.strokeStyle = fibre; c.lineWidth = Math.max(1, dpr * .7);
+    c.beginPath(); c.moveTo(0, cy - mm * .9); c.lineTo(W, cy + mm * .9); c.stroke();
     // igniter wires: in at the start, glowing, then pulled back
     var pull = Math.min(1, tau / (run.Tfull * 0.05 + 0.08)), reach = rd + mm * (0.6 + 9 * pull);
     c.lineWidth = dpr * 2.2;
@@ -2474,23 +2552,33 @@ window.FLAME_MODEL = {
     if (bright > 0.01) {
       // outer glow, then the thin bright shell
       var og = c.createRadialGradient(cx, cy, rf * 0.75, cx, cy, rf * 1.7);
-      og.addColorStop(0, "rgba(70,120,255,0)"); og.addColorStop(0.35, "rgba(70,120,255," + (0.42 * bright).toFixed(3) + ")"); og.addColorStop(1, "rgba(70,120,255,0)");
+      og.addColorStop(0, "rgba(92,142,180,0)"); og.addColorStop(0.35, "rgba(105,164,207," + (0.24 * bright).toFixed(3) + ")"); og.addColorStop(1, "rgba(80,126,158,0)");
       c.fillStyle = og; c.beginPath(); c.arc(cx, cy, rf * 1.7, 0, 6.2832); c.fill();
       var sh = c.createRadialGradient(cx, cy, rf * 0.86, cx, cy, rf * 1.1);
-      sh.addColorStop(0, "rgba(150,200,255,0)"); sh.addColorStop(0.5, "rgba(215,235,255," + (0.95 * bright).toFixed(3) + ")"); sh.addColorStop(1, "rgba(110,160,255,0)");
+      sh.addColorStop(0, "rgba(150,200,255,0)"); sh.addColorStop(0.55, "rgba(165,208,226," + (0.42 * bright).toFixed(3) + ")"); sh.addColorStop(1, "rgba(110,160,210,0)");
       c.fillStyle = sh; c.beginPath(); c.arc(cx, cy, rf * 1.1, 0, 6.2832); c.fill();
+      // A soft, unevenly lit limb gives the spherical shell depth at fixed exposure.
+      var limb = c.createLinearGradient(cx - rf, cy - rf, cx + rf, cy + rf);
+      limb.addColorStop(0, "rgba(202,227,240," + (.62 * bright).toFixed(3) + ")");
+      limb.addColorStop(.55, "rgba(148,196,217,0.02)");
+      limb.addColorStop(1, "rgba(210,182,150," + (.25 * bright).toFixed(3) + ")");
+      c.strokeStyle = limb; c.lineWidth = Math.max(dpr, rf * .024);
+      c.beginPath(); c.ellipse(cx, cy, rf * .997, rf * 1.012, -.14, 0, Math.PI * 2); c.stroke();
       if (heptane) {                                // soot glows yellow inside a heptane flame, strongest early on
         var sg = c.createRadialGradient(cx, cy, rd, cx, cy, rf * 0.92);
-        sg.addColorStop(0, "rgba(255,170,70,0)"); sg.addColorStop(0.6, "rgba(255,180,80," + (0.5 * bright * (1 - 0.6 * prog)).toFixed(3) + ")"); sg.addColorStop(1, "rgba(255,200,120,0)");
+        sg.addColorStop(0, "rgba(255,170,70,0)"); sg.addColorStop(0.6, "rgba(255,180,80," + (0.25 * bright * (1 - 0.6 * prog)).toFixed(3) + ")"); sg.addColorStop(1, "rgba(255,200,120,0)");
         c.fillStyle = sg; c.beginPath(); c.arc(cx, cy, rf * 0.92, 0, 6.2832); c.fill();
       }
     }
-    // ignition flash
-    if (tau < run.Tfull * 0.03 + 0.04) {
-      var fl = 1 - tau / (run.Tfull * 0.03 + 0.04);
-      var fg = c.createRadialGradient(cx, cy, 0, cx, cy, mm * 7);
-      fg.addColorStop(0, "rgba(255,255,255," + (0.9 * fl).toFixed(3) + ")"); fg.addColorStop(1, "rgba(255,255,255,0)");
-      c.fillStyle = fg; c.beginPath(); c.arc(cx, cy, mm * 7, 0, 6.2832); c.fill();
+    // Light stays at the wire tips during ignition.
+    if (pull < .65 && !run.reducedMotion) {
+      [-1, 1].forEach(function (side) {
+        var tx = cx + side * reach, ty = cy - mm * 1.1, radius = mm * 1.7;
+        var glow = c.createRadialGradient(tx, ty, 0, tx, ty, radius);
+        glow.addColorStop(0, "rgba(255,215,168," + (.68 * (1 - pull / .65)).toFixed(3) + ")");
+        glow.addColorStop(1, "rgba(243,146,89,0)");
+        c.fillStyle = glow; c.fillRect(tx - radius, ty - radius, radius * 2, radius * 2);
+      });
     }
     // soot shell: specks gathering on a sphere between the droplet and the flame (heptane only)
     c.globalCompositeOperation = "source-over";
@@ -2498,18 +2586,22 @@ window.FLAME_MODEL = {
       var want = Math.round(70 * Math.min(1, prog * 3.5));
       while (SIM.parts.length < want) SIM.parts.push({ a: SIM.rand() * 6.2832, k: 0.42 + SIM.rand() * 0.2, s: 0.6 + SIM.rand() * 1.1, w: (SIM.rand() - 0.5) * 0.0005 });
       for (var i = 0; i < SIM.parts.length; i++) {
-        var p = SIM.parts[i], pr = rd + (rf - rd) * p.k; p.a += p.w * 16;
+        var p = SIM.parts[i], pr = rd + (rf - rd) * p.k, a = p.a + (run.reducedMotion ? 0 : p.w * tau * 1000);
         c.globalAlpha = 0.75 * fade; c.fillStyle = "#3a2a1c";
-        c.beginPath(); c.arc(cx + pr * Math.cos(p.a), cy + pr * Math.sin(p.a), p.s * dpr, 0, 6.2832); c.fill();
+        c.beginPath(); c.arc(cx + pr * Math.cos(a), cy + pr * Math.sin(a), p.s * dpr, 0, 6.2832); c.fill();
       }
     }
     // the droplet: a clear bead with a highlight, lit by its own flame
     c.globalAlpha = 1;
     if (rd > 0.5) {
       var dg = c.createRadialGradient(cx - rd * 0.35, cy - rd * 0.4, rd * 0.05, cx, cy, rd);
-      dg.addColorStop(0, "rgba(245,250,255,0.95)"); dg.addColorStop(0.35, heptane ? "rgba(214,196,150,0.85)" : "rgba(170,205,235,0.8)"); dg.addColorStop(1, "rgba(40,55,90,0.9)");
+      dg.addColorStop(0, "#596668"); dg.addColorStop(.27, "#263439");
+      dg.addColorStop(.68, "#0d181b"); dg.addColorStop(.92, heptane ? "#4e4840" : "#35474e"); dg.addColorStop(1, "#899694");
       c.fillStyle = dg; c.beginPath(); c.arc(cx, cy, rd, 0, 6.2832); c.fill();
-      c.strokeStyle = "rgba(230,240,255,0.5)"; c.lineWidth = dpr; c.beginPath(); c.arc(cx, cy, rd, 0, 6.2832); c.stroke();
+      c.lineWidth = Math.max(dpr * .7, rd * .055); c.strokeStyle = "rgba(203,221,225,.42)";
+      c.beginPath(); c.arc(cx, cy, rd * .91, .34, 1.48); c.stroke();
+      c.fillStyle = "#dbe7e5"; c.beginPath();
+      c.ellipse(cx - rd * .36, cy - rd * .37, rd * .14, rd * .066, -.54, 0, 6.2832); c.fill();
     }
     // camera overlay: scale bar, clock, a dark rim
     var vg = c.createRadialGradient(cx, cy, unit * 0.7, cx, cy, Math.max(W, H) * 0.75);
@@ -2527,36 +2619,75 @@ window.FLAME_MODEL = {
   function simStart() {
     cancelAnimationFrame(SIM.raf);
     var run = simPlan(), key = simKey(), t0 = null, ended = null;
-    SIM.run = run; SIM.parts = [];
+    SIM.run = run; SIM.sample = null; SIM.parts = [];
+    SIM.pausedAt = null; SIM.pausedMs = 0;
+    var pauseButton = $("simPause");
+    pauseButton.disabled = !!run.blocked;
+    pauseButton.querySelector("span").textContent = "Pause";
+    run.reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (SIM.tally.key !== key) SIM.tally = { key: key, out: 0, burn: 0 };
     simSize();
     $("simEnd").textContent = run.blocked || "";
+    $("simScope").textContent = last.rc.noClear ? "All nearby FLEX outcomes were inconclusive." :
+      last.rc.near && last.rc.near.far ? "The nearest FLEX test is far from these settings." : "";
     $("simWho").textContent = run.blocked ? "" : fuelLabel() + ", " + M.features.map(function (f) { return fmt(f, state.values[f.key]) + " " + f.unit + " " + (SHORT[f.key] != null ? SHORT[f.key].trim() : f.label.toLowerCase()); }).join(", ").replace(/ ,/g, ",");
     simTally();
-    if (run.blocked) { simDraw(null, 0, 0, 0, null); simPlot(null, 0); $("simT").textContent = "0.0"; $("simD").textContent = "0.00"; $("simK").textContent = "0.00"; sfx.bad(); return; }
+    if (run.blocked) {
+      simDraw(null, 0, 0, null); simPlot(null, 0);
+      $("simPhase").textContent = "Model run unavailable"; $("simSpeed").textContent = "";
+      $("simT").textContent = $("simD").textContent = $("simK").textContent = "—";
+      sfx.bad(); return;
+    }
     $("simK").textContent = run.K.toFixed(2);
     var speed = run.T / Math.min(6, Math.max(3, 6 * run.T / run.Tfull));   // three to six seconds on screen
+    SIM.speedLabel = "Playback " + speed.toFixed(2) + "×";
+    $("simSpeed").textContent = SIM.speedLabel;
+    $("simPhase").textContent = "Ignition";
     sfx.start(); buzz(120, false);
-    function frame(now) {
-      if (!SIM.open || SIM.run !== run) return;
+    function frame(wallTime) {
+      if (!SIM.open || SIM.run !== run || SIM.pausedAt !== null) return;
+      var now = wallTime - SIM.pausedMs;
       if (t0 == null) t0 = now;
-      var tau = Math.min(run.T, (now - t0) / 1000 * speed), d = Math.sqrt(Math.max(run.d0 * run.d0 - run.K * tau, 0));
+      var tau = Math.min(run.T, Math.max(0, now - t0) / 1000 * speed), d = Math.sqrt(Math.max(run.d0 * run.d0 - run.K * tau, 0));
       var fade = ended == null ? 1 : Math.max(0, 1 - (now - ended) / 900);
       $("simT").textContent = tau.toFixed(1); $("simD").textContent = d.toFixed(2);
-      simDraw(run, tau, fade, now, ended == null ? null : now - ended); simPlot(run, tau);
+      SIM.sample = { tau: tau, fade: fade, sinceEnd: ended == null ? null : now - ended };
+      simDraw(run, tau, fade, SIM.sample.sinceEnd);
+      if (ended === null) simPlot(run, tau);
+      if (ended === null && tau > run.Tfull * .05 + .08) $("simPhase").textContent = "Droplet burning";
       if (tau >= run.T && ended == null) {
         ended = now;
+        $("simPhase").textContent = run.burns ? "Fuel consumed" : "Visible flame extinguished";
+        if (document.activeElement === pauseButton) $("simAgain").focus({ preventScroll: true });
+        pauseButton.disabled = true;
         if (run.burns) SIM.tally.burn++; else SIM.tally.out++;
         $("simEnd").textContent = run.burns
           ? "This run: it burned all its fuel in " + run.T.toFixed(1) + " s."
           : "This run: the flame went out after " + run.T.toFixed(1) + " s, with the droplet at " + run.dEnd.toFixed(2) + " mm"
-            + (run.from ? " (stopping size borrowed from real FLEX test " + run.from[0] + ")." : ".");
+            + (run.from ? " (stopping size borrowed from real FLEX test " + run.from[0] + ")." : " (illustrative stopping size: half the initial diameter).");
         simTally();
         if (run.burns) sfx.good(1); else sfx.close();
       }
-      if (ended == null || now - ended < 5400) SIM.raf = requestAnimationFrame(frame);   // keep drawing while the haze fades
+      if (ended == null || now - ended < (run.fuel === "heptane" && !run.burns ? 5200 : 900)) SIM.raf = requestAnimationFrame(frame);
     }
+    SIM.frame = frame;
     SIM.raf = requestAnimationFrame(frame);
+  }
+  function toggleSimPause() {
+    var button = $("simPause");
+    if (!SIM.open || button.disabled) return;
+    if (SIM.pausedAt === null) {
+      SIM.pausedAt = performance.now();
+      cancelAnimationFrame(SIM.raf);
+      button.querySelector("span").textContent = "Resume";
+      $("simSpeed").textContent = "Paused · " + SIM.speedLabel;
+    } else {
+      SIM.pausedMs += performance.now() - SIM.pausedAt;
+      SIM.pausedAt = null;
+      button.querySelector("span").textContent = "Pause";
+      $("simSpeed").textContent = SIM.speedLabel;
+      SIM.raf = requestAnimationFrame(SIM.frame);
+    }
   }
   function simTally() {
     var t = SIM.tally, n = t.out + t.burn, pct = SIM.run && !SIM.run.blocked ? shown(SIM.run.pKeep) : null;
@@ -2597,6 +2728,14 @@ window.FLAME_MODEL = {
   $("simClose").addEventListener("click", closeSim);
   $("sim").addEventListener("cancel", function (e) { e.preventDefault(); closeSim(); });
   $("simAgain").addEventListener("click", simStart);
+  $("simPause").addEventListener("click", toggleSimPause);
+  if (window.ResizeObserver) new ResizeObserver(function () {
+    var s = SIM.sample;
+    if (!SIM.open || !SIM.run || SIM.run.blocked || !s) return;
+    simSize();
+    simDraw(SIM.run, s.tau, s.fade, s.sinceEnd);
+    simPlot(SIM.run, s.tau);
+  }).observe($("simCanvas"));
 
   /* ---------- oxygen map: what air did each investigation's tests burn in? ---------- */
   // One mark per row of each investigation's Experimental Table on NASA PSI (console/tables.js, built by
@@ -3373,6 +3512,7 @@ window.FLAME_MODEL = {
     if (SIM.open) {                                // the Ignite screen: A or Enter runs it again, B or Esc closes
       cycleDialogTab(e, $("sim"));
       if (e.key === "Escape" || e.key === "Backspace") { e.preventDefault(); closeSim(); }
+      else if (e.key.toLowerCase() === "p") { e.preventDefault(); if (!e.repeat) toggleSimPause(); }
       else if (((e.key === "Enter" || e.key === " ") && !onButton) || e.key.toLowerCase() === "i") { e.preventDefault(); if (!e.repeat) simStart(); }
       return;
     }
@@ -3517,7 +3657,8 @@ window.FLAME_MODEL = {
         requestAnimationFrame(poll);
         return;
       }
-      if (SIM.open) {                              // the Ignite screen takes A, B and LT only
+      if (SIM.open) {
+        fire("x", now, b(2), 0, 0, toggleSimPause);
         fire("a", now, b(0), 0, 0, simStart);
         fire("lt", now, b(6), 0, 0, simStart);
         fire("b", now, b(1), 0, 0, closeSim);
@@ -3581,7 +3722,12 @@ window.FLAME_MODEL = {
         else if (pg === "research") setInvestigationDetails();
       });
       fire("b", now, b(1), 0, 0, function () {
-        if (pg === "ai") closeAI(); else if (con) { if (state.comparing) toggleComparison(false); else toggleSheet(false); } else if (pg === "drill") goPage(PAGES[0]);
+        if (pg === "ai") closeAI();
+        else if (con) {
+          if (state.comparing) toggleComparison(false);
+          else if (state.sheet || REPLAY.box) toggleSheet(false);
+          else $("crewMode").click();
+        } else if (pg === "drill") goPage(PAGES[0]);
         else if (pg === "research") setInvestigationDetails(false);
       });
       fire("y", now, b(3), 0, 0, function () { if (pg === "ai") toggleVoice(); else if (con) { if (state.sheet) toggleExplanationDetail("testDetails"); else reset(); } else if (pg === "drill") drillStart(); else if (pg === "research") openOx(); });

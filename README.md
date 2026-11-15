@@ -19,7 +19,8 @@ or open `console/index.html` from a checkout.
   NASA's PSI database and ranks them for the question you pick: prevention,
   detection, suppression, or cabin air (the oxygen-rich, low-pressure air planned for
   the Moon Base). The page opens in Orbit view, with the most relevant investigations
-  nearest the centre. Pick one for a short summary. **Find** (F) searches all 24
+  nearest the centre. The numbered rings run from 3 (a stated objective) to 0
+  (outside the selected topic). Pick a mark for a short summary. **Find** (F) searches all 24
   by name, full title or PSI ID. **Investigation details** opens the record and
   **List view** (X) shows the full ranking for the selected topic.
 - **Oxygen map** (Y on the research page) puts the tests of seven investigations on
@@ -40,9 +41,10 @@ or open `console/index.html` from a checkout.
 - **Read the sensors.** See the initial and final oxygen readings from BASS-II,
   then reveal how CO and CO₂ changed in the same test (Research, RT or N).
 - **[Ember evidence lab](console/ember-lab.html).** Open **Research tools → Evidence lab**
-  (or press L or the left stick). In **FLEX footage**, compare two candidate frames with the original NASA
-  movie and select a timestamp to seek there. In **Ask the table**, try “Which tests recorded unchanged oxygen
-  and rising CO?” and expand a match to inspect its original BASS-II row. The NASA clip,
+  (or press L or the left stick). In **Experiment footage**, choose **FLEX** to
+  inspect a droplet's visible flame rim or **Saffire-I** to compare a fabric
+  flame with the camera's green smoke illumination. In **Ask the table**, try “Which tests recorded unchanged oxygen
+  and rising CO?” and expand a match to inspect its original BASS-II row. Both NASA clips,
   saved frame review and three sample questions work offline. A fresh film review or new
   English question uses the Python dashboard with Ollama available here or on its configured peer.
 - **Find counterexample.** From a selected FLEX star, compare a real test with the
@@ -54,17 +56,19 @@ or open `console/index.html` from a checkout.
   the burning rate, and an explanation that opens with the prediction, the evidence
   from real tests and the limits, with the reasoning and the closest real NASA tests
   one press away. Any set of settings can be saved as a baseline and compared side by
-  side with a changed set, with the warnings of both kept in view. One
-  button switches the cabin air between Earth-like air, the Moon Base case from the
-  challenge brief, and a Mars base (same air, labelled as an assumption), and the
-  background becomes the Earth, the Moon or Mars. Under the reading is a star map:
+  side with a changed set, with the warnings of both kept in view. Three photo
+  buttons select Earth-like air, the Moon Base case from the challenge brief,
+  or a Mars base assumed to have the same cabin air. **Crew mode** enlarges the
+  controls and puts the evidence limits above the estimate for handheld training.
+  Press B on the main console to toggle it with a controller. Under the reading is a star map:
   every star is a real FLEX test, its shape and colour say how it ended, its size how
   fast it burned. Point at a star with the right stick to read it, replay it from
   NASA's measurements, or move the settings onto it. The map zooms to the whole
   screen, with a grid, the test numbers and the model's 25, 50 and 75 % lines.
-  **Ignite** plays one run of the model as a picture drawn like FLEX footage. The
+  **Ignite** shows a modelled droplet at a labelled scale and playback speed.
+  Pause and resume with P or controller X to inspect its diameter and time. The
   page warns, with a banner, a sound and a buzz, when the settings leave what the
-  experiments actually tested.
+  experiments actually tested. [Crew mode preview](docs/crew-training-preview.png) · [Paused model run](docs/ignite-preview.png)
 - **Fire drill** is a ten-round game. It shows the settings of a real FLEX test and
   you guess how it ended. It then replays the test, shows NASA's recorded result and
   keeps score, you against the model, with a streak, a rank and a best score.

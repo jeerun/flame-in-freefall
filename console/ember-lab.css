@@ -64,6 +64,10 @@ p, summary { line-height: 1.48; }
 .film-layout, .table-layout { display: grid; align-items: start; gap: clamp(14px, 1.7vw, 26px); }
 .film-layout { grid-template-columns: minmax(0, 1.65fr) minmax(290px, 1fr); }
 .film-view { min-width: 0; display: grid; gap: 12px; }
+.film-picker { display: flex; flex-wrap: wrap; gap: 6px; }
+.film-picker [aria-pressed=true] { background: #304844; border-color: var(--teal); color: var(--ink); }
+#saffire-answer summary { cursor: pointer; color: var(--teal); }
+#saffire-answer[open] p { margin-top: .6rem; }
 .film-player { display: block; width: 100%; aspect-ratio: 16 / 9; background: #050909; border: 1px solid var(--line); border-radius: 12px; }
 .film-finding { display: grid; justify-items: start; align-content: start; gap: 14px; }
 .film-actions { display: flex; gap: .5rem; flex-wrap: wrap; }

@@ -41,10 +41,41 @@ def check_offline(page):
       const v = document.querySelector("video");
       return !v.seeking && v.currentTime === FLEX_FILM_ANALYSIS.after;
     }""")
+    player = page.locator("video")
+    page.get_by_role("button", name="FLEX · Droplet").focus()
+    page.evaluate("window.pressPad(13)")
+    fabric = page.get_by_role("button", name="Saffire-I · Fabric")
+    expect(fabric).to_be_focused()
+    page.evaluate("window.pressPad(0)")
+    expect(fabric).to_have_attribute("aria-pressed", "true")
+    expect(page.locator("#film-title")).to_have_text("Saffire-I aboard Cygnus")
+    expect(page.locator("#film-saved")).to_be_hidden()
+    page.wait_for_function("""() => {
+      const v = document.querySelector("video");
+      return v.paused && v.currentTime === 0 && v.videoWidth === 320 && v.videoHeight === 230
+        && Math.abs(v.duration - 22.96) < 0.01 && v.currentSrc.endsWith("/saffire-1.webm");
+    }""")
+    for seconds in (2, 22):
+        page.locator(f'button[data-seconds="{seconds}"]').press("Enter")
+        page.wait_for_function("""time => {
+          const clip = document.querySelector("video");
+          return clip.paused && !clip.seeking && Math.abs(clip.currentTime - time) < .01;
+        }""", arg=seconds)
+    page.locator("#saffire-answer summary").click()
+    expect(page.locator("#saffire-answer p")).to_contain_text("Green LEDs")
+    player.evaluate("clip => clip.play()")
     page.locator("#film-tab").focus()
     page.keyboard.press("ArrowRight")
     expect(page.locator("#table-tab")).to_be_focused()
     assert page.url.endswith("#table")
+    expect(player).to_have_js_property("paused", True)
+    expect(player).to_have_js_property("currentTime", 0)
+    page.locator("#film-tab").click()
+    expect(page.locator("#saffire-answer")).to_have_js_property("open", False)
+    page.get_by_role("button", name="FLEX · Droplet").click()
+    expect(page.locator("#film-title")).to_have_text("FLEX on the space station")
+    expect(page.locator("#film-result")).to_be_hidden()
+    expect(page.locator("#film-saved")).to_be_enabled()
     page.set_viewport_size({"width": 320, "height": 568})
     for tab in ["table-tab", "film-tab"]:
         page.locator("#" + tab).click()
@@ -97,6 +128,9 @@ def check_server(page):
     expect(page.locator("#film-status")).to_contain_text("no single clear transition")
     page.locator("#film-saved").click()
     expect(page.locator(".film-frames button")).to_have_count(2)
+    page.get_by_role("button", name="Saffire-I · Fabric").click()
+    expect(page.locator("#film-live")).to_be_hidden()
+    expect(page.locator(".film-frames button")).to_have_count(0)
 
 
 if __name__ == "__main__":

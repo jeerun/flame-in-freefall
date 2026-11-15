@@ -15,7 +15,14 @@ FILE = (ROOT / "console" / "index.html").as_uri()
 
 
 def share(page, button):
-    page.locator("#" + button).click()
+    launcher = page.locator("#" + button)
+    expect(launcher).to_have_text("Share")
+    expect(launcher).to_have_accessible_name("Share view")
+    expect(launcher).to_have_attribute("title", "Share view")
+    icon = launcher.locator("svg use")
+    expect(icon).to_have_attribute("href", "#shareIcon")
+    assert icon.evaluate("node => node.getBBox().height > 0 && node.getBBox().width > 0")
+    launcher.click()
     expect(page.locator("#shareCopy")).to_be_focused()
     return page.locator("#shareOutput").input_value()
 

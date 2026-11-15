@@ -7,6 +7,87 @@ from playwright.sync_api import expect, sync_playwright
 from browser_evidence import CONSOLE, GAMEPAD
 
 
+def check_ignite_playback(browser):
+    page = browser.new_page(viewport={"width": 844, "height": 390}, reduced_motion="reduce")
+    page.add_init_script(GAMEPAD)
+    page.clock.install(time="2026-01-01T00:00:00Z")
+    page.goto(CONSOLE.as_uri())
+    page.locator("#tabConsole").click()
+    page.clock.pause_at("2026-01-01T00:00:10Z")
+    page.keyboard.press("i")
+    page.clock.run_for(350)
+    button = page.locator("#simPause")
+    label = button.locator("span")
+    time = page.locator("#simT")
+    diameter = page.locator("#simD")
+
+    def click(control):
+        box = control.bounding_box()
+        page.mouse.click(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2)
+
+    def pad(index):
+        page.evaluate("b => { void pressPad(b); }", index)
+        page.clock.run_for(96)
+
+    def stopped():
+        expect(label).to_have_text("Resume")
+        reading = time.inner_text(), diameter.inner_text()
+        assert float(reading[0]) > 0
+        page.clock.fast_forward(8000)
+        assert (time.inner_text(), diameter.inner_text()) == reading
+        return float(reading[0])
+
+    def resumed(before):
+        expect(label).to_have_text("Pause")
+        page.clock.run_for(240)
+        speed = float(page.locator("#simSpeed").inner_text().split()[1].rstrip("×"))
+        assert 0 < float(time.inner_text()) - before <= .38 * speed + .1
+        expect(button).to_be_enabled()
+
+    click(button)
+    before = stopped()
+    for width, height in ((320, 568), (844, 390)):
+        page.set_viewport_size({"width": width, "height": height})
+        page.clock.run_for(64)
+        expect(page.locator("#simSpeed")).to_contain_text("Paused")
+        assert float(time.inner_text()) == before
+        assert page.locator("#sim .box").evaluate("""box => {
+          const right = box.getBoundingClientRect().right;
+          return box.scrollWidth <= box.clientWidth
+            && box.querySelector('#simClose').getBoundingClientRect().right <= right
+            && box.querySelector('.simside').getBoundingClientRect().right <= right;
+        }""")
+    page.keyboard.press("p")
+    resumed(before)
+    pad(2)
+    before = stopped()
+    pad(2)
+    resumed(before)
+    page.keyboard.press("p")
+    before = stopped()
+    click(page.locator("#simAgain"))
+    page.clock.run_for(64)
+    expect(label).to_have_text("Pause")
+    assert float(time.inner_text()) < before
+    click(button)
+    expect(label).to_have_text("Resume")
+    pad(1)
+    expect(page.locator("#sim")).to_be_hidden()
+    page.keyboard.press("i")
+    page.clock.run_for(64)
+    expect(label).to_have_text("Pause")
+    expect(button).to_be_enabled()
+    page.clock.fast_forward(7000)
+    expect(button).to_be_disabled()
+    expect(page.locator("#simEnd")).to_contain_text("This run:")
+    page.keyboard.press("Escape")
+    page.get_by_role("slider", name="Pressure in atm", exact=True).fill("1.5")
+    page.keyboard.press("i")
+    expect(button).to_be_disabled()
+    expect(page.locator("#simPhase")).to_have_text("Model run unavailable")
+    page.close()
+
+
 def check(browser):
     page = browser.new_page()
     page.add_init_script(GAMEPAD)
@@ -106,4 +187,5 @@ if __name__ == "__main__":
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(channel=args.channel)
         check(browser)
-        print("Ignite and Ember modal focus, controller isolation, stale answers and offline fallback passed.")
+        check_ignite_playback(browser)
+        print("Ignite pause/resume, restart, model limits, dialog focus, controller isolation, stale answers and offline fallback passed.")

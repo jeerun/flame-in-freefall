@@ -167,11 +167,13 @@ inconclusive.
 **Ignite.** One button plays a single run of the model full screen. A droplet drawn
 with a scale bar shrinks at the predicted burning rate, and whether this run burns all
 its fuel is drawn at random with the model's odds, so pressing it a few times shows
-what "57%" means. When a run goes out, the size it stops at is borrowed from a real
-nearby test. The picture is drawn to look like FLEX footage and is labelled an
-illustration. Outside the tested range it refuses to run.
+what "57%" means. An extinction run uses a recorded FLEX end-to-start diameter
+ratio when available. Otherwise it labels the assumed stopping size. The picture is drawn to look like FLEX footage and is labelled an
+illustration. The player shows playback speed and can pause on a modelled time
+and diameter. Outside the tested range it withholds the run.
 
-**Controller operation.** A crew member may be wearing gloves. A stick sweep moves
+**Controller operation.** An optional Crew mode puts the evidence limits above the
+estimate and enlarges controls for handheld practice. A stick sweep moves
 a selected setting across its range. Banners and, on supported devices, sound and
 vibration report changes in the evidence, including leaving the input ranges,
 finding only inconclusive nearby tests or seeing nearby results disagree with the
@@ -435,7 +437,8 @@ Inside the product:
 
 - The Ember evidence lab uses the locally installed vision model to identify a candidate
   change in the visible flame rim in NASA's [FLEX footage](https://svs.gsfc.nasa.gov/11318/).
-  Viewers can play the bundled NASA clip and inspect the saved frames offline. A fresh review
+  Viewers can play both the FLEX clip and a separate NASA Saffire-I camera sequence offline.
+  The saved frame review applies to FLEX. A fresh review
   uses the Python server and an available Ollama vision model. For English questions
   about BASS-II gas readings, Ember proposes a filter and the dashboard returns original
   CSV rows. OpenAI Codex helped implement and test both activities.

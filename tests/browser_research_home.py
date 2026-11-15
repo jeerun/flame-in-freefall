@@ -1,11 +1,41 @@
 """Research home checks. Run python tests/browser_research_home.py --channel msedge."""
 
 import argparse
+import math
 import re
 
 from playwright.sync_api import expect, sync_playwright
 
 from browser_evidence import CONSOLE, GAMEPAD
+
+
+def check_orbit_rings(page):
+    orbit = page.locator("#orbit")
+    legend = page.locator("#orbitLegend")
+    expect(legend).to_be_visible()
+    for label in ("AI-rated relevance", "Stated objective", "Directly useful measurements",
+                  "Indirect link", "Outside topic", "Dotted outer ring"):
+        expect(legend).to_contain_text(label)
+    expect(orbit).to_have_accessible_description(re.compile("Direct.*Strong.*Related", re.S | re.I))
+    labels = orbit.locator("[data-ring-score]")
+    expect(labels).to_have_count(4)
+    rings = sorted(orbit.locator(":scope > circle[stroke-dasharray]").all(),
+                   key=lambda circle: float(circle.get_attribute("r")))
+    assert len(rings) == 4
+    previous_boxes = []
+    for score, ring in zip((3, 2, 1, 0), rings):
+        number = orbit.locator(f'[data-ring-score="{score}"]')
+        expect(number).to_be_visible()
+        expect(number).to_contain_text(str(score))
+        mark = number.bounding_box()
+        circle = ring.bounding_box()
+        dx = mark["x"] + mark["width"] / 2 - (circle["x"] + circle["width"] / 2)
+        dy = mark["y"] + mark["height"] / 2 - (circle["y"] + circle["height"] / 2)
+        assert abs(math.hypot(dx, dy) - circle["width"] / 2) < 3, score
+        for box in previous_boxes:
+            assert (box["x"] + box["width"] <= mark["x"] or mark["x"] + mark["width"] <= box["x"]
+                    or box["y"] + box["height"] <= mark["y"] or mark["y"] + mark["height"] <= box["y"]), score
+        previous_boxes.append(mark)
 
 
 def check_home(page, width, height):
@@ -22,6 +52,7 @@ def check_home(page, width, height):
     expect(photo).to_be_in_viewport()
     photo.evaluate("image => image.decode()")
     expect(orbit).to_be_visible()
+    check_orbit_rings(page)
     expect(rank).to_be_hidden()
     expect(tools).to_have_js_property("open", False)
     expect(details).to_have_js_property("open", False)
@@ -59,8 +90,15 @@ def check_home(page, width, height):
     page.goto(CONSOLE.as_uri() + code.replace("orbit=1", "orbit=0"))
     expect(rank).to_be_visible()
     expect(orbit).to_be_hidden()
+    expect(page.locator("#orbitLegend")).to_be_hidden()
     page.locator("#orbitBtn").click()
     expect(orbit).to_be_visible()
+    if width == 1280 and height == 800:
+        page.get_by_role("button", name="Detection").click()
+        check_orbit_rings(page)
+        page.set_viewport_size({"width": 320, "height": 568})
+        expect(orbit).to_have_attribute("viewBox", re.compile(r"^0 0 [23]\d\d "))
+        check_orbit_rings(page)
 
 
 def check_controller(page):
@@ -204,5 +242,5 @@ if __name__ == "__main__":
         phone.close()
         assert not errors, errors
         browser.close()
-    print("PASS: FLEX banner, orbit-first home, disclosures, Find by title and PSI ID, topic fallback, "
+    print("PASS: four labelled orbit rings, FLEX banner, orbit-first home, disclosures, Find by title and PSI ID, topic fallback, "
           "shared selection, responsive layout, keyboard, touch and controller.")

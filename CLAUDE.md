@@ -43,6 +43,7 @@ Submission closes Sunday Nov 15, 11:59 PM in the team owner's local time
 ## Status
 
 Research opens in Orbit view. The tools and investigation details open on demand.
+Four numbered rings and a visible key explain the AI relevance scores from 3 to 0.
 X switches between Orbit and List. Find (F) searches all 24 investigations by name, title
 or PSI ID. Share beside NASA source copies the selected view through the Share dialog.
 
@@ -53,9 +54,13 @@ normal-flame CSV. All 20 are gas flames and the rows provide no measured gravity
 Rebuild the bundled rows with `python data/clean/build_moon_evidence.py`.
 
 The Ember evidence lab opens from Research with L or left-stick click. It includes original
-NASA FLEX footage, a saved local-model frame review and three BASS-II table questions,
+NASA FLEX footage, the NASA Saffire-I fabric sequence, a saved FLEX frame review and three BASS-II table questions,
 all bundled for offline use. Use the Python server with Ollama for fresh image reviews and custom English
 table questions. Physical Legion Go testing of these activities is pending.
+
+Flame console has a handheld Crew training layout, photographed Earth/Moon/Mars
+cabin presets and the same Share control as Research. Ignite shows model time,
+playback speed and droplet scale. P or controller X freezes and resumes a run.
 
 The security review branch defaults to a PC-only dashboard. Direct LAN use requires
 the handheld's IPv4 address. The local device log requires the per-run password
