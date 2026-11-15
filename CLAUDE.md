@@ -42,6 +42,11 @@ Submission closes Sunday Nov 15, 11:59 PM in the team owner's local time
 
 ## Status
 
+The Ember evidence lab opens from Research with L or left-stick click. It includes original
+NASA FLEX footage with a saved local-model frame review and three offline BASS-II table
+questions. Use the Python server with Ollama for fresh image reviews and custom English
+table questions. Physical Legion Go testing of these activities is pending.
+
 Last updated Sunday Nov 15, about 4:10 AM by the owner's PC clock (British Columbia time, UTC-7).
 
 Pull request 5, merged on Nov 15, includes shared research views and FLEX readings. Open a shared URL on

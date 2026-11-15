@@ -38,6 +38,11 @@
   filter: saturate(.7) brightness(.85);
 }
 #viewResearch .research-intro-copy { max-width: 73%; }
+#viewResearch #evidenceLab {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 30px;
+  color: var(--res-ice); font-size: 13px; font-weight: 650; text-underline-offset: 3px;
+}
+#viewResearch #evidenceLab kbd { font-size: 10px; }
 #viewResearch .research-intro h2 {
   margin: 0 0 4px;
   color: #f3f5f2;
