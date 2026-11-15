@@ -53,11 +53,21 @@ We have not measured it on the handheld. If its answers are poor, use way A.
 
 ## C. Away from the PC's network
 
-Use a private network between your own devices, such as Tailscale, on both the PC
-and the Legion Go, and give `Start on Legion Go.bat` the PC's address on that
-network (for example `http://100.x.y.z:8000`). Start the PC side with
-`Start dashboard.bat` as usual. Do not use a public tunnel: the dashboard has no
-login.
+Use a private network between your own devices, such as Tailscale. It also gets
+around Wi-Fi that keeps devices apart, because the two machines talk through it
+directly. Not tried yet.
+
+1. Install Tailscale on the PC and on the Legion Go, signed in to the same account,
+   and switch it on (Connect) on both. If another VPN is running on either machine,
+   pause it: two VPNs often get in each other's way.
+2. On the PC double-click `Start dashboard.bat`. With Tailscale on, the window prints
+   a second line: `On the Legion Go (anywhere, both on Tailscale): http://100.x.y.z:8000`.
+   If Windows asks about the firewall, tick Private as well: Windows treats the
+   Tailscale network as a private one.
+3. On the Legion Go open that address in Edge. Or, for the handheld's own model with
+   the PC as the big machine, give that address to `Start on Legion Go.bat`.
+
+Do not use a public tunnel: the dashboard has no login.
 
 ## Where the sent file goes
 
