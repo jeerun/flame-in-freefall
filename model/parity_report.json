@@ -1,0 +1,50 @@
+{
+  "passed": true,
+  "case_count": 820,
+  "source_rows": 252,
+  "classification_rows": 199,
+  "regression_rows": 252,
+  "negative_raw_K_cases": 1,
+  "max_absolute_errors": {
+    "artifact_vs_js_pOut": 3.3306690738754696e-16,
+    "artifact_vs_js_rawK": 4.440892098500626e-16,
+    "completion_complement": 0.0,
+    "zero_clamp": 0.0,
+    "refit_vs_js_pOut": 5.299414820414405e-06,
+    "refit_vs_js_rawK": 3.917437887346331e-05,
+    "refit_vs_js_clampedK": 3.917437887346331e-05
+  },
+  "absolute_tolerances": {
+    "artifact_vs_js_pOut": 1e-12,
+    "artifact_vs_js_rawK": 1e-12,
+    "completion_complement": 1e-12,
+    "zero_clamp": 1e-12,
+    "refit_vs_js_pOut": 0.0001,
+    "refit_vs_js_rawK": 0.0001,
+    "refit_vs_js_clampedK": 0.0001
+  },
+  "export_matches_refit_rounded_coefficients": {
+    "extinction": true,
+    "burn_rate": true
+  },
+  "sha256": {
+    "model/train.py": "b57b82badabd6e3f57a33fe4dce1d677da87f1398dd06ff1faa4c127edb86467",
+    "console/model.js": "af7cb18f2451e2f8a9f52d988d66e4596e580ce8e64b6ca2aff326e47cb0c93d",
+    "console/index.html": "f487806eb8195440d29d7694a8fac4e88e2ad9a82ba7c9bea7ebd06b6d1f3348",
+    "data/clean/flex_clean.csv": "4f8c5b93feb3be16391fe5d8bcccfb827de08e2d3a50b62f5107e9e512c5fc32"
+  },
+  "versions": {
+    "python": "3.12.10",
+    "sklearn": "1.9.1",
+    "numpy": "2.5.4",
+    "pandas": "3.1.1",
+    "node": "v24.16.0"
+  },
+  "limitations": [
+    "Numerical inference parity only; not out-of-sample performance or safety validation.",
+    "Executes actual pure Console functions in Node VM; does not test browser DOM, sliders, formatting, or live hosted deployment.",
+    "Refits current training configuration, not a serialized historical Python estimator.",
+    "Random/corner cases include physically invalid and OOD combinations; used only as arithmetic stress probes.",
+    "Training pipeline changes require review of the explicit fit/scope setup in this checker."
+  ]
+}
