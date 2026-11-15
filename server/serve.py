@@ -1,18 +1,33 @@
-"""Serve the dashboard and answer its "Ask the AI" questions with a language model running on this PC.
+"""Serve the dashboard and answer its "Ask Ember" questions with a language model running on this machine.
 
 Easiest: double-click "Start dashboard.bat" in the repo folder. Or, from the repo root:
-    py server/serve.py            this PC only:  http://localhost:8000
+    py server/serve.py            this machine only:  http://localhost:8000
     py server/serve.py --lan      also other devices on the same Wi-Fi (the Legion Go)
-    add --open to open the dashboard in this PC's browser
+    add --open to open the dashboard in this machine's browser
 
-Needs only the Python standard library, plus Ollama (https://ollama.com) running on this PC
-with the model pulled once:   ollama pull gemma4:12b
+Two machines, each with its own model (a big one on the PC, a small one on the handheld):
+    on the PC:         py server/serve.py --lan
+    on the handheld:   py server/serve.py --open --peer http://<the PC address>:8000 --name "the Legion Go itself"
+The handheld then offers both. Left on "auto" it asks the PC first and answers by itself when the PC is not there.
+
+Needs only the Python standard library, plus Ollama (https://ollama.com) running on this machine
+with a model pulled once:   ollama pull gemma4:12b      (on a handheld a small one, such as gemma4:e2b)
 
 What it does:
   GET  /            the files in console/ (index.html, model.js, research.js), nothing else
-  GET  /ai          is the local model ready, and is it on the GPU
+  GET  /ai          which models can answer right now, here and on the peer machine
   POST /ask         builds a prompt from the NASA PSI records in this repo plus what the page sent,
-                    asks the local model, and streams the answer back as plain text
+                    asks the chosen model, and streams the answer back as plain text
+  POST /export      keeps the page's CSV of real tests in the folder exports/ on this machine, and passes it on
+                    to the peer machine when there is one (so a handheld can hand its file to the PC)
+  GET  /tests.csv   that stored file, for any other device on the same network
+
+Sharing the exported file with other people: point the exports folder at a folder that a sync app already shares
+(Google Drive for desktop, OneDrive). The file then reaches them whenever this machine has internet, and simply
+waits in the folder when it has none. Either
+    py server/serve.py --exports "G:/My Drive/Flame exports"
+or write that folder on the first line of a file named exports-folder.txt next to "Start dashboard.bat".
+This script never signs in to anything and never uploads by itself.
 
 The model only ever sees NASA PSI text from data/raw/psi_search, the dashboard's own notes and
 numbers, and the question. Nothing is sent to the internet.
@@ -38,6 +53,10 @@ OLLAMA = "http://127.0.0.1:11434"
 STATIC = {"/": "index.html", "/index.html": "index.html", "/model.js": "model.js", "/research.js": "research.js"}
 TYPES = {".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8"}
 MAX_BODY = 16000
+EXPORTS_NOTE = ROOT / "exports-folder.txt"         # optional: first line names the folder to export into
+CSV_NAME = "flex_psi69_tests_with_predictions.csv"
+CSV_HEAD = "flex_test,flex_id,fuel,"
+MAX_CSV = 200000
 
 SYSTEM = (
     "You are the assistant inside a fire-safety dashboard for spacecraft crews, students and engineers. "
@@ -144,21 +163,46 @@ def gpu_name():
         return ""
 
 
-def ai_status(model):
-    """Is Ollama up, is the model pulled, and how much of it sits in GPU memory right now."""
+def local_models():
+    """Names of the models Ollama has on this machine, or None if Ollama is not answering."""
     try:
-        names = [m.get("name", "") for m in ollama_json("/api/tags").get("models", [])]
-    except (OSError, ValueError) as err:
-        return {"ok": False, "model": model, "reason": f"Ollama is not answering on this PC ({err.__class__.__name__})."}
-    if model not in names and model + ":latest" not in names:
-        return {"ok": False, "model": model, "reason": f"Model {model} is not pulled. Run: ollama pull {model}"}
-    status = {"ok": True, "model": model, "gpu": GPU, "on_gpu": None}
-    try:
-        for m in ollama_json("/api/ps").get("models", []):
-            if m.get("name") == model and m.get("size"):
-                status["on_gpu"] = round(100 * m.get("size_vram", 0) / m["size"])      # percent of the loaded model in GPU memory
+        return [m.get("name", "") for m in ollama_json("/api/tags", timeout=3).get("models", []) if m.get("name")]
     except (OSError, ValueError):
-        pass
+        return None
+
+
+def brains(server):
+    """Every place an answer can come from: each model on this machine, and each one on the peer machine if it is reachable.
+
+    The first brain in the list is the one "auto" uses: the peer's first (the big machine) when it is up, else this machine's.
+    """
+    here, names = [], local_models()
+    for name in (names or [])[:4]:
+        here.append({"id": "local:" + name, "model": name, "where": server.where, "label": f"{name} on {server.where}", "up": True})
+    here.sort(key=lambda b: b["model"] != server.model)                    # the model named with --model comes first
+    there = []
+    if server.peer:
+        try:
+            with urllib.request.urlopen(server.peer + "/ai", timeout=2) as resp:
+                remote = json.loads(resp.read().decode("utf-8"))
+            for b in remote.get("brains", []):
+                if b.get("up") and str(b.get("id", "")).startswith("local:"):
+                    there.append({"id": "peer:" + b["id"], "model": b["model"], "where": b["where"], "label": b["label"], "up": True})
+            if not there:
+                there.append({"id": "peer", "model": "", "where": "the other machine", "label": "the other machine has no model ready", "up": False})
+        except (OSError, ValueError):
+            there.append({"id": "peer", "model": "", "where": "the other machine", "label": "the other machine cannot be reached", "up": False})
+    return there + here
+
+
+def ai_status(server):
+    found = brains(server)
+    up = [b for b in found if b["up"]]
+    status = {"ok": bool(up), "brains": found, "default": up[0]["id"] if up else None,
+              "model": up[0]["model"] if up else server.model, "gpu": GPU, "where": server.where, "host": server.host}
+    if not up:
+        status["reason"] = ("Ollama is not answering on this machine." if local_models() is None
+                            else f"No model is pulled on this machine. Run: ollama pull {server.model}")
     return status
 
 
@@ -191,12 +235,12 @@ def ask_model(model, system, user):
                 break
 
 
-def warm_up(server):
-    """Load the model into GPU memory before the first real question (a cold start takes about a minute)."""
+def warm_up(server, model):
+    """Load the model into memory before the first real question (a cold start can take a minute)."""
     started = time.time()
     try:
         with server.one_at_a_time:
-            "".join(ask_model(server.model, SYSTEM, "QUESTION: Reply with the single word ready.\n\nMATERIAL\nnone"))
+            "".join(ask_model(model, SYSTEM, "QUESTION: Reply with the single word ready.\n\nMATERIAL\nnone"))
         print(f"Local AI warmed up in {time.time() - started:.0f} s. First answers will be quick now.")
     except (OSError, RuntimeError, ValueError) as err:
         print(f"Local AI warm-up failed: {err}")
@@ -204,6 +248,12 @@ def warm_up(server):
 
 class Handler(BaseHTTPRequestHandler):
     server_version = "FlameConsole/1"
+
+    def handle(self):
+        try:
+            super().handle()
+        except (ConnectionError, TimeoutError):
+            pass                                           # the browser went away mid-answer: nothing to do
 
     def log_message(self, fmt, *args):
         print(f"{self.address_string()} {fmt % args}")
@@ -220,11 +270,23 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         path = self.path.split("?", 1)[0]
         if path == "/ai":
-            return self.send_json(ai_status(self.server.model))
+            return self.send_json(ai_status(self.server))
         if path == "/favicon.ico":                         # browsers ask for one; there is none
             self.send_response(204)
             self.send_header("Content-Length", "0")
             return self.end_headers()
+        if path == "/tests.csv":
+            file = self.server.exports / CSV_NAME
+            if not file.is_file():
+                return self.send_error(404, "Nothing has been sent yet. Press Send on the dashboard first.")
+            data = file.read_bytes()
+            self.send_response(200)
+            self.send_header("Content-Type", "text/csv; charset=utf-8")
+            self.send_header("Content-Disposition", f'attachment; filename="{CSV_NAME}"')
+            self.send_header("Content-Length", str(len(data)))
+            self.send_header("Cache-Control", "no-store")
+            self.end_headers()
+            return self.wfile.write(data)
         name = STATIC.get(path)
         file = CONSOLE / name if name else None
         if not file or not file.is_file():
@@ -237,21 +299,114 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
+    def start_answer(self, label, used, fell_back):
+        self.send_response(200)
+        self.send_header("Content-Type", "text/plain; charset=utf-8")
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("X-Records-Used", ",".join(used))
+        self.send_header("X-Brain-Label", label.encode("ascii", "replace").decode("ascii"))
+        self.send_header("X-Brain-Fallback", "1" if fell_back else "0")
+        self.send_header("Connection", "close")
+        self.end_headers()
+
+    def export(self):
+        """Keep the page's CSV of real tests on this machine and pass it on to the peer machine, if there is one."""
+        try:
+            length = int(self.headers.get("Content-Length") or 0)
+            if not 0 < length <= MAX_CSV:
+                return self.send_error(413)
+            text = self.rfile.read(length).decode("ascii")
+        except (ValueError, UnicodeDecodeError):
+            return self.send_error(400)
+        # Only the dashboard's own table is accepted: its header, plain printable text, and no cell a spreadsheet
+        # would run as a formula. The file name and folder are fixed.
+        plain = all(ch in "\r\n" or " " <= ch <= "~" for ch in text)
+        cells = (cell for line in text.splitlines() for cell in line.split(","))
+        if not text.startswith(CSV_HEAD) or not plain or any(cell[:1] in ("=", "+", "-", "@") for cell in cells):
+            return self.send_error(400)
+        server = self.server
+        try:
+            server.exports.mkdir(parents=True, exist_ok=True)
+            (server.exports / CSV_NAME).write_bytes(text.encode("ascii"))
+        except OSError as err:
+            print(f"   could not write into {server.exports}: {err}")
+            return self.send_error(500, "The exports folder cannot be written")
+        saved, missed = [server.host], False
+        link = f"http://{lan_address() or 'localhost'}:{server.server_address[1]}/tests.csv" if server.lan else None
+        if server.peer:
+            try:
+                req = urllib.request.Request(server.peer + "/export", data=text.encode("ascii"), headers={"Content-Type": "text/csv"})
+                with urllib.request.urlopen(req, timeout=5) as resp:
+                    there = json.loads(resp.read().decode("utf-8"))
+                saved = [flat(name, 60) for name in there.get("saved", [])][:2] + saved
+                link = there.get("link") or link
+            except (OSError, ValueError):
+                missed = True
+        folder = server.exports.name or "exports"
+        if server.peer and not missed:
+            folder = flat(there.get("folder"), 60) or folder
+        print(f"   kept {len(text.splitlines()) - 1} tests in {server.exports / CSV_NAME}" + (" (the other machine did not take it)" if missed else ""))
+        self.send_json({"saved": saved, "folder": folder, "peer_missed": missed, "link": link})
+
     def do_POST(self):
+        if self.path == "/export":
+            return self.export()
         if self.path != "/ask":
             return self.send_error(404)
         try:
             length = int(self.headers.get("Content-Length") or 0)
             if not 0 < length <= MAX_BODY:
                 return self.send_error(413)
-            ask = json.loads(self.rfile.read(length).decode("utf-8"))
+            raw = self.rfile.read(length)
+            ask = json.loads(raw.decode("utf-8"))
             question = flat(ask.get("question"), 400)
             if not question:
                 return self.send_error(400)
         except (ValueError, UnicodeDecodeError):
             return self.send_error(400)
 
-        records = self.server.records
+        server, found = self.server, brains(self.server)
+        up = [b for b in found if b["up"]]
+        wanted = str(ask.get("brain") or "auto")
+        brain = next((b for b in up if b["id"] == wanted), None) or (up[0] if up else None)
+        if not brain:
+            return self.send_error(503, "No model is ready")
+        fell_back = wanted not in ("auto", brain["id"])
+        started, count = time.time(), 0
+
+        # The other machine: pass the question on unchanged and relay its answer. If it does not pick up, answer here.
+        if brain["id"].startswith("peer:"):
+            fwd = dict(ask, brain=brain["id"][len("peer:"):])
+            try:
+                req = urllib.request.Request(server.peer + "/ask", data=json.dumps(fwd).encode("utf-8"), headers={"Content-Type": "application/json"})
+                resp = urllib.request.urlopen(req, timeout=20)
+            except (OSError, ValueError) as err:
+                mine = next((b for b in up if b["id"].startswith("local:")), None)
+                print(f"   the other machine did not answer ({err.__class__.__name__}); " + ("answering here" if mine else "no model here either"))
+                if not mine:
+                    return self.send_error(503, "The other machine did not answer")
+                brain, fell_back = mine, True
+            else:
+                with resp:
+                    self.start_answer(resp.headers.get("X-Brain-Label") or brain["label"], (resp.headers.get("X-Records-Used") or "").split(","), fell_back)
+                    try:
+                        while True:
+                            chunk = resp.read(64)
+                            if not chunk:
+                                break
+                            self.wfile.write(chunk)
+                            self.wfile.flush()
+                            count += len(chunk)
+                    except OSError as err:
+                        try:
+                            self.wfile.write(f"\n[The other machine stopped answering: {err.__class__.__name__}]".encode("utf-8"))
+                        except OSError:
+                            pass
+                print(f"   asked ({ask.get('page')}) via the other machine: {question[:60]!r} -> {count} bytes in {time.time() - started:.1f} s")
+                self.close_connection = True
+                return
+
+        records = server.records
         if ask.get("page") == "console":
             material, used = reading_material(records, str(ask.get("reading") or ""))
             system = SYSTEM + SYSTEM_READING
@@ -259,26 +414,19 @@ class Handler(BaseHTTPRequestHandler):
             material, used = research_material(records, question, flat(ask.get("selected"), 12), flat(ask.get("need"), 20))
             system = SYSTEM
         user = f"QUESTION: {question}\n\nMATERIAL\n{material}"
-
-        self.send_response(200)
-        self.send_header("Content-Type", "text/plain; charset=utf-8")
-        self.send_header("Cache-Control", "no-store")
-        self.send_header("X-Records-Used", ",".join(used))
-        self.send_header("Connection", "close")
-        self.end_headers()
-        started, count = time.time(), 0
+        self.start_answer(brain["label"], used, fell_back)
         try:
-            with self.server.one_at_a_time:
-                for piece in ask_model(self.server.model, system, user):
+            with server.one_at_a_time:
+                for piece in ask_model(brain["model"], system, user):
                     self.wfile.write(piece.encode("utf-8"))
                     self.wfile.flush()
                     count += len(piece)
         except (OSError, RuntimeError, ValueError) as err:
             try:
-                self.wfile.write(f"\n[The local model could not answer: {err}]".encode("utf-8"))
+                self.wfile.write(f"\n[The model could not answer: {err}]".encode("utf-8"))
             except OSError:
                 pass
-        print(f"   asked ({ask.get('page')}): {question[:70]!r} -> {count} chars in {time.time() - started:.1f} s, records {used}")
+        print(f"   asked ({ask.get('page')}) on {brain['model']}: {question[:60]!r} -> {count} chars in {time.time() - started:.1f} s, records {used}")
         self.close_connection = True
 
 
@@ -295,23 +443,42 @@ def main():
     parser = argparse.ArgumentParser(description="Serve the dashboard and its local AI.")
     parser.add_argument("--lan", action="store_true", help="also accept other devices on the same network")
     parser.add_argument("--port", type=int, default=8000)
-    parser.add_argument("--model", default="gemma4:12b", help="Ollama model name")
-    parser.add_argument("--open", action="store_true", help="open the dashboard in this PC's browser")
+    parser.add_argument("--model", default="gemma4:12b", help="the Ollama model to prefer on this machine")
+    parser.add_argument("--peer", default="", help="address of a bigger machine that also runs this script, e.g. http://192.168.1.23:8000")
+    parser.add_argument("--name", default="", help="what to call this machine on screen, e.g. \"the Legion Go itself\"")
+    parser.add_argument("--exports", default="", help="folder for exported files; default: exports/ in this repo, or the folder named in exports-folder.txt")
+    parser.add_argument("--open", action="store_true", help="open the dashboard in this machine's browser")
     args = parser.parse_args()
 
     global GPU
     GPU = gpu_name()
     server = ThreadingHTTPServer(("0.0.0.0" if args.lan else "127.0.0.1", args.port), Handler)
     server.model, server.records, server.one_at_a_time = args.model, load_records(), threading.Lock()
-    status = ai_status(args.model)
+    server.peer = args.peer.strip().rstrip("/")
+    if server.peer and not server.peer.startswith("http"):
+        server.peer = "http://" + server.peer
+    server.where = args.name.strip() or (f"this team's {GPU}" if GPU else "this device")
+    server.host, server.lan = args.name.strip() or socket.gethostname(), args.lan
+    chosen = args.exports.strip()
+    if not chosen and EXPORTS_NOTE.is_file():
+        lines = [line.strip().strip('"') for line in EXPORTS_NOTE.read_text(encoding="utf-8-sig").splitlines() if line.strip()]
+        chosen = lines[0] if lines else ""
+    server.exports = Path(chosen).expanduser() if chosen else ROOT / "exports"
+    status = ai_status(server)
     print(f"Dashboard: http://localhost:{args.port}")
     if args.lan:
         print(f"On the Legion Go (same Wi-Fi): http://{lan_address() or '<this PC address>'}:{args.port}")
         print("If Windows asks whether to allow Python through the firewall, choose Allow on private networks.")
-    print(f"Local AI: {'ready, ' + args.model + (' on ' + GPU if GPU else '') if status['ok'] else 'NOT ready. ' + status['reason']}")
-    print(f"NASA PSI records loaded: {len(server.records)}. Press Ctrl+C to stop.")
     if status["ok"]:
-        threading.Thread(target=warm_up, args=(server,), daemon=True).start()
+        for b in status["brains"]:
+            print(f"AI: {'ready' if b['up'] else 'NOT ready'}, {b['label']}")
+    else:
+        print("AI: NOT ready. " + status["reason"])
+    print(f"Exported files go to: {server.exports}")
+    print(f"NASA PSI records loaded: {len(server.records)}. Press Ctrl+C to stop.")
+    mine = next((b for b in status["brains"] if b["up"] and b["id"].startswith("local:")), None)
+    if mine:
+        threading.Thread(target=warm_up, args=(server, mine["model"]), daemon=True).start()
     if args.open:
         threading.Timer(1.0, webbrowser.open, args=(f"http://localhost:{args.port}",)).start()
     try:
