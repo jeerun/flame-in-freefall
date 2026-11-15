@@ -283,3 +283,26 @@ re-run on the team's PC and reproduced exactly.
 No AI-generated images, video or audio are used, and no data value was generated or
 changed by AI. Keep this section current: the submission form asks where and how AI
 was used.
+
+
+## Explanation and comparison controls
+
+The Flame console explanation now starts with Prediction, Real-test evidence and
+Limitations. Expand **Why this prediction?** for model factors and **Test details &
+sources** for the nearest tests, validation metrics and NASA source. Use touch,
+Tab then Enter, W/T on the keyboard, or X/Y on the gamepad while the explanation is
+open. X/Y retain their previous actions when that panel is closed.
+
+Click **Save baseline** (H) to save scenario A and open the comparison. The left
+controls update B live; changed values are highlighted. **Compare** (C) reopens the
+panel. **Replace baseline** saves the current B; **Clear baseline** removes A.
+Esc or gamepad B closes the comparison. Save/replace/clear buttons support touch
+and keyboard; no existing gamepad shortcut was reassigned for these actions.
+Baseline includes settings, predictions and evidence warnings. It remains fixed
+across parameter edits, presets, page changes and Reset; refreshing clears it.
+Differences use percentage points, not relative percent. When either scenario is
+outside tested conditions, numeric deltas are withheld and warnings stay visible.
+This is a comparison of model outputs, not a ranking of overall fire safety.
+
+These UI additions were implemented with assistance from OpenAI ChatGPT/Codex.
+The training code, model coefficients and NASA data were not changed.
