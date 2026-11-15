@@ -27,7 +27,7 @@ support. Its optional assistant, Ember, uses Ollama on a configured machine. The
 core dashboard and evidence activities open offline.
 
 ## Link to project demo
-[Watch the captioned desktop demo](https://github.com/jeerun/flame-in-freefall/blob/c4834f7b8d7096635bbf2ad774edcdeac9565f23/docs/crew-console-demo.mp4)
+[Watch the captioned desktop demo](https://github.com/jeerun/flame-in-freefall/blob/93d2907764ed7d9ae335e4812acbada5b7f1f653/docs/crew-console-demo.mp4)
 
 ## Link to final project
 The public GitHub repo. No login needed to view.
