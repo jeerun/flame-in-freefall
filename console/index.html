@@ -40,7 +40,7 @@
 
   /* ---------- top bar ---------- */
   .top {
-    display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.7rem;
     padding: 0.7rem 1.2rem;
     border-bottom: 1px solid var(--line);
   }
@@ -50,7 +50,7 @@
   .chip {
     display: inline-flex; align-items: center; gap: 0.4rem;
     padding: 0.25rem 0.65rem; border-radius: 999px;
-    border: 1px solid var(--line); font-size: 0.85rem; color: var(--ink-2);
+    border: 1px solid var(--line); font-size: 0.85rem; color: var(--ink-2); white-space: nowrap;
   }
   .chip .dot { width: 0.6rem; height: 0.6rem; border-radius: 50%; background: var(--ink-3); }
   .chip.on .dot { background: var(--good); }
@@ -128,7 +128,18 @@
   .legend i { display: inline-block; width: 1.6rem; height: 0.45rem; border-radius: 999px; background: var(--flame-dim); }
 
   /* readout */
-  .read { position: relative; display: grid; grid-template-rows: auto auto auto auto 1fr; gap: 0.7rem; min-height: 0; align-content: start; }
+  #viewConsole { grid-template-rows: minmax(0, 1fr); }
+  .read { position: relative; display: grid; grid-template-rows: auto auto auto auto auto minmax(0, 1fr); gap: 0.7rem; min-height: 0; align-content: start; }
+  /* star map of the real tests: fills whatever height is left under the reading */
+  .read > * { min-width: 0; }
+  .map { background: var(--panel); border-radius: 0.6rem; padding: 0.35rem 0.8rem 0.3rem; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); min-height: 0; min-width: 0; }
+  .maphead { display: flex; justify-content: space-between; align-items: center; gap: 1rem; font-size: 0.78rem; color: var(--ink-2); }
+  .maphead > span:first-child { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .maplegend { display: flex; gap: 0.7rem; color: var(--ink-3); white-space: nowrap; flex: none; }
+  .maplegend span { display: inline-flex; align-items: center; gap: 0.2rem; }
+  .maplegend svg { width: 1.1rem; height: 1.1rem; }
+  #map, #orbit { width: 100%; height: 100%; min-height: 0; display: block; }
+  #map text, #orbit text { font-family: inherit; fill: var(--ink-3); }
   .stage {
     display: grid; grid-template-columns: auto 1fr; gap: 1.2rem; align-items: center;
     background: var(--panel); border-radius: 0.6rem; padding: 0.7rem 1.1rem;
@@ -156,6 +167,9 @@
     content: "?"; position: absolute; font-size: 3.2rem; font-weight: 700; color: var(--ink); line-height: 1;
   }
   .flamebox.unknown .droplet { opacity: 0; }
+  /* replay of a real test: the script drives the sizes frame by frame */
+  .flamebox.replaying .flame { animation: none; transition: opacity .7s; }
+  .flamebox.replaying .droplet { transition: none; }
   /* Fire drill reveal: the droplet is consumed, or the flame dies around it */
   .flamebox.ended-burn .droplet { animation: burnout 1.6s ease-in forwards; }
   .flamebox.ended-burn .flame { opacity: 1; }
@@ -192,9 +206,9 @@
   .conf.outside span { color: var(--ink); }
   .read.untrusted .stage, .read.untrusted .facts { opacity: 0.45; }
 
-  .line { font-size: 1.15rem; align-self: start; }
+  .line { font-size: 1.1rem; align-self: start; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
   .line button {
-    margin-top: 0.6rem; display: inline-flex; align-items: center; gap: 0.5rem;
+    flex: none; white-space: nowrap; display: inline-flex; align-items: center; gap: 0.5rem;
     padding: 0.5rem 0.9rem; border-radius: 0.5rem; border: 1px solid var(--line); background: transparent; cursor: pointer; font-size: 0.95rem;
   }
   kbd {
@@ -223,7 +237,7 @@
   .tabs button[aria-pressed=true] { background: var(--panel-hi); border-color: var(--flame); color: var(--ink); font-weight: 600; }
   main.research { grid-template-rows: minmax(0, 1fr); }
   .research > section { display: grid; min-height: 0; align-content: start; }
-  .research > section:first-child { grid-template-rows: auto auto auto minmax(0, 1fr) auto; }
+  .research > section:first-child { grid-template-rows: auto auto auto auto minmax(0, 1fr) auto; }
   .research > section:last-child { grid-template-rows: auto minmax(0, 1fr); }
   .needs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.45rem; margin-bottom: 0.7rem; }
   .needs button {
@@ -244,6 +258,14 @@
   .rank .n { color: var(--ink-3); text-align: right; }
   .rank .nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .rank .nm small { color: var(--ink-3); margin-left: 0.5rem; font-size: 0.8rem; }
+  .fpic { width: 0.9rem; height: 0.9rem; margin-right: 0.3rem; vertical-align: -0.12rem; }
+  .rankhead { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  .rankhead button {
+    display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.15rem 0.6rem; border-radius: 999px;
+    border: 1px solid var(--line); background: transparent; cursor: pointer; font-size: 0.82rem; color: var(--ink-2);
+  }
+  #orbit { margin-top: 0.3rem; }
+  #orbit .pick { cursor: pointer; }
   .rank .lv { font-size: 0.82rem; color: var(--ink-2); white-space: nowrap; }
   .dots { margin-left: 0.35rem; white-space: nowrap; }
   .dots i { display: inline-block; width: 0.5rem; height: 0.5rem; border-radius: 50%; margin-left: 0.15rem; border: 1px solid var(--ink-3); }
@@ -261,7 +283,33 @@
   .card .rel { display: flex; flex-wrap: wrap; gap: 0.2rem 1.1rem; }
   .card .fine { margin: 0.7rem 0 0; font-size: 0.8rem; color: var(--ink-3); }
 
+  /* ---------- starfield, start screen, sound button ---------- */
+  #stars { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+  .snd { cursor: pointer; background: transparent; color: var(--ink-2); font: inherit; font-size: 0.85rem; }
+  .snd.off { text-decoration: line-through; color: var(--ink-3); }
+  .title {
+    position: fixed; inset: 0; z-index: 9; background: radial-gradient(ellipse at 50% 34%, rgba(37,63,112,0.6), rgba(14,23,48,0) 60%);
+    display: grid; place-items: center; text-align: center; padding: 1rem; cursor: pointer;
+  }
+  body.titled > header, body.titled > main, body.titled > footer { visibility: hidden; }   /* only the stars show behind the start screen */
+  .title .in { display: grid; justify-items: center; gap: 0.5rem; }
+  .title .orb { width: 9rem; height: 9rem; display: grid; place-items: center; position: relative; margin-bottom: 0.4rem; }
+  .title .orb .flame { --size: 1; --glow: 1; --beat: 1.8s; outline: none; }
+  .title h1 { margin: 0; font-size: 3.4rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .title .tag { font-size: 1.15rem; color: var(--ink-2); max-width: 44rem; }
+  .title .go { margin-top: 1rem; font-size: 1.3rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.6rem; animation: blink 1.4s ease-in-out infinite; }
+  .title .go kbd { width: 2rem; height: 2rem; font-size: 1.05rem; }
+  .title .three { display: flex; gap: 0.6rem; flex-wrap: wrap; justify-content: center; margin-top: 0.9rem; }
+  .title .three span { border: 1px solid var(--line); border-radius: 999px; padding: 0.25rem 0.9rem; font-size: 0.9rem; color: var(--ink-2); background: rgba(22,34,63,0.7); }
+  .title .by { margin-top: 0.8rem; font-size: 0.85rem; color: var(--ink-3); }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
   /* ---------- Fire drill (guess how a real test ended) ---------- */
+  .board .extra { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 1rem; font-size: 0.9rem; color: var(--ink-2); padding-top: 0.15rem; }
+  .board .extra b { color: var(--ink); font-weight: 600; }
+  .coach { font-size: 0.98rem; color: var(--ink); background: var(--panel); border-radius: 0.6rem; padding: 0.5rem 1rem; border-left: 0.3rem solid var(--flame); }
+  .coach small { display: block; color: var(--ink-3); font-size: 0.78rem; margin-bottom: 0.15rem; }
+  .rankline { font-size: 1.25rem; font-weight: 600; }
   main.drill { grid-template-rows: minmax(0, 1fr); }
   .drill > section { display: grid; min-height: 0; align-content: start; gap: 0.6rem; }
   .drill h2 { margin: 0; }
@@ -351,7 +399,15 @@
     .row { padding: 0.35rem 0.8rem 0.4rem 1rem; }
     .fuels button { padding: 0.35rem 0.9rem; }
     .legend { margin-top: 0.35rem; }
-    .read { gap: 0.55rem; }
+    .read { gap: 0.5rem; }
+    #viewConsole .flamebox { width: 6.4rem; height: 6.4rem; }
+    #viewConsole .stage { padding: 0.45rem 1.1rem; gap: 0.3rem 1.2rem; }
+    #viewConsole .big { font-size: 2.8rem; }
+    #viewConsole .meter { margin: 0.4rem 0 0.25rem; }
+    #viewConsole .caption { margin-top: 0; }
+    .fact { padding: 0.3rem 1rem; }
+    .fact .v { font-size: 1.4rem; }
+    #viewConsole .conf { padding: 0.4rem 1rem; }
     .hints { padding: 0.4rem 1.2rem; }
   }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
@@ -359,18 +415,32 @@
 </head>
 <body>
 
+<canvas id="stars" aria-hidden="true"></canvas>
+
+<div class="title" id="title" hidden role="dialog" aria-label="Start screen">
+  <div class="in">
+    <div class="orb" aria-hidden="true"><div class="flame"></div><div class="droplet"></div></div>
+    <h1>Flame in Freefall</h1>
+    <div class="tag">A dashboard that summarizes, ranks and interprets NASA's microgravity combustion investigations, for fire safety on the way to the Moon and Mars.</div>
+    <div class="three"><span id="titleRes">NASA research</span><span>Flame console: predict a droplet flame</span><span>Fire drill: test yourself</span><span id="titleAI" hidden>Ember: the on-board AI</span></div>
+    <div class="go"><kbd>A</kbd> Press A to start</div>
+    <div class="by">Team Second Toe · 2026 NASA Space Apps Challenge · Data: NASA Physical Sciences Informatics</div>
+  </div>
+</div>
+
 <header class="top">
   <h1>Flame in Freefall</h1>
   <nav class="tabs" id="tabs" aria-label="Pages" hidden>
-    <button type="button" id="tabConsole" aria-pressed="true">Flame console</button>
     <button type="button" id="tabResearch" aria-pressed="false">NASA research</button>
+    <button type="button" id="tabConsole" aria-pressed="true">Flame console</button>
     <button type="button" id="tabDrill" aria-pressed="false">Fire drill</button>
   </nav>
   <span class="spacer"></span>
-  <button type="button" class="chip aibtn" id="aiBtn" hidden><kbd class="wide">☰</kbd> Ask the AI</button>
+  <button type="button" class="chip snd" id="sndBtn" title="Sound on or off (key M)">♪ Sound</button>
+  <button type="button" class="chip aibtn" id="aiBtn" hidden><kbd class="wide">☰</kbd> Ask Ember</button>
   <span class="chip mock" id="mockChip" hidden><span class="mark" aria-hidden="true">!</span><span id="mockText">Mock numbers, not NASA data yet</span></span>
   <span class="chip" id="srcChip" hidden></span>
-  <span class="chip" id="padChip"><span class="dot" aria-hidden="true"></span><span id="padText">No controller: press a button</span></span>
+  <span class="chip" id="padChip"><span class="dot" aria-hidden="true"></span><span id="padText">No controller</span></span>
 </header>
 
 <main id="viewConsole">
@@ -397,7 +467,7 @@
         <div class="meter" id="meter" role="img" aria-label="Chance the flame burns until the fuel is gone"><div id="meterFill"></div></div>
         <div class="twin">Chance it goes out before the fuel is gone: <span id="pOut">50</span>%</div>
       </div>
-      <div class="caption">Picture is an illustration, not a simulation. In microgravity a droplet flame forms a sphere instead of a teardrop.</div>
+      <div class="caption" id="stageCap">Picture is an illustration, not a simulation. In microgravity a droplet flame forms a sphere instead of a teardrop.</div>
     </div>
 
     <div class="facts">
@@ -414,6 +484,13 @@
       <div id="oneLine"></div>
       <button type="button" id="openSheet"><kbd>A</kbd> Explain this reading</button>
     </div>
+    <div class="map" id="mapBox">
+      <div class="maphead">
+        <span id="mapTitle"></span>
+        <span class="maplegend" id="mapLegend"></span>
+      </div>
+      <svg id="map" role="img" aria-label="Star map of the real FLEX tests with this fuel: oxygen across, droplet size up"></svg>
+    </div>
 
     <div class="sheet" id="sheet" hidden role="dialog" aria-labelledby="sheetTitle">
       <button type="button" class="close" id="closeSheet"><kbd>B</kbd> Close</button>
@@ -426,10 +503,15 @@
 
 <main id="viewResearch" class="research" hidden>
   <section aria-labelledby="hNeed">
-    <h2 id="hNeed">Which part of fire safety do you need?</h2>
+    <h2 id="hNeed" style="margin:0">Which part of fire safety do you need?</h2>
+    <div class="legend" id="resSummary" style="margin:0.2rem 0 0.5rem"></div>
     <div class="needs" id="needs"></div>
-    <h2 id="hRank" style="margin:0"></h2>
+    <div class="rankhead">
+      <h2 id="hRank" style="margin:0"></h2>
+      <button type="button" id="orbitBtn"><kbd>X</kbd> <span id="orbitBtnText">Orbit view</span></button>
+    </div>
     <div class="rank" id="rank"></div>
+    <svg id="orbit" hidden role="img" aria-label="Orbit view: investigations closer to the centre are more relevant to the question"></svg>
     <div class="legend" id="rankNote"></div>
   </section>
   <section aria-labelledby="hCard" aria-live="polite">
@@ -458,12 +540,13 @@
           <button type="button" id="drillBurn">Burned all its fuel <kbd class="wide">→</kbd></button>
         </div>
       </div>
-      <div class="caption">Picture is an illustration, not a recording of the test.</div>
+      <div class="caption" id="drillCap">Picture is an illustration, not a recording of the test.</div>
     </div>
     <div class="conf" id="drillConf" hidden>
       <div class="ico" id="drillIco" aria-hidden="true"></div>
       <div><b id="drillTitle"></b><span id="drillText"></span></div>
     </div>
+    <div class="coach" id="drillCoach" hidden><small id="drillCoachBy"></small><span id="drillCoachText"></span></div>
     <div class="line">
       <div id="drillLine"></div>
       <button type="button" id="drillNext" hidden><kbd>A</kbd> <span id="drillNextText">Next test</span></button>
@@ -478,7 +561,7 @@
   <span><kbd>A</kbd> Next test</span>
   <span><kbd>Y</kbd> New game</span>
   <span><kbd class="wide">LB</kbd><kbd class="wide">RB</kbd> Other page</span>
-  <span class="hintAI" hidden><kbd class="wide">☰</kbd> Ask the AI</span>
+  <span class="hintAI" hidden><kbd class="wide">☰</kbd> Ask Ember (AI)</span>
   <span>Keys: arrows, Enter, R, 1 to 3</span>
 </footer>
 <footer class="hints" id="hintsConsole" aria-label="Controls">
@@ -489,23 +572,24 @@
   <span><kbd>X</kbd> Cabin air</span>
   <span><kbd>Y</kbd> Reset</span>
   <span id="hintPage"><kbd class="wide">LB</kbd><kbd class="wide">RB</kbd> Other page</span>
-  <span class="hintAI" hidden><kbd class="wide">☰</kbd> Ask the AI</span>
+  <span class="hintAI" hidden><kbd class="wide">☰</kbd> Ask Ember (AI)</span>
   <span>Keys: arrows, Enter, Esc, X, R, 1 to 3</span>
 </footer>
 <footer class="hints" id="hintsResearch" aria-label="Controls" hidden>
   <span><kbd class="wide">←→</kbd> Change the question</span>
   <span><kbd class="wide">↑↓</kbd> Pick an investigation</span>
-  <span><kbd>B</kbd> Back to the console</span>
+  <span><kbd>X</kbd> Orbit view</span>
   <span><kbd class="wide">LB</kbd><kbd class="wide">RB</kbd> Other page</span>
-  <span class="hintAI" hidden><kbd class="wide">☰</kbd> Ask the AI</span>
-  <span>Keys: arrows, Esc, 1 to 3</span>
+  <span class="hintAI" hidden><kbd class="wide">☰</kbd> Ask Ember (AI)</span>
+  <span>Keys: arrows, 1 to 3, M sound</span>
 </footer>
 
 <div class="ai" id="ai" hidden role="dialog" aria-labelledby="aiTitle">
   <div class="box">
     <div class="ahead">
-      <h3 id="aiTitle">Ask the AI</h3>
+      <h3 id="aiTitle">Ask Ember</h3>
       <span class="who" id="aiWho"></span>
+      <button type="button" class="close" id="aiVoice" title="Read answers aloud (key V)">Voice: on</button>
       <button type="button" class="close" id="aiClose"><kbd>B</kbd> Close</button>
     </div>
     <div>
@@ -516,7 +600,7 @@
       </form>
     </div>
     <div class="ans" id="aiAns" aria-live="polite"></div>
-    <p class="fine">Written on the spot by a language model running on the team's own PC, from the NASA PSI records and the numbers on this screen. It can be wrong: check the PSI ids it cites. Not a crew procedure.</p>
+    <p class="fine">Ember is a language model running on the team's own PC. It writes each answer on the spot from the NASA PSI records and the numbers on this screen. It can be wrong: check the PSI ids it cites. Not a crew procedure.</p>
   </div>
 </div>
 
@@ -538,7 +622,10 @@
   meta.far_distance  nearest-test distance above which a reading counts as far from the data
   meta.auc, meta.burn_rate_mae, meta.rows_burn_rate   held-out accuracy, shown in the fine print
   tests              one row per real test:
-                     [test, id, fuel, o2 %, pressure atm, co2 %, he %, droplet mm, test end, burning rate]
+                     [test, id, fuel, o2 %, pressure atm, co2 %, he %, droplet mm, test end, burning rate,
+                      burn time s, end diameter mm]
+                     The last two are measured after the burn. They are only used to replay a test on
+                     screen and to draw it, never to predict anything.
 -->
 <script>
 window.FLAME_MODEL = {
@@ -565,6 +652,48 @@ window.FLAME_MODEL = {
   var state = { sel: 0, fuel: M.fuels[0].key, values: {}, sheet: false };
   var last = null;                                // the reading on screen: { r: prediction, rc: range check }
   var lastLevel = null;                           // confidence level of the previous reading
+
+  /* ---------- saved preferences and sound ---------- */
+  function load(key, fallback) {
+    try { var v = localStorage.getItem("flame." + key); return v == null ? fallback : JSON.parse(v); } catch (err) { return fallback; }
+  }
+  function save(key, value) { try { localStorage.setItem("flame." + key, JSON.stringify(value)); } catch (err) { /* storage is off */ } }
+  // Sound effects are made in the browser, so there are no audio files to carry around. M turns them off.
+  var SND = { on: load("sound", true), ctx: null, played: 0 };
+  function tone(freq, ms, type, vol, slideTo, delay) {
+    if (!SND.on) return;
+    SND.played++;
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      var c = SND.ctx || (SND.ctx = new AC());
+      if (c.state === "suspended") c.resume();
+      var o = c.createOscillator(), g = c.createGain(), t = c.currentTime + (delay || 0) / 1000, d = ms / 1000;
+      o.type = type || "sine"; o.frequency.setValueAtTime(freq, t);
+      if (slideTo) o.frequency.exponentialRampToValueAtTime(slideTo, t + d);
+      g.gain.setValueAtTime(vol || 0.06, t); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+      o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + d + 0.03);
+    } catch (err) { /* no audio on this device */ }
+  }
+  var sfx = {
+    tick: function () { tone(740, 35, "square", 0.025); },
+    move: function () { tone(440, 45, "triangle", 0.05); },
+    open: function () { tone(440, 110, "sine", 0.06, 880); },
+    close: function () { tone(660, 110, "sine", 0.05, 330); },
+    page: function () { tone(330, 90, "triangle", 0.06); tone(494, 120, "triangle", 0.06, null, 80); },
+    preset: function () { tone(392, 90, "triangle", 0.06); tone(587, 140, "triangle", 0.06, null, 90); },
+    alert: function () { tone(196, 170, "sawtooth", 0.06); tone(196, 170, "sawtooth", 0.06, null, 230); },
+    good: function (streak) { var up = Math.min(streak || 1, 6) * 40; tone(523 + up, 90, "triangle", 0.08); tone(784 + up, 170, "triangle", 0.08, null, 100); },
+    bad: function () { tone(220, 280, "sawtooth", 0.06, 110); },
+    win: function () { [523, 659, 784, 1047].forEach(function (f, i) { tone(f, 180, "triangle", 0.08, null, 500 + i * 130); }); },
+    lose: function () { [392, 330, 262].forEach(function (f, i) { tone(f, 220, "triangle", 0.07, null, 500 + i * 170); }); },
+    start: function () { [262, 392, 523, 784].forEach(function (f, i) { tone(f, 200, "sine", 0.08, null, i * 110); }); },
+    reply: function () { tone(880, 70, "sine", 0.04); }
+  };
+  function soundButton() { $("sndBtn").classList.toggle("off", !SND.on); $("sndBtn").textContent = SND.on ? "♪ Sound" : "♪ Muted"; }
+  function toggleSound() { SND.on = !SND.on; save("sound", SND.on); soundButton(); if (SND.on) sfx.open(); }
+  $("sndBtn").addEventListener("click", toggleSound);
+  soundButton();
   var byKey = {};
   M.features.forEach(function (f) { state.values[f.key] = f.default; byKey[f.key] = f; });
   var rowCount = M.features.length + 1;           // fuel row + numeric rows
@@ -641,6 +770,7 @@ window.FLAME_MODEL = {
   }
   function applyPreset(ps) {
     Object.keys(ps.values).forEach(function (k) { if (byKey[k]) state.values[k] = ps.values[k]; });
+    sfx.preset();
     render();
   }
   function cyclePreset() {
@@ -763,6 +893,7 @@ window.FLAME_MODEL = {
   }
 
   function render() {
+    if (REPLAY.box && REPLAY.box === $("flame").parentNode) stopReplay();   // any change ends a replay on this page
     var r = predict(), rc = rangeCheck();
     // Real tests right next to these settings outrank the model: flag it when most of them went the other way.
     var nb = rc.near ? rc.near.near : null, seen = nb ? nb.out + nb.done : 0;
@@ -809,7 +940,7 @@ window.FLAME_MODEL = {
     flame.style.setProperty("--glow", (0.12 + 0.88 * r.pKeep).toFixed(2));
     flame.style.setProperty("--beat", Math.max(1.1, 3.2 - r.K * 2.4).toFixed(2) + "s");
     flame.parentNode.classList.toggle("unknown", rc.level === "outside");
-    if (rc.level === "outside" && lastLevel && lastLevel !== "outside") buzz(260, true);   // the controller buzzes on leaving tested ground
+    if (rc.level === "outside" && lastLevel && lastLevel !== "outside") { buzz(260, true); sfx.alert(); }   // buzz and alarm on leaving tested ground
     lastLevel = rc.level;
     if (d0) $("droplet").style.setProperty("--drop", (0.04 + d0 * 0.022).toFixed(3));
 
@@ -847,6 +978,7 @@ window.FLAME_MODEL = {
     else if (r.pKeep >= 0.35) line = "Could go either way: burn until the fuel is gone, or go out first.";
     else line = "The model expects this flame to go out before the fuel is gone.";
     $("oneLine").textContent = line;
+    drawMap(rc);
 
     if (state.sheet) renderSheet(r, rc);
   }
@@ -907,7 +1039,7 @@ window.FLAME_MODEL = {
   // Up and Down: pick a setting, or scroll the explanation panel while it is open.
   function move(dir) {
     if (state.sheet) $("sheet").scrollTop += dir * 70;
-    else select(state.sel + dir);
+    else { sfx.move(); select(state.sel + dir); }
   }
   function nudge(dir, mult) {
     if (state.sel === 0) {
@@ -919,26 +1051,293 @@ window.FLAME_MODEL = {
       v = Math.min(f.max, Math.max(f.min, v));
       state.values[f.key] = Math.round(v / f.step) * f.step;
     }
+    sfx.tick();
     render();
   }
   function toggleSheet(open) {
+    var was = state.sheet;
     state.sheet = open == null ? !state.sheet : open;
+    if (state.sheet !== was) { if (state.sheet) sfx.open(); else sfx.close(); }
     $("sheet").hidden = !state.sheet;
     render();
   }
   function reset() {
     state.fuel = M.fuels[0].key;
     M.features.forEach(function (f) { state.values[f.key] = f.default; });
+    sfx.close();
     render();
   }
   $("openSheet").addEventListener("click", function () { toggleSheet(true); });
   $("closeSheet").addEventListener("click", function () { toggleSheet(false); });
 
+  /* ---------- star map of the real tests (Flame console) ---------- */
+  // Every real test with the chosen fuel is one star: oxygen across, droplet size up, colour by how it ended.
+  // The cross is the current setting; lines run to the three tests that are closest across all settings.
+  var SVGNS = "http://www.w3.org/2000/svg";
+  function svgEl(tag, attrs, text) {
+    var e = document.createElementNS(SVGNS, tag);
+    for (var k in attrs) if (Object.prototype.hasOwnProperty.call(attrs, k)) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  var OUT_COLOR = { Extinction: "#3987e5", Completion: "#d95926" };
+  // A test drawn the way a telescope shows a star: a core with spikes of light. Eight spikes and orange: it burned
+  // all its fuel. Four spikes and blue: it went out first. A grey cross: disruption. The size follows the measured
+  // burning rate, so a bigger star burned faster.
+  function spikes(cx, cy, r, n) {
+    var d = "", k = n === 8 ? 0.42 : 0.3;
+    for (var i = 0; i < n * 2; i++) {
+      var a = Math.PI * i / n - Math.PI / 2, len = i % 2 ? r * k : (n === 8 && i % 4 ? r * 0.72 : r);
+      d += (i ? "L" : "M") + (cx + len * Math.cos(a)).toFixed(1) + " " + (cy + len * Math.sin(a)).toFixed(1);
+    }
+    return d + "Z";
+  }
+  function starMark(cx, cy, t, big) {
+    var g = svgEl("g"), end = t[8], rate = t[9] == null ? 0.4 : Math.min(1.1, t[9]), r = (4.2 + 5 * rate) * (big || 1);
+    if (!OUT_COLOR[end]) {
+      g.appendChild(svgEl("path", { d: "M" + (cx - 3) + " " + (cy - 3) + "l6 6m0 -6l-6 6", stroke: "#898781", "stroke-width": 1.3, fill: "none" }));
+      return g;
+    }
+    if (end === "Completion") g.appendChild(svgEl("circle", { cx: cx, cy: cy, r: r * 1.05, fill: OUT_COLOR[end], opacity: 0.22 }));
+    g.appendChild(svgEl("path", { d: spikes(cx, cy, r, end === "Completion" ? 8 : 4), fill: OUT_COLOR[end], stroke: "#16223f", "stroke-width": 0.8, "stroke-linejoin": "round" }));
+    g.appendChild(svgEl("circle", { cx: cx, cy: cy, r: Math.max(1, r * 0.16), fill: "#f1f4ff", opacity: end === "Completion" ? 0.95 : 0.6 }));
+    return g;
+  }
+  (function () {                                   // the key to the star shapes, drawn with the same code as the map
+    var box = $("mapLegend");
+    [["Extinction", "went out"], ["Completion", "burned all its fuel"], ["Disruption", "disruption"]].forEach(function (k) {
+      var item = el("span"), pic = svgEl("svg", { viewBox: "0 0 18 18", "aria-hidden": "true" });
+      pic.appendChild(starMark(9, 9, [0, "", "", 0, 0, 0, 0, 0, k[0], 0.75]));
+      item.appendChild(pic); item.appendChild(document.createTextNode(k[1])); box.appendChild(item);
+    });
+    box.appendChild(el("span", "", "bigger = burned faster"));
+  })();
+  var MAP = { stars: [], sel: null, plot: null };  // what the last drawing put where, and the star picked with the right stick
+  function drawMap(rc) {
+    var box = $("mapBox"), svg = $("map");
+    if (!hasTests || !byKey.o2 || !byKey.d0) { box.hidden = true; return; }
+    var W = svg.clientWidth, H = svg.clientHeight;
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    MAP.stars = []; MAP.plot = null;
+    if (MAP.sel && MAP.sel[2] !== state.fuel) MAP.sel = null;
+    if (W < 220 || H < 60) return;                 // no room: leave the panel empty rather than squeeze it
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    // The plot covers the tested range plus a small margin, so the stars use the space.
+    var fx = byKey.o2, fy = byKey.d0, L = 26, Rt = 10, T = 6, B = 16;
+    var x0 = fx.data_min - 2, x1 = fx.data_max + 2, y0 = fy.data_min - 0.35, y1 = fy.data_max + 0.35;
+    var X = function (v) { return L + (Math.min(x1, Math.max(x0, v)) - x0) / (x1 - x0) * (W - L - Rt); };
+    var Y = function (v) { return H - B - (Math.min(y1, Math.max(y0, v)) - y0) / (y1 - y0) * (H - T - B); };
+    MAP.plot = { cx: (L + W - Rt) / 2, cy: (T + H - B) / 2, w: W - L - Rt, h: H - T - B };
+    svg.appendChild(svgEl("rect", { x: X(fx.data_min), y: Y(fy.data_max), width: X(fx.data_max) - X(fx.data_min),
+      height: Y(fy.data_min) - Y(fy.data_max), rx: 4, fill: "rgba(125,184,255,0.07)", stroke: "#2b3b66" }));
+    for (var ox = Math.ceil(x0 / 5) * 5; ox <= x1; ox += 5) {
+      var lastX = ox + 5 > x1;
+      svg.appendChild(svgEl("text", { x: X(ox), y: H - 3, "text-anchor": lastX ? "end" : "middle", "font-size": 10 }, ox + (lastX ? " % oxygen" : "")));
+    }
+    for (var dy = Math.ceil(y0); dy <= y1; dy += 1) {
+      svg.appendChild(svgEl("text", { x: L - 6, y: Y(dy) + 3.5, "text-anchor": "end", "font-size": 10 }, String(dy)));
+    }
+    svg.appendChild(svgEl("text", { x: L + 4, y: T + 9, "font-size": 10 }, "mm droplet"));
+
+    var ux = X(state.values.o2), uy = Y(state.values.d0), top = rc.near ? rc.near.top : [];
+    top.forEach(function (c) {
+      svg.appendChild(svgEl("line", { x1: ux, y1: uy, x2: X(c.t[3]), y2: Y(c.t[7]), stroke: "#f1f4ff", "stroke-opacity": 0.55, "stroke-width": 1 }));
+    });
+    ["Disruption", "Extinction", "Completion"].forEach(function (end) {       // the rarest outcome is drawn last, on top
+      M.tests.forEach(function (t) {
+        var known = !!OUT_COLOR[t[8]];
+        if (t[2] !== state.fuel || (known ? t[8] !== end : end !== "Disruption")) return;
+        var cx = X(t[3]), cy = Y(t[7]), star;
+        star = starMark(cx, cy, t);
+        star.appendChild(svgEl("title", {}, "FLEX test " + t[0] + ": " + testSettings(t) + ". " + testEnd(t)));
+        star.addEventListener("click", function () { selectStar(t); });
+        svg.appendChild(star);
+        MAP.stars.push({ x: cx, y: cy, t: t });
+      });
+    });
+    top.forEach(function (c) {
+      svg.appendChild(svgEl("circle", { cx: X(c.t[3]), cy: Y(c.t[7]), r: 6.5, fill: "none", stroke: "#f1f4ff", "stroke-width": 1.2 }));
+    });
+    svg.appendChild(svgEl("path", { d: "M" + (ux - 10) + " " + uy + "h20M" + ux + " " + (uy - 10) + "v20", stroke: "#f1f4ff", "stroke-width": 1.5, fill: "none" }));
+    svg.appendChild(svgEl("circle", { cx: ux, cy: uy, r: 4.5, fill: "#0e1730", stroke: "#f1f4ff", "stroke-width": 2 }));
+    var s = MAP.sel, title;
+    if (s) {                                       // the picked star: a yellow ring, and its story in the heading
+      svg.appendChild(svgEl("circle", { cx: X(s[3]), cy: Y(s[7]), r: 9, fill: "none", stroke: "#fab219", "stroke-width": 2 }));
+      title = "FLEX test " + s[0] + ": " + testSettings(s) + ". " + testEnd(s) + " RT replays it, R3 goes there.";
+    } else {
+      title = MAP.stars.length + " real " + fuelLabel().toLowerCase() + " tests, one star each. Lines: your three closest. Right stick picks a star.";
+    }
+    $("mapTitle").textContent = title; $("mapTitle").title = title;
+    $("mapLegend").hidden = !!s;                   // the picked star's story takes the whole line
+  }
+  function selectStar(t) {
+    if (MAP.sel === t) return;
+    MAP.sel = t; sfx.move(); render();
+  }
+  // Right stick: its position on the pad points at a place on the map, and the star nearest to that place is picked.
+  function pickStar(ax, ay) {
+    var p = MAP.plot, best = null, bd = Infinity;
+    if (!p) return;
+    var tx = p.cx + Math.max(-1, Math.min(1, ax * 1.25)) * p.w / 2, ty = p.cy + Math.max(-1, Math.min(1, ay * 1.25)) * p.h / 2;
+    MAP.stars.forEach(function (st) { var d = (st.x - tx) * (st.x - tx) + (st.y - ty) * (st.y - ty); if (d < bd) { bd = d; best = st; } });
+    if (best) selectStar(best.t);
+  }
+  // Keyboard: [ and ] walk through the stars, the ones nearest the cross first.
+  function stepStar(dir) {
+    if (!MAP.stars.length || !last) return;
+    var ux = null, uy = null, near = last.rc.near;
+    var order = MAP.stars.slice();
+    if (near) { var me = MAP.stars.filter(function (st) { return st.t === near.test; })[0]; if (me) { ux = me.x; uy = me.y; } }
+    if (ux != null) order.sort(function (a, b) { return ((a.x - ux) * (a.x - ux) + (a.y - uy) * (a.y - uy)) - ((b.x - ux) * (b.x - ux) + (b.y - uy) * (b.y - uy)); });
+    var i = MAP.sel ? order.map(function (st) { return st.t; }).indexOf(MAP.sel) : -1;
+    selectStar(order[(i + dir + order.length) % order.length].t);
+  }
+  function starOrClosest() { return MAP.sel || (last && last.rc.near ? last.rc.near.test : null); }
+  // R3: move every setting onto the picked test, exactly as NASA recorded it.
+  function flyToStar() {
+    var t = starOrClosest();
+    if (!t) return;
+    state.fuel = t[2];
+    M.features.forEach(function (f) { var c = TEST_COL[f.key]; if (c != null) state.values[f.key] = Math.min(f.max, Math.max(f.min, t[c])); });
+    sfx.preset(); render();
+  }
+
+  /* ---------- replay of a real test ---------- */
+  // The droplet shrinks along the d-squared law between NASA's recorded start diameter and end diameter, over the
+  // recorded burn time, speeded up. Then the flame goes out or the fuel runs out, as recorded. The glow is illustrative.
+  var REPLAY = { id: 0, raf: 0, box: null, cap: null, capText: "" };
+  function stopReplay() {
+    if (!REPLAY.box) return;
+    cancelAnimationFrame(REPLAY.raf);
+    REPLAY.id++;
+    REPLAY.box.classList.remove("replaying");
+    if (REPLAY.cap) REPLAY.cap.textContent = REPLAY.capText;
+    REPLAY.box = null;
+  }
+  function replayTest(t, box, cap, keep) {
+    stopReplay();
+    var d0 = t[7], K = t[9], T = t[10], dEnd = t[11], worked = false;
+    if (dEnd == null) {                            // no end diameter on record
+      if (t[8] === "Completion") dEnd = 0;         // burned out: nothing left
+      else if (t[8] === "Extinction" && K != null && T != null && d0 * d0 - K * T > 0.04) { dEnd = Math.sqrt(d0 * d0 - K * T); worked = true; }
+      // a disruption with no end diameter cannot be replayed honestly, so it is not
+    }
+    if (T == null && K && dEnd != null) T = (d0 * d0 - dEnd * dEnd) / K;
+    if (!(T > 0) || dEnd == null || !(d0 > 0)) return false;
+    var id = ++REPLAY.id, speed = T / Math.min(4.5, Math.max(2.5, T)), flame = box.querySelector(".flame"), drop = box.querySelector(".droplet"), t0 = null;
+    var base = Math.min(1, 0.45 + (K || 0.5) * 0.6);
+    REPLAY.box = box; REPLAY.cap = cap; REPLAY.capText = cap ? cap.textContent : "";
+    box.className = "flamebox replaying";
+    sfx.open();
+    function frame(now) {
+      if (REPLAY.id !== id) return;
+      if (t0 == null) t0 = now;
+      var tau = Math.min(T, (now - t0) / 1000 * speed), d = Math.sqrt(Math.max(d0 * d0 - (d0 * d0 - dEnd * dEnd) * tau / T, 0));
+      drop.style.setProperty("--drop", (d > 0.03 ? 0.04 + d * 0.022 : 0).toFixed(3));
+      flame.style.setProperty("--size", (base * (0.5 + 0.5 * d / d0)).toFixed(3));
+      flame.style.setProperty("--glow", "1");
+      if (cap) cap.textContent = "Replay of FLEX test " + t[0] + ", " + speed.toFixed(1) + "x speed: " + tau.toFixed(1) + " s, droplet " + d.toFixed(2) + " mm";
+      if (tau < T) { REPLAY.raf = requestAnimationFrame(frame); return; }
+      flame.style.setProperty("--glow", t[8] === "Disruption" ? "0.4" : "0.04");
+      if (cap) cap.textContent = "FLEX test " + t[0] + " burned for " + T.toFixed(1) + " s. "
+        + (t[8] === "Completion" ? "It burned until the fuel was gone."
+          : t[8] === "Extinction" ? "Then the flame went out with the droplet at " + (worked ? "about " : "") + dEnd.toFixed(2) + " mm."
+          : "It was recorded as a disruption, with the droplet at " + (worked ? "about " : "") + dEnd.toFixed(2) + " mm.")
+        + " Sizes and times are NASA's; the glow is an illustration.";
+      if (t[8] === "Completion") sfx.good(1); else sfx.close();
+      if (!keep) setTimeout(function () { if (REPLAY.id === id) { stopReplay(); render(); } }, 4000);
+    }
+    REPLAY.raf = requestAnimationFrame(frame);
+    return true;
+  }
+  function replayStar() {
+    var t = starOrClosest();
+    if (t && !replayTest(t, $("flame").parentNode, $("stageCap"), false)) {
+      $("mapTitle").textContent = "FLEX test " + t[0] + " cannot be replayed: NASA's record has no burn time or end diameter for it.";
+      sfx.bad();
+    }
+  }
+
   /* ---------- NASA research page ---------- */
   // research.js (built by data/clean/build_research.py) lists the PSI combustion investigations.
   // Facts come from NASA PSI; summaries and relevance scores are AI-written and say so on screen.
   var R = window.FLAME_RESEARCH || null;
-  var view = { page: "console", need: 0, sel: 0 };
+  var view = { page: "console", need: 0, sel: 0, orbit: false };
+  var FUELS = ["Solid materials", "Liquid fuel droplets", "Gas flames", "Smoke and dust particles"];
+  var FUEL_COLOR = { "Solid materials": "#3987e5", "Liquid fuel droplets": "#d95926", "Gas flames": "#199e70", "Smoke and dust particles": "#c98500" };
+  // Orbit view: the question sits in the middle and the investigations circle it. The closer to the centre,
+  // the more relevant. Each quarter of the sky is one kind of fuel. The numbers are the ranks from the list.
+  var FUEL_SHORT = { "Solid materials": "Solid materials", "Liquid fuel droplets": "Fuel droplets", "Gas flames": "Gas flames", "Smoke and dust particles": "Smoke and dust" };
+  // One small picture per kind of fuel: a sheet of material, a droplet, a flame, a puff of smoke.
+  function fuelIcon(fuel, x, y, k, color) {
+    var g = svgEl("g", { transform: "translate(" + x.toFixed(1) + " " + y.toFixed(1) + ") scale(" + k + ")", fill: color, stroke: "#0e1730", "stroke-width": 1.2 / k, "stroke-linejoin": "round" });
+    if (fuel === "Solid materials") g.appendChild(svgEl("rect", { x: -6, y: -6, width: 12, height: 12, rx: 2 }));
+    else if (fuel === "Liquid fuel droplets") {    // in microgravity a droplet is a sphere
+      g.appendChild(svgEl("circle", { cx: 0, cy: 0, r: 6.5 }));
+      g.appendChild(svgEl("circle", { cx: -2.2, cy: -2.4, r: 1.8, fill: "#f1f4ff", stroke: "none", opacity: 0.85 }));
+    } else if (fuel === "Gas flames") {              // a flame with its dark core
+      g.appendChild(svgEl("path", { d: "M0 -9C1 -5 6 -3 6 2A6 6 0 1 1 -6 2C-6 -1 -4 -2 -3.5 -4.5C-2 -3.5 -1 -6 0 -9Z" }));
+      g.appendChild(svgEl("path", { d: "M0 -2C0.5 0 2.4 1 2.4 3A2.4 2.4 0 1 1 -2.4 3C-2.4 1.6 -1 1 0 -2Z", fill: "#0e1730", stroke: "none" }));
+    }
+    else [[-3.6, 2, 3.4], [3, 2.4, 3.6], [0, -2.8, 3.8]].forEach(function (c) { g.appendChild(svgEl("circle", { cx: c[0], cy: c[1], r: c[2] })); });
+    return g;
+  }
+  var ORB = { dots: [], cx: 0, cy: 0, rad: 0 };
+  // Right stick in the orbit view: its position points at a place in the picture, and the nearest ranked investigation is picked.
+  function pickOrbit(ax, ay) {
+    if (!view.orbit || !ORB.dots.length) return;
+    var tx = ORB.cx + ax * ORB.rad, ty = ORB.cy + ay * ORB.rad, best = null, bd = Infinity;
+    ORB.dots.forEach(function (d) { var q = (d.x - tx) * (d.x - tx) + (d.y - ty) * (d.y - ty); if (q < bd) { bd = q; best = d; } });
+    if (best && best.rank !== view.sel) { view.sel = best.rank; sfx.move(); renderResearch(); }
+  }
+  function drawOrbit(list, need) {
+    var svg = $("orbit"), W = svg.clientWidth, H = svg.clientHeight;
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    ORB.dots = [];
+    if (W < 260 || H < 150) return;
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    var cx = W / 2, cy = H / 2, rad = Math.min(H / 2 - 12, W / 2 - 112);
+    ORB.cx = cx; ORB.cy = cy; ORB.rad = rad;
+    var ring = { 3: 0.36 * rad, 2: 0.6 * rad, 1: 0.82 * rad, 0: rad };
+    [[3, "direct"], [2, "strong"], [1, "related"], [0, "not about this"]].forEach(function (k) {
+      svg.appendChild(svgEl("circle", { cx: cx, cy: cy, r: ring[k[0]], fill: k[0] === 3 ? "rgba(125,184,255,0.06)" : "none",
+        stroke: "#2b3b66", "stroke-width": 1, "stroke-dasharray": k[0] ? "none" : "2 5" }));
+      svg.appendChild(svgEl("text", { x: cx, y: cy - ring[k[0]] + 11, "text-anchor": "middle", "font-size": 9.5 }, k[1]));
+    });
+    svg.appendChild(svgEl("circle", { cx: cx, cy: cy, r: 5, fill: "#7db8ff" }));
+    svg.appendChild(svgEl("text", { x: cx, y: cy + 17, "text-anchor": "middle", "font-size": 10.5, style: "fill:#b9c3e0" }, need.label.toLowerCase()));
+    var label = null;
+    FUELS.forEach(function (fuel, s) {
+      var a0 = (180 + 90 * s + 9) * Math.PI / 180, a1 = (180 + 90 * (s + 1) - 9) * Math.PI / 180;
+      var left = s === 0 || s === 3, upper = s < 2;
+      var lx = left ? cx - rad - 14 : cx + rad + 14, ly = upper ? cy - rad * 0.74 : cy + rad * 0.8;
+      svg.appendChild(fuelIcon(fuel, lx + (left ? 2 : -2), ly - 4, 0.8, FUEL_COLOR[fuel]));
+      svg.appendChild(svgEl("text", { x: lx + (left ? -9 : 9), y: ly, "text-anchor": left ? "end" : "start", "font-size": 11, style: "fill:#b9c3e0" }, FUEL_SHORT[fuel]));
+      [3, 2, 1, 0].forEach(function (score) {
+        var group = R.items.filter(function (it) { return it.fuel === fuel && it.scores[need.key] === score; });
+        group.forEach(function (it, i) {
+          var a = a0 + (i + 0.5) / group.length * (a1 - a0), x = cx + ring[score] * Math.cos(a), y = cy + ring[score] * Math.sin(a);
+          var rank = list.indexOf(it), on = rank >= 0 && rank === view.sel;
+          var g = svgEl("g", rank >= 0 ? { "class": "pick" } : { opacity: 0.4 });
+          if (on) g.appendChild(svgEl("circle", { cx: x, cy: y, r: 12.5, fill: "rgba(241,244,255,0.12)", stroke: "#f1f4ff", "stroke-width": 2 }));
+          g.appendChild(fuelIcon(fuel, x, y, rank >= 0 ? 1 : 0.45, FUEL_COLOR[fuel]));
+          if (rank >= 0) g.appendChild(svgEl("text", { x: x + 9, y: y - 6, "font-size": 9.5, "font-weight": 700,
+            style: "fill:#f1f4ff;paint-order:stroke;stroke:#0e1730;stroke-width:3px;stroke-linejoin:round" }, String(rank + 1)));
+          g.appendChild(svgEl("title", {}, it.name + " (" + it.id + "): " + LEVEL[score].toLowerCase()));
+          if (rank >= 0) g.addEventListener("click", function () { view.sel = rank; renderResearch(); });
+          svg.appendChild(g);
+          if (rank >= 0) ORB.dots.push({ x: x, y: y, rank: rank });
+          if (on) label = { x: x, y: y, name: it.name };
+        });
+      });
+    });
+    if (label) {                                   // the name of the selected one, drawn last so nothing covers it
+      var right = label.x >= cx;
+      svg.appendChild(svgEl("text", { x: label.x + (right ? 17 : -17), y: label.y + 15, "text-anchor": right ? "start" : "end", "font-size": 12, "font-weight": 600,
+        style: "fill:#f1f4ff;paint-order:stroke;stroke:#0e1730;stroke-width:4px;stroke-linejoin:round" }, label.name));
+    }
+  }
+  function toggleOrbit() { view.orbit = !view.orbit; sfx.preset(); renderResearch(); }
   var LEVEL = { 3: "Direct", 2: "Strong", 1: "Related", 0: "Not about this" };
   function ranked() {
     var key = R.needs[view.need].key, flight = function (it) { return it.type === "Microgravity Investigation" ? 0 : 1; };
@@ -959,11 +1358,17 @@ window.FLAME_MODEL = {
     list.forEach(function (it, i) {
       var row = el("div", "item" + (i === view.sel ? " sel" : ""));
       row.appendChild(el("span", "n", String(i + 1)));
-      var nm = el("span", "nm", it.name); nm.appendChild(el("small", "", it.fuel)); row.appendChild(nm);
+      var nm = el("span", "nm", it.name), kind = el("small"), pic = svgEl("svg", { viewBox: "-10 -10 20 20", "class": "fpic", "aria-hidden": "true" });
+      pic.appendChild(fuelIcon(it.fuel, 0, 0, 1, FUEL_COLOR[it.fuel] || "#898781"));
+      kind.appendChild(pic); kind.appendChild(document.createTextNode(it.fuel)); nm.appendChild(kind); row.appendChild(nm);
       var lv = el("span", "lv", LEVEL[it.scores[need.key]]); lv.appendChild(dots(it.scores[need.key])); row.appendChild(lv);
       row.addEventListener("click", function () { view.sel = i; renderResearch(); });
       box.appendChild(row);
     });
+    box.hidden = view.orbit;
+    if (view.orbit) $("orbit").removeAttribute("hidden"); else $("orbit").setAttribute("hidden", "");   // an svg has no .hidden property
+    $("orbitBtnText").textContent = view.orbit ? "List view" : "Orbit view";
+    if (view.orbit) drawOrbit(list, need);
     var cur = box.children[view.sel];
     if (cur) box.scrollTop = Math.max(0, cur.offsetTop - box.offsetTop - box.clientHeight / 2 + cur.offsetHeight / 2);
     $("rankNote").textContent = (R.items.length - list.length) + " other investigations are not about " + need.label.toLowerCase() + ".";
@@ -1009,10 +1414,32 @@ window.FLAME_MODEL = {
     return a;
   }
   function drillStart(seed) {
+    stopReplay();
     var rand = rng(seed == null ? Date.now() : seed);
     var take = function (end) { return shuffle(M.tests.filter(function (t) { return t[8] === end; }), rand).slice(0, 5); };
-    drill = { rounds: shuffle(take("Completion").concat(take("Extinction")), rand), i: 0, you: [], model: [], guess: null };
+    drill = { rounds: shuffle(take("Completion").concat(take("Extinction")), rand), i: 0, you: [], model: [], guess: null,
+              streak: 0, newBest: false, coach: "", coachFor: -1 };
     renderDrill();
+  }
+  function drillRank(score) {
+    return score >= 9 ? "Fire marshal" : score >= 7 ? "Flight engineer" : score >= 5 ? "Crew member" : "Cadet";
+  }
+  // After each answer the local AI, when it is reachable, adds one sentence on why the test may have ended that way.
+  function drillCoach() {
+    var round = drill.i, game = drill;
+    if (!AI.ok) return;
+    drill.coachFor = round; drill.coach = "...";
+    aiStream({ page: "console", question: "In one sentence of at most 28 words, say why this test may have ended this way.", reading: drillText() },
+      function (text) { if (drill === game && drill.i === round) { drill.coach = text.replace(/\s*\[[^\]]*\]/g, ""); coachLine(); } },
+      function (err) { if (drill === game && drill.i === round) { if (err) drill.coach = ""; coachLine(); } });
+  }
+  function coachLine() {
+    var show = !!drill.guess && drill.coachFor === drill.i && !!drill.coach;
+    $("drillCoach").hidden = !show;
+    if (show) {
+      $("drillCoachBy").textContent = "Ember, the AI on the team's PC, thinks:";
+      $("drillCoachText").textContent = drill.coach;
+    }
   }
   function drillValues(t) {
     var v = {};
@@ -1025,13 +1452,23 @@ window.FLAME_MODEL = {
     var truth = t[8] === "Completion" ? "burn" : "out";
     var m = predictFor(t[2], drillValues(t)).pKeep >= 0.5 ? "burn" : "out";
     drill.guess = g; drill.you.push(g === truth); drill.model.push(m === truth);
+    drill.streak = g === truth ? drill.streak + 1 : 0;
     buzz(g === truth ? 90 : 320, g !== truth);
+    if (g === truth) sfx.good(drill.streak); else sfx.bad();
+    if (drill.i === drill.rounds.length - 1) {                 // game over: jingle, and remember the best score on this device
+      var you = count(drill.you);
+      if (you >= count(drill.model)) sfx.win(); else sfx.lose();
+      if (you > load("best", 0)) { save("best", you); drill.newBest = true; }
+    }
     renderDrill();
+    replayTest(t, $("drillBox"), $("drillCap"), true);          // the reveal plays the real test back; without a burn time it stays a still
+    drillCoach();
   }
   function drillNext() {
     if (!drill.guess) return;
+    stopReplay();
     if (drill.i >= drill.rounds.length - 1) return drillStart();
-    drill.i++; drill.guess = null; renderDrill();
+    drill.i++; drill.guess = null; sfx.move(); renderDrill();
   }
   function count(a) { return a.filter(Boolean).length; }
   function renderDrill() {
@@ -1053,9 +1490,19 @@ window.FLAME_MODEL = {
       board.appendChild(pips);
       board.appendChild(el("span", "pts", String(count(row[1]))));
     });
+    var extra = el("div", "extra"), best = load("best", 0);
+    var s1 = el("span", "", "Streak: "); s1.appendChild(el("b", "", String(drill.streak))); extra.appendChild(s1);
+    var s2 = el("span", "", "Best on this device: "); s2.appendChild(el("b", "", best ? best + " of " + n : "none yet")); extra.appendChild(s2);
+    board.appendChild(extra);
 
     $("hDrillRound").textContent = "Round " + (drill.i + 1) + " of " + n;
-    $("drillBox").className = "flamebox" + (done ? (truth === "burn" ? " ended-burn" : " ended-out") : "");
+    if (REPLAY.box !== $("drillBox")) $("drillBox").className = "flamebox" + (done ? (truth === "burn" ? " ended-burn" : " ended-out") : "");
+    if (!done) {                                    // a fresh round: the picture gives nothing away
+      var pic = $("drillBox");
+      pic.querySelector(".flame").style.setProperty("--size", "0.8");
+      pic.querySelector(".flame").style.setProperty("--glow", "0.85");
+      pic.querySelector(".droplet").style.setProperty("--drop", (0.04 + t[7] * 0.022).toFixed(3));
+    }
     $("drillQ").textContent = done ? (truth === "burn" ? "It burned until the fuel was gone." : "It went out before the fuel was gone.") : "What happened to the flame?";
     [["drillOut", "out"], ["drillBurn", "burn"]].forEach(function (b) {
       $(b[0]).disabled = done; $(b[0]).classList.toggle("picked", drill.guess === b[1]);
@@ -1072,9 +1519,12 @@ window.FLAME_MODEL = {
       $("drillNextText").textContent = lastRound ? "Play again" : "Next test";
     }
     var you = count(drill.you), mod = count(drill.model);
+    $("drillLine").className = (done && lastRound) ? "rankline" : "";
     $("drillLine").textContent = (done && lastRound)
-      ? "Final score: you " + you + " of " + n + ", the model " + mod + " of " + n + ". " + (you > mod ? "You beat the model." : you === mod ? "A draw." : "The model wins this time.")
+      ? "Final score: you " + you + " of " + n + ", the model " + mod + ". " + (you > mod ? "You beat the model." : you === mod ? "A draw." : "The model wins this time.")
+        + " Rank: " + drillRank(you) + "." + (drill.newBest ? " New best score!" : "")
       : done ? "" : "Left: it went out first. Right: it burned all its fuel.";
+    coachLine();
   }
   $("drillOut").addEventListener("click", function () { drillGuess("out"); });
   $("drillBurn").addEventListener("click", function () { drillGuess("burn"); });
@@ -1090,8 +1540,9 @@ window.FLAME_MODEL = {
   }
 
   /* ---------- pages ---------- */
-  var PAGES = ["console"];
-  if (R) PAGES.push("research");
+  var PAGES = [];
+  if (R) PAGES.push("research");                   // what the challenge asks for comes first: summarize and rank the investigations
+  PAGES.push("console");
   if (hasTests) PAGES.push("drill");
   function showPage(name) {
     if (PAGES.indexOf(name) < 0) return;
@@ -1105,22 +1556,33 @@ window.FLAME_MODEL = {
     else if (name === "drill") { if (drill.rounds.length) renderDrill(); else drillStart(); }
     else render();
   }
-  function turnPage(dir) { showPage(PAGES[(PAGES.indexOf(view.page) + dir + PAGES.length) % PAGES.length]); }
-  function researchMove(dir) { view.sel += dir; renderResearch(); }
-  function researchNeed(dir) { view.need = (view.need + dir + R.needs.length) % R.needs.length; view.sel = 0; renderResearch(); }
+  function goPage(name) { if (name !== view.page && PAGES.indexOf(name) >= 0) { sfx.page(); showPage(name); } }
+  function turnPage(dir) { goPage(PAGES[(PAGES.indexOf(view.page) + dir + PAGES.length) % PAGES.length]); }
+  function researchMove(dir) { view.sel += dir; sfx.move(); renderResearch(); }
+  function researchNeed(dir) { view.need = (view.need + dir + R.needs.length) % R.needs.length; view.sel = 0; sfx.preset(); renderResearch(); }
   $("tabs").hidden = PAGES.length < 2;
   $("tabResearch").hidden = !R; $("tabDrill").hidden = !hasTests;
   $("hintPage").hidden = PAGES.length < 2;
-  $("tabConsole").addEventListener("click", function () { showPage("console"); });
-  $("tabDrill").addEventListener("click", function () { showPage("drill"); });
+  $("tabConsole").addEventListener("click", function () { goPage("console"); });
+  $("tabDrill").addEventListener("click", function () { goPage("drill"); });
   if (R) {
+    // One line that sums up the whole collection, counted from the data.
+    var tally = function (fn) { var c = {}; R.items.forEach(function (it) { var k = fn(it); c[k] = (c[k] || 0) + 1; }); return c; };
+    var byFuel = tally(function (it) { return it.fuel.toLowerCase(); });
+    var flown = R.items.filter(function (it) { return it.type === "Microgravity Investigation"; }).length;
+    $("resSummary").textContent = R.items.length + " NASA combustion investigations: "
+      + Object.keys(byFuel).sort(function (a, b) { return byFuel[b] - byFuel[a]; }).map(function (k) { return byFuel[k] + " on " + k; }).join(", ")
+      + ". " + flown + " are flight experiments, " + (R.items.length - flown) + " are ground studies.";
+    $("needs").style.gridTemplateColumns = "repeat(" + R.needs.length + ", minmax(0, 1fr))";
+    $("titleRes").textContent = "NASA research: " + R.items.length + " investigations, ranked";
     R.needs.forEach(function (nd, i) {
       var b = el("button"); b.type = "button";
       b.appendChild(el("b", "", nd.label)); b.appendChild(el("span", "", nd.hint));
       b.addEventListener("click", function () { view.need = i; view.sel = 0; renderResearch(); });
       $("needs").appendChild(b);
     });
-    $("tabResearch").addEventListener("click", function () { showPage("research"); });
+    $("tabResearch").addEventListener("click", function () { goPage("research"); });
+    $("orbitBtn").addEventListener("click", toggleOrbit);
   }
 
   /* ---------- Ask the AI ---------- */
@@ -1129,14 +1591,19 @@ window.FLAME_MODEL = {
   var AI = { ok: false, model: "", gpu: "", open: false, busy: false, sel: 0, qs: [] };
   function aiQuestions() {
     if (view.page === "research" && R) {
-      var list = ranked(), it = list[view.sel], need = R.needs[view.need].label.toLowerCase();
+      var list = ranked(), it = list[view.sel];
       var other = list.filter(function (x) { return x !== it; })[0];
-      return [
+      var moon = "For a Moon Base cabin with about 30% oxygen at low pressure, which investigations matter most, and why?";
+      var qs = [
         it ? "Explain " + it.name + " to a new crew member in simple words." : null,
-        "For a Moon Base cabin with about 30% oxygen at low pressure, which investigations matter most, and why?",
-        it && other ? "Compare " + it.name + " with " + other.name + ": what does each add for fire " + need + "?" : null,
-        "What do these investigations still leave unknown about fire safety on the Moon or Mars?"
+        moon,
+        it && other ? "Compare " + it.name + " with " + other.name + ": how are they alike, and how do they differ?" : null,
+        it ? "What did " + it.name + " measure, and with which instruments?" : null,
+        "Which investigations help design fire-safety equipment such as smoke detectors and extinguishers, and how?"
       ].filter(Boolean);
+      // While the list is ranked for cabin air, the Moon Base question is the one asked first.
+      if (R.needs[view.need].key === "cabin") qs = [moon].concat(qs.filter(function (q) { return q !== moon; }));
+      return qs;
     }
     if (view.page === "drill") {
       return drill.guess ? [                       // no hints before the answer is shown
@@ -1184,24 +1651,13 @@ window.FLAME_MODEL = {
     if (!qs.length) return;
     AI.open = true; AI.sel = 0; AI.qs = qs; renderAI();
     $("ai").hidden = false;
+    sfx.open();
     askAI(AI.qs[0]);                               // one press is enough: the first question is asked straight away
   }
-  function closeAI() { AI.open = false; $("ai").hidden = true; $("aiInput").blur(); }
-  function askAI(q) {
-    q = (q || "").trim();
-    if (!q || AI.busy) return;
-    AI.busy = true;
-    var box = $("aiAns"); box.innerHTML = "";
-    box.appendChild(el("span", "asked", q));
-    var out = el("span", "", "Thinking on the " + (AI.gpu || "team's PC") + " ..."); box.appendChild(out);
-    var body = { page: view.page === "research" ? "research" : "console", question: q };
-    if (view.page === "research" && R) {
-      var it = ranked()[view.sel];
-      body.selected = it ? it.id : ""; body.need = R.needs[view.need].label.toLowerCase();
-    } else {
-      body.reading = view.page === "drill" ? drillText() : readingText();
-    }
-    var t0 = Date.now(), got = "";
+  function closeAI() { if (AI.open) sfx.close(); AI.open = false; $("ai").hidden = true; $("aiInput").blur(); hush(); }
+  // Send one question to the model on the PC. onText gets the answer so far, onEnd gets (error or null, full text).
+  function aiStream(body, onText, onEnd) {
+    var got = "";
     fetch("/ask", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
       .then(function (resp) {
         if (!resp.ok || !resp.body) throw new Error("HTTP " + resp.status);
@@ -1210,20 +1666,63 @@ window.FLAME_MODEL = {
           return reader.read().then(function (x) {
             if (x.done) return;
             got += dec.decode(x.value, { stream: true });
-            out.textContent = got; box.scrollTop = box.scrollHeight;
+            onText(got);
             return pump();
           });
         }
         return pump();
       })
-      .then(function () {
-        if (!got.trim()) throw new Error("empty answer");
-        box.appendChild(el("span", "took", "Answered in " + ((Date.now() - t0) / 1000).toFixed(1) + " s by " + AI.model
-          + (AI.gpu ? " on this team's " + AI.gpu : "") + "."));
-        box.scrollTop = box.scrollHeight;
-      })
-      .catch(function (err) { out.textContent = "The AI did not answer (" + err.message + "). The rest of the dashboard still works."; })
-      .then(function () { AI.busy = false; });
+      .then(function () { if (!got.trim()) throw new Error("empty answer"); onEnd(null, got); })
+      .catch(function (err) { onEnd(err, got); });
+  }
+  // Read an answer aloud with a voice that is already on the device. V turns it off.
+  var VOICE = { on: load("voice", true), spoken: 0 };
+  function say(text) {
+    if (!VOICE.on || !window.speechSynthesis || !window.SpeechSynthesisUtterance) return;
+    try {
+      speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text.replace(/\s*\[[^\]]*\]/g, "").replace(/mm2\/s/g, "square millimetres per second"));
+      var en = speechSynthesis.getVoices().filter(function (v) { return /^en/i.test(v.lang); });
+      if (en.length) u.voice = en.filter(function (v) { return /natural|aria|jenny|guy|zira|david/i.test(v.name); })[0] || en[0];
+      u.lang = "en-US"; u.rate = 1.05;
+      VOICE.spoken++;
+      speechSynthesis.speak(u);
+    } catch (err) { /* no speech on this device */ }
+  }
+  function hush() { try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (err) { /* nothing to stop */ } }
+  function voiceButton() { $("aiVoice").textContent = "Voice: " + (VOICE.on ? "on" : "off"); }
+  function toggleVoice() { VOICE.on = !VOICE.on; save("voice", VOICE.on); voiceButton(); if (!VOICE.on) hush(); }
+  $("aiVoice").addEventListener("click", toggleVoice);
+  voiceButton();
+  function askAI(q) {
+    q = (q || "").trim();
+    if (!q || AI.busy) return;
+    AI.busy = true;
+    hush();
+    var box = $("aiAns"); box.innerHTML = "";
+    box.appendChild(el("span", "asked", q));
+    var out = el("span", "", "Ember is thinking on the " + (AI.gpu || "team's PC") + " ..."); box.appendChild(out);
+    var body = { page: view.page === "research" ? "research" : "console", question: q };
+    if (view.page === "research" && R) {
+      var it = ranked()[view.sel];
+      body.selected = it ? it.id : ""; body.need = R.needs[view.need].label.toLowerCase();
+    } else {
+      body.reading = view.page === "drill" ? drillText() : readingText();
+    }
+    var t0 = Date.now();
+    aiStream(body,
+      function (text) { out.textContent = text; box.scrollTop = box.scrollHeight; },
+      function (err, text) {
+        if (err) out.textContent = "Ember did not answer (" + err.message + "). The rest of the dashboard still works.";
+        else {
+          box.appendChild(el("span", "took", "Answered in " + ((Date.now() - t0) / 1000).toFixed(1) + " s by Ember (" + AI.model
+            + (AI.gpu ? " on this team's " + AI.gpu : "") + ")."));
+          box.scrollTop = box.scrollHeight;
+          sfx.reply();
+          if (AI.open) say(text);
+        }
+        AI.busy = false;
+      });
   }
   $("aiBtn").addEventListener("click", openAI);
   $("aiClose").addEventListener("click", closeAI);
@@ -1232,16 +1731,53 @@ window.FLAME_MODEL = {
     fetch("/ai").then(function (resp) { return resp.json(); }).then(function (j) {
       if (!j || !j.ok) return;
       AI.ok = true; AI.model = j.model; AI.gpu = j.gpu || "";
-      $("aiBtn").hidden = false;
+      $("aiBtn").hidden = false; $("titleAI").hidden = false;
       Array.prototype.forEach.call(document.querySelectorAll(".hintAI"), function (s) { s.hidden = false; });
-      $("aiWho").textContent = j.model + ", a language model running on this team's own PC" + (AI.gpu ? " (" + AI.gpu + ")" : "") + ". Nothing leaves the local network.";
+      $("aiWho").textContent = "the on-board AI: " + j.model + " running on this team's own PC" + (AI.gpu ? " (" + AI.gpu + ")" : "") + ". Nothing leaves the local network.";
     }).catch(function () {});
   }
+
+  /* ---------- start screen and starfield ---------- */
+  var titleOn = false;
+  function startGame() {
+    if (!titleOn) return;
+    titleOn = false; $("title").hidden = true; document.body.classList.remove("titled");
+    sfx.start();
+  }
+  if (location.hash !== "#notitle") { titleOn = true; $("title").hidden = false; document.body.classList.add("titled"); }
+  $("title").addEventListener("click", startGame);
+  (function () {
+    var cv = $("stars"), ctx = cv.getContext && cv.getContext("2d");
+    if (!ctx) return;
+    var still = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    var W = 0, H = 0, pts = [], rand = rng(11), then = null;
+    function size() { W = cv.width = window.innerWidth; H = cv.height = window.innerHeight; if (still) draw(0); }
+    for (var i = 0; i < 120; i++) pts.push({ x: rand(), y: rand(), r: 0.4 + rand() * 1.1, v: 0.003 + rand() * 0.011, a: 0.2 + rand() * 0.55 });
+    function draw(now) {
+      var dt = then == null ? 0 : Math.min(0.1, (now - then) / 1000); then = now;
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = "#cfe0ff";
+      for (var i = 0; i < pts.length; i++) {
+        var p = pts[i];
+        p.x -= p.v * dt; if (p.x < 0) p.x += 1;
+        ctx.globalAlpha = p.a;
+        ctx.beginPath(); ctx.arc(p.x * W, p.y * H, p.r, 0, 6.2832); ctx.fill();
+      }
+      if (!still) requestAnimationFrame(draw);
+    }
+    window.addEventListener("resize", size);
+    size();
+    if (!still) requestAnimationFrame(draw);
+  })();
 
   /* ---------- keyboard ---------- */
   document.addEventListener("keydown", function (e) {
     var onButton = e.target && e.target.tagName === "BUTTON";
     var typing = e.target && e.target.tagName === "INPUT" && e.target.type === "text";
+    if (titleOn) {                                 // any plain key leaves the start screen
+      if (!e.ctrlKey && !e.metaKey && !e.altKey && e.key !== "F11") { e.preventDefault(); startGame(); }
+      return;
+    }
     if (AI.open) {
       var n = AI.qs.length;
       if (e.key === "Escape") { e.preventDefault(); closeAI(); }
@@ -1250,21 +1786,21 @@ window.FLAME_MODEL = {
         else if (e.key === "ArrowDown") { e.preventDefault(); AI.sel = (AI.sel + 1) % n; renderAI(); }
         else if ((e.key === "Enter" || e.key === " ") && !onButton) { e.preventDefault(); askAI(AI.qs[AI.sel]); }
         else if (e.key === "Backspace") closeAI();
+        else if (e.key === "v" || e.key === "V") toggleVoice();
       }
       return;
     }
     if (typing) return;
     if (e.key === "/" || e.key === "?") { e.preventDefault(); openAI(); return; }
-    if (e.key === "1") { showPage("console"); return; }
-    if (e.key === "2") { showPage("research"); return; }
-    if (e.key === "3") { showPage("drill"); return; }
+    if (e.key === "m" || e.key === "M") { toggleSound(); return; }
+    if (e.key.length === 1 && "123".indexOf(e.key) >= 0) { if (PAGES[+e.key - 1]) goPage(PAGES[+e.key - 1]); return; }
     if (view.page === "drill") {
       switch (e.key) {
         case "ArrowLeft": e.preventDefault(); drillGuess("out"); break;
         case "ArrowRight": e.preventDefault(); drillGuess("burn"); break;
         case "Enter": case " ": if (!onButton) { e.preventDefault(); drillNext(); } break;
         case "r": case "R": drillStart(); break;
-        case "Escape": case "Backspace": showPage("console"); break;
+        case "Escape": case "Backspace": goPage(PAGES[0]); break;
       }
       return;
     }
@@ -1274,7 +1810,7 @@ window.FLAME_MODEL = {
         case "ArrowDown": e.preventDefault(); researchMove(1); break;
         case "ArrowLeft": e.preventDefault(); researchNeed(-1); break;
         case "ArrowRight": e.preventDefault(); researchNeed(1); break;
-        case "Escape": case "Backspace": showPage("console"); break;
+        case "x": case "X": toggleOrbit(); break;
       }
       return;
     }
@@ -1287,11 +1823,16 @@ window.FLAME_MODEL = {
       case "Escape": case "Backspace": toggleSheet(false); break;
       case "r": case "R": reset(); break;
       case "x": case "X": cyclePreset(); break;
+      case "[": stepStar(-1); break;               // pick a star on the map
+      case "]": stepStar(1); break;
+      case "p": case "P": replayStar(); break;     // replay the picked test, or the closest one
+      case "g": case "G": flyToStar(); break;      // move the settings onto it
     }
   });
 
   /* ---------- gamepad ---------- */
-  // Standard mapping: 0=A 1=B 2=X 3=Y 4=LB 5=RB 8=View 9=Menu 12=up 13=down 14=left 15=right, axes 0/1 = left stick.
+  // Standard mapping: 0=A 1=B 2=X 3=Y 4=LB 5=RB 7=RT 8=View 9=Menu 11=R3 12=up 13=down 14=left 15=right,
+  // axes 0/1 = left stick, axes 2/3 = right stick.
   var held = {};
   function fire(name, now, isDown, firstDelay, repeatMs, fn) {
     var h = held[name];
@@ -1306,9 +1847,16 @@ window.FLAME_MODEL = {
     for (var i = 0; i < pads.length; i++) if (pads[i] && pads[i].connected) { pad = pads[i]; break; }
     var chip = $("padChip");
     chip.classList.toggle("on", !!pad);
-    $("padText").textContent = pad ? "Controller connected" : "No controller: press a button";
+    $("padText").textContent = pad ? "Controller connected" : "No controller";
+    chip.title = pad ? "" : "Press any button on the controller to wake it up";
     if (pad) {
       var b = function (n) { return !!(pad.buttons[n] && pad.buttons[n].pressed); };
+      if (titleOn) {                               // the start screen only listens for A (or Menu)
+        fire("a", now, b(0), 0, 0, startGame);
+        fire("menu", now, b(9) || b(8), 0, 0, startGame);
+        requestAnimationFrame(poll);
+        return;
+      }
       var ax = pad.axes[0] || 0, ay = pad.axes[1] || 0, ai = AI.open;
       var pg = ai ? "ai" : view.page, con = pg === "console";
       var aiMove = function (dir) { AI.sel = (AI.sel + dir + AI.qs.length) % AI.qs.length; renderAI(); };
@@ -1328,13 +1876,20 @@ window.FLAME_MODEL = {
         if (pg === "ai") askAI(AI.qs[AI.sel]); else if (pg === "drill") drillNext(); else if (con) toggleSheet();
       });
       fire("b", now, b(1), 0, 0, function () {
-        if (pg === "ai") closeAI(); else if (con) toggleSheet(false); else showPage("console");
+        if (pg === "ai") closeAI(); else if (con) toggleSheet(false); else if (pg === "drill") goPage(PAGES[0]);
       });
       fire("y", now, b(3), 0, 0, function () { if (con) reset(); else if (pg === "drill") drillStart(); });
-      fire("x", now, b(2), 0, 0, function () { if (con) cyclePreset(); });
+      fire("x", now, b(2), 0, 0, function () { if (con) cyclePreset(); else if (pg === "research") toggleOrbit(); });
       fire("lb", now, b(4), 0, 0, function () { if (!ai) turnPage(-1); });
       fire("rb", now, b(5), 0, 0, function () { if (!ai) turnPage(1); });
       fire("menu", now, b(9) || b(8), 0, 0, function () { if (ai) closeAI(); else openAI(); });   // Menu or View button
+      // Right stick: point at a star on the map, or at an investigation in the orbit view. RT replays, R3 goes there.
+      var rx = pad.axes[2] || 0, ry = pad.axes[3] || 0;
+      if (!ai && rx * rx + ry * ry > 0.12) {
+        if (con) pickStar(rx, ry); else if (pg === "research") pickOrbit(rx, ry);
+      }
+      fire("rt", now, b(7), 0, 0, function () { if (con) replayStar(); });
+      fire("r3", now, b(11), 0, 0, function () { if (con) flyToStar(); });
     }
     requestAnimationFrame(poll);
   }
@@ -1347,8 +1902,12 @@ window.FLAME_MODEL = {
   window.__flame = { state: state, predict: predict, rangeCheck: rangeCheck, nudge: nudge, select: select, toggleSheet: toggleSheet, reset: reset,
                      cyclePreset: cyclePreset, activePreset: activePreset, view: view, showPage: showPage,
                      AI: AI, openAI: openAI, askAI: askAI, readingText: readingText,
-                     drill: function () { return drill; }, drillStart: drillStart, drillGuess: drillGuess, drillNext: drillNext, buzz: buzz };
+                     drill: function () { return drill; }, drillStart: drillStart, drillGuess: drillGuess, drillNext: drillNext, buzz: buzz,
+                     pages: PAGES, sound: SND, voice: VOICE, title: function () { return titleOn; }, startGame: startGame,
+                     map: MAP, orb: ORB, replay: REPLAY, pickStar: pickStar, stepStar: stepStar, flyToStar: flyToStar, replayStar: replayStar, pickOrbit: pickOrbit };
   render();
+  showPage(PAGES[0]);                              // the NASA research dashboard is the home page when its data is present
+  window.addEventListener("resize", function () { showPage(view.page); });   // the two drawings size themselves to the space they get
 })();
 </script>
 </body>
