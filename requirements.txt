@@ -1,0 +1,11 @@
+# The versions the data, model and audit scripts were written and checked with (Python 3.14).
+# pip install -r requirements.txt
+# The dashboard itself needs none of this: console/index.html runs in a browser, and
+# server/serve.py uses only the Python standard library.
+numpy==2.5.4
+pandas==3.1.1
+scikit-learn==1.9.1
+# docs/make_chart.py only
+matplotlib==3.11.2
+# the browser tests only (tests/browser_*.py, and the Node and Playwright copy tests/e2e can use)
+playwright==1.65.2
