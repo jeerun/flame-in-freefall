@@ -34,6 +34,7 @@ The model only ever sees NASA PSI text from data/raw/psi_search, the dashboard's
 numbers, and the question. Nothing is sent to the internet.
 """
 import argparse
+import ipaddress
 import json
 import os
 import re
@@ -484,6 +485,16 @@ def lan_address():
         return None
 
 
+def tailscale_address(addresses=None):
+    """This machine's address on a Tailscale network, if it is on one (Tailscale hands out 100.64.0.0/10)."""
+    try:
+        found = addresses if addresses is not None else [a[4][0] for a in socket.getaddrinfo(socket.gethostname(), None, socket.AF_INET)]
+    except OSError:
+        return None
+    net = ipaddress.ip_network("100.64.0.0/10")
+    return next((a for a in found if ipaddress.ip_address(a) in net), None)
+
+
 def main():
     parser = argparse.ArgumentParser(description="Serve the dashboard and its local AI.")
     parser.add_argument("--lan", action="store_true", help="also accept other devices on the same network")
@@ -529,6 +540,8 @@ def main():
     print(f"Dashboard: http://localhost:{args.port}")
     if args.lan:
         print(f"On the Legion Go (same Wi-Fi): http://{lan_address() or '<this PC address>'}:{args.port}")
+        if tailscale_address():
+            print(f"On the Legion Go (anywhere, both on Tailscale): http://{tailscale_address()}:{args.port}")
         print("If Windows asks whether to allow Python through the firewall: tick the kind of network this PC is on")
         print("(Private, Public, or both) and choose Allow. If the handheld still cannot open the address, a VPN on")
         print("this PC may be keeping local devices out: pause it, or allow local network access in its settings.")
