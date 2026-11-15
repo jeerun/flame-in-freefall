@@ -47,6 +47,9 @@ fails: `docs/legion-go-setup.md`.
 - [ ] A banner appears at the top, with a sound and a buzz, when the settings leave
       what NASA tested (set carbon dioxide and helium both above zero) and when the
       risk turns high (press X for Moon Base).
+- [ ] Flame console: A opens the explanation with three boxes (prediction, evidence,
+      limitations). There, X and Y open the two sections and LT saves a baseline and
+      opens the comparison. Changing a bar updates column B; B closes.
 - [ ] Fire drill: Left and Right guess, the test replays, A goes on, Y starts a new game.
 - [ ] Sound plays after the first touch or key press, and M mutes it. The controller
       buzzes when the red box appears and on a wrong Fire drill answer. If sound or
