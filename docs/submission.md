@@ -12,17 +12,20 @@ Flame in Freefall Crew Fire Console
 
 ## High-level project summary
 
-An offline, gamepad-driven dashboard that turns NASA's microgravity combustion data
-into fire-safety answers. It has two pages. The NASA research page summarizes and
-ranks the 24 combustion investigations in NASA's Physical Sciences Informatics (PSI)
-database by what the user needs: preventing a fire, detecting it, or putting it out.
-The Flame console page goes deep on one of them, the Flame Extinguishment Experiment
-(FLEX): two small models trained on 252 real tests predict whether a fuel-droplet
-flame burns until the fuel is gone or goes out first, and how fast it burns, for any
-cabin air the user sets, including the oxygen-rich, low-pressure air expected in the
-Moon Base. Every reading ranks the closest real NASA tests, and the dashboard says
-so in red when the settings leave what NASA actually tested. It runs as one web page
-on a Lenovo Legion Go.
+A gamepad-driven dashboard that turns NASA's microgravity combustion data into
+fire-safety answers, with its AI running on our own hardware instead of the cloud.
+The NASA research page summarizes and ranks the 24 combustion investigations in
+NASA's Physical Sciences Informatics (PSI) database by what the user needs:
+preventing a fire, detecting it, or putting it out. The Flame console page goes deep
+on one of them, the Flame Extinguishment Experiment (FLEX): two small models trained
+on 252 real tests predict whether a fuel-droplet flame burns until the fuel is gone
+or goes out first, for any cabin air the user sets, including the oxygen-rich,
+low-pressure air expected in the Moon Base. The Fire drill page turns the same data
+into a game: guess how a real NASA test ended, and see whether you beat the model.
+On every page, "Ask the AI" sends the question to a language model on the team's
+RTX 5080 PC, which answers from the NASA records only and cites them. Every reading
+ranks the closest real NASA tests, and the dashboard says so in red when the settings
+leave what NASA actually tested. It runs as one web page on a Lenovo Legion Go.
 
 ## Link to project demo
 Video up to 30 seconds with English subtitles, or up to 7 slides. Public link, no login.
@@ -37,7 +40,7 @@ https://github.com/jeerun/flame-in-freefall
 ## Detailed project description
 What it does, how it works, what benefit it has, what tools and languages we used.
 
-**The challenge asks for** an interactive, AI-powered, web-based dashboard that
+**The challenge asks for** an interactive, SI-powered, web-based dashboard that
 summarizes, ranks and interprets NASA's microgravity combustion investigations for
 fire safety. Here is how each word is answered.
 
@@ -67,17 +70,40 @@ oxygen, pressure, carbon dioxide, helium and droplet size, and the page shows:
 - an explanation: which settings push the result which way, the three closest real
   tests, how the nearby tests ended, and the model's measured accuracy.
 
+**Plays like a handheld game.** Everything is driven with a gamepad. The flame picture
+breathes faster as the burning rate rises, the controller buzzes when the settings
+leave what NASA tested, and the picture turns into a question mark there. A third
+page, Fire drill, is a ten-round game: it shows the settings of a real FLEX test, the
+player guesses whether the flame went out first or burned all its fuel, and the page
+reveals NASA's recorded result and keeps score, player against model. Five of the ten
+tests burned all their fuel and five went out, so guessing one answer every time does
+not win. It is a quick way to build intuition for what makes a flame survive in
+microgravity, and it shows the model's misses as openly as its hits.
+
 One button switches the cabin air between Earth-like air and the Moon Base case from
 the challenge brief (oxygen 30% or more at 10.2 psi or less). FLEX ran tests at that
 pressure and oxygen level, so the page can show both what the model expects there and
 that the nearest real tests were inconclusive.
 
-**Where the AI is.** Two places, both stated on screen. The summaries and relevance
-ranks on the research page were written by an AI model (Claude) from each
-investigation's PSI record, then stored in the page so it works offline. The
-predictions on the console page come from machine-learning models trained on NASA
-data. No AI model runs on the device: a crew tool should work without a network and
-give the same answer every time.
+**Where the AI is.** Three places, each stated on screen.
+
+- "Ask the AI", on every page. A language model (Gemma 4, 12 billion parameters) runs
+  on the team's own PC with an RTX 5080, and the handheld reaches it over the local
+  network. On the research page it answers questions such as "For a Moon Base cabin
+  with about 30% oxygen at low pressure, which investigations matter most, and why?"
+  from the PSI text of the investigations closest to the question. On the console
+  page it interprets the current reading in plain words. It is told to answer only
+  from the material it is given, to cite PSI identifiers, and to say so when the
+  records do not hold the answer. Answers arrive in a few seconds. No cloud service
+  is involved, which is how a crew far from Earth would have to run it.
+- The summaries and relevance ranks on the research page were written ahead of time
+  by an AI model (Claude) from each investigation's PSI record and stored in the
+  page, so they are there even when the PC is not.
+- The predictions on the console page come from machine-learning models trained on
+  NASA data.
+
+If the PC is switched off, the dashboard still opens as a plain file and everything
+except "Ask the AI" works, fully offline.
 
 **How it works.**
 
@@ -91,8 +117,12 @@ give the same answer every time.
    Inputs are only things known before ignition.
 3. Export. Scripts write the model, the list of real tests and the research notes
    into two small JavaScript files.
-4. Dashboard. One HTML file with no libraries and no network access reads them. It
-   works with a gamepad, touch or keyboard and fits a 1280x680 screen.
+4. Dashboard. One HTML file with no libraries reads them. It works with a gamepad,
+   touch or keyboard and fits a 1280x680 screen.
+5. Local AI. A small Python script on the PC serves the dashboard on the local
+   network. For each question it picks the PSI records that share the most words with
+   the question, adds a one-line catalogue of all 24, and hands that to the language
+   model running on the GPU through Ollama. The answer streams back to the handheld.
 
 **How we keep it honest.**
 
@@ -106,6 +136,9 @@ give the same answer every time.
   tells the user to trust the tests.
 - Accuracy is measured on tests held out of training and shown on screen.
 - AI-written text is labelled as AI-written, next to facts copied from PSI.
+- The language model never sees the internet, only NASA's PSI text and the numbers on
+  screen. In our tests it declined a question the records cannot answer instead of
+  making something up. Its answers are still labelled as possibly wrong.
 
 **Results, on held-out tests** (5-fold cross-validation repeated 20 times):
 
@@ -125,6 +158,11 @@ give the same answer every time.
   ranked, not modelled, and their raw data is not compared.
 - The relevance ranks are an AI model's reading of NASA's descriptions, on a 0 to 3
   scale. They are a starting point, not a NASA rating.
+- In Fire drill the model was trained on the tests it is scored on, so its score there
+  is not a measure of accuracy. The held-out numbers above are. The page says so.
+- "Ask the AI" can be wrong or imprecise, like any language model. We spot-checked a
+  handful of answers against the PSI records, not a formal evaluation. It needs the
+  PC to be on and reachable; without it that one button disappears.
 - The outcome model separates heptane tests well (AUC about 0.8 within heptane) and
   methanol tests poorly (about 0.6): only 8 of 124 methanol tests burned to completion.
 - Pressure sits at only two levels, about 0.7 and 1.0 atm, so its effect is weakly known.
@@ -143,9 +181,10 @@ that matter for their question in seconds, then explore one of them by hand, and
 always shows where the data stops.
 
 **Tools and languages.** Python (pandas, NumPy, scikit-learn, matplotlib) for
-cleaning, training and the chart. HTML, CSS and plain JavaScript with the browser
-Gamepad API for the dashboard. Git and GitHub. Trained on a desktop PC in seconds;
-shown on a Lenovo Legion Go.
+cleaning, training and the chart, and the Python standard library for the local
+server. HTML, CSS and plain JavaScript with the browser Gamepad API for the
+dashboard. Ollama running the open Gemma 4 12B model on an NVIDIA RTX 5080 for
+"Ask the AI". Git and GitHub. Shown on a Lenovo Legion Go.
 
 ## NASA data
 Copy from docs/sources.md.
@@ -181,27 +220,33 @@ from each in `docs/sources.md`):
 
 ## Space agency partner and other data
 
-None. The project uses NASA data only. Software: Python, pandas, NumPy, scikit-learn
-and matplotlib (open source).
+No other data: the project uses NASA data only. Software and models: Python, pandas,
+NumPy, scikit-learn and matplotlib (open source); Ollama (https://ollama.com) to run
+a language model locally; Gemma 4 12B, an open model from Google, as that model.
 
 ## Use of artificial intelligence
 Where and how we used AI. Copy from the README and add anything new.
 
-We used Claude (Anthropic), an AI assistant.
-
 Inside the product:
 
+- "Ask the AI" uses Gemma 4 12B, an open language model from Google, run locally with
+  Ollama on the team's own RTX 5080 PC. It answers the user's questions at run time
+  from the NASA PSI records and the numbers on screen, which our server puts in its
+  prompt, and it is instructed to cite PSI identifiers and not to guess. Its answers
+  are generated on the spot, shown with a warning that they can be wrong, and never
+  leave the local network.
 - The plain-language summaries, the "why it matters" lines and the 0 to 3 relevance
-  scores on the NASA research page were written by Claude from the PSI record of each
-  investigation. The page labels them as AI-written and shows the PSI identifier so
-  they can be checked. Titles, project type and hardware are copied from PSI unchanged.
+  scores on the NASA research page were written ahead of time by Claude (Anthropic)
+  from the PSI record of each investigation. The page labels them as AI-written and
+  shows the PSI identifier so they can be checked. Titles, project type and hardware
+  are copied from PSI unchanged.
 - The predictions come from a logistic regression and a linear regression (machine
   learning, not generative AI) trained on the NASA FLEX table.
 
-While building it:
+While building it we used Claude (Anthropic), an AI assistant, for:
 
 - planning the project and the repository layout;
-- writing the dashboard (`console/index.html`);
+- writing the dashboard (`console/index.html`) and the local server (`server/serve.py`);
 - writing the data-cleaning and training scripts, then reviewing them and re-running
   them to confirm the numbers;
 - reading the PSI-69 table from the NASA page into a file (checked page by page with

@@ -24,8 +24,23 @@ owner's local time (confirm on the team page). "Submit for Judging" is final.
 - [ ] D-pad and left stick pick and change settings, A opens the explanation, B closes
       it, Y resets.
 - [ ] X switches the cabin air between "Earth-like air" and "Moon Base (expected)".
-- [ ] LB or RB opens the "NASA research" page; Left and Right change the question,
-      Up and Down move through the list, B goes back.
+- [ ] RB goes to the "NASA research" page, then to "Fire drill"; LB goes back. On the
+      research page Left and Right change the question, Up and Down move through the
+      list. On Fire drill, Left and Right guess, A goes on, Y starts a new game.
+- [ ] The controller buzzes when the red box appears and on a wrong Fire drill answer.
+      If it does not, nothing is broken: some browsers and controllers have no rumble.
+
+## Local AI, PC and Legion Go together (owner only)
+
+- [ ] On the PC, `Start dashboard.bat` prints "Local AI: ready, gemma4:12b on NVIDIA
+      GeForce RTX 5080". The first time, Windows asks about the firewall: choose Allow
+      on private networks.
+- [ ] On the Legion Go, on the same Wi-Fi, the address the window printed opens the
+      dashboard and the "Ask the AI" button is in the top bar.
+- [ ] The Menu button opens "Ask the AI" and an answer appears within a few seconds,
+      ending with the model name and the graphics card.
+- [ ] With the PC window closed, `console/index.html` opened as a file still works,
+      without the "Ask the AI" button.
 - [ ] The red "Outside the tested range" box appears with carbon dioxide and helium
       both above zero.
 

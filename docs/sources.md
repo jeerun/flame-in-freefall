@@ -53,6 +53,14 @@ What is in the FLEX table and what we used:
 | NASA Astronomy Picture of the Day, "Fire in Space", Aug 10, 2021 | https://science.nasa.gov/image-article/apod-2021-august-10-fire-in-space/ | On Earth flames are teardrop shaped because heated air rises. On the ISS flames are spheres. |
 | C. K. Law, "Mechanisms of droplet combustion", 1982, NASA NTRS 19820015551 | https://ntrs.nasa.gov/citations/19820015551 | The classical d-squared law of droplet burning: the droplet diameter squared falls at a steady rate, the burning-rate constant. |
 
+## Software and models that are not ours
+
+| What | Link | Used for |
+|---|---|---|
+| Ollama 0.40 | https://ollama.com | Runs the language model on the team's PC and GPU. |
+| Gemma 4, 12B (`gemma4:12b`, 8.0 GB, 4-bit), an open model from Google | https://ollama.com/library/gemma4 | The model behind "Ask the AI". Check its licence terms on that page before reusing it. |
+| Python, pandas, NumPy, scikit-learn, matplotlib | https://www.python.org | Cleaning, training, the chart, the local server. |
+
 ## Claims shown in the console, and where each comes from
 
 Wording in quotes is the text on screen. "Our model" means the two regressions in
@@ -83,6 +91,12 @@ Wording in quotes is the text on screen. "Our model" means the two regressions i
 | NASA research page: investigation title, "Flight experiment" or "Ground study", "Hardware", the PSI identifier | Copied from the PSI search records in `data/raw/psi_search/` ("Title", "Project Type", "Experiment Hardware", "Accession"). Spelling is PSI's. |
 | NASA research page: "What it did", "What varied", "Why it matters", the fuel label, and the ranks "Direct", "Strong", "Related" | Written by an AI model (Claude) from the "Objectives", "Approach" and "Keywords" text of each PSI record, and for two entries from the challenge brief (ACME E-FIELD Flames mimicking partial gravity; ACME CFI-G having the highest oxygen levels). Kept in `data/clean/research_notes.json`. The page says they are AI-written. Not NASA's wording and not a NASA rating. |
 | NASA research page: "... other investigations are not about ..." | Count of investigations the notes score 0 for that need. |
+| Fire drill: the settings shown, "It burned until the fuel was gone." or "It went out before the fuel was gone.", "This was FLEX test ..., measured burning rate ..." | One row of the PSI-69 table per round, shown as recorded: its inputs, its "Test end" ("Completion" or "Extinction") and its "Burning rate". Ten rows are drawn at random, five of each outcome. |
+| Fire drill: "The model gave it ... % to burn all its fuel, so it answered ...", the score rows "You" and "Model", "Final score ..." | Our model's output for that test's settings, counted as "burned all its fuel" at 50 % or more. The model was trained on these same tests, as the page says, so this score is a game score and not an accuracy figure. |
+| Flame picture that pulses, grows, fades, or becomes a question mark; controller buzz | Our own illustration and effects. The pulse speeds up with the modelled burning rate. Not a simulation or a recording. |
+| "Ask the AI": the preset questions | Our own wording. The Moon Base question uses the oxygen and pressure figures from the challenge brief. |
+| "Ask the AI": the answers | Written at run time by a language model (Gemma 4 12B, run with Ollama on the team's PC). `server/serve.py` gives it only: the one-line catalogue from `research_notes.json`, the PSI "Objectives", "Approach", "Keywords" and hardware text of the four records that share the most words with the question, three facts from the challenge brief, or, on the Flame console page, the text of the reading on screen plus the PSI-69 record. It is told to cite PSI ids and not to guess. Its wording is not NASA's and can be wrong; the panel says so. |
+| "Ask the AI": "... a language model running on this team's own PC (NVIDIA GeForce RTX 5080)" and "Answered in ... s by gemma4:12b on this team's NVIDIA GeForce RTX 5080" | Reported by the server: the model name it was started with, the graphics card name from `nvidia-smi`, and the time measured in the browser. |
 
 ## What we do not claim
 
