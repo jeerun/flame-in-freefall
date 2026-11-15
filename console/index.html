@@ -492,6 +492,40 @@
     .hints { padding: 0.4rem 1.2rem; }
   }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+  /* Summary-first explanations and session-only scenario comparisons. */
+  .sheet h3 { padding-right: 5rem; }
+  .reading-summary { display: grid; gap: .6rem; margin: .8rem 0; }
+  .reading-summary section { padding: .65rem .8rem; border: 1px solid var(--line); border-radius: .5rem; }
+  .reading-summary h4 { margin: 0 0 .3rem; font-size: .9rem; color: var(--flame); }
+  .reading-summary p { margin: 0; line-height: 1.45; font-size: .98rem; }
+  .reading-summary .summary-limit { border-left: 3px solid var(--warning); }
+  .sheet details { border-top: 1px solid var(--line); padding: .65rem 0; }
+  .sheet summary { cursor: pointer; font-weight: 600; padding: .3rem; }
+  .sheet summary small { font-weight: 400; color: var(--ink-2); margin-left: .5rem; }
+  .sheet details[open] summary { margin-bottom: .65rem; }
+  .baseline-actions { display: flex; flex-wrap: wrap; gap: .45rem; align-items: center; margin-top: .6rem; }
+  .baseline-actions button { display: inline-flex; gap: .4rem; align-items: center; padding: .45rem .75rem; background: var(--panel-hi); border: 1px solid var(--flame); border-radius: .45rem; cursor: pointer; color: var(--ink); }
+  .baseline-actions button:disabled { opacity: .45; cursor: default; }
+  #baselineStatus { font-size: .8rem; color: var(--ink-2); flex-basis: 100%; }
+  .compare-table { width: 100%; border-collapse: collapse; margin-top: .8rem; font-size: .9rem; table-layout: fixed; }
+  .compare-table th, .compare-table td { text-align: left; padding: .5rem .35rem; border-bottom: 1px solid var(--line); vertical-align: top; overflow-wrap: anywhere; }
+  .compare-table th:first-child { width: 36%; }
+  .compare-table .changed td:last-child { background: var(--flame-dim); font-weight: 600; }
+  .compare-table small { display: block; color: var(--ink-2); font-weight: 400; margin-top: .15rem; }
+  .compare-warnings { display: grid; gap: .5rem; margin-top: .75rem; }
+  .compare-warning { padding: .65rem; border-left: 3px solid var(--warning); background: var(--panel); font-size: .9rem; line-height: 1.4; }
+  .sheet summary:focus-visible, .baseline-actions button:focus-visible { outline: 2px solid var(--flame); outline-offset: 3px; }
+  /* Short screens: the summary, the two buttons and both section headings must show without scrolling. */
+  @media (max-height: 720px) and (min-width: 821px) {
+    .reading-summary { gap: .35rem; margin: .45rem 0; }
+    .reading-summary section { padding: .35rem .8rem; }
+    .reading-summary h4 { margin-bottom: .1rem; }
+    .sheet details { padding: .35rem 0; }
+    .baseline-actions { margin-top: .35rem; }
+    .baseline-actions button { padding: .3rem .75rem; }
+  }
+
 </style>
 </head>
 <body>
@@ -581,11 +615,33 @@
       <p class="mapfine" id="mapFine" hidden></p>
     </div>
 
+    <div class="sheet compare-sheet" id="compareSheet" hidden role="dialog" aria-labelledby="compareTitle">
+      <button type="button" class="close" id="closeCompare"><kbd>B</kbd> Close</button>
+      <h3 id="compareTitle">Compare scenarios</h3>
+      <p class="fine">Baseline A stays fixed. Change the controls on the left to update B.</p>
+      <table class="compare-table"><thead><tr><th scope="col">Setting / result</th><th scope="col">Baseline A</th><th scope="col">Current B</th></tr></thead><tbody id="compareRows"></tbody></table>
+      <div id="compareWarnings" class="compare-warnings"></div>
+      <p class="fine">Differences are model estimates, not a ranking of overall fire safety. pp = percentage points.</p>
+      <div class="baseline-actions"><button type="button" id="replaceBaseline" title="Key H, or LT"><kbd class="wide">LT</kbd> Replace baseline with B</button><button type="button" id="clearBaseline">Clear baseline</button></div>
+      <p class="fine">Saved for this page session only. Reset changes B; refreshing clears A. Keys: H save or replace, C compare, Esc close. Controller: LT replaces the baseline, the right stick scrolls this panel, B closes.</p>
+    </div>
     <div class="sheet" id="sheet" hidden role="dialog" aria-labelledby="sheetTitle">
       <button type="button" class="close" id="closeSheet"><kbd>B</kbd> Close</button>
       <h3 id="sheetTitle">Why the model says this</h3>
-      <ul id="sheetList"></ul>
-      <p class="fine" id="sheetFine"></p>
+      <div class="reading-summary">
+        <section><h4>Prediction</h4><p id="summaryPrediction"></p></section>
+        <section><h4>Real-test evidence</h4><p id="summaryEvidence"></p></section>
+        <section class="summary-limit"><h4>Limitations</h4><p id="summaryLimits"></p></section>
+      </div>
+      <div class="baseline-actions">
+        <button type="button" id="saveBaseline" title="Key H, or LT while this panel is open"><kbd class="wide">LT</kbd> <span id="saveBaselineText">Save as baseline and compare</span></button>
+        <button type="button" id="openCompare" disabled title="Key C">Compare</button>
+        <span id="baselineStatus" role="status">Save these settings as A, then change the bars to see B beside it.</span>
+      </div>
+      <details id="whyDetails"><summary>Why this prediction? <small>X / key W</small></summary><ul id="sheetList"></ul></details>
+      <details id="testDetails"><summary>Test details &amp; sources <small>Y / key T</small></summary><ul id="testList"></ul><p class="fine" id="sheetFine"></p>
+        <p class="fine"><a href="https://psi.nasa.gov/physci/repo/data/investigations/PSI-69" target="_blank" rel="noopener">NASA PSI-69 FLEX source ↗</a></p>
+      </details>
     </div>
   </section>
 </main>
@@ -783,7 +839,7 @@ window.FLAME_MODEL = {
   "use strict";
   var M = window.FLAME_MODEL;
   var $ = function (id) { return document.getElementById(id); };
-  var state = { sel: 0, fuel: M.fuels[0].key, values: {}, sheet: false };
+  var state = { sel: 0, fuel: M.fuels[0].key, values: {}, sheet: false, baseline: null, comparing: false };
   var last = null;                                // the reading on screen: { r: prediction, rc: range check }
   var lastLevel = null, lastHigh = false, lastDisagree = false;   // the previous reading, to notice changes
 
@@ -1142,6 +1198,7 @@ window.FLAME_MODEL = {
     drawMap(rc);
 
     if (state.sheet) renderSheet(r, rc);
+    renderComparison();
   }
 
   // Every reason the settings count as untested, most serious first.
@@ -1154,7 +1211,12 @@ window.FLAME_MODEL = {
   }
 
   function renderSheet(r, rc) {
+    var summary = readingSummary(r, rc);
+    $("summaryPrediction").textContent = summary.prediction;
+    $("summaryEvidence").textContent = summary.evidence;
+    $("summaryLimits").textContent = summary.limits;
     var ul = $("sheetList"); ul.innerHTML = "";
+    $("testList").innerHTML = "";
     function li(t) { ul.appendChild(el("li", "", t)); }
     var ds = drivers(), ap = activePreset();
     if (!ds.length) li("All settings are at their starting values, so nothing is pushing the result either way.");
@@ -1164,6 +1226,7 @@ window.FLAME_MODEL = {
       li((n === 0 ? "Biggest factor: " : "") + what + " " + dir + ".");
     });
     li("Burning rate " + r.K.toFixed(2) + " mm²/s means the droplet's diameter squared shrinks by that much every second.");
+    ul = $("testList");
     if (ap && ap.key === "moon") li("Cabin air is the Moon Base case from the challenge brief: oxygen 30 % or more at 10.2 psi (0.69 atm) or less.");
     if (ap && ap.key === "mars") li("Cabin air for a Mars base is an assumption: the challenge brief gives numbers only for the Moon Base and pressurized rovers, so the same air is used here. NASA has no fire tests at Mars gravity yet.");    if (rc.near) {
       var nb = rc.near.near;
@@ -1196,6 +1259,89 @@ window.FLAME_MODEL = {
     $("sheetFine").textContent = fine + "This is a model reading for study and planning, not a crew procedure.";
   }
 
+  function readingSummary(r, rc) {
+    var nb = rc.near && rc.near.near;
+    var prediction = rc.level === "outside" ? "Outside the tested conditions. Do not rely on this prediction."
+      : Math.round(r.pKeep * 100) + "% estimated chance of burning until the fuel is gone; " + Math.round(r.pOut * 100) + "% of going out first. Burning rate: " + r.K.toFixed(2) + " mm²/s.";
+    var evidence = !rc.near ? "No real-test comparison is available."
+      : rc.near.far ? "Closest: FLEX test " + rc.near.test[0] + ". " + testEnd(rc.near.test) + " Even this test is far from the current settings."
+      : nb.n + " nearby test(s): " + nb.done + " burned to completion, " + nb.out + " went out early, " + nb.other + " had no clear outcome.";
+    var limits = [];
+    if (M.meta.mock) limits.push("Mock model: these are not NASA-derived predictions.");
+    if (rc.level === "outside") limits.push(outsideReasons(rc).join(" ") + " The numbers are unsupported extrapolations.");
+    if (rc.near && rc.near.far) limits.push("There is no close experimental match for these conditions.");
+    if (nb && nb.n && nb.done + nb.out === 0) limits.push("Nearby tests have no clear flame outcome, so they cannot confirm this prediction.");
+    if (rc.disagree) limits.push("Nearby real tests disagree with the model. Give the experimental evidence priority.");
+    if (rc.edge.length) limits.push("These conditions are near the edge of the tested range.");
+    var ap = activePreset();
+    if (ap && ap.key === "mars") limits.push("Mars cabin air is an assumed scenario, not a Mars-gravity validation.");
+    if (!limits.length) limits.push("Experimental coverage does not guarantee accuracy for this exact combination.");
+    limits.push("Visible flame extinction does not establish safety; cool-flame reactions may continue.");
+    return { prediction: prediction, evidence: evidence, limits: limits.join(" ") };
+  }
+
+  function comparisonSnapshot() {
+    return { fuel: state.fuel, fuelLabel: fuelLabel(), values: Object.assign({}, state.values),
+      r: Object.assign({}, last.r), level: last.rc.level,
+      summary: readingSummary(last.r, last.rc), coverage: $("confTitle").textContent };
+  }
+  function saveBaseline() {
+    state.baseline = comparisonSnapshot();
+    $("baselineStatus").textContent = "Baseline saved. Changes now update Current B only.";
+    toggleComparison(true);
+  }
+  function clearBaseline() {
+    state.baseline = null;
+    toggleComparison(false);
+    $("baselineStatus").textContent = "Baseline cleared. Save another setting to compare.";
+  }
+  function toggleComparison(open) {
+    state.comparing = !!state.baseline && (open == null ? !state.comparing : open);
+    if (state.comparing) {
+      if (MAP.big) mapBig(false);
+      state.sheet = false; $("sheet").hidden = true;
+    }
+    $("compareSheet").hidden = !state.comparing;
+    renderComparison();
+  }
+  function renderComparison() {
+    $("openCompare").disabled = !state.baseline;
+    $("saveBaselineText").textContent = state.baseline ? "Replace the baseline and compare" : "Save as baseline and compare";
+    if (!state.baseline || !state.comparing) return;
+    var a = state.baseline, b = comparisonSnapshot(), body = $("compareRows");
+    body.innerHTML = "";
+    function row(label, av, bv, changed, delta) {
+      var tr = el("tr", changed ? "changed" : ""), th = el("th", "", label); th.scope = "row"; tr.appendChild(th);
+      tr.appendChild(el("td", "", av)); var td = el("td", "", bv);
+      if (delta) td.appendChild(el("small", "", delta));
+      tr.appendChild(td); body.appendChild(tr);
+    }
+    function signed(v, digits, unit) { return (v > 0 ? "+" : "") + v.toFixed(digits) + " " + unit + " vs A"; }
+    row("Fuel", a.fuelLabel, b.fuelLabel, a.fuel !== b.fuel);
+    M.features.forEach(function (f) {
+      var av = a.values[f.key], bv = b.values[f.key];
+      row(f.label, fmt(f, av) + " " + f.unit, fmt(f, bv) + " " + f.unit, Math.abs(av - bv) > 1e-9);
+    });
+    var usable = a.level !== "outside" && b.level !== "outside";
+    row("Burns to completion", Math.round(a.r.pKeep * 100) + "%", Math.round(b.r.pKeep * 100) + "%", Math.abs(a.r.pKeep - b.r.pKeep) > 1e-9,
+      usable ? signed((b.r.pKeep - a.r.pKeep) * 100, 1, "pp") : "Delta withheld: unsupported conditions");
+    row("Goes out first", Math.round(a.r.pOut * 100) + "%", Math.round(b.r.pOut * 100) + "%", Math.abs(a.r.pOut - b.r.pOut) > 1e-9);
+    row("Burning rate", a.r.K.toFixed(2) + " mm²/s", b.r.K.toFixed(2) + " mm²/s", Math.abs(a.r.K - b.r.K) > 1e-9,
+      usable ? signed(b.r.K - a.r.K, 2, "mm²/s") : "Delta withheld: unsupported conditions");
+    row("Data support", a.coverage, b.coverage, a.coverage !== b.coverage);
+    var warnings = $("compareWarnings"); warnings.innerHTML = "";
+    [a, b].forEach(function (snap, i) {
+      var box = el("div", "compare-warning"), title = el("strong", "", i ? "Current B: " : "Baseline A: ");
+      box.appendChild(title); box.appendChild(document.createTextNode(snap.summary.evidence + " " + snap.summary.limits)); warnings.appendChild(box);
+    });
+  }
+  function toggleExplanationDetail(id) { var d = $(id); d.open = !d.open; }
+  $("saveBaseline").addEventListener("click", saveBaseline);
+  $("replaceBaseline").addEventListener("click", saveBaseline);
+  $("clearBaseline").addEventListener("click", clearBaseline);
+  $("openCompare").addEventListener("click", function () { toggleComparison(true); });
+  $("closeCompare").addEventListener("click", function () { toggleComparison(false); });
+
   /* ---------- actions ---------- */
   function select(i) { state.sel = (i + rowCount) % rowCount; render(); }
   // Up and Down: pick a setting, or scroll the explanation panel while it is open.
@@ -1217,6 +1363,7 @@ window.FLAME_MODEL = {
     render();
   }
   function toggleSheet(open) {
+    if (open !== false) toggleComparison(false);
     if (MAP.big && open !== false) mapBig(false);
     var was = state.sheet;
     state.sheet = open == null ? !state.sheet : open;
@@ -2309,7 +2456,7 @@ window.FLAME_MODEL = {
   function readingText() {
     renderSheet(last.r, last.rc);                 // fills the explanation list even while its panel is closed
     var t = function (id) { return $(id).textContent; };
-    var bullets = Array.prototype.map.call($("sheetList").children, function (li) {
+    var bullets = Array.prototype.map.call(document.querySelectorAll("#sheetList > li, #testList > li"), function (li) {
       var sub = li.querySelector("ol");
       if (!sub) return "- " + li.textContent;
       return "- " + li.firstChild.textContent + " " + Array.prototype.map.call(sub.children, function (x, i) { return (i + 1) + ") " + x.textContent; }).join(" ");
@@ -2321,6 +2468,7 @@ window.FLAME_MODEL = {
       + " %; burning rate " + t("kVal") + " mm2/s; droplet gone in about " + t("tVal") + " s if the flame lasts."
       + "\nConfidence box: " + t("confTitle") + ". " + t("confText")
       + "\nOne-line reading: " + t("oneLine")
+      + "\nSummary: " + t("summaryPrediction") + " " + t("summaryEvidence") + " " + t("summaryLimits")
       + "\nExplanation panel:\n" + bullets
       + "\nFine print: " + t("sheetFine");
   }
@@ -2567,7 +2715,7 @@ window.FLAME_MODEL = {
   var wheelAcc = 0, wheelAt = 0;
   window.addEventListener("wheel", function (e) {
     var t = e.target && e.target.closest ? e.target : document.body;
-    if (titleOn || SIM.open || AI.open || e.ctrlKey || (state.sheet && !MAP.big)) return;      // those scroll, or do nothing, by themselves
+    if (titleOn || SIM.open || AI.open || e.ctrlKey || (state.sheet && !MAP.big) || t.closest(".sheet")) return;   // those scroll, or do nothing, by themselves
     if (view.page === "drill" || (view.page === "research" && !OX.open && (view.orbit || t.closest("#card")))) return;
     e.preventDefault();
     var d = e.deltaMode === 1 ? e.deltaY * 40 : e.deltaY, now = Date.now(), steps;
@@ -2658,6 +2806,14 @@ window.FLAME_MODEL = {
       }
       return;
     }
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (e.target && e.target.tagName === "SUMMARY" && (e.key === "Enter" || e.key === " ")) return;
+    if (state.sheet && (e.key.toLowerCase() === "w" || e.key.toLowerCase() === "t")) {
+      e.preventDefault(); toggleExplanationDetail(e.key.toLowerCase() === "w" ? "whyDetails" : "testDetails"); return;
+    }
+    if (e.key.toLowerCase() === "h") { e.preventDefault(); saveBaseline(); return; }
+    if (e.key.toLowerCase() === "c") { e.preventDefault(); toggleComparison(); return; }
+    if (state.comparing && (e.key === "Escape" || e.key === "Backspace")) { e.preventDefault(); toggleComparison(false); return; }
     switch (e.key) {
       case "ArrowUp": e.preventDefault(); move(-1); break;
       case "ArrowDown": e.preventDefault(); move(1); break;
@@ -2768,10 +2924,10 @@ window.FLAME_MODEL = {
         if (pg === "ai") askAI(AI.qs[AI.sel]); else if (pg === "drill") drillNext(); else if (con) toggleSheet();
       });
       fire("b", now, b(1), 0, 0, function () {
-        if (pg === "ai") closeAI(); else if (con) toggleSheet(false); else if (pg === "drill") goPage(PAGES[0]);
+        if (pg === "ai") closeAI(); else if (con) { if (state.comparing) toggleComparison(false); else toggleSheet(false); } else if (pg === "drill") goPage(PAGES[0]);
       });
-      fire("y", now, b(3), 0, 0, function () { if (pg === "ai") toggleVoice(); else if (con) reset(); else if (pg === "drill") drillStart(); else if (pg === "research") openOx(); });
-      fire("x", now, b(2), 0, 0, function () { if (pg === "ai") cycleBrain(); else if (con) cyclePreset(); else if (pg === "research") toggleOrbit(); });
+      fire("y", now, b(3), 0, 0, function () { if (pg === "ai") toggleVoice(); else if (con) { if (state.sheet) toggleExplanationDetail("testDetails"); else reset(); } else if (pg === "drill") drillStart(); else if (pg === "research") openOx(); });
+      fire("x", now, b(2), 0, 0, function () { if (pg === "ai") cycleBrain(); else if (con) { if (state.sheet) toggleExplanationDetail("whyDetails"); else cyclePreset(); } else if (pg === "research") toggleOrbit(); });
       fire("lb", now, b(4), 0, 0, function () { if (!ai) turnPage(-1); });
       fire("rb", now, b(5), 0, 0, function () { if (!ai) turnPage(1); });
       fire("menu", now, b(9), 0, 0, function () { if (ai) closeAI(); else openAI(); });             // Menu: Ember
@@ -2783,11 +2939,17 @@ window.FLAME_MODEL = {
       // Right stick: point at a star on the map, or at an investigation in the orbit view. RT replays, R3 goes there.
       var rx = pad.axes[2] || 0, ry = pad.axes[3] || 0;
       if (!ai && rx * rx + ry * ry > 0.12) {
-        if (con) pickStar(rx, ry); else if (pg === "research") pickOrbit(rx, ry);
+        if (con && (state.comparing || state.sheet)) $(state.comparing ? "compareSheet" : "sheet").scrollTop += ry * 14;   // an open panel scrolls
+        else if (con) pickStar(rx, ry); else if (pg === "research") pickOrbit(rx, ry);
       }
       fire("rt", now, b(7), 0, 0, function () { if (con) replayStar(); });
       fire("r3", now, b(11), 0, 0, function () { if (con) flyToStar(); });
-      fire("lt", now, b(6), 0, 0, function () { if (con && !ai) openSim(); });
+      fire("lt", now, b(6), 0, 0, function () {
+        if (!con || ai) return;
+        if (state.comparing) saveBaseline();                               // in the comparison: B becomes the new baseline
+        else if (state.sheet) { if (state.baseline) toggleComparison(true); else saveBaseline(); }
+        else openSim();
+      });
     }
     requestAnimationFrame(poll);
   }
@@ -2797,7 +2959,7 @@ window.FLAME_MODEL = {
   if (M.meta.mock) $("mockChip").hidden = false;
   else { $("srcChip").hidden = false; $("srcChip").textContent = "Model: " + (M.meta.source || "NASA data") + (M.meta.rows ? ", " + M.meta.rows + " tests" : ""); }
 
-  window.__flame = { state: state, predict: predict, rangeCheck: rangeCheck, nudge: nudge, select: select, toggleSheet: toggleSheet, reset: reset,
+  window.__flame = { readingSummary: readingSummary, saveBaseline: saveBaseline, clearBaseline: clearBaseline, toggleComparison: toggleComparison, render: render, state: state, predict: predict, rangeCheck: rangeCheck, nudge: nudge, select: select, toggleSheet: toggleSheet, reset: reset,
                      cyclePreset: cyclePreset, activePreset: activePreset, view: view, showPage: showPage,
                      AI: AI, openAI: openAI, askAI: askAI, readingText: readingText,
                      drill: function () { return drill; }, drillStart: drillStart, drillGuess: drillGuess, drillNext: drillNext, buzz: buzz,
