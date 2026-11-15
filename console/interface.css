@@ -162,6 +162,7 @@ html:has(#ox[open]) { overflow: hidden; }
 #ox[open] { overflow: hidden; }
 #ox .box { grid-template: auto auto auto minmax(265px, 1fr) auto auto / minmax(0, 1fr); overflow-y: auto; }
 #ox .ahead { align-items: center; justify-content: space-between; }
+#oxHead { grid-row: 2; }
 .ox-controls { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px 16px; }
 .ox-controls label { display: grid; gap: 3px; min-width: 0; color: var(--ink-2); font-size: 13px; font-weight: 600; }
 #oxStudy { width: 100%; min-width: 0; max-width: 100%; padding: 7px 8px; background: var(--panel-hi); color: var(--ink); border: 1px solid var(--line); border-radius: .4rem; font: inherit; }
@@ -185,8 +186,8 @@ html:has(#ox[open]) { overflow: hidden; }
   .sim .ahead .who, .ai .ahead .who { flex-basis: 100%; order: 2; white-space: normal; }
   .sim .ahead .who:empty, #ox .levels kbd { display: none; }
   .sim .ahead button, .ai .ahead button { min-height: 40px; }
-  #ox .box { grid-template-rows: auto auto auto minmax(284px, 1fr) auto auto; align-content: start; }
-  #oxHead { font-size: 14px; line-height: 1.4; }
+  #ox .box { grid-template-rows: auto auto minmax(284px, 1fr) auto auto auto; align-content: start; }
+  #oxHead { grid-row: auto; padding-top: 5px; border-top: 1px solid var(--line); font-size: 14px; line-height: 1.4; }
   .ox-controls { display: grid; grid-template-columns: minmax(0, 1fr); gap: 7px; }
   #oxStudy { font-size: 16px; min-height: 42px; }
   #oxLevels { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
