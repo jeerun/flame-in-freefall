@@ -68,7 +68,8 @@ TABLES = ROOT / "data" / "clean" / "psi_tables_summary.json"   # counts from the
 OLLAMA = "http://127.0.0.1:11434"
 STATIC = {"/": "index.html", **{"/" + name: name for name in (
     "index.html", "model.js", "research.js", "tables.js", "counterexample.js", "evidence.js", "evidence-data.js",
-    "interface.css", "research-ui.css", "console-ui.css", "flex-flame.webp", "view-link.js", "share-view.js")}}
+    "interface.css", "research-ui.css", "console-ui.css", "flex-flame.webp", "view-link.js", "share-view.js",
+    "moon-evidence.html", "moon-evidence.css", "moon-evidence-data.js", "moon-evidence.js")}}
 TYPES = {".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8",
          ".css": "text/css; charset=utf-8", ".webp": "image/webp"}
 STATIC.update({"/" + asset: asset for asset in evidence_lab.ASSETS})

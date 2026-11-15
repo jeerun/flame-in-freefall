@@ -661,44 +661,72 @@
     <div class="research-intro">
       <div class="research-intro-copy">
         <h2>NASA combustion research</h2>
-        <p id="resSummary"></p>
-        <a id="evidenceLab" href="ember-lab.html">Open evidence lab <kbd>L / L3</kbd></a>
+        <p class="research-prompt">Choose a safety topic, then select an investigation.</p>
       </div>
-      <span class="research-photo-credit">FLEX · NASA</span>
+      <figure class="research-photo">
+        <img src="flex-flame.webp" alt="Colorized NASA composite of a heptane droplet burning in microgravity.">
+        <figcaption>FLEX · NASA</figcaption>
+      </figure>
     </div>
-    <nav class="research-tools" aria-label="Explore the experimental data">
-      <button type="button" id="oxBtn" hidden title="Open the Oxygen map (O or Y)">
-        <span class="tool-symbol" aria-hidden="true">O₂</span><kbd aria-hidden="true">Y</kbd>
-        <strong>Oxygen map</strong><small>Oxygen &amp; pressure</small>
-      </button>
-      <div class="case-launchers" id="caseLaunchers" hidden>
-        <button type="button" id="gravityCase" title="Compare Earth and orbital burn lengths (E or LT)">
-          <span class="tool-symbol" aria-hidden="true">1 g</span><kbd aria-hidden="true">LT</kbd>
-          <strong>Earth or orbit?</strong><small>Compare burn lengths</small>
+    <details id="researchTools">
+      <summary>Research tools</summary>
+      <nav class="research-tools" aria-label="Explore the experimental data">
+        <button type="button" id="oxBtn" hidden title="Open the Oxygen map (O or Y)">
+          <strong>Oxygen map</strong><kbd aria-hidden="true">Y</kbd><small>Oxygen &amp; pressure</small>
         </button>
-        <button type="button" id="sensorCase" title="Reveal measured gas concentrations (N or RT)">
-          <span class="tool-symbol" aria-hidden="true">CO</span><kbd aria-hidden="true">RT</kbd>
-          <strong>Read the sensors</strong><small>Compare gas readings</small>
-        </button>
-      </div>
-    </nav>
+        <div class="case-launchers" id="caseLaunchers" hidden>
+          <button type="button" id="gravityCase" title="Compare Earth and orbital burn lengths (E or LT)">
+            <strong>Earth or orbit?</strong><kbd aria-hidden="true">LT</kbd><small>Compare burn lengths</small>
+          </button>
+          <button type="button" id="sensorCase" title="Reveal measured gas concentrations (N or RT)">
+            <strong>Read the sensors</strong><kbd aria-hidden="true">RT</kbd><small>Compare gas readings</small>
+          </button>
+        </div>
+        <a id="evidenceLab" href="ember-lab.html">
+          <strong>Evidence lab</strong><kbd aria-hidden="true">L3</kbd><small>Inspect NASA footage &amp; data</small>
+        </a>
+        <a id="moonCase" href="moon-evidence.html" aria-keyshortcuts="G">
+          <strong>Moon evidence check</strong><kbd aria-hidden="true">G</kbd><small>Test a lunar cabin claim</small>
+        </a>
+      </nav>
+      <p id="resSummary"></p>
+    </details>
   </header>
   <section class="research-results" aria-labelledby="hRank">
-    <h2 class="research-label" id="hNeed">Rank by safety need</h2>
+    <h2 class="research-label" id="hNeed">Safety topic</h2>
     <div class="needs" id="needs" role="group" aria-labelledby="hNeed"></div>
     <div class="rankhead">
-      <div><h2 id="hRank">Ranked investigations</h2><span id="rankCount"></span></div>
-      <button type="button" id="orbitBtn" title="Switch between list and orbit (X)"><kbd aria-hidden="true">X</kbd> <span id="orbitBtnText">Orbit view</span></button>
+      <div><h2 id="hRank">Investigation orbits</h2><span id="rankCount"></span></div>
+      <span class="rank-actions">
+        <button type="button" id="findResearch" title="Find an investigation (F)" aria-keyshortcuts="F" aria-haspopup="dialog" aria-controls="findResearchDialog">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="10" cy="10" r="6.5"></circle><path d="m15 15 6 6"></path></svg> Find
+        </button>
+        <button type="button" id="orbitBtn" title="Switch between list and orbit (X)" aria-controls="orbit rank"><kbd aria-hidden="true">X</kbd> <span id="orbitBtnText">List view</span></button>
+      </span>
     </div>
     <p id="rankFact" hidden></p>
-    <div class="rank" id="rank" role="group" aria-labelledby="hRank"></div>
-    <svg id="orbit" hidden role="img" aria-label="Orbit view: investigations closer to the centre are more relevant to the question"></svg>
+    <div class="rank" id="rank" hidden role="group" aria-labelledby="hRank"></div>
+    <svg id="orbit" tabindex="0" role="listbox" aria-label="Research investigations by relevance" aria-describedby="rankNote"></svg>
     <p id="rankNote"></p>
   </section>
-  <section class="research-detail" aria-labelledby="hCard">
-    <div class="research-detail-top"><h2 id="hCard" class="research-label" tabindex="-1">Selected investigation</h2><span class="research-actions"><button type="button" class="view-action" id="shareResearch" hidden aria-haspopup="dialog">Share view</button><a id="researchSource" target="_blank" rel="noopener noreferrer">NASA source ↗</a></span></div>
-    <article class="card" id="card" aria-labelledby="investigationName"></article>
-  </section>
+  <div class="research-sidebar">
+    <section class="research-detail" aria-labelledby="hCard">
+      <div class="research-detail-top">
+        <h2 id="hCard" class="research-label" tabindex="-1">Selected investigation</h2>
+        <span class="research-actions">
+          <button type="button" class="view-action" id="shareResearch" hidden aria-label="Share view" title="Share view" aria-haspopup="dialog" aria-controls="shareViewDialog">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false">
+              <path d="m7.5 10.6 8.8-5.1m-8.8 7.9 8.8 5.1"></path>
+              <circle cx="5" cy="12" r="2.8"></circle><circle cx="19" cy="4" r="2.8"></circle><circle cx="19" cy="20" r="2.8"></circle>
+            </svg>
+            <span>Share</span>
+          </button>
+          <a id="researchSource" target="_blank" rel="noopener noreferrer">NASA source ↗</a>
+        </span>
+      </div>
+      <article class="card" id="card" aria-labelledby="investigationName"></article>
+    </section>
+  </div>
 </main>
 
 <main id="viewDrill" class="drill" hidden>
@@ -739,6 +767,13 @@
   </section>
 </main>
 
+<dialog class="control-guide" id="findResearchDialog" aria-labelledby="findResearchTitle">
+  <div class="guide-title"><h2 id="findResearchTitle">Find an investigation</h2><button type="button" id="findResearchClose">Close</button></div>
+  <label for="findResearchInput">Investigation name, title or PSI ID</label>
+  <input type="search" id="findResearchInput" placeholder="Try FLEX or PSI-69" autocomplete="off" spellcheck="false" aria-controls="findResearchResults" autofocus>
+  <p id="findResearchStatus" role="status"></p>
+  <div id="findResearchResults"></div>
+</dialog>
 <dialog class="control-guide share-view" id="shareViewDialog" aria-labelledby="shareTitle">
   <div class="guide-title"><h2 id="shareTitle">Share view</h2><button type="button" id="shareClose">Close</button></div>
   <p id="shareSubject"></p>
@@ -774,11 +809,15 @@
   <div class="hints" id="hintsResearch" hidden>
     <span>Change the question <kbd>← → / D-pad</kbd></span>
     <span>Pick an investigation <kbd>↑ ↓ / D-pad</kbd></span>
+    <span>Find an investigation <kbd>F</kbd></span>
+    <span>Moon evidence check <kbd>G</kbd></span>
+    <span>Investigation details <kbd>Tab, Enter / A</kbd></span>
     <span>Switch list or orbit <kbd>X / X</kbd></span>
     <span class="hintOx" hidden>Oxygen map <kbd>O / Y</kbd></span>
     <span class="hintCases" hidden>Earth or orbit? <kbd>E / LT</kbd></span>
     <span class="hintCases" hidden>Read the sensors <kbd>N / RT</kbd></span>
     <span>Open evidence lab <kbd>L / L3</kbd></span>
+    <span id="hintShareResearch" hidden>Share view <kbd>R3</kbd></span>
   </div>
   <div class="hints guide-common">
     <span id="hintPage">Change page <kbd>1–3 / LB, RB</kbd></span>
@@ -1834,11 +1873,11 @@ window.FLAME_MODEL = {
   // research.js (built by data/clean/build_research.py) lists the PSI combustion investigations.
   // Facts come from NASA PSI; summaries and relevance scores are AI-written and say so on screen.
   var R = window.FLAME_RESEARCH || null;
-  var view = { page: "console", need: 0, sel: 0, orbit: false };
+  var view = { page: "console", need: 0, sel: 0, orbit: true };
   var FUELS = ["Solid materials", "Liquid fuel droplets", "Gas flames", "Smoke and dust particles"];
-  var FUEL_COLOR = { "Solid materials": "#3987e5", "Liquid fuel droplets": "#d95926", "Gas flames": "#199e70", "Smoke and dust particles": "#c98500" };
+  var FUEL_COLOR = { "Solid materials": "#85b6da", "Liquid fuel droplets": "#ffb184", "Gas flames": "#83cabe", "Smoke and dust particles": "#d6b56e" };
   // Orbit view: the question sits in the middle and the investigations circle it. The closer to the centre,
-  // the more relevant. Each quarter of the sky is one kind of fuel. The numbers are the ranks from the list.
+  // the more relevant. Each quarter of the sky is one kind of fuel.
   var FUEL_SHORT = { "Solid materials": "Solid materials", "Liquid fuel droplets": "Fuel droplets", "Gas flames": "Gas flames", "Smoke and dust particles": "Smoke and dust" };
   // One small picture per kind of fuel: a sheet of material, a droplet, a flame, a puff of smoke.
   function fuelIcon(fuel, x, y, k, color) {
@@ -1855,30 +1894,38 @@ window.FLAME_MODEL = {
     return g;
   }
   var ORB = { dots: [], cx: 0, cy: 0, rad: 0 };
+  function nearestOrbit(x, y, limit) {
+    var best = null, distance = limit * limit;
+    ORB.dots.forEach(function (dot) {
+      var squared = (dot.x - x) ** 2 + (dot.y - y) ** 2;
+      if (squared < distance) { distance = squared; best = dot; }
+    });
+    return best;
+  }
   // Right stick in the orbit view: its position points at a place in the picture, and the nearest ranked investigation is picked.
   function pickOrbit(ax, ay) {
     if (!view.orbit || !ORB.dots.length) return;
-    var tx = ORB.cx + ax * ORB.rad, ty = ORB.cy + ay * ORB.rad, best = null, bd = Infinity;
-    ORB.dots.forEach(function (d) { var q = (d.x - tx) * (d.x - tx) + (d.y - ty) * (d.y - ty); if (q < bd) { bd = q; best = d; } });
+    var best = nearestOrbit(ORB.cx + ax * ORB.rad, ORB.cy + ay * ORB.rad, Infinity);
     if (best && best.rank !== view.sel) { view.sel = best.rank; sfx.move(); renderResearch(); }
   }
   function drawOrbit(list, need) {
     var svg = $("orbit"), W = svg.clientWidth, H = svg.clientHeight;
     while (svg.firstChild) svg.removeChild(svg.firstChild);
+    svg.removeAttribute("aria-activedescendant");
     ORB.dots = [];
-    if (W < 260 || H < 150) return;
+    if (W < 180 || H < 150) return;
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
     var compact = W < 450;
     var cx = W / 2, cy = H / 2, rad = Math.min(H / 2 - (compact ? 27 : 12), W / 2 - (compact ? 26 : 112));
     ORB.cx = cx; ORB.cy = cy; ORB.rad = rad;
-    var ring = { 3: 0.36 * rad, 2: 0.6 * rad, 1: 0.82 * rad, 0: rad };
-    [[3, "direct"], [2, "strong"], [1, "related"], [0, "not about this"]].forEach(function (k) {
-      svg.appendChild(svgEl("circle", { cx: cx, cy: cy, r: ring[k[0]], fill: k[0] === 3 ? "rgba(125,184,255,0.06)" : "none",
-        stroke: "var(--line)", "stroke-width": 1, "stroke-dasharray": k[0] ? "none" : "2 5" }));
-      svg.appendChild(svgEl("text", { x: cx, y: cy - ring[k[0]] + 11, "text-anchor": "middle", "font-size": 9.5 }, k[1]));
+    var ring = { 3: 0.47 * rad, 2: 0.67 * rad, 1: 0.85 * rad, 0: rad };
+    [3, 2, 1, 0].forEach(function (score) {
+      svg.appendChild(svgEl("circle", { cx: cx, cy: cy, r: ring[score], fill: "none",
+        stroke: "var(--res-edge)", "stroke-width": 1, "stroke-dasharray": score ? "none" : "2 5" }));
     });
-    svg.appendChild(svgEl("circle", { cx: cx, cy: cy, r: 5, fill: "var(--flame)" }));
-    svg.appendChild(svgEl("text", { x: cx, y: cy + 17, "text-anchor": "middle", "font-size": 10.5, style: "fill:#b9c3e0" }, need.label.toLowerCase()));
+    svg.appendChild(svgEl("circle", { cx: cx, cy: cy - 8, r: 10, fill: "#78d4cc", opacity: .13 }));
+    svg.appendChild(svgEl("circle", { cx: cx, cy: cy - 8, r: 4.5, fill: "#a1e4db" }));
+    svg.appendChild(svgEl("text", { x: cx, y: cy + 15, "text-anchor": "middle", "font-size": 13, "font-weight": 600, style: "fill:var(--ink)" }, need.label));
     var label = null;
     FUELS.forEach(function (fuel, s) {
       var a0 = (180 + 90 * s + 9) * Math.PI / 180, a1 = (180 + 90 * (s + 1) - 9) * Math.PI / 180;
@@ -1892,13 +1939,16 @@ window.FLAME_MODEL = {
         group.forEach(function (it, i) {
           var a = a0 + (i + 0.5) / group.length * (a1 - a0), x = cx + ring[score] * Math.cos(a), y = cy + ring[score] * Math.sin(a);
           var rank = list.indexOf(it), on = rank >= 0 && rank === view.sel;
-          var g = svgEl("g", rank >= 0 ? { "class": "pick" } : { opacity: 0.4 });
-          if (on) g.appendChild(svgEl("circle", { cx: x, cy: y, r: 12.5, fill: "rgba(241,244,255,0.12)", stroke: "#f1f4ff", "stroke-width": 2 }));
-          g.appendChild(fuelIcon(fuel, x, y, rank >= 0 ? 1 : 0.45, FUEL_COLOR[fuel]));
-          if (rank >= 0) g.appendChild(svgEl("text", { x: x + 9, y: y - 6, "font-size": 9.5, "font-weight": 700,
-            style: "fill:#f1f4ff;paint-order:stroke;stroke:#0e1730;stroke-width:3px;stroke-linejoin:round" }, String(rank + 1)));
-          g.appendChild(svgEl("title", {}, it.name + " (" + it.id + "): " + LEVEL[score].toLowerCase()));
-          if (rank >= 0) g.addEventListener("click", function () { view.sel = rank; renderResearch(); });
+          var description = it.name + " (" + it.id + "), " + LEVEL[score].toLowerCase();
+          var g = svgEl("g", rank >= 0 ? { "class": "pick", id: "orbit-" + it.id, role: "option",
+            "aria-label": description, "aria-selected": String(on), "aria-posinset": rank + 1, "aria-setsize": list.length }
+            : { opacity: 0.4, "aria-hidden": "true" });
+          if (on) {
+            svg.setAttribute("aria-activedescendant", "orbit-" + it.id);
+            g.appendChild(svgEl("circle", { cx: x, cy: y, r: 10.5, fill: "#162327", stroke: "var(--res-copper)", "stroke-width": 2 }));
+          }
+          g.appendChild(fuelIcon(fuel, x, y, rank >= 0 ? 0.9 : 0.5, FUEL_COLOR[fuel]));
+          g.appendChild(svgEl("title", {}, description));
           svg.appendChild(g);
           if (rank >= 0) ORB.dots.push({ x: x, y: y, rank: rank });
           if (on) label = { x: x, y: y, name: it.name };
@@ -1907,17 +1957,103 @@ window.FLAME_MODEL = {
     });
     if (label) {                                   // the name of the selected one, drawn last so nothing covers it
       var right = label.x >= cx;
-      svg.appendChild(svgEl("text", { x: label.x + (right ? 17 : -17), y: label.y + 15, "text-anchor": right ? "start" : "end", "font-size": 12, "font-weight": 600,
-        style: "fill:#f1f4ff;paint-order:stroke;stroke:#0e1730;stroke-width:4px;stroke-linejoin:round" }, label.name));
+      var name = svgEl("text", { x: label.x + (right ? 15 : -15), y: label.y + 4, "text-anchor": right ? "start" : "end", "font-size": 12, "font-weight": 600,
+        "pointer-events": "none", style: "fill:var(--ink);paint-order:stroke;stroke:#111c21;stroke-width:4px;stroke-linejoin:round" }, label.name);
+      svg.appendChild(name);
+      var width = name.getComputedTextLength();
+      if ((right && label.x + 15 + width > W) || (!right && label.x - 15 - width < 0)) {
+        name.setAttribute("text-anchor", right ? "end" : "start");
+        name.setAttribute("x", label.x + (right ? -15 : 15));
+      }
     }
   }
-  function toggleOrbit() { view.orbit = !view.orbit; sfx.preset(); renderResearch(); }
+  function toggleOrbit() {
+    var focused = document.activeElement, moveFocus = focused === $("orbit") || $("rank").contains(focused);
+    view.orbit = !view.orbit; sfx.preset(); renderResearch();
+    if (moveFocus) {
+      var target = view.orbit ? $("orbit") : $("rank").querySelector(".sel");
+      if (target) target.focus({ preventScroll: true });
+    }
+  }
   var LEVEL = { 3: "Direct", 2: "Strong", 1: "Related", 0: "Not about this" };
   function ranked(needIndex) {
     var key = R.needs[needIndex == null ? view.need : needIndex].key, flight = function (it) { return it.type === "Microgravity Investigation" ? 0 : 1; };
     return R.items.filter(function (it) { return it.scores[key] > 0; })
       .sort(function (a, b) { return (b.scores[key] - a.scores[key]) || (flight(a) - flight(b)) || (a.num - b.num); });
   }
+  function searchText(value) {
+    return value.toLowerCase().replace(/\bpsi[\s-]*(\d+)/g, "psi$1").replace(/[^a-z0-9]+/g, " ").trim();
+  }
+  function researchTopicFor(item) {
+    if (item.scores[R.needs[view.need].key] > 0) return view.need;
+    return R.needs.reduce(function (best, need, index) {
+      return item.scores[need.key] > item.scores[R.needs[best].key] ? index : best;
+    }, 0);
+  }
+  function closeResearchFind(target) {
+    $("findResearchDialog").close();
+    target.focus({ preventScroll: true });
+    waitForPadRelease = poll.activeInput;
+  }
+  function renderResearchFind() {
+    var input = $("findResearchInput").value.trim(), query = searchText(input);
+    var terms = query ? query.split(" ") : [];
+    function isExact(item) {
+      return query && (searchText(item.id) === query || searchText(item.name) === query || searchText(item.title) === query);
+    }
+    var matches = R.items.filter(function (item) {
+      var text = searchText(item.name + " " + item.title + " " + item.id);
+      return (!input || terms.length > 0) && terms.every(function (term) { return text.includes(term); });
+    }).sort(function (a, b) {
+      return Number(isExact(b)) - Number(isExact(a)) || a.name.localeCompare(b.name, "en");
+    });
+    var results = $("findResearchResults");
+    results.replaceChildren();
+    results.scrollTop = 0;
+    matches.forEach(function (item) {
+      var topic = researchTopicFor(item), button = el("button");
+      button.type = "button";
+      button.appendChild(el("strong", "", item.name));
+      button.appendChild(el("span", "find-id", item.id));
+      var shortText = searchText(item.name + " " + item.id);
+      if (query && !terms.every(function (term) { return shortText.includes(term); })) {
+        button.appendChild(el("span", "find-detail", item.title));
+      }
+      if (topic !== view.need) button.appendChild(el("span", "find-detail", "Opens in " + R.needs[topic].label));
+      button.addEventListener("click", function () {
+        view.need = topic;
+        view.sel = ranked(topic).indexOf(item);
+        renderResearch();
+        var heading = $("hCard");
+        closeResearchFind(heading);
+        if (window.matchMedia("(max-width: 820px)").matches) heading.scrollIntoView({ block: "start" });
+      });
+      results.appendChild(button);
+    });
+    $("findResearchStatus").textContent = matches.length ? matches.length + (matches.length === 1 ? " investigation" : " investigations") :
+      "No investigations found. Try another name or PSI ID.";
+  }
+  function openResearchFind() {
+    if (!R || view.page !== "research" || document.querySelector("dialog[open]")) return;
+    $("findResearchInput").value = "";
+    renderResearchFind();
+    $("findResearchDialog").showModal();
+    $("findResearchInput").focus();
+  }
+  var researchFindPanel = { handle: function (action) {
+    var results = $("findResearchResults").children;
+    var focused = document.activeElement;
+    if (action === "back") closeResearchFind($("findResearch"));
+    else if (action === "confirm") {
+      if (focused.tagName === "BUTTON") focused.click();
+      else if (results.length) results[0].click();
+    } else if (results.length && (action === "up" || action === "down")) {
+      var index = Array.prototype.indexOf.call(results, focused);
+      if (index < 0) index = action === "up" ? results.length : -1;
+      index = Math.max(0, Math.min(results.length - 1, index + (action === "up" ? -1 : 1)));
+      results[index].focus();
+    }
+  } };
   function dots(n) {
     var s = el("span", "dots");
     for (var i = 1; i <= 3; i++) s.appendChild(el("i", i <= n ? "on" : ""));
@@ -1981,16 +2117,18 @@ window.FLAME_MODEL = {
       + T.meta.in_moon_zone + " meet the Moon Base thresholds.";
     var box = $("rank");
     box.hidden = view.orbit;
-    renderRankList(box, list, need);
+    if (!view.orbit) renderRankList(box, list, need);
     if (view.orbit) $("orbit").removeAttribute("hidden"); else $("orbit").setAttribute("hidden", "");   // an svg has no .hidden property
+    $("hRank").textContent = view.orbit ? "Investigation orbits" : "Ranked investigations";
     $("orbitBtnText").textContent = view.orbit ? "List view" : "Orbit view";
-    $("orbitBtn").setAttribute("aria-pressed", String(view.orbit));
     if (view.orbit) drawOrbit(list, need);
-    $("rankNote").textContent = "AI relevance ranking · " + (R.items.length - list.length) + " investigations outside this topic.";
+    $("rankNote").textContent = view.orbit ? "Inner orbits indicate higher AI-ranked relevance." :
+      "AI relevance ranking · " + (R.items.length - list.length) + " investigations outside this topic.";
 
     var it = list[view.sel], card = $("card");
     if (!it) return;
     if (card.dataset.investigation === it.id) return;
+    var restoreCardFocus = card.contains(document.activeElement);
     card.dataset.investigation = it.id;
     card.replaceChildren();
     card.scrollTop = 0;
@@ -1999,18 +2137,23 @@ window.FLAME_MODEL = {
     var head = el("div", "chead"), name = el("h3", "", it.name);
     name.id = "investigationName";
     head.appendChild(name); head.appendChild(el("span", "pid", it.id)); card.appendChild(head);
-    card.appendChild(el("div", "full", it.title));
+    card.appendChild(el("p", "research-why-label", "Why it matters · AI summary"));
+    card.appendChild(el("p", "research-why", it.why));
+    var details = el("details", "investigation-details"), summary = el("summary", "", "Investigation details");
+    details.id = "investigationDetails";
+    details.appendChild(summary);
+    card.appendChild(details);
+    details.appendChild(el("p", "full", it.title));
     var tags = el("div", "tags");
     [it.fuel, it.type === "Microgravity Investigation" ? "Flight experiment" : "Ground study"].forEach(function (t) { tags.appendChild(el("span", "", t)); });
-    card.appendChild(tags);
-    card.appendChild(el("p", "research-description", it.summary));
+    details.appendChild(tags);
+    details.appendChild(el("p", "research-description", it.summary));
     var dl = el("dl");
-    function pair(k, v, style) {
-      var group = el("div", style || ""), dd = el("dd", "", typeof v === "string" ? v : null);
+    function pair(k, v) {
+      var group = el("div"), dd = el("dd", "", typeof v === "string" ? v : null);
       if (typeof v !== "string") dd.appendChild(v);
       group.appendChild(el("dt", "", k)); group.appendChild(dd); dl.appendChild(group);
     }
-    pair("Why it matters", it.why, "research-why");
     pair("What varied", it.varied);
     pair("Hardware", it.hardware || "Not listed in PSI");
     if (T) {                                       // counted from this investigation's own test table, not AI-written
@@ -2030,8 +2173,16 @@ window.FLAME_MODEL = {
       rel.appendChild(one);
     });
     pair("Relevance", rel);
-    card.appendChild(dl);
-    card.appendChild(el("p", "fine", "Summaries and ranks by Claude. Title, type and hardware from NASA PSI, retrieved " + R.meta.retrieved + "."));
+    details.appendChild(dl);
+    details.appendChild(el("p", "fine", "Summaries and ranks by Claude. Title, type and hardware from NASA PSI, retrieved " + R.meta.retrieved + "."));
+    if (restoreCardFocus) summary.focus({ preventScroll: true });
+  }
+  function setInvestigationDetails(open) {
+    var details = $("investigationDetails");
+    if (!details || (open === false && !details.open)) return;
+    details.open = open == null ? !details.open : open;
+    details.firstElementChild.focus({ preventScroll: true });
+    details.firstElementChild.scrollIntoView({ block: "nearest" });
   }
   /* ---------- Fire drill: guess how a real FLEX test ended ---------- */
   // Ten real tests from model.js: five that burned all their fuel and five that went out first, shuffled.
@@ -2606,6 +2757,7 @@ window.FLAME_MODEL = {
   function oxMove(d) { oxChoose((OX.sel + d + T.rows.length) % T.rows.length); }
   function openOx() {
     if (!T || OX.open || SIM.open || AI.open || titleOn) return;
+    focusResearchToolsForShortcut();
     OX.open = true;
     $("ox").hidden = false;
     $("ox").showModal();
@@ -2689,13 +2841,41 @@ window.FLAME_MODEL = {
     $("titleRes").textContent = "NASA research: " + R.items.length + " investigations, ranked";
     R.needs.forEach(function (nd, i) {
       var b = el("button"); b.type = "button";
-      b.appendChild(el("b", "", nd.label)); b.appendChild(el("span", "", nd.hint));
-      b.setAttribute("aria-controls", "rank");
+      b.appendChild(el("b", "", nd.label)); b.title = nd.hint;
+      b.setAttribute("aria-controls", "orbit rank");
       b.addEventListener("click", function () { view.need = i; view.sel = 0; renderResearch(); });
       $("needs").appendChild(b);
     });
     $("tabResearch").addEventListener("click", function () { goPage("research"); });
     $("orbitBtn").addEventListener("click", toggleOrbit);
+    $("findResearch").addEventListener("click", openResearchFind);
+    $("findResearchClose").addEventListener("click", function () { researchFindPanel.handle("back"); });
+    $("findResearchInput").addEventListener("input", renderResearchFind);
+    $("findResearchDialog").addEventListener("cancel", function (e) { e.preventDefault(); researchFindPanel.handle("back"); });
+    $("findResearchDialog").addEventListener("keydown", function (e) {
+      if (e.isComposing || e.altKey || e.ctrlKey || e.metaKey) return;
+      cycleDialogTab(e, this);
+      var action = { Escape: "back", ArrowUp: "up", ArrowDown: "down" }[e.key];
+      if (e.key === "Enter" && e.target === $("findResearchInput")) action = "confirm";
+      if (action) { e.preventDefault(); e.stopPropagation(); researchFindPanel.handle(action); }
+    });
+    $("researchTools").addEventListener("toggle", function () {
+      if (view.page === "research" && view.orbit) drawOrbit(ranked(), R.needs[view.need]);
+    });
+    $("orbit").addEventListener("click", function (event) {
+      var option = event.target.closest("[role='option']");
+      var rank;
+      if (option) rank = Number(option.getAttribute("aria-posinset")) - 1;
+      else {
+        var svg = $("orbit"), bounds = svg.getBoundingClientRect();
+        var nearest = nearestOrbit(event.clientX - bounds.left, event.clientY - bounds.top, 15);
+        if (!nearest) return;
+        rank = nearest.rank;
+      }
+      view.sel = rank;
+      renderResearch();
+      if (window.matchMedia("(max-width: 820px)").matches) $("hCard").scrollIntoView({ block: "start" });
+    });
   }
 
   /* ---------- Ask the AI ---------- */
@@ -3047,6 +3227,7 @@ window.FLAME_MODEL = {
   } };
   function activeCasePanel() {
     if (shareView && shareView.isOpen()) return shareView;
+    if ($("findResearchDialog").open) return researchFindPanel;
     if (guide.open) return guidePanel;
     if (window.FLAME_EVIDENCE && window.FLAME_EVIDENCE.isOpen()) return window.FLAME_EVIDENCE;
     if (window.FLAME_COUNTER && window.FLAME_COUNTER.isOpen()) return window.FLAME_COUNTER;
@@ -3093,6 +3274,7 @@ window.FLAME_MODEL = {
     }
     // A link opened from the address bar may arrive while another tool owns focus.
     if (guide.open) guide.close();
+    if ($("findResearchDialog").open) $("findResearchDialog").close();
     if (shareView.isOpen()) shareView.close();
     if (window.FLAME_COUNTER && window.FLAME_COUNTER.isOpen()) window.FLAME_COUNTER.close();
     if (window.FLAME_EVIDENCE && window.FLAME_EVIDENCE.isOpen()) window.FLAME_EVIDENCE.close();
@@ -3117,7 +3299,15 @@ window.FLAME_MODEL = {
     return true;
   }
   function openEvidence(mode) {
-    if (window.FLAME_EVIDENCE && window.FLAME_EVIDENCE_DATA) window.FLAME_EVIDENCE.open(mode);
+    if (window.FLAME_EVIDENCE && window.FLAME_EVIDENCE_DATA) {
+      focusResearchToolsForShortcut();
+      window.FLAME_EVIDENCE.open(mode);
+    }
+  }
+  function focusResearchToolsForShortcut() {
+    if (view.page === "research" && !$("researchTools").open && document.activeElement === document.body) {
+      $("researchTools").querySelector("summary").focus({preventScroll: true});
+    }
   }
   function openCounterexample() {
     if (!window.FLAME_COUNTER || !hasTests) return;
@@ -3163,7 +3353,7 @@ window.FLAME_MODEL = {
 
   /* ---------- keyboard ---------- */
   document.addEventListener("keydown", function (e) {
-    if (window.FLAME_SHARE_VIEW && window.FLAME_SHARE_VIEW.isOpen()) return;
+    if ($("findResearchDialog").open || (window.FLAME_SHARE_VIEW && window.FLAME_SHARE_VIEW.isOpen())) return;
     var panel = activeCasePanel();
     if (panel) {
       var action = { ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right",
@@ -3211,7 +3401,9 @@ window.FLAME_MODEL = {
     if (typing) return;
     if (!e.ctrlKey && !e.altKey && !e.metaKey && !e.repeat) {
       var letter = e.key.toLowerCase();
+      if (view.page === "research" && letter === "f") { e.preventDefault(); openResearchFind(); return; }
       if (view.page === "research" && letter === "l") { e.preventDefault(); $("evidenceLab").click(); return; }
+      if (view.page === "research" && letter === "g") { e.preventDefault(); $("moonCase").click(); return; }
       if (view.page === "research" && (letter === "e" || letter === "n")) {
         e.preventDefault(); openEvidence(letter === "e" ? "gravity" : "sensors"); return;
       }
@@ -3386,9 +3578,11 @@ window.FLAME_MODEL = {
       });
       fire("a", now, b(0), 0, 0, function () {
         if (pg === "ai") askAI(AI.qs[AI.sel]); else if (pg === "drill") drillNext(); else if (con) toggleSheet();
+        else if (pg === "research") setInvestigationDetails();
       });
       fire("b", now, b(1), 0, 0, function () {
         if (pg === "ai") closeAI(); else if (con) { if (state.comparing) toggleComparison(false); else toggleSheet(false); } else if (pg === "drill") goPage(PAGES[0]);
+        else if (pg === "research") setInvestigationDetails(false);
       });
       fire("y", now, b(3), 0, 0, function () { if (pg === "ai") toggleVoice(); else if (con) { if (state.sheet) toggleExplanationDetail("testDetails"); else reset(); } else if (pg === "drill") drillStart(); else if (pg === "research") openOx(); });
       fire("x", now, b(2), 0, 0, function () { if (pg === "ai") cycleBrain(); else if (con) { if (state.sheet) toggleExplanationDetail("whyDetails"); else cyclePreset(); } else if (pg === "research") toggleOrbit(); });
@@ -3408,10 +3602,20 @@ window.FLAME_MODEL = {
       var rx = pad.axes[2] || 0, ry = pad.axes[3] || 0;
       if (!ai && rx * rx + ry * ry > 0.12) {
         if (con && (state.comparing || state.sheet)) $(state.comparing ? "compareSheet" : "sheet").scrollTop += ry * 14;   // an open panel scrolls
-        else if (con) pickStar(rx, ry); else if (pg === "research") pickOrbit(rx, ry);
+        else if (con) pickStar(rx, ry);
+        else if (pg === "research" && $("investigationDetails") && $("investigationDetails").open) {
+          if (window.matchMedia("(max-width: 820px)").matches) window.scrollBy(0, ry * 14);
+          else $("card").scrollTop += ry * 14;
+        } else if (pg === "research") pickOrbit(rx, ry);
       }
       fire("rt", now, b(7), 0, 0, function () { if (pg === "research") openEvidence("sensors"); else if (con) replayStar(); });
-      fire("r3", now, b(11), 0, 0, function () { if (con) flyToStar(); });
+      fire("r3", now, b(11), 0, 0, function () {
+        if (con) flyToStar();
+        else if (pg === "research" && !$("shareResearch").hidden) {
+          $("shareResearch").focus({preventScroll: true});
+          $("shareResearch").click();
+        }
+      });
       fire("lt", now, b(6), 0, 0, function () {
         if (pg === "research") { openEvidence("gravity"); return; }
         if (!con || ai) return;
@@ -3440,6 +3644,7 @@ window.FLAME_MODEL = {
   if (shareView && window.FLAME_VIEW_LINK) {
     shareView.init(captureView, restoreView);
     $("shareResearch").hidden = !R;
+    $("hintShareResearch").hidden = !R;
     $("shareReading").hidden = M.meta.mock;
     $("shareResearch").addEventListener("click", shareView.open);
     $("shareReading").addEventListener("click", shareView.open);

@@ -42,6 +42,7 @@ def check(page):
     pad(1)
     expect(loc("#controlGuide")).to_be_hidden()
     expect(loc("#guideBtn")).to_be_focused()
+    loc("#researchTools summary").click()
     expect(loc("#gravityCase")).to_be_visible()
     loc("#gravityCase").focus()
     key("Enter")  # Native activation of the launcher.
@@ -136,6 +137,8 @@ def check_phone(page):
     page.locator("#jumpSettings").click()
     expect(page.locator("#rows .row").first).to_be_in_viewport()
     page.keyboard.press("1")
+    if not page.locator("#researchTools").evaluate("panel => panel.open"):
+        page.locator("#researchTools summary").click()
     page.locator("#oxBtn").click()
     expect(page.locator("#oxClose")).to_be_in_viewport()
     study = page.get_by_role("combobox", name="Investigation")
