@@ -11,8 +11,9 @@ been checked on the Legion Go itself yet: do the "Before filming" list first.
 
 1. On the PC with the RTX 5080: double-click `Start dashboard.bat` in the repo folder
    (or run `py server/serve.py --lan`). The window prints two addresses and
-   "Local AI: ready". The first time, Windows asks about the firewall: choose Allow on
-   private networks. Leave the window open.
+   "AI: ready". The first time, Windows asks about the firewall: tick the kind of
+   network the PC is on (Private, Public, or both) and choose Allow. Leave the window
+   open. If the Legion Go cannot connect, see `docs/legion-go-setup.md`.
 2. On the Legion Go, on the same Wi-Fi, open Edge at the address the window printed
    for the Legion Go (it looks like `http://192.168.x.x:8000`) and press F11.
 3. The start screen must list four things, the last one "Ember: the on-board AI". If

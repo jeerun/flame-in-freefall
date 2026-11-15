@@ -21,6 +21,7 @@ What it does:
   POST /export      keeps the page's CSV of real tests in the folder exports/ on this machine, and passes it on
                     to the peer machine when there is one (so a handheld can hand its file to the PC)
   GET  /tests.csv   that stored file, for any other device on the same network
+  GET  /who         which devices have connected so far (answered only to this machine itself)
 
 Sharing the exported file with other people: point the exports folder at a folder that a sync app already shares
 (Google Drive for desktop, OneDrive). The file then reaches them whenever this machine has internet, and simply
@@ -34,6 +35,7 @@ numbers, and the question. Nothing is sent to the internet.
 """
 import argparse
 import json
+import os
 import re
 import socket
 import subprocess
@@ -267,6 +269,10 @@ def warm_up(server, model):
         print(f"Local AI warm-up failed: {err}")
 
 
+class Server(ThreadingHTTPServer):
+    allow_reuse_address = os.name != "nt"              # on Windows, reuse would let two servers share one port
+
+
 class Handler(BaseHTTPRequestHandler):
     server_version = "FlameConsole/1"
 
@@ -288,8 +294,25 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
+    def note_visitor(self, path):
+        """Remember which devices have asked for something, so the person at the PC can see that the handheld got through."""
+        ip, seen = self.client_address[0], self.server.seen
+        new = ip not in seen
+        entry = seen.setdefault(ip, {"first": time.strftime("%H:%M:%S"), "requests": 0, "asked_ember": 0, "sent_csv": 0})
+        entry["requests"] += 1
+        entry["last"], entry["last_path"] = time.strftime("%H:%M:%S"), path
+        entry["asked_ember"] += path == "/ask"
+        entry["sent_csv"] += path == "/export"
+        if new and ip not in ("127.0.0.1", "::1"):
+            print(f"New device connected: {ip}")
+
     def do_GET(self):
         path = self.path.split("?", 1)[0]
+        if path == "/who":                                 # for the person at this machine only
+            if self.client_address[0] not in ("127.0.0.1", "::1"):
+                return self.send_error(404)
+            return self.send_json({"this_machine": self.server.host, "devices": self.server.seen})
+        self.note_visitor(path)
         if path == "/ai":
             return self.send_json(ai_status(self.server))
         if path == "/favicon.ico":                         # browsers ask for one; there is none
@@ -370,6 +393,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_json({"saved": saved, "folder": folder, "peer_missed": missed, "link": link})
 
     def do_POST(self):
+        self.note_visitor(self.path)
         if self.path == "/export":
             return self.export()
         if self.path != "/ask":
@@ -473,7 +497,23 @@ def main():
 
     global GPU
     GPU = gpu_name()
-    server = ThreadingHTTPServer(("0.0.0.0" if args.lan else "127.0.0.1", args.port), Handler)
+    # Started twice (a second double-click)? Point at the one that is running instead of fighting over the port.
+    try:
+        with urllib.request.urlopen(f"http://127.0.0.1:{args.port}/ai", timeout=1.5) as resp:
+            running = "brains" in json.loads(resp.read().decode("utf-8"))
+    except (OSError, ValueError):
+        running = False
+    if running:
+        print(f"The dashboard is already running on this machine: http://localhost:{args.port}")
+        print("Use that one. To restart it, close the other dashboard window first.")
+        if args.open:
+            webbrowser.open(f"http://localhost:{args.port}")
+        return
+    try:
+        server = Server(("0.0.0.0" if args.lan else "127.0.0.1", args.port), Handler)
+    except OSError as err:
+        raise SystemExit(f"Port {args.port} is taken by another program ({err}). Try:  py server/serve.py --port 8010")
+    server.seen = {}
     server.model, server.records, server.one_at_a_time = args.model, load_records(), threading.Lock()
     server.peer = args.peer.strip().rstrip("/")
     if server.peer and not server.peer.startswith("http"):
@@ -489,7 +529,10 @@ def main():
     print(f"Dashboard: http://localhost:{args.port}")
     if args.lan:
         print(f"On the Legion Go (same Wi-Fi): http://{lan_address() or '<this PC address>'}:{args.port}")
-        print("If Windows asks whether to allow Python through the firewall, choose Allow on private networks.")
+        print("If Windows asks whether to allow Python through the firewall: tick the kind of network this PC is on")
+        print("(Private, Public, or both) and choose Allow. If the handheld still cannot open the address, a VPN on")
+        print("this PC may be keeping local devices out: pause it, or allow local network access in its settings.")
+        print("A line \"New device connected\" appears here when the handheld gets through.")
     if status["ok"]:
         for b in status["brains"]:
             print(f"AI: {'ready' if b['up'] else 'NOT ready'}, {b['label']}")

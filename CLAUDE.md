@@ -201,6 +201,14 @@ Not done:
     `docs/demo-script.md` (shot 2 is now the Oxygen map), `docs/checklist.md`, the
     two data READMEs.
 
+  - For the owner's test on the handheld (Nov 15, after midnight): `Setup Legion
+    Go.bat` (winget installs Python and Ollama, pulls `gemma4:e2b`, 4.3 GB; only its
+    "already installed" path was run, on the PC), `docs/legion-go-setup.md`, and in
+    the server: "New device connected: <ip>" in the window, `/who` (answered only to
+    the machine itself) listing every device with its request counts, and a second
+    start that points at the running dashboard instead of failing. This session
+    cannot reach the Legion Go: no SSH and no Claude on it.
+
 Not done, or not verified:
 - Everything in the list above is unverified on the real Legion Go, with real
   gloves, and over real Wi-Fi.

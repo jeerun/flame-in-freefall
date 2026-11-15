@@ -21,6 +21,9 @@ owner's local time (confirm on the team page). "Submit for Judging" is final.
 
 ## Console on the Legion Go (owner only)
 
+How to get it onto the handheld, three ways, with fixes for a connection that
+fails: `docs/legion-go-setup.md`.
+
 - [ ] Opens in Edge, F11, nothing needs scrolling.
 - [ ] Chip reads "Controller connected" after pressing a button. If the stick moves a
       mouse pointer, switch the device to gamepad mode.
@@ -51,9 +54,12 @@ owner's local time (confirm on the team page). "Submit for Judging" is final.
 
 ## Local AI, PC and Legion Go together (owner only)
 
-- [ ] On the PC, `Start dashboard.bat` prints "Local AI: ready, gemma4:12b on NVIDIA
-      GeForce RTX 5080". The first time, Windows asks about the firewall: choose Allow
-      on private networks.
+- [ ] On the PC, `Start dashboard.bat` prints "AI: ready, gemma4:12b on this team's
+      NVIDIA GeForce RTX 5080". The first time, Windows asks about the firewall: tick
+      the kind of network the PC is on (Private, Public, or both) and choose Allow.
+      A VPN on the PC can keep the handheld out: pause it for the test.
+- [ ] When the Legion Go opens the address, the PC window prints "New device
+      connected", and `http://localhost:8000/who` on the PC lists it.
 - [ ] On the Legion Go, on the same Wi-Fi, the address the window printed opens the
       dashboard, the start screen lists "Ember: the on-board AI", and the "Ask Ember"
       button is in the top bar.
@@ -64,9 +70,9 @@ owner's local time (confirm on the team page). "Submit for Judging" is final.
 - [ ] On the Flame console, pressing the left stick (or the "Send to base" button)
       shows "Sent 252 real FLEX tests to ...", and the file
       `flex_psi69_tests_with_predictions.csv` is in the folder `exports` on the PC.
-- [ ] Optional, the handheld's own model: on the Legion Go, Python and Ollama are
-      installed, `ollama pull gemma4:e2b` was run, and `Start on Legion Go.bat` was
-      given the PC's address. In Ember, a row "Ember thinks on:" offers both
+- [ ] Optional, the handheld's own model: on the Legion Go, `Setup Legion Go.bat` ran
+      to the end (Python, Ollama, the model `gemma4:e2b`), and `Start on Legion Go.bat`
+      was given the PC's address. In Ember, a row "Ember thinks on:" offers both
       machines and X switches. Close the window on the PC: within about 20 seconds a
       banner says the big machine is out of reach, and Ember still answers.
       This has only been tried with two copies of the server on the PC.

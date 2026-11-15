@@ -98,14 +98,18 @@ thing by hand, from the repo root:
     py server/serve.py           (this PC only: open http://localhost:8000)
     py server/serve.py --lan     (also the Legion Go on the same Wi-Fi)
 
-The first time, Windows asks whether to let Python through the firewall: allow it on
-private networks. The script needs only the Python standard library. If the PC is
+The first time, Windows asks whether to let Python through the firewall: tick the
+kind of network the PC is on (Private, Public, or both) and allow it. When the
+handheld gets through, the PC window prints "New device connected". Step by step,
+with what to do when it does not connect: `docs/legion-go-setup.md`. The script
+needs only the Python standard library. If the PC is
 off or out of reach, open the file directly as above: everything except Ember still
 works.
 
 **Two machines, each with its own model** (not yet tried on the real handheld). On
-the Legion Go install Python and Ollama, run `ollama pull gemma4:e2b` once, copy
-this repo to it, and double-click `Start on Legion Go.bat`. It asks once for the
+the Legion Go download this repo as a ZIP, double-click `Setup Legion Go.bat` once
+(it installs Python and Ollama with winget and downloads the 4.3 GB model
+`gemma4:e2b`), then double-click `Start on Legion Go.bat`. It asks once for the
 address the PC printed. Ember then shows where it is thinking, X switches between
 the machines, and if the PC stops answering the handheld answers by itself and a
 banner says so. Away from the Wi-Fi the same works over a private network such as
@@ -215,7 +219,7 @@ Known limits: the outcome model is much weaker for methanol than for heptane (on
 | `server/` | 3 Console | `serve.py`: serves the dashboard on the local network, passes questions for Ember to the language model, and keeps the sent CSV file. `ember_check.py`: asks Ember a fixed list of questions for checking. |
 | `docs/sources.md` | 4 Science | Every NASA dataset and source we use. |
 | `docs/submission.md` | 5 Submission | Draft text for the submission form. |
-| `docs/demo-script.md`, `docs/checklist.md` | 5 Submission | Demo video script and the pre-submission checklist. |
+| `docs/demo-script.md`, `docs/checklist.md`, `docs/legion-go-setup.md` | 5 Submission | Demo video script, the pre-submission checklist, and how to set up the Legion Go. |
 | `docs/ember-check.md` | 4 Science | Ember's answers to 18 fixed questions, waiting for a human verdict on each. |
 
 One owner per folder. If you need a change in someone else's folder, ask them.
