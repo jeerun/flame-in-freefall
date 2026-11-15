@@ -43,9 +43,11 @@ SYSTEM = (
     "You are the assistant inside a fire-safety dashboard for spacecraft crews, students and engineers. "
     "The dashboard is built on NASA's Physical Sciences Informatics (PSI) records of microgravity combustion investigations. "
     "Answer ONLY from the material given after the question. "
-    "When you use an investigation, cite it by its PSI id in square brackets, like [PSI-69]. "
+    "Refer to an investigation by its name followed by its PSI id in square brackets, like FLEX [PSI-69]. "
     "If the material does not contain the answer, say so plainly instead of guessing. "
     "Never invent numbers, test results, dates or investigation names. "
+    "Copy every number exactly as it is written in that investigation's own record, and never attach a number from the "
+    "question, the challenge brief or another investigation to it. "
     "Write plain English for a non-specialist, in at most 110 words. No headings, no tables, no markdown symbols. "
     "When you rank things, use short numbered lines."
 )
@@ -111,9 +113,11 @@ def research_material(records, question, selected, need):
     for r in chosen:
         lines.append(f"\n{r['id']} {r['name']}: {r['title']} ({r['kind']})\nObjectives: {r['objectives']}\nApproach: {r['approach']}"
                      f"\nKeywords: {r['keywords']}\nHardware: {r['hardware']}")
-    lines.append("\nFACTS FROM THE 2026 NASA SPACE APPS CHALLENGE BRIEF: NASA's spacecraft fire-safety work is prevention, detection and "
-                 "suppression. The Moon Base and pressurized rovers will likely have 30% oxygen or more at 10.2 psi or less. "
-                 "PSI has no partial-gravity combustion data yet.")
+    lines.append("\nBACKGROUND FROM THE 2026 NASA SPACE APPS CHALLENGE BRIEF (use it for questions about future missions and about what is "
+                 "missing; its numbers do not belong to any investigation above): NASA's spacecraft fire-safety work is prevention, "
+                 "detection and suppression. The Moon Base and pressurized rovers will likely have 30% oxygen or more at 10.2 psi or "
+                 "less. A known gap: PSI has no partial-gravity combustion data yet, so nothing in it was measured at Moon or Mars "
+                 "gravity; microgravity and normal-gravity results can only bound what happens in between.")
     on_screen = next((r for r in records if r["id"] == selected), None)
     if on_screen:
         lines.append(f"\nTHE USER IS LOOKING AT: {on_screen['id']} {on_screen['name']}" + (f", in the list ranked for {need}." if need else "."))
