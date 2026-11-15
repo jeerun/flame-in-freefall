@@ -42,7 +42,7 @@ Submission closes Sunday Nov 15, 11:59 PM in the team owner's local time
 
 ## Status
 
-Last updated Sunday Nov 15, about 12:15 AM by the owner's PC clock (Pacific Time).
+Last updated Sunday Nov 15, about 3:17 AM by the owner's PC clock (Pacific Time).
 
 Done:
 - Team created on the Space Apps site, challenge selected.
@@ -245,6 +245,36 @@ Not done:
     teammate's parity tests run here with the Node.js bundled in Playwright
     (`<venv>/Lib/site-packages/playwright/driver/node.exe`): all pass.
 
+  - MODEL SWITCHED (Nov 15, early morning, at the owner's word "pick the better one and
+    merge the good things"). A teammate's pull request #3 proposed a per-fuel model:
+    each fuel has its own slope for every setting, and the logistic model's penalty is
+    picked by cross-validation inside the training rows. It was additive. Before
+    switching the console to it, on the owner's PC: its training and its
+    eight-candidate comparison reproduced byte for byte; its six tests passed; and
+    `model/verify_per_fuel.py`, written without its code, agreed (held out one gas mix
+    or one test day at a time AUC goes 0.80 to 0.90; ahead in more than 99 % of 4000
+    paired resamples; accuracy peaks near the chosen penalty and falls beyond it).
+    Held out, new against earlier: AUC 0.902 against 0.813, methanol 0.847 against
+    0.605, Brier 0.0676 against 0.0865, completions found at 50 % 52.4 % against
+    21.7 %, burning-rate R² 0.732 against 0.705, MAE 0.045 against 0.048.
+    What the switch changed:
+    - `model/train.py` now writes the base export and the earlier model to
+      `model/pooled/` and never touches the console. `model/train_per_fuel.py` writes
+      `console/model.js` and `model/metrics.json`. Run them in that order.
+    - `console/index.html`: the teammate's 11-edit patch (per-fuel slopes in
+      `linear()`, in the "pushes toward" lines and in the map's model lines; "could go
+      either way" from `meta.watch` = 30 %; a "Watch" banner), plus two additions:
+      no chance is shown below 1 % or above 99 % (`shown()`), and the "pushes toward"
+      line says so when the tests do not settle the direction for that fuel
+      (`meta.unsure`: pressure for both fuels, droplet size and CO2 for methanol).
+    - `model/check_parity.py` refits the per-fuel recipe; `tests/test_per_fuel_model.py`
+      and `tests/test_console_features.cjs` follow the new layout and readings.
+    - Readings changed: heptane at the starting values 35 % to 57 %, methanol 8 % to
+      3 %, heptane in Moon Base air 90 % to 99 % (the model says 99.9 %). The demo
+      script, the Ember check and every document that quotes the model were updated.
+    - Checked after the switch: 14 Python tests, the Node test, the parity report, all
+      twelve browser suites at 1280x680 and 1280x800, and the demo sequence.
+
 Not done, or not verified:
 - Everything in the list above is unverified on the real Legion Go, with real
   gloves, and over real Wi-Fi, except what the previous point says.
@@ -387,8 +417,12 @@ First run, held out by repeated 5-fold cross-validation:
 - Inputs are only things known before ignition. Never use burn time, extinction
   diameter or anything measured after the burn: that leaks the answer.
 - Two small models: logistic regression for "flame goes out", linear regression
-  for burning rate (mm^2/s). Coefficients must apply to raw values in the console's
-  units. Shape of the export is in `model/README.md` and `model/model.example.js`.
+  for burning rate (mm^2/s). Since Nov 15 each fuel has its own slopes (`fuel_coef`
+  in the export). `model/train.py` builds the base export in `model/pooled/`, then
+  `model/train_per_fuel.py` writes `console/model.js`: never run only the first and
+  copy its output over the console's file. Coefficients must apply to raw values in
+  the console's units. Shape of the export is in `model/README.md` and
+  `model/model.example.js`.
 - `data_min` and `data_max` in the export are the real column min and max.
 - Hold out data, report accuracy on the held-out part, put the numbers in
   `docs/submission.md` whether they are good or bad.

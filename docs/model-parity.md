@@ -3,6 +3,12 @@
 Checked 15 November 2026 against repository commit
 `6162bcaabc4d3c88dfa119d0f472f8d51b450662`.
 
+**Re-run later the same day, after the console was switched to the per-fuel model.**
+The checker now refits the recipe of `model/train_per_fuel.py` and adds each fuel's
+own slopes in its hand calculation. The results below are from that run
+(`model/parity_report.json`). The first run, against the earlier one-slope model,
+passed with the same tolerances.
+
 ## Purpose
 
 Verify that the exported model and the actual Console inference functions compute
@@ -25,8 +31,9 @@ instead of a passing result.
 
 ## What is compared
 
-1. Refit the current `train.py` configuration and scope without calling its
-   artifact-writing main function. Reuse its feature design and export helpers.
+1. Refit the current training configuration (`train_per_fuel.py`, which builds on
+   `train.py`) and scope without calling its artifact-writing main function. Its
+   feature design, estimators and export helpers are imported, not copied.
 2. Read `console/model.js` in Node VM. Check the feature order and supported fuels.
 3. Extract and execute the actual `linear` and `predictFor` functions from
    `console/index.html`. No copied JavaScript prediction formula is used.
@@ -39,7 +46,8 @@ instead of a passing result.
 
 Input mapping: `o2_pct→o2`, `pressure_atm→p`, `co2_pct→co2`, `he_pct→he`,
 `d0_mm→d0`; percentages are on the 0–100 scale, pressure in atm, diameter in mm.
-Methanol is the binary indicator in Python. Extinction is class 1. The Console
+Methanol is the binary indicator in Python, and it multiplies each setting to give
+methanol its own slopes. Extinction is class 1. The Console
 returns both extinction (`pOut`) and completion (`pKeep`) probabilities.
 
 ## Verified results
@@ -50,14 +58,14 @@ they are not additional experimental evidence.
 
 | Comparison | Maximum absolute error |
 |---|---:|
-| Exported coefficients: Python vs JS extinction probability | 3.33e-16 |
-| Exported coefficients: Python vs JS raw burning rate | 4.44e-16 mm²/s |
-| Full-precision refit vs JS extinction probability | 5.30e-6 |
-| Full-precision refit vs JS raw burning rate | 3.92e-5 mm²/s |
+| Exported coefficients: Python vs JS extinction probability | 1.11e-15 |
+| Exported coefficients: Python vs JS raw burning rate | 3.33e-16 mm²/s |
+| Full-precision refit vs JS extinction probability | 7.92e-6 |
+| Full-precision refit vs JS raw burning rate | 4.19e-5 mm²/s |
 | Completion complement and zero clamp | 0 |
 
 Both models' rounded refit coefficients match the committed export exactly in
-this environment. One stress case produced a negative raw rate; zero clamping
+this environment. Three stress cases produced a negative raw rate; zero clamping
 was exercised. All three tests passed, including deliberate probability reversal
 and clamp removal in isolated temporary copies.
 
