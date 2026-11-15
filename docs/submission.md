@@ -69,6 +69,8 @@ three closest real FLEX tests and shows how each one ended.
 **Compares cabin atmospheres.** The Oxygen map reads ambient or burner oxygen from
 nine PSI tables for FLEX, CFI, CFI-G, Flame Design, BASS-II, Saffire-I and Saffire-II.
 Users can switch from ranges to individual rows to oxygen plotted against pressure.
+An investigation selector keeps the same series selected across all three views.
+The phone layout fits the chart axes to the available width.
 Of 746 rows with measured ambient oxygen and pressure, 20 CFI-G normal-flame rows
 meet both brief thresholds (at least 30% oxygen and at most 10.2 psi). No FLEX row
 meets both. Seventeen FLEX rows meet the oxygen threshold at pressures above 10.2
@@ -148,7 +150,7 @@ inconclusive.
 **Ignite.** One button plays a single run of the model full screen. A droplet drawn
 with a scale bar shrinks at the predicted burning rate, and whether this run burns all
 its fuel is drawn at random with the model's odds, so pressing it a few times shows
-what "35%" means. When a run goes out, the size it stops at is borrowed from a real
+what "57%" means. When a run goes out, the size it stops at is borrowed from a real
 nearby test. The picture is drawn to look like FLEX footage and is labelled an
 illustration. Outside the tested range it refuses to run.
 
@@ -200,7 +202,8 @@ except Ember works, fully offline.
 2. Models. Two deliberately small models, so every number can be explained: a
    logistic regression for "the flame went out before the fuel was gone" against "it
    burned until the fuel was gone", and a linear regression for the burning rate.
-   Inputs are only things known before ignition.
+   Inputs are settings known before ignition. Each fuel has its own slopes. The
+   outcome model selects penalty strength inside each outer training fold.
 3. Export. Scripts write the fitted model, in-scope tests, research notes, oxygen
    map and selected evidence rows as JavaScript data files for offline use.
 4. Dashboard. One HTML file with no libraries reads them. It works with a gamepad,
@@ -220,15 +223,23 @@ except Ember works, fully offline.
 - Gas settings above 100% in total are flagged as physically impossible.
 - Inside the range, the page still measures the distance to the closest real test and
   warns when it is far, or when the nearby tests had no clear outcome.
-- Within range, a strong model preference (below 35% or at least 65% completion)
+- Within range, a strong model preference (below 30% or at least 65% completion)
   triggers a disagreement warning when a majority of at least two clear nearby
   outcomes went the other way.
 - Accuracy is measured on tests held out of training and shown on screen.
-- A teammate checked the model independently, twice: an audit that reports each
-  outcome separately instead of one accuracy figure (`docs/scientific-validation.md`),
-  and a test that runs the page's own prediction code against the Python model on 820
-  inputs and finds the same numbers to within rounding (`docs/model-parity.md`).
-  Both were re-run on the team's PC.
+- The model was chosen in the open. A teammate's audit showed that our first model,
+  with one set of slopes for both fuels, found fewer than a quarter of the tests that
+  burned to completion (`docs/scientific-validation.md`). Another teammate trained a
+  model with separate slopes for each fuel and compared eight candidates on the same
+  held-out tests (`docs/per-fuel-model.md`). We re-ran both, checked the gain with a
+  separate script and stricter hold-outs (`model/verify_per_fuel.py`), and only then
+  switched the console. A third check runs the page's own prediction code against
+  the Python model on 820 inputs and finds the same numbers to within rounding
+  (`docs/model-parity.md`).
+- The main reading displays estimates from 1% to 99%. This is a display rule.
+- Where resampling the tests does not settle which way a setting pushes for a fuel
+  (pressure for both fuels; droplet size and carbon dioxide for methanol), the
+  explanation says so on the line that leans on it.
 - AI-written text is labelled as AI-written, next to facts copied from PSI.
 - The Oxygen map keeps the original table rows, including exact repeats. Rows
   with unreadable oxygen are excluded. Inverse flames use oxygen in the burner
@@ -243,15 +254,23 @@ except Ember works, fully offline.
 used row-level splits. Similar settings can appear in both training and evaluation.
 These scores describe performance within this FLEX dataset.
 
-- Flame outcome, 199 tests (172 went out, 27 burned until the fuel was gone):
-  AUC 0.81. Accuracy 0.887, against 0.864 for always answering "goes out". The two
-  outcomes are lopsided, so the AUC is the fairer number.
-- Burning rate, 252 tests: mean absolute error 0.048 mm²/s, R² 0.71. The measured
-  values spread about 0.14 mm²/s around their mean.
-- An independent audit by a teammate, with a separately fitted model on the same 199
-  tests (five-fold cross-validation over five seeds): mean accuracy 88.8%, balanced
-  accuracy 61.4%. Read as a yes or no at 50%, it finds on average only 23.7% of the
-  tests that burned to completion (heptane 19%, methanol 35%).
+- Of 199 clear outcomes, 172 were visible extinctions and 27 were completions.
+  AUC was 0.902 overall, 0.906 within heptane and 0.847 within methanol.
+  Accuracy was 0.915, compared with 0.864 for always predicting extinction.
+- At a 50% cutoff the model identified 52.4% of completions and called about 2%
+  of extinctions completions. At the 30% study threshold it identified 64.1% of
+  completions and also flagged 7.8% of extinctions.
+- On 252 tests, burning-rate MAE was 0.045 mm²/s and R² was 0.732. The measured
+  rates had a standard deviation of 0.138 mm²/s.
+- Keeping each fuel and gas mixture together in the same evaluation fold gave AUC
+  0.9005 and burning-rate R² 0.724 (`model/per_fuel/comparison.json`).
+- In row-held-out predictions, 2.6% of the rows assigned a completion chance below
+  10% completed. The share was 33% for predictions from 30% to below 65%, and 92.5%
+  at 65% or above. These are averages across repeated splits of the same rows.
+- The earlier pooled-slope model reached AUC 0.813. Its independent five-seed
+  audit found 23.7% completion recall at 50% and 61.4% balanced accuracy.
+  The current per-fuel classifier had the lowest Brier score and log loss of the
+  eight candidates in the row-split comparison.
 
 **Limits we know about.**
 
@@ -276,12 +295,15 @@ These scores describe performance within this FLEX dataset.
 - The star map shows oxygen and droplet size only. Two stars that sit close together
   can still differ in pressure, carbon dioxide or helium, which is why the "closest
   three" lines do not always point at the nearest-looking stars.
-- Only 8 of 124 methanol tests with a clear outcome completed. The small class
-  count limits conclusions about this fuel.
-- Read as a yes or no at 50%, the model misses most of the tests that burned to
-  completion (about three in four in the independent audit). A low percentage means
-  "less likely", not "it will go out".
-- In-scope pressures cluster near 0.7 and 1.0 atm. Coverage between the clusters is sparse.
+- Only 8 of the 124 clear methanol outcomes completed. Bootstrap refits disagree
+  on the direction of the methanol diameter and CO₂ effects.
+- At a 50% cutoff the model misses about half the recorded completions.
+- In-scope pressures cluster near 0.7 and 1.0 atm. The direction of the pressure
+  effect is unstable for both fuels.
+- We selected the model family and evaluated it on the same FLEX dataset. No
+  independent flight or external test set was used.
+- At the default heptane droplet size the Moon Base preset gives a very high
+  fitted completion chance. All three nearby measured outcomes were disruptions.
 - "Goes out" means the visible flame. FLEX found that fuel can keep reacting afterwards
   in a cool flame, which the page does not model.
 - The PSI-69 page says the investigation used both space-based data and ground-based
@@ -379,6 +401,8 @@ While building it we used Claude (Anthropic), an AI assistant, for:
 - writing the dashboard (`console/index.html`) and the local server (`server/serve.py`);
 - writing the data-cleaning and training scripts, then reviewing them and re-running
   them to confirm the numbers;
+- implementing the per-fuel models, comparison of eight outcome candidates,
+  dashboard changes, tests and write-up with a team member;
 - reading the PSI-69 table from the NASA page into a file (checked page by page with
   SHA-256 hashes), downloading the other PSI test tables and writing the script that
   reads them, reading the official challenge page and finding the NASA sources
@@ -402,6 +426,10 @@ team's PC and reproduced exactly, and its five tests pass.
 
 ## Model accuracy (for the description)
 
-- Row-held-out classification on 199 clear outcomes gave AUC 0.813 and accuracy 0.887, against 0.864 for always predicting extinction.
-- Row-held-out burning-rate estimates on 252 tests had MAE 0.048 mm²/s and R² 0.705.
-- The separate five-seed audit gave balanced accuracy 61.4% and completion recall 23.7% at a 50% cutoff.
+- Row-held-out classification on 199 clear FLEX outcomes gave AUC 0.902, accuracy
+  0.915 and completion recall 52.4% at a 50% cutoff. Always predicting visible
+  extinction would give accuracy 0.864.
+- Burning-rate prediction on 252 rows gave mean absolute error 0.045 mm²/s and
+  R² 0.732. Both evaluations used five folds repeated 20 times.
+- The old pooled model's separate five-seed audit gave completion recall 23.7%
+  and balanced accuracy 61.4%.

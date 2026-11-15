@@ -1,0 +1,290 @@
+{
+  "tests": 199,
+  "went_out": 172,
+  "burned_to_completion": 27,
+  "gas_mixes": 68,
+  "test_days": 69,
+  "held_out": {
+    "leave one test out": {
+      "one slope for both fuels, C=1 (the earlier model)": {
+        "auc": 0.813,
+        "auc_heptane": 0.852,
+        "auc_methanol": 0.598,
+        "brier": 0.0861,
+        "log_loss": 0.315,
+        "completions_found_at_50_pct": 0.222,
+        "went_out_called_completion_at_50_pct": 0.006
+      },
+      "two separate fits, C=1": {
+        "auc": 0.903,
+        "auc_heptane": 0.904,
+        "auc_methanol": 0.863,
+        "brier": 0.0701,
+        "log_loss": 0.237,
+        "completions_found_at_50_pct": 0.444,
+        "went_out_called_completion_at_50_pct": 0.023
+      },
+      "two separate fits, C=10": {
+        "auc": 0.902,
+        "auc_heptane": 0.911,
+        "auc_methanol": 0.852,
+        "brier": 0.0686,
+        "log_loss": 0.238,
+        "completions_found_at_50_pct": 0.519,
+        "went_out_called_completion_at_50_pct": 0.035
+      },
+      "fuel-by-setting terms, C=10 (the console's model)": {
+        "auc": 0.902,
+        "auc_heptane": 0.909,
+        "auc_methanol": 0.844,
+        "brier": 0.0668,
+        "log_loss": 0.234,
+        "completions_found_at_50_pct": 0.556,
+        "went_out_called_completion_at_50_pct": 0.029
+      }
+    },
+    "leave one gas mix out": {
+      "one slope for both fuels, C=1 (the earlier model)": {
+        "auc": 0.799,
+        "auc_heptane": 0.842,
+        "auc_methanol": 0.569,
+        "brier": 0.0879,
+        "log_loss": 0.322,
+        "completions_found_at_50_pct": 0.185,
+        "went_out_called_completion_at_50_pct": 0.012
+      },
+      "two separate fits, C=1": {
+        "auc": 0.902,
+        "auc_heptane": 0.898,
+        "auc_methanol": 0.865,
+        "brier": 0.0702,
+        "log_loss": 0.237,
+        "completions_found_at_50_pct": 0.407,
+        "went_out_called_completion_at_50_pct": 0.023
+      },
+      "two separate fits, C=10": {
+        "auc": 0.902,
+        "auc_heptane": 0.903,
+        "auc_methanol": 0.858,
+        "brier": 0.0682,
+        "log_loss": 0.238,
+        "completions_found_at_50_pct": 0.481,
+        "went_out_called_completion_at_50_pct": 0.035
+      },
+      "fuel-by-setting terms, C=10 (the console's model)": {
+        "auc": 0.903,
+        "auc_heptane": 0.9,
+        "auc_methanol": 0.851,
+        "brier": 0.0663,
+        "log_loss": 0.234,
+        "completions_found_at_50_pct": 0.519,
+        "went_out_called_completion_at_50_pct": 0.029
+      }
+    },
+    "leave one test day out": {
+      "one slope for both fuels, C=1 (the earlier model)": {
+        "auc": 0.802,
+        "auc_heptane": 0.809,
+        "auc_methanol": 0.601,
+        "brier": 0.0896,
+        "log_loss": 0.321,
+        "completions_found_at_50_pct": 0.222,
+        "went_out_called_completion_at_50_pct": 0.006
+      },
+      "two separate fits, C=1": {
+        "auc": 0.908,
+        "auc_heptane": 0.907,
+        "auc_methanol": 0.875,
+        "brier": 0.0691,
+        "log_loss": 0.233,
+        "completions_found_at_50_pct": 0.407,
+        "went_out_called_completion_at_50_pct": 0.023
+      },
+      "two separate fits, C=10": {
+        "auc": 0.902,
+        "auc_heptane": 0.897,
+        "auc_methanol": 0.863,
+        "brier": 0.0673,
+        "log_loss": 0.234,
+        "completions_found_at_50_pct": 0.481,
+        "went_out_called_completion_at_50_pct": 0.023
+      },
+      "fuel-by-setting terms, C=10 (the console's model)": {
+        "auc": 0.905,
+        "auc_heptane": 0.9,
+        "auc_methanol": 0.856,
+        "brier": 0.0667,
+        "log_loss": 0.232,
+        "completions_found_at_50_pct": 0.519,
+        "went_out_called_completion_at_50_pct": 0.023
+      }
+    }
+  },
+  "paired_bootstrap": {
+    "leave one test out": {
+      "brier": {
+        "mean_gain": 0.0192,
+        "p2_5": 0.0066,
+        "p97_5": 0.0322,
+        "share_of_resamples_where_the_console_model_is_better": 1.0
+      },
+      "log_loss": {
+        "mean_gain": 0.0797,
+        "p2_5": 0.0305,
+        "p97_5": 0.1342,
+        "share_of_resamples_where_the_console_model_is_better": 1.0
+      },
+      "auc": {
+        "mean_gain": 0.0881,
+        "p2_5": 0.0204,
+        "p97_5": 0.1709,
+        "share_of_resamples_where_the_console_model_is_better": 0.997
+      }
+    },
+    "leave one gas mix out": {
+      "brier": {
+        "mean_gain": 0.0215,
+        "p2_5": 0.0082,
+        "p97_5": 0.0359,
+        "share_of_resamples_where_the_console_model_is_better": 0.999
+      },
+      "log_loss": {
+        "mean_gain": 0.0886,
+        "p2_5": 0.0342,
+        "p97_5": 0.1459,
+        "share_of_resamples_where_the_console_model_is_better": 1.0
+      },
+      "auc": {
+        "mean_gain": 0.1045,
+        "p2_5": 0.0299,
+        "p97_5": 0.194,
+        "share_of_resamples_where_the_console_model_is_better": 0.998
+      }
+    }
+  },
+  "penalty": [
+    {
+      "C": 0.3,
+      "auc": 0.852,
+      "brier": 0.0822,
+      "log_loss": 0.288,
+      "fitted_chances_below_1_or_above_99_pct": 15
+    },
+    {
+      "C": 1,
+      "auc": 0.873,
+      "brier": 0.0741,
+      "log_loss": 0.262,
+      "fitted_chances_below_1_or_above_99_pct": 41
+    },
+    {
+      "C": 3,
+      "auc": 0.898,
+      "brier": 0.069,
+      "log_loss": 0.242,
+      "fitted_chances_below_1_or_above_99_pct": 60
+    },
+    {
+      "C": 10,
+      "auc": 0.903,
+      "brier": 0.0663,
+      "log_loss": 0.234,
+      "fitted_chances_below_1_or_above_99_pct": 76
+    },
+    {
+      "C": 30,
+      "auc": 0.902,
+      "brier": 0.0667,
+      "log_loss": 0.237,
+      "fitted_chances_below_1_or_above_99_pct": 85
+    },
+    {
+      "C": 100,
+      "auc": 0.897,
+      "brier": 0.0687,
+      "log_loss": 0.246,
+      "fitted_chances_below_1_or_above_99_pct": 90
+    },
+    {
+      "C": 1000,
+      "auc": 0.89,
+      "brier": 0.0712,
+      "log_loss": 0.259,
+      "fitted_chances_below_1_or_above_99_pct": 95
+    }
+  ],
+  "methanol_completions_held_out": [
+    {
+      "test": 20,
+      "o2_pct": 34.0,
+      "pressure_atm": 0.71,
+      "co2_pct": 0.0,
+      "d0_mm": 3.4,
+      "earlier_model_pct": 64.1,
+      "console_model_pct": 92.9
+    },
+    {
+      "test": 25,
+      "o2_pct": 30.0,
+      "pressure_atm": 0.71,
+      "co2_pct": 0.0,
+      "d0_mm": 2.6,
+      "earlier_model_pct": 74.3,
+      "console_model_pct": 66.7
+    },
+    {
+      "test": 29,
+      "o2_pct": 30.0,
+      "pressure_atm": 1.01,
+      "co2_pct": 0.0,
+      "d0_mm": 2.57,
+      "earlier_model_pct": 72.4,
+      "console_model_pct": 48.7
+    },
+    {
+      "test": 97,
+      "o2_pct": 23.0,
+      "pressure_atm": 0.7,
+      "co2_pct": 20.0,
+      "d0_mm": 4.25,
+      "earlier_model_pct": 1.8,
+      "console_model_pct": 22.1
+    },
+    {
+      "test": 108,
+      "o2_pct": 23.0,
+      "pressure_atm": 0.71,
+      "co2_pct": 25.0,
+      "d0_mm": 3.75,
+      "earlier_model_pct": 3.8,
+      "console_model_pct": 30.3
+    },
+    {
+      "test": 111,
+      "o2_pct": 21.0,
+      "pressure_atm": 0.71,
+      "co2_pct": 30.0,
+      "d0_mm": 3.37,
+      "earlier_model_pct": 1.5,
+      "console_model_pct": 6.7
+    },
+    {
+      "test": 112,
+      "o2_pct": 21.0,
+      "pressure_atm": 0.7,
+      "co2_pct": 30.0,
+      "d0_mm": 3.99,
+      "earlier_model_pct": 0.6,
+      "console_model_pct": 8.3
+    },
+    {
+      "test": 151,
+      "o2_pct": 18.0,
+      "pressure_atm": 1.0,
+      "co2_pct": 15.0,
+      "d0_mm": 3.86,
+      "earlier_model_pct": 0.5,
+      "console_model_pct": 0.2
+    }
+  ]
+}

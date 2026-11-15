@@ -97,7 +97,7 @@ def check(page):
         ("Pressure", ["0.708 atm", "0.703 atm"]),
         ("Starting diameter", ["3.75 mm", "3.72 mm"]),
         ("NASA recorded", ["Burned all its fuel", "Visible flame went out"]),
-        ("Model chance of completion", ["4.6%", "4.8%"]),
+        ("Model chance of completion", ["25.6%", "25.7%"]),
     ]:
         row = pair.get_by_role("row").filter(has=page.get_by_role("rowheader", name=label))
         expect(row.get_by_role("cell")).to_have_text(values)

@@ -75,8 +75,8 @@ model controls and drill work from the sticks and buttons. The left stick slides
 in about a second, and warnings come as sound and vibration as well as text. We
 have not verified glove use or the new controls on a physical handheld.
 
-The console numbers come from two small models trained on FLEX (PSI-69). The
-research summaries and ranks were written by an AI model from the PSI records and
+The console numbers come from two small models trained on FLEX (PSI-69), each with
+its own slopes for heptane and for methanol. The research summaries and ranks were written by an AI model from the PSI records and
 are labelled as such. It is a study and planning tool, not a crew procedure.
 
 ## Status
@@ -88,8 +88,10 @@ Working on real data (Nov 15, 2026).
   gamepad. The two-machine set-up (PC plus handheld) was checked with two copies of
   the server on the one PC. Ember's answers to 18 fixed questions are in
   `docs/ember-check.md`, with automatic checks but no human check yet.
-- Not done yet: trying it on the real Lenovo Legion Go (alone, over Wi-Fi to the PC,
-  and with its own small model) and the official submission form. The preview demo was captured in desktop Edge.
+- A physical Legion Go reached the PC over Tailscale, received Ember answers and
+  sent a CSV. Running the model on the handheld, its controls and rumble, and
+  direct Wi-Fi operation remain unverified. The preview demo was captured in
+  desktop Edge. The official submission form is still pending.
 
 ## Run it
 
@@ -178,29 +180,34 @@ device: if one is missing, nothing else breaks.
 
 ## Rebuild
 
-Needs Python with pandas, numpy and scikit-learn. From the repo root:
+Needs Python with pandas, numpy and scikit-learn (the model scripts were written and
+checked with scikit-learn 1.9). From the repo root:
 
     python data/clean/build_clean.py
     python model/train.py
+    python model/train_per_fuel.py
     python data/clean/build_research.py
     python data/clean/build_tables.py
     python data/clean/build_evidence.py
     python data/clean/fetch_psi_tables.py --verify
 
-The first builds `data/clean/flex_clean.csv` from the raw table. The second trains
-both models, writes `model/metrics.json` and exports `console/model.js`. The results
-are seeded, so a re-run gives the same numbers. The third joins the PSI records with
-the notes in `data/clean/research_notes.json` and writes `console/research.js`. The
-fourth reads the oxygen and pressure of each test from the PSI test tables and
-writes `console/tables.js` and the counts Ember is given. The fifth generates the
-Saffire-II and BASS-II cases. The final command verifies the original PSI hashes
-offline, restoring the downloads’ CRLF line endings in memory where Git stored LF.
+The first builds `data/clean/flex_clean.csv` from the raw table. The second builds
+the base export (ranges, sliders, test rows) with the earlier one-slope model, in
+`model/pooled/`. The third trains the two models the console uses, writes
+`model/metrics.json` and exports `console/model.js`. The results are seeded, so a
+re-run gives the same files. The fourth joins the PSI records with the notes in
+`data/clean/research_notes.json` and writes `console/research.js`. The fifth reads
+the oxygen and pressure of each test from the PSI test tables and writes
+`console/tables.js` and the counts Ember is given. The sixth builds the
+Saffire-II and BASS-II evidence cases. The last command checks the original download
+hashes offline, restoring CRLF line endings in memory when necessary.
 
 After changing the shipped model or CSV layout, run `node server/export_digest.cjs`, review the new export and update `CSV_SHA256` in `server/serve.py`. The server verifies the digest before storing or forwarding a file.
 
-`python model/science_audit.py` repeats the independent audit, and
-`python -m unittest tests.test_science_audit` runs its tests.
-`python model/check_parity.py` repeats the page-versus-Python check (needs Node.js).
+The comparison of eight candidate outcome models is in `model/compare_models.py`.
+Run `python model/verify_per_fuel.py` for a separately implemented check of the
+pooled and per-fuel models. `python model/science_audit.py` reproduces the audit of
+the earlier pooled model. `python model/check_parity.py` repeats the page-versus-Python check (needs Node.js).
 `node tests/test_console_features.cjs` tests the explanation summary and the baseline
 comparison against the page's own code.
 `node tests/test_view_link.cjs` checks shared view codes and exact slider values.
@@ -244,29 +251,46 @@ The chart is drawn from the cleaned table by `python docs/make_chart.py` (needs 
 
 ## How good is the model
 
-Measured on tests held out of training (5-fold cross-validation, repeated 20 times):
+Five-fold cross-validation repeated 20 times held out individual FLEX rows.
+Similar settings can occur on both sides of a split. The team selected the model
+family using this same dataset. [Evaluation results](model/metrics.json)
 
 | Model | Tests | Result |
 |---|---|---|
-| Does the flame go out before the fuel is gone (logistic regression) | 199 | AUC 0.81. Accuracy 0.887, against 0.864 for always answering "goes out". |
-| Burning rate in mm²/s (linear regression) | 252 | Mean absolute error 0.048, R² 0.71. The values spread about 0.14. |
+| Completion versus visible extinction, with separate slopes per fuel | 199 clear outcomes | AUC 0.902 (0.906 within heptane, 0.847 within methanol). Accuracy 0.915, against 0.864 for always predicting extinction. A 50% cutoff identifies 52.4% of completions. |
+| Burning rate in mm²/s, with separate slopes per fuel | 252 | Mean absolute error 0.045 mm²/s, R² 0.732. The measured rates have a standard deviation of 0.138 mm²/s. |
 
-Known limits: the outcome model is much weaker for methanol than for heptane (only
-8 of 124 methanol tests burned to completion); pressure sits at only two levels;
-"goes out" means the visible flame only. More in `docs/submission.md`.
+Keeping each fuel and gas mixture in the same fold gave AUC 0.9005 and burning-rate
+R² 0.724. [Grouped evaluation](model/per_fuel/comparison.json)
 
-Two independent checks by a teammate:
+**How the model got here.** Until Nov 15 the console used a simpler model: one set
+of slopes for both fuels. It scored AUC 0.81 (0.60 within methanol) and found 22 %
+of the completions. Three pieces of teammates' work changed that:
 
-- `docs/scientific-validation.md` (`model/science_audit.py`): a separately fitted
-  model on the same 199 tests, five-fold cross-validation over five seeds. Mean
-  accuracy 88.8 %, balanced accuracy 61.4 %. Read as a yes or no at 50 %, it finds on
-  average only 23.7 % of the tests that burned to completion (heptane 19 %, methanol
-  35 %). So a low percentage on the console means "less likely", not "it will go
-  out". Re-run on the team's PC: same results, 5 of 5 tests pass.
-- `docs/model-parity.md` (`model/check_parity.py`): runs the page's own prediction
-  code in Node against the Python model on 820 inputs and finds the same numbers to
-  within rounding. Its three tests also pass on the team's PC, using the Node.js that
-  ships with Playwright.
+- An independent audit (`docs/scientific-validation.md`, `model/science_audit.py`)
+  refitted that earlier model and reported each outcome separately: accuracy 88.8 %
+  but balanced accuracy 61.4 %, and only 23.7 % of the completions found at 50 %.
+- A per-fuel model (`docs/per-fuel-model.md`, `model/train_per_fuel.py`) gives each
+  fuel its own slopes, because the tests show the fuels respond differently, and
+  picks the strength of its penalty by cross-validation inside the training rows.
+  `model/compare_models.py` measures it against the earlier model and six other
+  candidates on the same held-out tests. It has the best Brier score and log loss of
+  the eight and is level with the best on AUC.
+- A parity check (`docs/model-parity.md`, `model/check_parity.py`) runs the page's
+  own prediction code in Node against the Python model on 820 inputs: the same
+  numbers to within rounding.
+
+In a separate implementation with the per-fuel penalty fixed at C=10, leaving out
+one gas mix at a time gave AUC 0.903 versus 0.799 for the pooled model. Leaving
+out one test day at a time gave 0.905 versus 0.802. The paired bootstrap
+resampled individual rows and favoured the per-fuel AUC in 99.8% of 4,000
+resamples for the gas-mix evaluation. [Independent check](model/per_fuel/independent_check.json)
+
+Only 8 of the 124 clear methanol outcomes completed. Bootstrap refits disagree
+on the direction of the methanol CO₂ and diameter effects and of pressure for
+both fuels. Pressures cluster near 0.7 and 1.0 atm. The main reading limits the
+displayed probability to 1–99%. Extinction refers to the visible flame.
+The dataset does not validate the model for a crewed cabin. [Model limitations](docs/submission.md)
 
 ## Folders, and who owns each
 
@@ -274,8 +298,8 @@ Two independent checks by a teammate:
 |---|---|---|
 | `data/raw/` | 1 Data | Files exactly as downloaded from NASA PSI. Never edit these. |
 | `data/clean/` | 1 Data | One tidy CSV built from the raw files, plus notes on each column. Also the research notes and the script that writes `console/research.js`. |
-| `model/` | 2 Model | Training script. It writes `console/model.js`. Also the independent audit (`science_audit.py`, results in `audit_v2_1/`) and the parity check (`check_parity.py`). |
-| `tests/` | 2 Model | Tests for the audit and the parity check. |
+| `model/` | 2 Model | `train.py` builds the base export and the earlier model in `pooled/`. `train_per_fuel.py` trains the console's model and writes `console/model.js` and `metrics.json`. `compare_models.py` and `verify_per_fuel.py` are the comparison and its independent check (results in `per_fuel/`). Also the audit (`science_audit.py`, results in `audit_v2_1/`) and the parity check (`check_parity.py`). |
+| `tests/` | 2 Model | Tests for the model export, the audit, the parity check, and the page's explanation and comparison. |
 | `console/` | 3 Console | `index.html`, the page that runs on the Legion Go, with `model.js`, `research.js` and `tables.js`. |
 | `server/` | 3 Console | `serve.py`: serves the dashboard on the local network, passes questions for Ember to the language model, and keeps the sent CSV file. `ember_check.py`: asks Ember a fixed list of questions for checking. |
 | `docs/sources.md` | 4 Science | Every NASA dataset and source we use. |
@@ -320,6 +344,11 @@ The summary-first explanation panel and the baseline comparison were written by 
 team member with OpenAI ChatGPT/Codex, then reviewed, fitted to the screen, given a
 controller path and tested with Claude. The training code, the model coefficients and
 the NASA data were not changed by it.
+
+The per-fuel model the console now uses (training script, comparison of eight
+candidates, page patch, tests and write-up) was produced by a team member with
+Claude. Its results were re-run on the team's PC and checked with a separate script
+before the console was switched to it.
 
 OpenAI Codex also helped implement and test the three evidence activities, the
 responsive dashboard layout, the console and server fixes, and the captioned browser demonstration. Its scenes
