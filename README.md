@@ -5,25 +5,32 @@ Challenge: Flame in Freefall: SI-Powered Fire Safety Insights from Microgravity 
 
 ## What it is
 
-A gamepad-driven dashboard that turns NASA's microgravity combustion data into
-fire-safety answers. It plays like a handheld game and has three pages.
+A dashboard that summarizes, ranks and interprets NASA's microgravity combustion
+investigations for fire safety, built to be driven with a gamepad on a handheld. Its
+AI runs on the team's own PC, not in the cloud. It has three pages.
 
-- **NASA research** summarizes and ranks the 24 combustion investigations in NASA's
-  PSI database by what you need: preventing a fire, detecting it, or putting it out.
-- **Flame console** goes deep on one of them, the Flame Extinguishment Experiment
-  (FLEX). Set the fuel, oxygen, pressure, carbon dioxide, helium and droplet size,
-  and it shows the chance a droplet flame burns until the fuel is gone, the burning
-  rate, and a plain-language explanation that ranks the closest real NASA tests. One
-  button switches the cabin air to the Moon Base case from the challenge brief. It
+- **NASA research** (the home page) summarizes the 24 combustion investigations in
+  NASA's PSI database and ranks them for the question you pick: prevention,
+  detection, suppression, or cabin air (the oxygen-rich, low-pressure air planned for
+  the Moon Base). The list can be switched to an orbit view: the question sits in the
+  middle and the investigations circle it, the most relevant nearest the centre, one
+  quarter of the sky per kind of fuel.
+- **Flame console** goes deep on one investigation, the Flame Extinguishment
+  Experiment (FLEX). Set the fuel, oxygen, pressure, carbon dioxide, helium and
+  droplet size, and it shows the chance a droplet flame burns until the fuel is gone,
+  the burning rate, and an explanation that ranks the closest real NASA tests. One
+  button switches the cabin air to the Moon Base case from the challenge brief. Under
+  the reading is a star map: every star is a real FLEX test, its shape and colour say
+  how it ended, its size how fast it burned. Point at a star with the right stick to
+  read it, replay it from NASA's measurements, or move the settings onto it. The page
   warns when the settings fall outside what the experiments actually tested.
-
 - **Fire drill** is a ten-round game. It shows the settings of a real FLEX test and
-  you guess how it ended: Left for "went out first", Right for "burned all its fuel".
-  It then shows NASA's recorded result and keeps score, you against the model.
-- **Ask the AI** is on every page when the dashboard is served from the team's PC. A
-  language model running on that PC's RTX 5080 answers questions from the NASA PSI
-  records and the numbers on screen, and cites the PSI ids it used. Nothing leaves
-  the local network.
+  you guess how it ended. It then replays the test, shows NASA's recorded result and
+  keeps score, you against the model, with a streak, a rank and a best score.
+- **Ember**, the on-board AI, is on every page when the dashboard is served from the
+  team's PC. It is a language model running on that PC's RTX 5080. It answers
+  questions from the NASA PSI records and the numbers on screen, cites the PSI ids it
+  used, and can read its answers aloud. Nothing leaves the local network.
 
 The console numbers come from two small models trained on FLEX (PSI-69). The
 research summaries and ranks were written by an AI model from the PSI records and
@@ -33,9 +40,9 @@ are labelled as such. It is a study and planning tool, not a crew procedure.
 
 Working on real data (Nov 14, 2026).
 
-- Done: data cleaned, models trained and reviewed, all three pages and the local AI built
-  and checked on the team's PC in a desktop browser, with keyboard and a simulated
-  gamepad.
+- Done: data cleaned, models trained and reviewed, all three pages and the local AI
+  built and checked on the team's PC in a desktop browser, with keyboard and a
+  simulated gamepad.
 - Not done yet: trying it on the real Lenovo Legion Go (alone and over Wi-Fi to the
   PC), the demo video, the submission form.
 
@@ -58,24 +65,29 @@ dashboard in the browser and prints the address to open on the Legion Go. The sa
 thing by hand, from the repo root:
 
     py server/serve.py           (this PC only: open http://localhost:8000)
-    py server/serve.py --lan     (also the Legion Go on the same Wi-Fi) The first time, Windows asks
-whether to let Python through the firewall: allow it on private networks. The script
-needs only the Python standard library. If the PC is off or out of reach, open the
-file directly as above: everything except the "Ask the AI" button still works.
+    py server/serve.py --lan     (also the Legion Go on the same Wi-Fi)
 
-Controls. LB and RB turn the page. The Menu button (☰) opens "Ask the AI", which
-answers its first question straight away; Up/Down pick another, A asks it, B closes.
+The first time, Windows asks whether to let Python through the firewall: allow it on
+private networks. The script needs only the Python standard library. If the PC is
+off or out of reach, open the file directly as above: everything except Ember still
+works.
 
-- Flame console: Up/Down pick a setting, Left/Right change it (hold to repeat),
-  A explain, B close, X switch cabin air, Y reset. The controller buzzes and the flame
-  picture turns into a question mark when the settings leave what NASA tested.
-- NASA research: Left/Right change the question, Up/Down move through the list,
-  B goes back.
-- Fire drill: Left "went out first", Right "burned all its fuel", A next test,
-  Y new game. The controller buzzes harder on a wrong answer.
+## Controls
 
-Touch and keyboard also work (arrows, Enter, Esc, X, R, 1 to 3 for the pages, and /
-for the AI).
+Press A on the start screen. RB and LB turn the page. The Menu button opens Ember,
+who answers the first question straight away; Up/Down pick another, A asks it,
+B closes.
+
+| Page | Gamepad | Keyboard |
+|---|---|---|
+| NASA research | Left/Right change the question. Up/Down move through the ranked list. X switches between the list and the orbit view. In the orbit view the right stick points at an investigation. | Arrows, X |
+| Flame console | Up/Down pick a setting, Left/Right change it (hold to repeat). A explain, B close, X switch cabin air, Y reset. Right stick picks a star on the map, RT replays that test, pressing the right stick moves the settings onto it. | Arrows, Enter, Esc, X, R, `[` and `]` pick a star, P replay, G go there |
+| Fire drill | Left "went out first", Right "burned all its fuel", A next test, Y new game, B home. | Arrows, Enter, R, Esc |
+| Everywhere | RB/LB pages, Menu opens Ember. | 1, 2, 3 pages, `/` Ember, V voice on or off (while Ember is open), M sound on or off |
+
+The controller buzzes, an alarm sounds and the flame picture turns into a question
+mark when the settings leave what NASA tested. Touch works too. Sound, voice and
+rumble depend on the browser and the device: if one is missing, nothing else breaks.
 
 ## Rebuild
 
@@ -133,7 +145,7 @@ Known limits: the outcome model is much weaker for methanol than for heptane (on
 | `data/clean/` | 1 Data | One tidy CSV built from the raw files, plus notes on each column. Also the research notes and the script that writes `console/research.js`. |
 | `model/` | 2 Model | Training script. It writes `console/model.js`. |
 | `console/` | 3 Console | `index.html`, the page that runs on the Legion Go, with `model.js` and `research.js`. |
-| `server/` | 3 Console | `serve.py`: serves the dashboard on the local network and passes "Ask the AI" questions to the language model on the PC. |
+| `server/` | 3 Console | `serve.py`: serves the dashboard on the local network and passes questions for Ember to the language model on the PC. |
 | `docs/sources.md` | 4 Science | Every NASA dataset and source we use. |
 | `docs/submission.md` | 5 Submission | Draft text for the submission form. |
 | `docs/demo-script.md`, `docs/checklist.md` | 5 Submission | Demo video script and the pre-submission checklist. |
@@ -151,7 +163,7 @@ One owner per folder. If you need a change in someone else's folder, ask them.
 
 Inside the product, three kinds of AI, each labelled on screen:
 
-- "Ask the AI": Gemma 4 (12B, an open model from Google) run locally with Ollama on
+- Ember ("Ask Ember"): Gemma 4 (12B, an open model from Google) run locally with Ollama on
   the team's RTX 5080 PC. `server/serve.py` gives it the NASA PSI text for the
   investigations closest to the question, or the reading on screen, and tells it to
   answer only from that and to cite PSI ids. Its answers are written on the spot and

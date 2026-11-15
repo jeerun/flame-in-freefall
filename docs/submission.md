@@ -12,20 +12,21 @@ Flame in Freefall Crew Fire Console
 
 ## High-level project summary
 
-A gamepad-driven dashboard that turns NASA's microgravity combustion data into
-fire-safety answers, with its AI running on our own hardware instead of the cloud.
-The NASA research page summarizes and ranks the 24 combustion investigations in
-NASA's Physical Sciences Informatics (PSI) database by what the user needs:
-preventing a fire, detecting it, or putting it out. The Flame console page goes deep
-on one of them, the Flame Extinguishment Experiment (FLEX): two small models trained
-on 252 real tests predict whether a fuel-droplet flame burns until the fuel is gone
-or goes out first, for any cabin air the user sets, including the oxygen-rich,
-low-pressure air expected in the Moon Base. The Fire drill page turns the same data
-into a game: guess how a real NASA test ended, and see whether you beat the model.
-On every page, "Ask the AI" sends the question to a language model on the team's
-RTX 5080 PC, which answers from the NASA records only and cites them. Every reading
-ranks the closest real NASA tests, and the dashboard says so in red when the settings
-leave what NASA actually tested. It runs as one web page on a Lenovo Legion Go.
+A dashboard that summarizes, ranks and interprets NASA's microgravity combustion
+investigations for fire safety, driven with a gamepad on a handheld, with its AI
+running on our own hardware instead of the cloud. The NASA research page summarizes
+the 24 combustion investigations in NASA's Physical Sciences Informatics (PSI)
+database and ranks them for the user's question: prevention, detection, suppression,
+or the oxygen-rich cabin air planned for the Moon Base. An orbit view shows the same
+ranking as a picture, the most relevant investigations nearest the centre. The Flame
+console page goes deep on one investigation, the Flame Extinguishment Experiment
+(FLEX): two small models trained on 252 real tests predict whether a fuel-droplet
+flame burns until the fuel is gone or goes out first, and a star map shows every real
+test, which the user can pick and replay from NASA's measurements. The Fire drill
+page turns the same data into a game. On every page Ember, a language model on the
+team's RTX 5080 PC, answers questions from the NASA records only, cites them and
+reads the answer aloud. The dashboard says so in red when the settings leave what
+NASA actually tested. It runs as one web page on a Lenovo Legion Go.
 
 ## Link to project demo
 Video up to 30 seconds with English subtitles, or up to 7 slides. Public link, no login.
@@ -48,16 +49,21 @@ fire safety. Here is how each word is answered.
 investigations that the PSI repository returns for "combustion" (BASS, Saffire, SAME,
 FLEX, FLEX-2, the ACME experiments and others). For each one it shows what the
 experiment did, what changed between tests, the kind of fuel, the hardware, and why it
-matters for fire safety, in plain language, with the PSI identifier to find it.
+matters for fire safety, in plain language, with the PSI identifier to find it. One
+line at the top counts the whole collection by kind of fuel and by flight or ground.
 
-**Ranks: by the part of fire safety you need.** NASA's fire-safety work is prevention,
-detection and suppression. Pick one and the page ranks the investigations from
-"direct" to "related" for that need. Choose suppression and BASS and FLEX come first;
-choose detection and the smoke experiments SAME and SAME-R come first; choose
-prevention and the material-flammability experiments lead, including the ACME Burning
-Rate Emulator, which tested the cabin atmospheres NASA considers for crewed missions.
-On the Flame console page the same idea is applied to single tests: every reading
-ranks the three closest real FLEX tests and shows how each one ended.
+**Ranks: by the question you bring.** NASA's fire-safety work is prevention, detection
+and suppression, and the challenge adds a fourth concern: the Moon Base will run on
+air with 30% oxygen or more at low pressure. Pick one of the four and the page ranks
+the investigations from "direct" to "related". Choose suppression and BASS and FLEX
+come first; choose detection and the smoke experiments SAME and SAME-R come first;
+choose cabin air and the ACME Burning Rate Emulator leads, because it tested the
+cabin atmospheres NASA considers for crewed missions. The ranking can be shown as a
+numbered list or as an orbit view: the question in the middle, each investigation on
+a ring set by its relevance, one quarter of the sky per kind of fuel, each drawn with
+a small picture of that fuel. Similar investigations end up side by side. On the
+Flame console page the same idea is applied to single tests: every reading ranks the
+three closest real FLEX tests and shows how each one ended.
 
 **Interprets: the Flame console page.** It takes one investigation, FLEX, and makes its
 274-test table something you can explore by hand. Set the fuel (heptane or methanol),
@@ -70,15 +76,28 @@ oxygen, pressure, carbon dioxide, helium and droplet size, and the page shows:
 - an explanation: which settings push the result which way, the three closest real
   tests, how the nearby tests ended, and the model's measured accuracy.
 
-**Plays like a handheld game.** Everything is driven with a gamepad. The flame picture
-breathes faster as the burning rate rises, the controller buzzes when the settings
-leave what NASA tested, and the picture turns into a question mark there. A third
-page, Fire drill, is a ten-round game: it shows the settings of a real FLEX test, the
-player guesses whether the flame went out first or burned all its fuel, and the page
-reveals NASA's recorded result and keeps score, player against model. Five of the ten
-tests burned all their fuel and five went out, so guessing one answer every time does
-not win. It is a quick way to build intuition for what makes a flame survive in
-microgravity, and it shows the model's misses as openly as its hits.
+**A star map of the real tests, and a replay.** Under the reading, every real FLEX
+test with the chosen fuel is drawn as a star: oxygen across, droplet size up. An
+orange star with eight spikes burned all its fuel, a blue star with four went out
+first, and the bigger the star, the faster NASA measured it burning. A cross marks
+the current settings and lines run to the three closest tests. The right stick points
+at any star: the page names that test, can move every setting onto it, and can replay
+it. In a replay the droplet shrinks between the start and end diameters NASA
+recorded, over the recorded burn time, and then the flame goes out or the fuel runs
+out, as recorded. It is the data played back, not a physics simulation, and the
+screen says so.
+
+**Plays like a handheld game.** It opens on a start screen and everything is driven
+with a gamepad, with sound effects made in the browser. The flame picture breathes
+faster as the burning rate rises. When the settings leave what NASA tested, the
+controller buzzes, an alarm sounds and the picture turns into a question mark. A
+third page, Fire drill, is a ten-round game: it shows the settings of a real FLEX
+test, the player guesses whether the flame went out first or burned all its fuel, and
+the page replays the test, reveals NASA's recorded result and keeps score, player
+against model, with a streak, a rank and a best score. Five of the ten tests burned
+all their fuel and five went out, so guessing one answer every time does not win.
+It is a quick way to build intuition for what makes a flame survive in microgravity,
+and it shows the model's misses as openly as its hits.
 
 One button switches the cabin air between Earth-like air and the Moon Base case from
 the challenge brief (oxygen 30% or more at 10.2 psi or less). FLEX ran tests at that
@@ -87,15 +106,19 @@ that the nearest real tests were inconclusive.
 
 **Where the AI is.** Three places, each stated on screen.
 
-- "Ask the AI", on every page. A language model (Gemma 4, 12 billion parameters) runs
-  on the team's own PC with an RTX 5080, and the handheld reaches it over the local
-  network. On the research page it answers questions such as "For a Moon Base cabin
-  with about 30% oxygen at low pressure, which investigations matter most, and why?"
-  from the PSI text of the investigations closest to the question. On the console
-  page it interprets the current reading in plain words. It is told to answer only
-  from the material it is given, to cite PSI identifiers, and to say so when the
-  records do not hold the answer. Answers arrive in a few seconds. No cloud service
-  is involved, which is how a crew far from Earth would have to run it.
+- Ember, the on-board AI, on every page. A language model (Gemma 4, 12 billion
+  parameters) runs on the team's own PC with an RTX 5080, and the handheld reaches it
+  over the local network. One button asks it. On the research page it answers
+  questions such as "For a Moon Base cabin with about 30% oxygen at low pressure,
+  which investigations matter most, and why?", "Compare BASS-II with BASS" or "What
+  did this investigation measure, and with which instruments?" from the PSI text of
+  the investigations closest to the question. On the console page it interprets the
+  current reading in plain words, and in the Fire drill it adds one sentence on why a
+  test may have ended the way it did. It is told to answer only from the material it
+  is given, to cite PSI identifiers, to copy numbers exactly, and to say so when the
+  records do not hold the answer. Answers arrive in a few seconds and can be read
+  aloud. No cloud service is involved, which is how a crew far from Earth would have
+  to run it.
 - The summaries and relevance ranks on the research page were written ahead of time
   by an AI model (Claude) from each investigation's PSI record and stored in the
   page, so they are there even when the PC is not.
@@ -103,7 +126,7 @@ that the nearest real tests were inconclusive.
   NASA data.
 
 If the PC is switched off, the dashboard still opens as a plain file and everything
-except "Ask the AI" works, fully offline.
+except Ember works, fully offline.
 
 **How it works.**
 
@@ -160,9 +183,17 @@ except "Ask the AI" works, fully offline.
   scale. They are a starting point, not a NASA rating.
 - In Fire drill the model was trained on the tests it is scored on, so its score there
   is not a measure of accuracy. The held-out numbers above are. The page says so.
-- "Ask the AI" can be wrong or imprecise, like any language model. We spot-checked a
-  handful of answers against the PSI records, not a formal evaluation. It needs the
-  PC to be on and reachable; without it that one button disappears.
+- Ember can be wrong or imprecise, like any language model. In testing it once
+  attached a figure from the challenge brief to an investigation; we tightened its
+  instructions and the error did not come back in our checks, but we only
+  spot-checked about twenty answers against the PSI records, not a formal evaluation.
+  It needs the PC to be on and reachable; without it that one button disappears.
+- A replay is the recorded data played back: start diameter, end diameter and burn
+  time are NASA's, the path between them is a straight line in diameter squared, and
+  the glow is an illustration. Tests whose record has no end diameter are not replayed.
+- The star map shows oxygen and droplet size only. Two stars that sit close together
+  can still differ in pressure, carbon dioxide or helium, which is why the "closest
+  three" lines do not always point at the nearest-looking stars.
 - The outcome model separates heptane tests well (AUC about 0.8 within heptane) and
   methanol tests poorly (about 0.6): only 8 of 124 methanol tests burned to completion.
 - Pressure sits at only two levels, about 0.7 and 1.0 atm, so its effect is weakly known.
@@ -183,8 +214,9 @@ always shows where the data stops.
 **Tools and languages.** Python (pandas, NumPy, scikit-learn, matplotlib) for
 cleaning, training and the chart, and the Python standard library for the local
 server. HTML, CSS and plain JavaScript with the browser Gamepad API for the
-dashboard. Ollama running the open Gemma 4 12B model on an NVIDIA RTX 5080 for
-"Ask the AI". Git and GitHub. Shown on a Lenovo Legion Go.
+dashboard, including the drawings (inline SVG), the sound effects (Web Audio) and the
+voice (the browser's speech synthesis). Ollama running the open Gemma 4 12B model on
+an NVIDIA RTX 5080 for Ember. Git and GitHub. Shown on a Lenovo Legion Go.
 
 ## NASA data
 Copy from docs/sources.md.
@@ -229,8 +261,9 @@ Where and how we used AI. Copy from the README and add anything new.
 
 Inside the product:
 
-- "Ask the AI" uses Gemma 4 12B, an open language model from Google, run locally with
-  Ollama on the team's own RTX 5080 PC. It answers the user's questions at run time
+- Ember, the on-board assistant, is Gemma 4 12B, an open language model from Google,
+  run locally with Ollama on the team's own RTX 5080 PC. It answers the user's
+  questions at run time, and adds a one-sentence comment after each Fire drill round,
   from the NASA PSI records and the numbers on screen, which our server puts in its
   prompt, and it is instructed to cite PSI identifiers and not to guess. Its answers
   are generated on the spot, shown with a warning that they can be wrong, and never

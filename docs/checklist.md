@@ -23,12 +23,19 @@ owner's local time (confirm on the team page). "Submit for Judging" is final.
       mouse pointer, switch the device to gamepad mode.
 - [ ] D-pad and left stick pick and change settings, A opens the explanation, B closes
       it, Y resets.
-- [ ] X switches the cabin air between "Earth-like air" and "Moon Base (expected)".
-- [ ] RB goes to the "NASA research" page, then to "Fire drill"; LB goes back. On the
-      research page Left and Right change the question, Up and Down move through the
-      list. On Fire drill, Left and Right guess, A goes on, Y starts a new game.
-- [ ] The controller buzzes when the red box appears and on a wrong Fire drill answer.
-      If it does not, nothing is broken: some browsers and controllers have no rumble.
+- [ ] The start screen appears and A starts. The first page is "NASA research".
+- [ ] RB goes to "Flame console", then "Fire drill"; LB goes back.
+- [ ] NASA research: Left and Right change the question (four of them), Up and Down
+      move through the list, X switches to the orbit view, and there the right stick
+      points at an investigation.
+- [ ] Flame console: X switches the cabin air between "Earth-like air" and "Moon Base
+      (expected)". The star map shows under the reading. The right stick picks a star
+      (yellow ring), RT replays that test in the flame picture, pressing the right
+      stick moves the settings onto it.
+- [ ] Fire drill: Left and Right guess, the test replays, A goes on, Y starts a new game.
+- [ ] Sound plays after the first touch or key press, and M mutes it. The controller
+      buzzes when the red box appears and on a wrong Fire drill answer. If sound or
+      rumble is missing, nothing is broken: not every browser and controller has them.
 
 ## Local AI, PC and Legion Go together (owner only)
 
@@ -36,11 +43,14 @@ owner's local time (confirm on the team page). "Submit for Judging" is final.
       GeForce RTX 5080". The first time, Windows asks about the firewall: choose Allow
       on private networks.
 - [ ] On the Legion Go, on the same Wi-Fi, the address the window printed opens the
-      dashboard and the "Ask the AI" button is in the top bar.
-- [ ] The Menu button opens "Ask the AI" and an answer appears within a few seconds,
-      ending with the model name and the graphics card.
+      dashboard, the start screen lists "Ember: the on-board AI", and the "Ask Ember"
+      button is in the top bar.
+- [ ] The Menu button opens Ember and an answer appears within a few seconds, ending
+      with the model name and the graphics card. With "Voice: on" it is read aloud.
+- [ ] In Fire drill, a line "Ember, the AI on the team's PC, thinks: ..." appears
+      after each answer.
 - [ ] With the PC window closed, `console/index.html` opened as a file still works,
-      without the "Ask the AI" button.
+      without Ember.
 - [ ] The red "Outside the tested range" box appears with carbon dioxide and helium
       both above zero.
 
