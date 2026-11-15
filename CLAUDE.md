@@ -52,7 +52,7 @@ the handheld's IPv4 address. The local device log requires the per-run password
 printed on the PC. For a two-server setup, update the base first and then the
 handheld so both support one-hop peer requests. [Current setup](docs/legion-go-setup.md)
 
-Last updated Sunday Nov 15, about 4:10 AM by the owner's PC clock (British Columbia time, UTC-7).
+Last updated Sunday Nov 15, about 5:20 AM by the owner's PC clock (British Columbia time, UTC-7).
 
 Pull request 5, merged on Nov 15, includes shared research views and FLEX readings. Open a shared URL on
 the hosted dashboard, or paste a view code into another offline copy. The Oxygen
@@ -516,6 +516,45 @@ Not done:
     - NOT checked: the redesigned page on the real Legion Go. `docs/checklist.md` has
       the open recheck list and `docs/handheld-agent-brief.md` says what a second run
       needs.
+
+  - MODEL DESIGN AUDIT (Nov 15, about 4:20 to 5:20 AM by the PC clock, at the owner's
+    words "look for holes in this model design", "look for more, and are there other
+    ways to close them", "when done, put it in a pull request first"). On branch
+    `fix/model-design-gaps`, as a pull request: NOT on main until the owner merges it.
+    Nine holes are written up in `docs/model-design-audit.md`, each with its evidence
+    (`model/design_audit.py`, `model/per_fuel/design_audit.json`), what closes it and
+    what stays open.
+    - The two formulas the console had are unchanged, so every reading is the same
+      (57 %, 99 %, 25.6 % and 25.7 % for tests 108 and 183) and the demo recording
+      still matches.
+    - New in the export (`console/model.js`, 21 KB to 48 KB): `disruption`, a third
+      formula with the same recipe on all 252 tests (held out AUC 0.892), and
+      `extinction_draws`, 300 of the 1000 refits on resampled tests.
+    - New on the page: "range 34–75%" beside the main reading; "Disruption chance 32%"
+      under it; an amber warning at a modelled disruption chance of 50 % or more, with actual nearby counts;
+      in the explanation the range, the disruption chance and, for nearby flames that
+      went out, how much of the droplet's volume was gone; a "Disruption chance" row in
+      the comparison; a new CSV column `model_chance_disruption_pct`.
+    - Because the CSV changed, `CSV_SHA256` in `server/serve.py` changed. A handheld
+      copy from before this branch cannot send to a server on this branch.
+    - Ember is told about both, and to lead with the disruption when it is 50 % or
+      more. `docs/ember-check.md` was made again through a server started from this
+      branch on port 8011: 18 answers, none flagged, none read by a person.
+    - `model/metrics.json` now has the AUC with its interval, each fuel on its own, the
+      burning rate by fuel and by ending, and the page's time to consume the droplet
+      against NASA's burn time.
+    - Tried and NOT adopted: smaller or more heavily penalised methanol models (worse
+      held out), per-fuel tested ranges on the page (they would turn the Moon Base preset
+      red over 0.001 atm), one table of variances instead of the refits (too wide near
+      0 %).
+    - `requirements.txt` pins the versions the scripts were checked with.
+    - Checked on the branch, on the PC: 23 Python tests, both Node tests, 40 of 40
+      browser scenarios (the oracle now also works out the disruption chance and the
+      range), the three other browser tests, the parity report, no page scroll at
+      1280x680 and 1280x800, Ember and "Send to base" through the branch's server.
+    - NOT checked: the handheld. NOT done: the live copy on GitHub Pages and the PC's
+      running dashboard still serve main. After a merge: restart the dashboard, run
+      `git subtree push --prefix console origin gh-pages`, and pull on the handheld.
 
 Not done, or not verified:
 - Everything in the list above is unverified on the real Legion Go, with real

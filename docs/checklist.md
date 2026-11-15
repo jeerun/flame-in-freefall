@@ -27,7 +27,10 @@ owner's local time (confirm on the team page). "Submit for Judging" is final.
 - [ ] In the Oxygen map, select an investigation and switch between the three chart
       views. LT and RT on Research open the two evidence activities. A reveals a
       result and B returns. In the zoomed FLEX map, A opens Find counterexample.
+- [ ] On the Flame console at the starting values the reading is 57% with "range
+      34–75%" beside it and "Disruption chance 32%" under it, on one line.
 - [ ] On the Moon Base preset, check the warning about three nearby disruptions.
+      The line under the number reads "Disruption chance 98%".
       In Ignite or Ember, B should close the dialog and return to the previous control.
 
 ## Earlier Legion Go runs recorded by the owner

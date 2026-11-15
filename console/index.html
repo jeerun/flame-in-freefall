@@ -589,9 +589,9 @@
       </div>
       <div class="prediction-value">
         <div class="big-label">Chance of burning all the fuel</div>
-        <div class="big"><span id="pKeep">50</span><small>%</small></div>
+        <div class="big"><span id="pKeep">50</span><small>%</small><span class="range" id="pRange" hidden></span></div>
         <div class="meter" id="meter" role="img" aria-label="Chance the flame burns until the fuel is gone"><div id="meterFill"></div></div>
-        <div class="twin"><span id="pOut">50</span>% visible extinction · Clear outcomes only</div>
+        <div class="twin"><span id="pOut">50</span>% visible extinction · Clear outcomes only<span id="disNote" hidden> · Disruption chance <span id="pDis">0</span>%</span></div>
       </div>
       <div class="caption" id="stageCap">Illustration of a spherical droplet flame in microgravity. Disrupted tests are excluded from the outcome model.</div>
     </div>
@@ -864,6 +864,11 @@
   Each model score is intercept + fuel offset + sum((shared slope + fuel-specific slope) * value).
   extinction: sigmoid(score) estimates visible extinction among FLEX Extinction and Completion rows.
   burn_rate: max(0, score) gives the fitted burning rate in mm^2/s.
+  disruption (optional): sigmoid(score) estimates the chance that a test ends in "Disruption", NASA's label
+              for an ending with no clear outcome, among all in-scope rows.
+  extinction_draws (optional): the extinction formula refitted on resampled tests, one row per refit:
+              [intercept, one slope per setting, then for each further fuel its offset and what it adds to
+              each slope]. The page shows where the middle of them fall (meta.range.percentiles).
 
   Optional fields the real export adds (the page works without them):
   meta.exclusive     pairs of settings no test ever combined, e.g. [["co2","he"]]
@@ -905,7 +910,7 @@ window.FLAME_MODEL = {
   var $ = function (id) { return document.getElementById(id); };
   var state = { sel: 0, fuel: M.fuels[0].key, values: {}, sheet: false, baseline: null, comparing: false };
   var last = null;                                // the reading on screen: { r: prediction, rc: range check }
-  var lastLevel = null, lastNoClear = false, lastDisagree = false;
+  var lastLevel = null, lastNoClear = false, lastDisagree = false, lastMostly = false;
   var WATCH = (M.meta && M.meta.watch) || 0.35, lastWatch = false;
 
   /* ---------- saved preferences and sound ---------- */
@@ -1065,7 +1070,31 @@ window.FLAME_MODEL = {
   function predictFor(fuel, values) {
     var pOut = 1 / (1 + Math.exp(-linear(M.extinction, fuel, values)));
     var K = Math.max(0, linear(M.burn_rate, fuel, values));
-    return { pOut: pOut, pKeep: 1 - pOut, K: K };
+    var r = { pOut: pOut, pKeep: 1 - pOut, K: K, pDis: null, lo: null, hi: null };
+    // A third formula: the chance that a test like this ends in "Disruption", NASA's label for no clear outcome.
+    // pKeep and pOut describe only the tests that did not.
+    if (M.disruption) r.pDis = 1 / (1 + Math.exp(-linear(M.disruption, fuel, values)));
+    // How far the chance of burning all the fuel moves when the model is refitted on resampled tests: lo and hi
+    // bound the middle of those refits. It shows how much the estimate hangs on which tests were run, not what
+    // the model leaves out.
+    var draws = M.extinction_draws, n = M.features.length;
+    if (draws && draws.length) {
+      var fi = 0;
+      M.fuels.forEach(function (f, i) { if (f.key === fuel) fi = i; });
+      var own = 1 + n + (fi - 1) * (n + 1);          // where this fuel's offset sits in a row, for every fuel but the first
+      var keeps = draws.map(function (d) {
+        var z = d[0] + (fi ? d[own] : 0);
+        M.features.forEach(function (f, j) { z += (d[1 + j] + (fi ? d[own + 1 + j] : 0)) * values[f.key]; });
+        return 1 - 1 / (1 + Math.exp(-z));
+      }).sort(function (a, b) { return a - b; });
+      var pick = function (pct) {
+        var pos = pct / 100 * (keeps.length - 1), i = Math.floor(pos);
+        return keeps[i] + (pos - i) * (keeps[Math.min(keeps.length - 1, i + 1)] - keeps[i]);
+      };
+      var q = (M.meta.range && M.meta.range.percentiles) || [5, 95];
+      r.lo = pick(q[0]); r.hi = pick(q[1]);
+    }
+    return r;
   }
   function predict() { return predictFor(state.fuel, state.values); }
   // Controller rumble, where the browser and the gamepad support it. Silent otherwise.
@@ -1092,7 +1121,7 @@ window.FLAME_MODEL = {
   function nearest() {
     if (!hasTests) return null;
     var limit = M.meta.far_distance || 0;
-    var list = [], near = { n: 0, out: 0, done: 0, other: 0 };
+    var list = [], near = { n: 0, out: 0, done: 0, other: 0, gone: null }, lost = [];
     M.tests.forEach(function (t) {
       if (t[2] !== state.fuel) return;
       var s = 0;
@@ -1106,10 +1135,17 @@ window.FLAME_MODEL = {
       list.push({ t: t, d: d });
       if (limit && d <= limit) {
         near.n++;
-        if (t[8] === "Extinction") near.out++; else if (t[8] === "Completion") near.done++; else near.other++;
+        if (t[8] === "Extinction") {
+          near.out++;                               // t[11]: the droplet's diameter when the visible flame went out
+          if (t[11] != null && t[7] > 0 && t[11] <= t[7]) lost.push(1 - Math.pow(t[11] / t[7], 3));
+        } else if (t[8] === "Completion") near.done++; else near.other++;
       }
     });
     if (!list.length) return null;
+    if (lost.length) {                              // the median share of the droplet's volume that was gone by then
+      lost.sort(function (a, b) { return a - b; });
+      near.gone = (lost[(lost.length - 1) >> 1] + lost[lost.length >> 1]) / 2;
+    }
     list.sort(function (a, b) { return a.d - b.d; });        // ranked, closest first
     return { test: list[0].t, dist: list[0].d, far: limit > 0 && list[0].d > limit, near: near, top: list.slice(0, 3), all: list };
   }
@@ -1185,6 +1221,9 @@ window.FLAME_MODEL = {
     rc.disagree = rc.level === "inside" && seen >= 2 &&
       ((r.pKeep < WATCH && nb.done * 2 > seen) || (r.pKeep >= 0.65 && nb.out * 2 > seen));
     if (rc.disagree) rc.level = "edge";
+    // The model threshold is distinct from the observed counts in the neighborhood.
+    rc.mostlyDisrupted = r.pDis != null && r.pDis >= 0.5 && rc.level !== "outside";
+    if (rc.mostlyDisrupted && rc.level === "inside") rc.level = "edge";
     last = { r: r, rc: rc };
 
     fuelVal.textContent = fuelLabel();
@@ -1213,6 +1252,15 @@ window.FLAME_MODEL = {
 
     var keep = shown(r.pKeep);
     $("pKeep").textContent = keep; $("pOut").textContent = 100 - keep;
+    var ranged = r.lo != null && rc.level !== "outside";
+    $("pRange").hidden = !ranged;
+    if (ranged) {
+      $("pRange").textContent = "range " + shown(r.lo) + "–" + shown(r.hi) + "%";
+      $("pRange").title = "Where the estimate falls when the model is refitted on resampled tests (the middle "
+        + (M.meta.range ? M.meta.range.percentiles[1] - M.meta.range.percentiles[0] : 90) + "% of refits)";
+    }
+    $("disNote").hidden = r.pDis == null || rc.level === "outside";
+    $("pDis").textContent = $("disNote").hidden ? "" : shown(r.pDis);
     $("jumpValue").textContent = rc.level === "outside" ? "Outside range" : rc.level === "edge" ? "Limited data" : keep + "%";
     $("meterFill").style.width = Math.max(2, keep) + "%";
     $("meter").className = "meter" + (rc.level !== "inside" ? "" : r.pKeep >= 0.65 ? " high" : r.pKeep >= WATCH ? " mid" : "");
@@ -1232,11 +1280,12 @@ window.FLAME_MODEL = {
       if (rc.level === "outside" && lastLevel !== "outside") notify("Outside the FLEX model range. The flame outcome is unknown.", "alert");
       else if (rc.level !== "outside" && lastLevel === "outside") notify("Back within the FLEX input ranges.", "info");
       if (rc.level !== "outside" && rc.noClear && !lastNoClear) notify("All nearby FLEX outcomes are inconclusive.", "warn");
+      else if (rc.mostlyDisrupted && !rc.noClear && !lastMostly) notify("The model estimates at least a 50% chance of disruption.", "warn");
       if (rc.disagree && !lastDisagree) notify("Real tests nearby disagree with the model. Trust the tests.", "warn");
       if (watch && !lastWatch) notify("Model watch level reached: at least " + shown(WATCH) + "% estimated completion among clear outcomes.", "info");
     }
     lastLevel = rc.level; lastNoClear = rc.level !== "outside" && rc.noClear; lastDisagree = !!rc.disagree;
-    lastWatch = watch;
+    lastWatch = watch; lastMostly = rc.mostlyDisrupted && !rc.noClear;
     if (d0) $("droplet").style.setProperty("--drop", (0.04 + d0 * 0.022).toFixed(3));
 
     var conf = $("conf");
@@ -1255,6 +1304,10 @@ window.FLAME_MODEL = {
       } else if (rc.noClear) {
         $("confTitle").textContent = "No clear outcome in nearby tests";
         $("confText").textContent = "Nearby FLEX rows: " + nb.n + ". All ended in disruption. The percentage relies on tests farther away.";
+      } else if (rc.mostlyDisrupted && nb && nb.n) {
+        $("confTitle").textContent = "Elevated modelled disruption chance";
+        $("confText").textContent = "The model estimates a " + shown(r.pDis) + "% chance of disruption. "
+          + nb.other + " of " + nb.n + " nearby FLEX tests ended in disruption.";
       } else if (rc.near && rc.near.far) {
         $("confTitle").textContent = "Far from any real test";
         $("confText").textContent = "The closest experiment, FLEX test " + rc.near.test[0] + ", is not close to these settings. Read with care.";
@@ -1272,6 +1325,7 @@ window.FLAME_MODEL = {
     var line;
     if (rc.level === "outside") line = "These settings exceed the model's scope.";
     else if (rc.noClear) line = "Nearby tests cannot confirm the estimated outcome.";
+    else if (rc.mostlyDisrupted && !rc.disagree) line = "The model estimates at least a 50% chance of disruption, an ending with no clear outcome.";
     else if (rc.level === "edge") line = "Check the nearby FLEX tests before interpreting the estimate.";
     else if (r.pKeep >= 0.65) line = "The model expects this flame to burn until the fuel is gone.";
     else if (r.pKeep >= WATCH) line = "Could go either way: burn until the fuel is gone, or go out first.";
@@ -1317,7 +1371,9 @@ window.FLAME_MODEL = {
       var ranked = el("li", "", "Closest real FLEX tests with this fuel, ranked (settings, outcome, measured burning rate):");
       var ol = el("ol");
       rc.near.top.forEach(function (x) {
+        var wentOut = x.t[8] === "Extinction" && x.t[11] != null && x.t[7] > 0 && x.t[11] <= x.t[7];
         ol.appendChild(el("li", "", "Test " + x.t[0] + ": " + testSettings(x.t) + ". " + testEnd(x.t)
+          + (wentOut ? " By then the droplet had lost about " + Math.round((1 - Math.pow(x.t[11] / x.t[7], 3)) * 100) + "% of its volume." : "")
           + (x.t[9] != null ? " " + x.t[9].toFixed(2) + " mm²/s." : "")));
       });
       ranked.appendChild(ol); ul.appendChild(ranked);
@@ -1339,6 +1395,10 @@ window.FLAME_MODEL = {
         + " for telling the two outcomes apart (0.5 is a coin flip, 1 is perfect)"
         + (M.meta.burn_rate_mae != null ? ", and burning rate off by " + M.meta.burn_rate_mae + " mm²/s on average" : "") + ". ";
       fine += "The main reading displays whole percentages from 1% to 99%. These display limits do not quantify model uncertainty. ";
+      if (M.meta.range) fine += "The range beside it is where the middle " + (M.meta.range.percentiles[1] - M.meta.range.percentiles[0])
+        + "% of " + M.meta.range.refits + " refits on resampled tests fall: how much the estimate hangs on which tests were run, not what the model leaves out. ";
+      if (M.meta.auc_disruption != null) fine += "A third formula estimates the chance of a disruption, an ending NASA's table records without a clear outcome (held-out AUC "
+        + M.meta.auc_disruption.toFixed(2) + ", " + M.meta.rows_disruption + " tests). ";
       fine += "\"Goes out\" means the visible flame: FLEX found that fuel can keep reacting after it, in a cool flame. ";
     }
     $("sheetFine").textContent = fine + "This is a model reading for study and planning, not a crew procedure.";
@@ -1348,15 +1408,19 @@ window.FLAME_MODEL = {
     var nb = rc.near && rc.near.near;
     var prediction = rc.level === "outside" ? "Outside the tested conditions. Do not rely on this prediction."
       : "Among tests with a clear outcome, the model estimates " + shown(r.pKeep) + "% completion and " + (100 - shown(r.pKeep)) + "% visible extinction. Disruptions are excluded. Burning rate: " + r.K.toFixed(2) + " mm²/s.";
+    if (rc.level !== "outside" && r.lo != null) prediction += " Refitted on resampled tests, the completion estimate falls between " + shown(r.lo) + "% and " + shown(r.hi) + "%.";
+    if (rc.level !== "outside" && r.pDis != null) prediction += " Modelled chance that a test like this is disrupted instead, with no clear outcome: " + shown(r.pDis) + "%.";
     var evidence = !rc.near ? "No real-test comparison is available."
       : rc.near.far ? "Closest: FLEX test " + rc.near.test[0] + ". " + testEnd(rc.near.test) + " Even this test is far from the current settings."
       : nb.n + " nearby test(s): " + nb.done + " burned to completion, " + nb.out + " went out early, " + nb.other + " had no clear outcome.";
+    if (rc.near && !rc.near.far && nb.gone != null) evidence += " Where the flame went out, the droplet had already lost a median of " + Math.round(nb.gone * 100) + "% of its volume.";
     var limits = [];
     if (M.meta.mock) limits.push("Mock model: these are not NASA-derived predictions.");
     if (rc.level === "outside") limits.push(outsideReasons(rc).join(" ") + " The numbers are unsupported extrapolations.");
     if (rc.near && rc.near.far) limits.push("There is no close experimental match for these conditions.");
     if (nb && nb.n && nb.done + nb.out === 0) limits.push("Nearby tests have no clear flame outcome, so they cannot confirm this prediction.");
     if (rc.disagree) limits.push("Nearby real tests disagree with the model. Give the experimental evidence priority.");
+    if (rc.level !== "outside" && r.pDis != null && r.pDis >= 0.5) limits.push("The model estimates at least a 50% chance of disruption. The completion estimate applies only to clear outcomes.");
     if (rc.edge.length) limits.push("These conditions are near the edge of the tested range.");
     var ap = activePreset();
     if (ap && ap.key === "mars") limits.push("Mars cabin air is an assumed scenario, not a Mars-gravity validation.");
@@ -1412,6 +1476,11 @@ window.FLAME_MODEL = {
     row("Burns to completion", aKeep + "%", bKeep + "%", aKeep !== bKeep,
       usable ? signed(bKeep - aKeep, 0, "pp") : "Delta withheld: unsupported conditions");
     row("Goes out first", (100 - aKeep) + "%", (100 - bKeep) + "%", aKeep !== bKeep);
+    if (a.r.pDis != null && b.r.pDis != null) {
+      var aDis = shown(a.r.pDis), bDis = shown(b.r.pDis);
+      row("Disruption chance", a.level === "outside" ? "Outside range" : aDis + "%", b.level === "outside" ? "Outside range" : bDis + "%", usable && aDis !== bDis,
+        usable ? signed(bDis - aDis, 0, "pp") : "Delta withheld: unsupported conditions");
+    }
     var aRate = a.r.K.toFixed(2), bRate = b.r.K.toFixed(2);
     row("Burning rate", aRate + " mm²/s", bRate + " mm²/s", aRate !== bRate,
       usable ? signed(Number(bRate) - Number(aRate), 2, "mm²/s") : "Delta withheld: unsupported conditions");
@@ -2117,13 +2186,14 @@ window.FLAME_MODEL = {
   // CSV file, as recorded, with this dashboard's own prediction beside it for comparison.
   function testsCsv() {
     var head = ["flex_test", "flex_id", "fuel", "o2_pct", "pressure_atm", "co2_pct", "he_pct", "droplet_d0_mm", "test_end",
-      "burn_rate_mm2_s", "burn_time_s", "end_diameter_mm", "model_chance_burns_all_fuel_pct", "model_burn_rate_mm2_s", "source"];
+      "burn_rate_mm2_s", "burn_time_s", "end_diameter_mm", "model_chance_burns_all_fuel_pct", "model_chance_disruption_pct",
+      "model_burn_rate_mm2_s", "source"];
     var lines = [head.join(",")];
     M.tests.forEach(function (t) {
       var p = predictFor(t[2], drillValues(t));
       var row = t.slice(0, 12).map(function (v) { return v == null ? "" : String(v); });
       while (row.length < 12) row.push("");
-      row.push((p.pKeep * 100).toFixed(1), p.K.toFixed(3), "NASA PSI-69 FLEX v5 DOI 10.60555/mbq8-0451");
+      row.push((p.pKeep * 100).toFixed(1), p.pDis == null ? "" : (p.pDis * 100).toFixed(1), p.K.toFixed(3), "NASA PSI-69 FLEX v5 DOI 10.60555/mbq8-0451");
       lines.push(row.join(","));
     });
     return lines.join("\r\n") + "\r\n";
@@ -2678,6 +2748,8 @@ window.FLAME_MODEL = {
       + (ap ? " Cabin air preset: " + ap.label + "." : "")
       + "\nModel output conditional on completion or visible extinction (disruptions excluded): chance the flame burns until the fuel is gone " + t("pKeep") + " %; chance it goes out before the fuel is gone " + t("pOut")
       + " %; burning rate " + t("kVal") + " mm2/s; droplet gone in about " + t("tVal") + " s if the flame lasts."
+      + (last.r.pDis != null && last.rc.level !== "outside" ? "\nModelled chance that a test like this ends in disruption instead (NASA's label for an ending with no clear outcome): " + shown(last.r.pDis) + " %." : "")
+      + (last.r.lo != null && last.rc.level !== "outside" ? "\nRefitted on resampled tests, the completion chance falls between " + shown(last.r.lo) + " % and " + shown(last.r.hi) + " %." : "")
       + "\nConfidence box: " + t("confTitle") + ". " + t("confText")
       + "\nOne-line reading: " + t("oneLine")
       + "\nSummary: " + t("summaryPrediction") + " " + t("summaryEvidence") + " " + t("summaryLimits")

@@ -38,10 +38,24 @@ function linear(part,fuel,values){
 }
 // The model's own chance of burning all the fuel, in percent, before any rounding.
 function rawKeep(fuel,values){return 100*(1-1/(1+Math.exp(-linear(model.extinction,fuel,values))));}
+const whole=percent=>Math.min(99,Math.max(1,Math.round(percent)));   // the page shows no chance below 1 % or above 99 %
+// The range beside the main reading: the exported refits on resampled tests, each row
+// [intercept, one slope per setting, then methanol's offset and what it adds to each slope].
+function expectedRange(fuel,values){
+  const n=model.features.length, fi=model.fuels.findIndex(f=>f.key===fuel), own=1+n+(fi-1)*(n+1);
+  const keeps=model.extinction_draws.map(d=>{
+    let z=d[0]+(fi?d[own]:0);
+    model.features.forEach((f,j)=>{z+=(d[1+j]+(fi?d[own+1+j]:0))*values[f.key];});
+    return 100*(1-1/(1+Math.exp(-z)));
+  }).sort((a,b)=>a-b);
+  const pick=pct=>{const pos=pct/100*(keeps.length-1), i=Math.floor(pos);return keeps[i]+(pos-i)*(keeps[Math.min(keeps.length-1,i+1)]-keeps[i]);};
+  return model.meta.range.percentiles.map(pick).map(whole);
+}
 function expected(fuel,values){
-  // The page shows no chance below 1 % or above 99 %: the tests cannot support more certainty than that.
-  const keep=Math.min(99,Math.max(1,Math.round(rawKeep(fuel,values))));
-  return {keep, K:Math.max(0,linear(model.burn_rate,fuel,values)).toFixed(2)};
+  const keep=whole(rawKeep(fuel,values));
+  // The third formula: the chance that a test like this ends in "Disruption".
+  const dis=whole(100/(1+Math.exp(-linear(model.disruption,fuel,values))));
+  return {keep, dis, range:expectedRange(fuel,values), K:Math.max(0,linear(model.burn_rate,fuel,values)).toFixed(2)};
 }
 async function assertDisplay(page,fuel,values){
   // Read-only test hook checks the unrounded values received by the model.
@@ -54,6 +68,12 @@ async function assertDisplay(page,fuel,values){
   assert.equal((await page.locator('#kVal').innerText()).trim(),e.K);
   assert.equal(await page.locator('#meter').getAttribute('aria-label'),
     `Estimated completion chance among clear outcomes: ${e.keep} percent`);
+  // The range is shown wherever the reading is usable, and hidden outside the tested range.
+  const outside=/untrusted/.test(await page.locator('#read').getAttribute('class'));
+  assert.equal(await page.locator('#disNote').isVisible(),!outside);
+  if(!outside) assert.equal((await page.locator('#pDis').innerText()).trim(),String(e.dis));
+  assert.equal(await page.locator('#pRange').isVisible(),!outside);
+  if(!outside) assert.equal((await page.locator('#pRange').innerText()).trim(),`range ${e.range[0]}–${e.range[1]}%`);
 }
 async function reset(page){
   await page.locator('body').click({position:{x:5,y:100}});

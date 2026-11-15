@@ -100,11 +100,17 @@ class PerFuelModelTests(unittest.TestCase):
         for key in ("fuels", "features", "tests"):
             self.assertEqual(new[key], old[key], key)
         changed = {k for k in set(new["meta"]) | set(old["meta"]) if new["meta"].get(k) != old["meta"].get(k)}
-        self.assertEqual(changed, {"auc", "burn_rate_mae", "watch", "unsure"})
+        self.assertEqual(changed, {"auc", "burn_rate_mae", "watch", "unsure", "rows_disruption", "auc_disruption", "range"})
         self.assertNotIn("fuel_coef", old["extinction"])
-        for part in ("extinction", "burn_rate"):
+        # Added on top of the base export: the chance of a disruption, and the refits behind the range on screen.
+        self.assertEqual(set(new) - set(old), {"disruption", "extinction_draws"})
+        for part in ("extinction", "burn_rate", "disruption"):
             self.assertEqual(set(new[part]), {"intercept", "fuel", "coef", "fuel_coef"})
             self.assertEqual(set(new[part]["fuel_coef"]), {k for k, _ in train.FUELS})
+        draws = new["extinction_draws"]
+        self.assertEqual(len(draws), per_fuel.DRAWS)
+        self.assertEqual({len(row) for row in draws}, {1 + 2 * len(train.NUM) + 1})   # intercept, slopes, methanol's offset and own slopes
+        self.assertEqual(new["meta"]["range"], {"refits": per_fuel.DRAWS, "of": per_fuel.BOOTSTRAPS, "percentiles": list(per_fuel.RANGE)})
 
     def test_exported_coefficients_give_the_fitted_predictions(self):
         scope = self.scope
@@ -112,8 +118,10 @@ class PerFuelModelTests(unittest.TestCase):
         rate = scope[scope["burn_rate_mm2_s"].notna()]
         clf = per_fuel.classifier().fit(per_fuel.design(ext), (ext["test_end"] == "Extinction").to_numpy(int))
         reg = per_fuel.regressor().fit(per_fuel.design(rate), rate["burn_rate_mm2_s"].to_numpy(float))
+        dis = per_fuel.classifier().fit(per_fuel.design(scope), (scope["test_end"] == "Disruption").to_numpy(int))
         self.assertEqual(per_fuel.as_parts(*train.raw_coefficients(clf)), self.export["extinction"])
         self.assertEqual(per_fuel.as_parts(*train.raw_coefficients(reg)), self.export["burn_rate"])
+        self.assertEqual(per_fuel.as_parts(*train.raw_coefficients(dis)), self.export["disruption"])
 
         def by_hand(part, frame):
             z = np.full(len(frame), part["intercept"], float)
@@ -128,6 +136,8 @@ class PerFuelModelTests(unittest.TestCase):
         self.assertLess(np.max(np.abs(p - clf.predict_proba(per_fuel.design(scope))[:, 1])), 1e-4)
         k = by_hand(self.export["burn_rate"], scope)
         self.assertLess(np.max(np.abs(k - reg.predict(per_fuel.design(scope)))), 1e-4)
+        d = 1 / (1 + np.exp(-by_hand(self.export["disruption"], scope)))
+        self.assertLess(np.max(np.abs(d - dis.predict_proba(per_fuel.design(scope))[:, 1])), 1e-4)
 
     @unittest.skipUnless(HAVE_NODE, "needs Node.js on PATH")
     def test_page_computes_the_per_fuel_model(self):
@@ -148,6 +158,22 @@ class PerFuelModelTests(unittest.TestCase):
         # The two models must really differ on these inputs, or the check above would pass for the wrong export.
         plain = page_predictions(ROOT / "console" / "index.html", per_fuel.BASE_JS, cases)
         self.assertGreater(np.max(np.abs(np.array([g["pOut"] for g in plain]) - p_out)), 0.05)
+        # The third formula: the chance of a disruption.
+        dis = per_fuel.classifier().fit(per_fuel.design(scope), (scope["test_end"] == "Disruption").to_numpy(int))
+        self.assertLess(np.max(np.abs(np.array([g["pDis"] for g in got]) - dis.predict_proba(per_fuel.design(frame))[:, 1])), 1e-4)
+        # The range: where the middle of the exported refits put the chance of burning all the fuel.
+        draws = np.array(self.export["extinction_draws"])
+        X = np.hstack([np.ones((len(frame), 1)), per_fuel.design(frame)])
+        keep = 1 - 1 / (1 + np.exp(-(X @ draws.T)))                       # one row per input, one column per refit
+        lo, hi = np.percentile(keep, self.export["meta"]["range"]["percentiles"], axis=1)
+        self.assertLess(np.max(np.abs(np.array([g["lo"] for g in got]) - lo)), 1e-9)
+        self.assertLess(np.max(np.abs(np.array([g["hi"] for g in got]) - hi)), 1e-9)
+        # At the starting values the reading sits inside its own range, for both fuels.
+        for fuel in ("heptane", "methanol"):
+            start = {f["key"]: f["default"] for f in self.export["features"]}
+            (g,) = page_predictions(ROOT / "console" / "index.html", per_fuel.OUT_JS, [{"fuel": fuel, "values": start}])
+            self.assertLess(g["lo"], g["pKeep"])
+            self.assertLess(g["pKeep"], g["hi"])
 
     @unittest.skipUnless(HAVE_NODE, "needs Node.js on PATH")
     def test_page_still_reads_an_export_without_fuel_slopes(self):
@@ -162,6 +188,8 @@ class PerFuelModelTests(unittest.TestCase):
         reg = make_pipeline(StandardScaler(), LinearRegression()).fit(train.design(rate), rate["burn_rate_mm2_s"].to_numpy(float))
         self.assertLess(np.max(np.abs(np.array([g["pOut"] for g in got]) - clf.predict_proba(train.design(frame))[:, 1])), 1e-4)
         self.assertLess(np.max(np.abs(np.array([g["rawK"] for g in got]) - reg.predict(train.design(frame)))), 1e-4)
+        # An export without the third formula or the refits: the page shows neither, instead of a made-up number.
+        self.assertEqual({(g["pDis"], g["lo"], g["hi"]) for g in got}, {(None, None, None)})
 
     def test_patch_refuses_the_page_it_has_already_changed(self):
         """The patch that taught the page the per-fuel export was applied on Nov 15, 2026. It must not apply twice."""

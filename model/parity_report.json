@@ -29,9 +29,9 @@
   },
   "sha256": {
     "model/train.py": "d3b652172c58816e68d1c969836bf96a954ab45e3bbb959240d40e79224808aa",
-    "model/train_per_fuel.py": "617b436152626c1e3775ce7731d8a667d605bd4c70b23dd63345396295c64e07",
-    "console/model.js": "148248e0e18c84eb74747935bd59c59868acf7054a107242235aaa3591e15372",
-    "console/index.html": "1eb219fa6baf0baa13bee8024dd8daf3749a3462dcda857a061d261502c7b449",
+    "model/train_per_fuel.py": "faf415d6b9f30fb12d8c74c03634f91d191e30d3663bdfd63d699c3a484065c2",
+    "console/model.js": "72e9df8e5ff907c30b07774e0c053e2a897f414d18951882c84e742c2f29d24e",
+    "console/index.html": "126be74b84312c3aec6ad9a2884928331ccdd5d5940e36c0507696df9755df2d",
     "data/clean/flex_clean.csv": "4f8c5b93feb3be16391fe5d8bcccfb827de08e2d3a50b62f5107e9e512c5fc32"
   },
   "versions": {
