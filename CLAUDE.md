@@ -42,7 +42,7 @@ Submission closes Sunday Nov 15, 11:59 PM in the team owner's local time
 
 ## Status
 
-Last updated Saturday Nov 14, about 10:19 PM Mountain Time.
+Last updated Saturday Nov 14, about 10:58 PM Mountain Time.
 
 Done:
 - Team created on the Space Apps site, challenge selected.
@@ -114,10 +114,31 @@ Done:
   into a question mark outside the tested range. The controller buzzes on the red
   state and on a wrong guess. Opening "Ask the AI" asks its first question by itself.
   All checked in headless Edge at 1280x680 and 1280x800 with a simulated gamepad.
+- Late evening of Nov 14, at the owner's request ("more fun", "fit the brief", "we
+  are going for first place", "something new", "pictures instead of dots", "pick a
+  star with the stick", "a simulation"). All of it checked the same way:
+  - The pages were reordered to fit the brief: NASA research is the home page, then
+    Flame console, then Fire drill. A start screen comes first (A or any key).
+  - NASA research: a one-line count of the collection, a fourth ranking question
+    "Cabin air" (scores added to `research_notes.json`), an orbit view (X) with a
+    small picture per kind of fuel, and the right stick points at an investigation.
+  - Flame console: a star map of the real tests under the reading. Right stick picks
+    a star, RT replays that test in the flame picture, R3 moves the settings onto
+    it (keys `[` `]`, P, G). The replay uses burn time and end diameter, which
+    `model/train.py` now adds to each `tests` row in `model.js` for display only.
+    The fitted model and `metrics.json` did not change.
+  - Fire drill: the reveal replays the test; streak, rank, best score kept in the
+    browser; one sentence from Ember after each answer when the PC is reachable.
+  - Ember: the AI got a name, reads its answers aloud (V turns the voice off), and
+    its prompt now forbids moving a number from the brief onto an investigation,
+    after it did that once in testing.
+  - Sound effects made in the browser (M mutes) and a moving starfield behind the page.
 
 Not done:
 - Nobody on the team has reviewed the AI-written research notes line by line.
-- "Ask the AI" answers were spot-checked by hand (about ten), not evaluated formally.
+- Ember's answers were spot-checked by hand (about twenty), not evaluated formally.
+- Sound and voice need one touch, click or key press before a browser will play
+  them. Whether a gamepad button alone unlocks them on the Legion Go is untested.
 - Reaching the PC from the Legion Go over Wi-Fi has not been tried. It needs the
   owner to answer the Windows firewall prompt on the PC (Allow, private networks).
 - Rumble has only been tried with a simulated gamepad.
@@ -303,17 +324,33 @@ under 10% predicted, 4% completed (115 tests); 10 to 20%, 7% (30); 20 to 35%, 13
 It misses four methanol tests at 0.7 atm with 20 to 30% CO2 that burned to
 completion (it gives them under 5%); the nearby-test count on screen shows them.
 
-Three pages, in this order: Flame console, NASA research, Fire drill. RB goes
-forward, LB back, keys 1 to 3 jump. Menu (or key /) opens "Ask the AI" when the page
-is served by `server/serve.py`.
+A start screen, then three pages in this order: NASA research (home), Flame console,
+Fire drill. RB goes forward, LB back, keys 1 to 3 jump. Menu (or key /) opens Ember,
+the AI, when the page is served by `server/serve.py`. The full control table is in
+the README; keep the two in step.
 
-Controls on the Flame console page: Up/Down pick a setting (or scroll the
-explanation while it is open), Left/Right change it (hold to repeat), A explain,
-B close, X switch cabin air (Earth-like air, Moon Base), Y reset. On the NASA
-research page: Left/Right change the question, Up/Down move through the ranked list,
-B goes back. On Fire drill: Left "went out first", Right "burned all its fuel",
-A next, Y new game, B back. In "Ask the AI": Up/Down pick a question, A asks, B
-closes. Touch and keyboard (arrows, Enter, Esc, X, R) also work.
+Controls in short. NASA research: Left/Right change the question, Up/Down move
+through the ranked list, X switches list and orbit view, right stick points at an
+investigation in the orbit view. Flame console: Up/Down pick a setting (or scroll
+the explanation while it is open), Left/Right change it (hold to repeat), A explain,
+B close, X switch cabin air, Y reset, right stick picks a star, RT replays it, R3
+moves the settings onto it. Fire drill: Left "went out first", Right "burned all its
+fuel", A next, Y new game, B home. In Ember's panel: Up/Down pick a question, A asks,
+B closes, V voice. M mutes the sound effects.
+
+Honesty rules for the new pieces: a star is a drawing of one real test (shape and
+colour from "Test end", size from the measured burning rate); a replay plays back
+NASA's start diameter, end diameter and burn time and says the glow is an
+illustration; a test with no end diameter on record is not replayed; the orbit view
+shows the same AI-written ranks as the list; Ember's lines are always labelled as
+the AI's.
+
+Tests live outside the repo (Playwright scripts driving headless Edge). When the
+page changes, the things worth re-checking are: nothing scrolls at 1280x680 and
+1280x800 on any page, the top bar stays on one line with the Ember button showing,
+the explanation panel does not overflow, and the page still works opened as a file
+with `model.js` only, with nothing but `index.html`, and with `#notitle` to skip
+the start screen.
 
 Running the local AI: Ollama 0.40 and the model `gemma4:12b` (8 GB) are installed
 on the owner's PC (ASUS ROG, RTX 5080 16 GB). `py server/serve.py` serves
@@ -335,8 +372,10 @@ The flame picture is an illustration, not a simulation, and says so on screen.
 The explanation panel says it is a model reading, not a crew procedure. Keep both.
 
 Agreed features: range and confidence warning, gamepad control, explanation panel,
-cabin-air presets, ranked closest tests, the NASA research page, "Ask the AI" on a
-local model, the Fire drill game, rumble and the animated flame picture.
+cabin-air presets, ranked closest tests, the NASA research page with its orbit view,
+Ember (a local model, with voice), the Fire drill game, the star map with replay,
+the start screen, sound, rumble and the animated flame picture.
+Feature freeze was set for 2 PM Sunday. After that: fixes from the Legion Go test only.
 Deliberately cut: flame video analysis, combining the raw data of several experiments.
 
 ## Submission requirements
