@@ -437,7 +437,9 @@ Inside the product:
 
 - The Ember evidence lab uses the locally installed vision model to identify a candidate
   change in the visible flame rim in NASA's [FLEX footage](https://svs.gsfc.nasa.gov/11318/).
-  Viewers can play both the FLEX clip and a separate NASA Saffire-I camera sequence offline.
+  Viewers can play six NASA clips offline, covering FLEX, FLEX-2, SoFIE-GEL,
+  Saffire-I, Saffire-V and Saffire-VI. Two online videos show FLEX-2 flame
+  oscillations and the Saffire-IV fabric experiment.
   The saved frame review applies to FLEX. A fresh review
   uses the Python server and an available Ollama vision model. For English questions
   about BASS-II gas readings, Ember proposes a filter and the dashboard returns original
