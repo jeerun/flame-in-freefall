@@ -14,20 +14,22 @@
   const limits = data.thresholds;
   const claim = byId("stageTitle").textContent;
   const graphic = byId("graphic");
+  const airFirst = ["Atmosphere", "Specimen", "Gravity"];
+  const specimenFirst = ["Specimen", "Atmosphere", "Gravity"];
+  let checks = airFirst;
   let stage = 0;
-  let predictedYes = false;
 
   function el(tag, text) {
     const node = document.createElement(tag);
     node.textContent = text;
     return node;
   }
-  function action(label, nextStage, primary = false) {
+  function action(label, nextStage, primary = false, route = checks) {
     const button = el("button", label);
     button.type = "button";
     button.classList.toggle("next", primary);
     button.addEventListener("click", () => {
-      if (stage === 0) predictedYes = label === "Yes, the air matches";
+      checks = route;
       show(nextStage);
     });
     byId("actions").append(button);
@@ -66,54 +68,58 @@
 
   function show(step, focus = true) {
     stage = step;
+    if (stage === 0) checks = airFirst;
     byId("actions").replaceChildren();
     graphic.replaceChildren();
     byId("sourceDetails").open = false;
     byId("sourceDetails").hidden = stage === 0;
     [...byId("trail").children].forEach((item, i) => {
+      item.textContent = checks[i];
       item.classList.toggle("passed", i + 1 < stage);
       if (i + 1 === stage) item.setAttribute("aria-current", "step");
       else item.removeAttribute("aria-current");
     });
     const title = byId("stageTitle");
     const reason = byId("reason");
+    const check = checks[stage - 1];
+    byId("stageLabel").textContent = stage ? "Check " + stage + " of 3 · " + check : "Your call";
     if (stage === 0) {
-      byId("stageLabel").textContent = "Your call";
       title.textContent = claim;
-      reason.textContent = "The challenge specifies at least " + limits.oxygenPct + "% oxygen and at most " + limits.pressurePsi + " psi. Make a call, then follow the measurements.";
+      reason.textContent = "The challenge specifies at least " + limits.oxygenPct + "% oxygen and at most " + limits.pressurePsi + " psi. Choose an answer to see the evidence behind it.";
       plot("Rows with ambient oxygen and pressure", data.eligible,
         "Each mark is one published table row. Some source rows repeat.");
       marks("matrix", data.eligible, 0);
-      action("Yes, the air matches", 1);
-      action("We need more evidence", 1);
-    } else if (stage === 1) {
-      byId("stageLabel").textContent = "Check 1 of 3 · Atmosphere";
+      action("Yes, the air matches", 1, false, airFirst);
+      action("We need more evidence", 1, false, specimenFirst);
+    } else if (check === "Atmosphere") {
       title.textContent = "The atmosphere matches";
-      reason.textContent = (predictedYes ? "You spotted the air match. " : "Your caution is worth testing. ") +
-        matches + " of " + data.eligible + " rows meet both limits. That tells us the oxygen and pressure in those tests. What actually burned?";
+      reason.textContent = stage === 1
+        ? "You chose the air match. " + matches + " rows meet both limits. That alone cannot predict how a solid panel burns. Check what those tests actually burned."
+        : "These are the " + matches + " gas-flame rows you just examined. They meet both cabin air limits. Did the table also record lunar gravity?";
       plot("Rows meeting both cabin air thresholds", matches + " / " + data.eligible,
         matches + " highlighted rows meet both limits, grouped together so you can count them.");
       marks("matrix", data.eligible, matches);
-      action("Check the specimen", 2, true);
-    } else if (stage === 2) {
+    } else if (check === "Specimen") {
       const example = data.matches[0];
-      byId("stageLabel").textContent = "Check 2 of 3 · Specimen";
       title.textContent = "All the matches are gas flames";
-      reason.textContent = "Every matching row comes from the CFI-G normal-flame table. The solid-material tables in this collection lack a comparable chamber-pressure field.";
+      reason.textContent = stage === 1
+        ? "You asked for more evidence. The fuel explains why. Every test that meets the cabin air limits burned gas. None used a solid panel."
+        : "Every matching row comes from the CFI-G normal-flame table. The solid-material tables in this collection lack a comparable chamber-pressure field.";
       plot("Gas-flame rows among the atmosphere matches", matches + " / " + matches,
         "Test " + example.test + " used " + example.fuel + " in " + example.oxygenPct +
         "% oxygen at approximately " + example.pressurePsi.toFixed(2) + " psi.");
       marks("specimens", matches, matches);
-      action("Check gravity", 3, true);
-      action("Previous", 1);
     } else {
-      byId("stageLabel").textContent = "Check 3 of 3 · Gravity";
       title.textContent = "The lunar panel is still an open question";
       reason.textContent = "The matching table has no gravity measurement for individual rows. To answer the crew’s question, we need observations of a comparable solid at lunar gravity under the specified cabin air.";
       plot("What the matching rows establish", "", "A missing gravity measurement leaves the lunar comparison open.");
       measurements();
-      action("Try again", 0, true);
-      action("Previous", 2);
+    }
+    if (stage > 0) {
+      const nextButtons = { Atmosphere: "Check the atmosphere", Specimen: "Check the specimen", Gravity: "Check gravity" };
+      if (stage < checks.length) action(nextButtons[checks[stage]], stage + 1, true);
+      else action("Try again", 0, true);
+      action(stage === 1 ? "Change answer" : "Previous", stage - 1);
     }
     byId("reading").hidden = !byId("reading").textContent;
     if (focus) title.focus();
