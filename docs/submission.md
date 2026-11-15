@@ -97,7 +97,7 @@ oxygen, pressure, carbon dioxide, helium and droplet size, and the page shows:
   an ending with no clear outcome, which is how most tests in oxygen-rich air ended;
 - the burning rate and how long the droplet would last at that rate;
 - an evidence box. Amber marks a distant match, inconclusive nearby tests,
-  disagreement, or settings where most tests were disrupted. Red flags settings
+  disagreement, or a modelled disruption chance of at least 50%. Red flags settings
   beyond the model's scope;
 - an explanation that opens with three short boxes, the prediction, the evidence from
   nearby real tests and the limits, and keeps the detail one press away: which

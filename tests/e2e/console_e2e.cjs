@@ -68,9 +68,10 @@ async function assertDisplay(page,fuel,values){
   assert.equal((await page.locator('#kVal').innerText()).trim(),e.K);
   assert.equal(await page.locator('#meter').getAttribute('aria-label'),
     `Estimated completion chance among clear outcomes: ${e.keep} percent`);
-  assert.equal((await page.locator('#pDis').innerText()).trim(),String(e.dis));
   // The range is shown wherever the reading is usable, and hidden outside the tested range.
   const outside=/untrusted/.test(await page.locator('#read').getAttribute('class'));
+  assert.equal(await page.locator('#disNote').isVisible(),!outside);
+  if(!outside) assert.equal((await page.locator('#pDis').innerText()).trim(),String(e.dis));
   assert.equal(await page.locator('#pRange').isVisible(),!outside);
   if(!outside) assert.equal((await page.locator('#pRange').innerText()).trim(),`range ${e.range[0]}–${e.range[1]}%`);
 }

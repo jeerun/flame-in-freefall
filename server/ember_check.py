@@ -32,7 +32,6 @@ MOON = ("Fuel: Heptane. Oxygen 30.0 %, Pressure 0.69 atm, Carbon dioxide 0 %, He
 OUTSIDE = ("Fuel: Heptane. Oxygen 40.0 %, Pressure 0.69 atm, Carbon dioxide 0 %, Helium 0 %, Droplet diameter 3.0 mm.\n"
            "Model output conditional on completion or visible extinction (disruptions excluded): chance the flame burns until the fuel is gone 99 %; chance it goes out before the fuel is gone 1 %; burning rate 0.96 mm2/s; "
            "droplet gone in about 9 s if the flame lasts.\n"
-           "Modelled chance that a test like this ends in disruption instead (NASA's label for an ending with no clear outcome): 99 %.\n"
            "Confidence box: Outside the tested range. No experiment was run at this oxygen setting. Do not rely on these numbers.\n"
            "One-line reading: These settings exceed the model's scope.")
 

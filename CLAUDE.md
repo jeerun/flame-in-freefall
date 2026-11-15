@@ -521,7 +521,7 @@ Not done:
       formula with the same recipe on all 252 tests (held out AUC 0.892), and
       `extinction_draws`, 300 of the 1000 refits on resampled tests.
     - New on the page: "range 34–75%" beside the main reading; "Disruption chance 32%"
-      under it; an amber state "Most tests like this were disrupted" at 50 % or more;
+      under it; an amber warning at a modelled disruption chance of 50 % or more, with actual nearby counts;
       in the explanation the range, the disruption chance and, for nearby flames that
       went out, how much of the droplet's volume was gone; a "Disruption chance" row in
       the comparison; a new CSV column `model_chance_disruption_pct`.
