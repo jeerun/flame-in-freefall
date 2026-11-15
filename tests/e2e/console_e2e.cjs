@@ -1,11 +1,15 @@
 /* Actual browser UI tests. Never call app setters or predict() as the oracle. */
-const {chromium} = require('playwright');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const http = require('node:http');
 const crypto = require('node:crypto');
 const {pathToFileURL} = require('node:url');
+// E2E_PLAYWRIGHT_PATH: folder of a Playwright package to use instead of one installed with npm, for
+// example the copy inside Python's playwright package (<site-packages>/playwright/driver/package).
+const playwrightFrom = process.env.E2E_PLAYWRIGHT_PATH ? path.resolve(process.env.E2E_PLAYWRIGHT_PATH) : null;
+const {chromium} = require(playwrightFrom || 'playwright');
+const playwrightVersion = require(playwrightFrom ? path.join(playwrightFrom,'package.json') : 'playwright/package.json').version;
 const root = path.resolve(__dirname, '../..');
 const web = path.join(root, 'console');
 const output = process.env.E2E_OUTPUT_DIR ? path.resolve(process.env.E2E_OUTPUT_DIR) : path.join(__dirname, 'results');
@@ -26,10 +30,18 @@ const server=http.createServer((req,res)=>{
   res.writeHead(200,{'Content-Type':mime[path.extname(target)]||'application/octet-stream'});
   fs.createReadStream(target).pipe(res);
 });
+// The export's formula, written out here on purpose: intercept + fuel + sum((coef + this fuel's own coef) * value).
+// An export of the earlier one-slope model has no "fuel_coef", and then nothing is added.
+function linear(part,fuel,values){
+  const own=(part.fuel_coef&&part.fuel_coef[fuel])||{};
+  return part.intercept+part.fuel[fuel]+Object.entries(part.coef).reduce((sum,[key,c])=>sum+(c+(own[key]||0))*values[key],0);
+}
+// The model's own chance of burning all the fuel, in percent, before any rounding.
+function rawKeep(fuel,values){return 100*(1-1/(1+Math.exp(-linear(model.extinction,fuel,values))));}
 function expected(fuel,values){
-  const linear=part=>part.intercept+part.fuel[fuel]+Object.entries(part.coef).reduce((sum,[key,c])=>sum+c*values[key],0);
-  const out=1/(1+Math.exp(-linear(model.extinction)));
-  return {keep:Math.round((1-out)*100), K:Math.max(0,linear(model.burn_rate)).toFixed(2)};
+  // The page shows no chance below 1 % or above 99 %: the tests cannot support more certainty than that.
+  const keep=Math.min(99,Math.max(1,Math.round(rawKeep(fuel,values))));
+  return {keep, K:Math.max(0,linear(model.burn_rate,fuel,values)).toFixed(2)};
 }
 async function assertDisplay(page,fuel,values){
   // Read-only test hook checks the unrounded values received by the model.
@@ -94,8 +106,7 @@ async function runCase(page,name,fn){
     const corner=[];
     for(const fuel of model.fuels.map(f=>f.key)) for(let bits=0;bits<(1<<model.features.length);bits++){
      const values=Object.fromEntries(model.features.map((f,i)=>[f.key,(bits&(1<<i))?f.max:f.min]));
-     const raw=model.burn_rate.intercept+model.burn_rate.fuel[fuel]+Object.entries(model.burn_rate.coef).reduce((sum,[k,c])=>sum+c*values[k],0);
-     if(raw<0)corner.push({fuel,values});
+     if(linear(model.burn_rate,fuel,values)<0)corner.push({fuel,values});
     }
     assert.ok(corner.length,'No negative-rate fixture within current sliders; review test coverage');
     const c=corner[0];await reset(page);
@@ -103,6 +114,27 @@ async function runCase(page,name,fn){
     for(const [key,value] of Object.entries(c.values))await setSlider(page,key,value);
     await assertDisplay(page,c.fuel,c.values);
     assert.equal((await page.locator('#kVal').innerText()).trim(),'0.00');
+   });
+   await runCase(page,label('display_limits_1_and_99'),async()=>{
+    // Upper limit, inside the tested range: heptane in Moon Base air, where the model's own number is above 99.5 %.
+    const moon={...defaults,o2:30,p:.694,co2:0,he:0};
+    assert.ok(rawKeep('heptane',moon)>=99.5,'Moon Base fixture is no longer above 99.5 %; pick another');
+    await reset(page);await page.locator('[data-preset="moon"]').click();
+    await assertDisplay(page,'heptane',moon);
+    assert.equal((await page.locator('#pKeep').innerText()).trim(),'99');
+    assert.equal((await page.locator('#pOut').innerText()).trim(),'1');
+    // Lower limit: the first fuel and single slider end where the model's own number is below 0.5 %.
+    const low=[];
+    for(const fuel of model.fuels.map(f=>f.key)) for(const f of model.features) for(const end of [f.min,f.max]){
+     const values={...defaults,[f.key]:end};
+     if(rawKeep(fuel,values)<0.5)low.push({fuel,key:f.key,end,values});
+    }
+    assert.ok(low.length,'No fixture below 0.5 % with one slider at its end; review test coverage');
+    const c=low[0];await reset(page);
+    await page.locator(`[data-fuel="${c.fuel}"]`).click();await setSlider(page,c.key,c.end);
+    await assertDisplay(page,c.fuel,c.values);
+    assert.equal((await page.locator('#pKeep').innerText()).trim(),'1');
+    assert.equal((await page.locator('#pOut').innerText()).trim(),'99');
    });
    await runCase(page,label('reset_after_changes'),async()=>{
     await setSlider(page,'d0',4);await setSlider(page,'o2',26);await page.locator('[data-fuel="methanol"]').click();
@@ -169,7 +201,7 @@ async function runCase(page,name,fn){
   const browserVersion=browser?browser.version():null;
   if(browser)await browser.close();await new Promise(resolve=>server.close(resolve));
   const hashes=Object.fromEntries(['index.html','model.js','research.js','tables.js'].filter(f=>fs.existsSync(path.join(web,f))).map(f=>[f,crypto.createHash('sha256').update(fs.readFileSync(path.join(web,f))).digest('hex')]));
-  const report={passed:reports.length>0&&reports.every(r=>r.passed),plannedTests:38,tests:reports.length,passedTests:reports.filter(r=>r.passed).length,browser:browserVersion,playwright:require('playwright/package.json').version,source_sha256:hashes,results:reports,limitations:['Local Chromium only; not live hosting, real gamepad, or real handheld hardware.','Range inputs use native DOM input events; button/reset/preset interactions use browser clicks and keyboard.','Checks current UI behavior; does not validate scientific warning policy or model accuracy.','Read-only __flame.state hook verifies unrounded model inputs; no application setters or predict functions are called.']};
+  const report={passed:reports.length>0&&reports.every(r=>r.passed),plannedTests:40,tests:reports.length,passedTests:reports.filter(r=>r.passed).length,browser:browserVersion,playwright:playwrightVersion,source_sha256:hashes,results:reports,limitations:['Local Chromium only; not live hosting, real gamepad, or real handheld hardware.','Range inputs use native DOM input events; button/reset/preset interactions use browser clicks and keyboard.','Checks current UI behavior; does not validate scientific warning policy or model accuracy.','Read-only __flame.state hook verifies unrounded model inputs; no application setters or predict functions are called.']};
   fs.writeFileSync(path.join(output,'console_e2e_report.json'),JSON.stringify(report,null,2)+'\n');
   console.log(JSON.stringify(report,null,2));process.exitCode=report.passed?0:1;
  }
