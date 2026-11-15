@@ -44,9 +44,10 @@ fails: `docs/legion-go-setup.md`.
 - [ ] Flame console: LT opens Ignite (A runs it again, B closes). The View button
       zooms the star map to the whole screen (Left and Right change the detail, B
       closes).
+- [ ] Research: LT opens Earth or orbit?, RT opens Read the sensors, A reveals and B returns. In the zoomed FLEX map, A opens Find counterexample.
 - [ ] A banner appears at the top, with a sound and a buzz, when the settings leave
       what NASA tested (set carbon dioxide and helium both above zero) and when the
-      risk turns high (press X for Moon Base).
+      Moon preset has only inconclusive nearby outcomes (press X at the default heptane settings).
 - [ ] Flame console: A opens the explanation with three boxes (prediction, evidence,
       limitations). There, X and Y open the two sections and LT saves a baseline and
       opens the comparison. Changing a bar updates column B; B closes.
@@ -89,7 +90,7 @@ fails: `docs/legion-go-setup.md`.
 
 ## Demo video (owner only)
 
-- [ ] Filmed following `docs/demo-script.md`.
+- [ ] Review the included captioned desktop demo or record the alternative handheld demo in `docs/demo-script.md`.
 - [ ] 30 seconds or less.
 - [ ] English subtitles burned into the picture.
 - [ ] Hosted outside the Space Apps site.
