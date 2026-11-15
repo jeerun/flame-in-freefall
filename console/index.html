@@ -339,7 +339,55 @@
   .dbtns button:disabled { cursor: default; opacity: 0.75; }
   .drill .line button[hidden] { display: none; }
 
+  /* ---------- Ignite: a full-screen run of the model ---------- */
+  .facts.three { grid-template-columns: 1fr 1fr auto; }
+  .ignite {
+    display: flex; align-items: center; gap: 0.5rem; padding: 0 1.1rem; border-radius: 0.6rem; cursor: pointer;
+    border: 1px solid var(--flame); background: var(--panel-hi); font-size: 1.05rem; font-weight: 600; white-space: nowrap;
+  }
+  .ignite:disabled { opacity: 0.45; cursor: default; }
+  .sim { position: fixed; inset: 0; z-index: 6; background: rgba(4, 7, 18, 0.9); display: grid; place-items: center; padding: 1rem; }
+  .sim .box {
+    width: min(70rem, 100%); height: min(42rem, 100%); background: #0a1124; border: 1px solid var(--flame); border-radius: 0.6rem;
+    padding: 0.8rem 1.2rem; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 0.5rem;
+  }
+  .sim .ahead { display: flex; align-items: baseline; gap: 0.8rem; }
+  .sim h3 { margin: 0; font-size: 1.25rem; font-weight: 600; white-space: nowrap; }
+  .sim .who { color: var(--ink-2); font-size: 0.85rem; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sim .close, .sim .again {
+    border: 1px solid var(--line); background: transparent; border-radius: 0.5rem; padding: 0.3rem 0.7rem; cursor: pointer;
+    display: inline-flex; gap: 0.4rem; align-items: center; font-size: 0.9rem; white-space: nowrap;
+  }
+  .simgrid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 1rem; min-height: 0; }
+  #simCanvas { width: 100%; height: 100%; min-height: 0; display: block; border-radius: 0.5rem; background: radial-gradient(circle at 50% 50%, #101b3a, #05080f 75%); }
+  .simside { display: grid; grid-template-rows: auto minmax(0, 1fr) auto auto auto; gap: 0.5rem; min-height: 0; }
+  .simnums { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+  .simnums div { background: var(--panel); border-radius: 0.5rem; padding: 0.35rem 0.8rem; font-size: 0.82rem; color: var(--ink-2); }
+  .simnums b { display: block; font-size: 1.5rem; font-weight: 600; color: var(--ink); }
+  .simnums small { font-size: 0.8rem; font-weight: 400; color: var(--ink-2); margin-left: 0.2rem; }
+  #simPlot { width: 100%; height: 100%; min-height: 0; display: block; background: var(--panel); border-radius: 0.5rem; }
+  #simPlot text { font-family: inherit; fill: var(--ink-3); }
+  .simend { font-size: 1.1rem; font-weight: 600; min-height: 2.8rem; }
+  .simtally { font-size: 0.92rem; color: var(--ink-2); }
+  .sim .fine { margin: 0; font-size: 0.8rem; color: var(--ink-3); }
+  .csv + .csv { margin-left: 0; }
+  .csv { white-space: nowrap; margin-left: auto; padding: 0.15rem 0.6rem; border-radius: 999px; border: 1px solid var(--line); background: transparent; cursor: pointer; font-size: 0.8rem; color: var(--ink-2); }
+
+  /* ---------- notifications ---------- */
+  .toasts { position: fixed; top: 3.7rem; left: 50%; transform: translateX(-50%); z-index: 8; display: grid; gap: 0.4rem; justify-items: center; pointer-events: none; width: min(46rem, 92vw); }
+  .toast {
+    background: var(--panel-hi); border: 1px solid var(--flame); border-left-width: 0.4rem; border-radius: 0.6rem;
+    padding: 0.5rem 1rem; font-size: 1rem; font-weight: 600; box-shadow: 0 0.4rem 1.2rem rgba(0, 0, 0, 0.55); animation: toastin .25s ease-out;
+  }
+  .toast.warn { border-color: var(--warning); }
+  .toast.alert { border-color: var(--critical); background: var(--critical-dim); }
+  .toast.good { border-color: var(--good); }
+  @keyframes toastin { from { opacity: 0; transform: translateY(-0.5rem); } to { opacity: 1; transform: none; } }
+
   /* ---------- Ask the AI ---------- */
+  .ai .brains { display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; margin-bottom: 0.45rem; font-size: 0.85rem; color: var(--ink-2); }
+  .ai .brains button { padding: 0.2rem 0.7rem; border-radius: 999px; border: 1px solid var(--line); background: transparent; cursor: pointer; font-size: 0.85rem; color: var(--ink-2); }
+  .ai .brains button[aria-pressed=true] { background: var(--flame); border-color: var(--flame); color: #0b1020; font-weight: 600; }
   .aibtn { cursor: pointer; background: transparent; color: var(--ink); border-color: var(--flame); font: inherit; font-size: 0.85rem; }
   .aibtn kbd { height: 1.2rem; min-width: 1.2rem; font-size: 0.75rem; }
   .ai { position: fixed; inset: 0; z-index: 5; background: rgba(6, 10, 24, 0.8); display: grid; place-items: center; padding: 1rem; }
@@ -416,6 +464,7 @@
 <body>
 
 <canvas id="stars" aria-hidden="true"></canvas>
+<div class="toasts" id="toasts" role="status" aria-live="polite"></div>
 
 <div class="title" id="title" hidden role="dialog" aria-label="Start screen">
   <div class="in">
@@ -450,7 +499,9 @@
       <div class="presets" id="presets" aria-label="Cabin air presets" hidden></div>
     </div>
     <div class="rows" id="rows"></div>
-    <div class="legend"><i aria-hidden="true"></i> Range the experiments actually tested</div>
+    <div class="legend"><i aria-hidden="true"></i> Range the experiments actually tested
+      <button type="button" class="csv" id="csvBtn" hidden title="Key D. Saves the real tests on this device.">Download tests (CSV)</button>
+      <button type="button" class="csv" id="sendBtn" hidden></button></div>
   </section>
 
   <section class="read" id="read" aria-labelledby="hRead" aria-live="polite">
@@ -470,9 +521,10 @@
       <div class="caption" id="stageCap">Picture is an illustration, not a simulation. In microgravity a droplet flame forms a sphere instead of a teardrop.</div>
     </div>
 
-    <div class="facts">
+    <div class="facts three">
       <div class="fact"><div class="k">Burning rate</div><div class="v"><span id="kVal">0.00</span> <small>mm²/s</small></div></div>
       <div class="fact"><div class="k">Droplet gone in about</div><div class="v"><span id="tVal">0</span> <small>s, if the flame lasts</small></div></div>
+      <button type="button" class="ignite" id="igniteBtn"><kbd class="wide">LT</kbd> Ignite</button>
     </div>
 
     <div class="conf" id="conf">
@@ -584,6 +636,31 @@
   <span>Keys: arrows, 1 to 3, M sound</span>
 </footer>
 
+<div class="sim" id="sim" hidden role="dialog" aria-labelledby="simTitle">
+  <div class="box">
+    <div class="ahead">
+      <h3 id="simTitle">Ignite</h3>
+      <span class="who" id="simWho"></span>
+      <button type="button" class="again" id="simAgain"><kbd>A</kbd> Ignite again</button>
+      <button type="button" class="close" id="simClose"><kbd>B</kbd> Close</button>
+    </div>
+    <div class="simgrid">
+      <canvas id="simCanvas" aria-hidden="true"></canvas>
+      <div class="simside">
+        <div class="simnums">
+          <div>Time<b><span id="simT">0.0</span><small>s</small></b></div>
+          <div>Droplet<b><span id="simD">0.00</span><small>mm</small></b></div>
+          <div>Burning rate<b><span id="simK">0.00</span><small>mm²/s</small></b></div>
+        </div>
+        <svg id="simPlot" role="img" aria-label="Droplet diameter squared against time"></svg>
+        <div class="simend" id="simEnd" aria-live="polite"></div>
+        <div class="simtally" id="simTally"></div>
+      </div>
+    </div>
+    <p class="fine">A run of the model, not of physics. The droplet shrinks along the d-squared law at the burning rate the model predicts. Whether this run burns all its fuel is drawn at random with the model's odds, and when it goes out, the size it stops at is borrowed from a real FLEX test close to these settings. The flame, igniter wires, soot shell and the faint haze after a heptane flame goes out (FLEX found that a cool flame can carry on there) are drawn to look like the experiment. They are illustration, not footage and not modelled.</p>
+  </div>
+</div>
+
 <div class="ai" id="ai" hidden role="dialog" aria-labelledby="aiTitle">
   <div class="box">
     <div class="ahead">
@@ -593,6 +670,7 @@
       <button type="button" class="close" id="aiClose"><kbd>B</kbd> Close</button>
     </div>
     <div>
+      <div class="brains" id="aiBrains" hidden></div>
       <div class="qs" id="aiQs"></div>
       <form class="own" id="aiForm">
         <input id="aiInput" type="text" maxlength="300" autocomplete="off" aria-label="Your own question" placeholder="Or type your own question and press Enter">
@@ -651,7 +729,7 @@ window.FLAME_MODEL = {
   var $ = function (id) { return document.getElementById(id); };
   var state = { sel: 0, fuel: M.fuels[0].key, values: {}, sheet: false };
   var last = null;                                // the reading on screen: { r: prediction, rc: range check }
-  var lastLevel = null;                           // confidence level of the previous reading
+  var lastLevel = null, lastHigh = false, lastDisagree = false;   // the previous reading, to notice changes
 
   /* ---------- saved preferences and sound ---------- */
   function load(key, fallback) {
@@ -690,6 +768,22 @@ window.FLAME_MODEL = {
     start: function () { [262, 392, 523, 784].forEach(function (f, i) { tone(f, 200, "sine", 0.08, null, i * 110); }); },
     reply: function () { tone(880, 70, "sine", 0.04); }
   };
+  sfx.warn = function () { tone(520, 120, "triangle", 0.07); tone(520, 120, "triangle", 0.07, null, 170); };
+  // A short banner at the top of the screen, with a sound and a buzz that match how serious it is.
+  var lastNote = { text: "", at: 0 }, NOTES = { shown: 0 };
+  function notify(text, level, ms) {
+    var now = Date.now();
+    if (titleOn || (text === lastNote.text && now - lastNote.at < 4000)) return;
+    lastNote = { text: text, at: now }; NOTES.shown++;
+    var box = $("toasts"), t = el("div", "toast " + (level || "info"), text);
+    box.appendChild(t);
+    while (box.children.length > 2) box.removeChild(box.firstChild);
+    setTimeout(function () { if (t.parentNode) t.parentNode.removeChild(t); }, ms || 3800);
+    if (level === "alert") { sfx.alert(); buzz(260, true); }
+    else if (level === "warn") { sfx.warn(); buzz(140, false); }
+    else if (level === "good") sfx.good(1);
+    else sfx.reply();
+  }
   function soundButton() { $("sndBtn").classList.toggle("off", !SND.on); $("sndBtn").textContent = SND.on ? "♪ Sound" : "♪ Muted"; }
   function toggleSound() { SND.on = !SND.on; save("sound", SND.on); soundButton(); if (SND.on) sfx.open(); }
   $("sndBtn").addEventListener("click", toggleSound);
@@ -832,7 +926,7 @@ window.FLAME_MODEL = {
     });
     if (!list.length) return null;
     list.sort(function (a, b) { return a.d - b.d; });        // ranked, closest first
-    return { test: list[0].t, dist: list[0].d, far: limit > 0 && list[0].d > limit, near: near, top: list.slice(0, 3) };
+    return { test: list[0].t, dist: list[0].d, far: limit > 0 && list[0].d > limit, near: near, top: list.slice(0, 3), all: list };
   }
 
   function rangeCheck() {
@@ -940,8 +1034,15 @@ window.FLAME_MODEL = {
     flame.style.setProperty("--glow", (0.12 + 0.88 * r.pKeep).toFixed(2));
     flame.style.setProperty("--beat", Math.max(1.1, 3.2 - r.K * 2.4).toFixed(2) + "s");
     flame.parentNode.classList.toggle("unknown", rc.level === "outside");
-    if (rc.level === "outside" && lastLevel && lastLevel !== "outside") { buzz(260, true); sfx.alert(); }   // buzz and alarm on leaving tested ground
-    lastLevel = rc.level;
+    // notifications: only when something changes, never on the first reading
+    var high = rc.level !== "outside" && r.pKeep >= 0.65;
+    if (lastLevel) {
+      if (rc.level === "outside" && lastLevel !== "outside") notify("Outside what NASA tested. Treat the fire risk as unknown.", "alert");
+      else if (rc.level !== "outside" && lastLevel === "outside") notify("Back inside what NASA tested.", "info");
+      if (high && !lastHigh) notify("High fire risk: this flame is likely to burn all its fuel.", "warn");
+      if (rc.disagree && !lastDisagree) notify("Real tests nearby disagree with the model. Trust the tests.", "warn");
+    }
+    lastLevel = rc.level; lastHigh = high; lastDisagree = !!rc.disagree;
     if (d0) $("droplet").style.setProperty("--drop", (0.04 + d0 * 0.022).toFixed(3));
 
     var conf = $("conf");
@@ -1253,8 +1354,7 @@ window.FLAME_MODEL = {
   function replayStar() {
     var t = starOrClosest();
     if (t && !replayTest(t, $("flame").parentNode, $("stageCap"), false)) {
-      $("mapTitle").textContent = "FLEX test " + t[0] + " cannot be replayed: NASA's record has no burn time or end diameter for it.";
-      sfx.bad();
+      notify("FLEX test " + t[0] + " cannot be replayed: NASA's record has no end diameter for it.", "info");
     }
   }
 
@@ -1437,7 +1537,7 @@ window.FLAME_MODEL = {
     var show = !!drill.guess && drill.coachFor === drill.i && !!drill.coach;
     $("drillCoach").hidden = !show;
     if (show) {
-      $("drillCoachBy").textContent = "Ember, the AI on the team's PC, thinks:";
+      $("drillCoachBy").textContent = "Ember, the team's on-board AI, thinks:";
       $("drillCoachText").textContent = drill.coach;
     }
   }
@@ -1458,7 +1558,7 @@ window.FLAME_MODEL = {
     if (drill.i === drill.rounds.length - 1) {                 // game over: jingle, and remember the best score on this device
       var you = count(drill.you);
       if (you >= count(drill.model)) sfx.win(); else sfx.lose();
-      if (you > load("best", 0)) { save("best", you); drill.newBest = true; }
+      if (you > load("best", 0)) { save("best", you); drill.newBest = true; notify("New best score: " + you + " of " + drill.rounds.length + ".", "good"); }
     }
     renderDrill();
     replayTest(t, $("drillBox"), $("drillCap"), true);          // the reveal plays the real test back; without a burn time it stays a still
@@ -1539,6 +1639,249 @@ window.FLAME_MODEL = {
       + "The dashboard's model gave this test a " + p + " % chance to burn until the fuel is gone.";
   }
 
+  /* ---------- download the real tests ---------- */
+  // The challenge asks for data that supports predictive modelling: this hands over every in-scope FLEX test as a
+  // CSV file, as recorded, with this dashboard's own prediction beside it for comparison.
+  function testsCsv() {
+    var head = ["flex_test", "flex_id", "fuel", "o2_pct", "pressure_atm", "co2_pct", "he_pct", "droplet_d0_mm", "test_end",
+      "burn_rate_mm2_s", "burn_time_s", "end_diameter_mm", "model_chance_burns_all_fuel_pct", "model_burn_rate_mm2_s", "source"];
+    var lines = [head.join(",")];
+    M.tests.forEach(function (t) {
+      var p = predictFor(t[2], drillValues(t));
+      var row = t.slice(0, 12).map(function (v) { return v == null ? "" : String(v); });
+      while (row.length < 12) row.push("");
+      row.push((p.pKeep * 100).toFixed(1), p.K.toFixed(3), "NASA PSI-69 FLEX v5 DOI 10.60555/mbq8-0451");
+      lines.push(row.join(","));
+    });
+    return lines.join("\r\n") + "\r\n";
+  }
+  var CSV_NAME = "flex_psi69_tests_with_predictions.csv";
+  var BASE = { ours: false, host: "" };            // ours: this page is served by the team's own server (server/serve.py)
+  function downloadCsv() {
+    if (!hasTests) return;
+    try {
+      var url = URL.createObjectURL(new Blob([testsCsv()], { type: "text/csv" })), a = document.createElement("a");
+      a.href = url; a.download = CSV_NAME;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+      notify("Saved " + M.tests.length + " real FLEX tests as a CSV file on this device.", "info");
+    } catch (err) { /* downloads are off in this browser */ }
+  }
+  // Getting the file off the device in your hands, for later use somewhere with a keyboard.
+  // Served by the team's server: one press stores it on that computer (and on the bigger machine behind it, if there
+  // is one). That needs no internet. Opened any other way: the device's own share sheet, where mail apps live.
+  function canShare() {
+    try { return !!(navigator.canShare && navigator.canShare({ files: [new File(["a"], "a.csv", { type: "text/csv" })] })); } catch (err) { return false; }
+  }
+  function sendCsv() {
+    if (!hasTests) return;
+    var csv = testsCsv();
+    if (BASE.ours) {
+      fetch("/export", { method: "POST", headers: { "Content-Type": "text/csv" }, body: csv })
+        .then(function (resp) { if (!resp.ok) throw new Error("HTTP " + resp.status); return resp.json(); })
+        .then(function (j) {
+          notify("Sent " + M.tests.length + " real FLEX tests to " + j.saved.join(" and ") + ", folder \"" + (j.folder || "exports") + "\"."
+            + (j.peer_missed ? " The other machine was out of reach." : "")
+            + (j.link ? " Other devices on this network: " + j.link : ""), "good", 9000);
+        })
+        .catch(function () { notify("The base computer did not take the file. Saving it on this device instead.", "warn"); downloadCsv(); });
+    } else if (canShare()) {
+      navigator.share({ files: [new File([csv], CSV_NAME, { type: "text/csv" })], title: "FLEX droplet tests (NASA PSI-69) with model predictions" })
+        .catch(function (err) { if (!err || err.name !== "AbortError") downloadCsv(); });   // a gamepad press cannot open the share sheet
+    } else downloadCsv();
+  }
+  function sendButton() {
+    var b = $("sendBtn");
+    if (!hasTests) return;
+    if (BASE.ours) { b.textContent = "Send to base"; b.title = "Left stick click, or key S. Stores the file on " + (BASE.host || "the computer that serves this page") + "."; b.hidden = false; }
+    else if (canShare()) { b.textContent = "Share"; b.title = "Key S. Opens this device's share sheet (mail, chat, nearby share)."; b.hidden = false; }
+    else b.hidden = true;
+  }
+  if (hasTests) { $("csvBtn").hidden = false; $("csvBtn").addEventListener("click", downloadCsv); $("sendBtn").addEventListener("click", sendCsv); sendButton(); }
+
+  /* ---------- Ignite: one run of the model, full screen ---------- */
+  // The droplet shrinks along the d-squared law at the predicted burning rate. Whether this run burns all its fuel is
+  // drawn at random with the model's odds; when it goes out, the size it stops at is borrowed from a real nearby test.
+  // Press it several times and the tally drifts toward the percentage on the main screen.
+  var SIM = { open: false, raf: 0, run: null, tally: { key: "", out: 0, burn: 0 }, parts: [], rand: Math.random };
+  function simKey() { return state.fuel + "|" + M.features.map(function (f) { return state.values[f.key]; }).join("|"); }
+  function simPlan() {
+    var r = last.r, rc = last.rc, d0 = state.values.d0, K = r.K;
+    if (rc.level === "outside") return { blocked: "No experiment covers these settings, so there is nothing honest to simulate. Move back inside the tested range and ignite again." };
+    if (!(K > 0.01) || !(d0 > 0)) return { blocked: "The model gives no burning rate here, so there is nothing to simulate." };
+    var burns = SIM.rand() < r.pKeep, dEnd = 0, from = null;
+    if (!burns) {                                  // borrow where it stops from a real test that went out, as close as possible
+      var pool = (rc.near && rc.near.all ? rc.near.all : []).filter(function (x) { return x.t[8] === "Extinction" && x.t[11] != null && x.t[7] > 0; }).slice(0, 8);
+      if (pool.length) { from = pool[Math.floor(SIM.rand() * pool.length)].t; dEnd = Math.min(0.95, from[11] / from[7]) * d0; }
+      else dEnd = 0.5 * d0;
+    }
+    var T = (d0 * d0 - dEnd * dEnd) / K;
+    return { burns: burns, d0: d0, K: K, dEnd: dEnd, T: T, Tfull: d0 * d0 / K, from: from, pKeep: r.pKeep, fuel: state.fuel, o2: state.values.o2 };
+  }
+  function simSize() {
+    var cv = $("simCanvas"), dpr = Math.min(2, window.devicePixelRatio || 1);
+    cv.width = Math.max(1, Math.round(cv.clientWidth * dpr)); cv.height = Math.max(1, Math.round(cv.clientHeight * dpr));
+    return dpr;
+  }
+  function simPlot(run, tau) {
+    var svg = $("simPlot"), W = svg.clientWidth, H = svg.clientHeight;
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    if (W < 120 || H < 70 || !run || run.blocked) return;
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    var L = 34, R = 12, T = 24, B = 34, X = function (t) { return L + t / run.Tfull * (W - L - R); }, Y = function (d2) { return H - B - d2 / (run.d0 * run.d0) * (H - T - B); };
+    svg.appendChild(svgEl("path", { d: "M" + L + " " + T + "V" + (H - B) + "H" + (W - R), stroke: "#2b3b66", fill: "none" }));
+    svg.appendChild(svgEl("line", { x1: X(0), y1: Y(run.d0 * run.d0), x2: X(run.Tfull), y2: Y(0), stroke: "#898781", "stroke-dasharray": "3 4", "stroke-width": 1 }));
+    var d2 = run.d0 * run.d0 - run.K * tau;
+    svg.appendChild(svgEl("line", { x1: X(0), y1: Y(run.d0 * run.d0), x2: X(tau), y2: Y(d2), stroke: "#7db8ff", "stroke-width": 2.5, "stroke-linecap": "round" }));
+    svg.appendChild(svgEl("circle", { cx: X(tau), cy: Y(d2), r: 4.5, fill: "#f1f4ff" }));
+    svg.appendChild(svgEl("text", { x: L, y: 13, "font-size": 10 }, "droplet diameter squared, mm²"));
+    svg.appendChild(svgEl("text", { x: L, y: H - 6, "font-size": 10 }, "time, s (dashed line: if it burned all its fuel)"));
+    svg.appendChild(svgEl("text", { x: L, y: H - B + 12, "font-size": 10 }, "0"));
+    svg.appendChild(svgEl("text", { x: L - 5, y: Y(run.d0 * run.d0) + 3, "text-anchor": "end", "font-size": 10 }, (run.d0 * run.d0).toFixed(1)));
+    svg.appendChild(svgEl("text", { x: X(run.Tfull), y: H - B + 12, "text-anchor": "end", "font-size": 10 }, run.Tfull.toFixed(1)));
+  }
+  // The picture is drawn to look like footage of a FLEX test: a droplet at true scale (see the scale bar), two igniter
+  // wires that pull back, a thin spherical flame that grows relative to the droplet as it burns, a soot shell inside a
+  // heptane flame, and a faint haze after a heptane flame goes out, where FLEX found a cool flame can carry on.
+  // Only the droplet size and the clock come from numbers. Everything else here is illustration.
+  function simDraw(run, tau, fade, now, sinceEnd) {
+    var cv = $("simCanvas"), c = cv.getContext("2d"), dpr = cv.width / Math.max(1, cv.clientWidth), W = cv.width, H = cv.height;
+    var cx = W / 2, cy = H / 2, unit = Math.min(W, H) / 2;
+    c.globalCompositeOperation = "source-over"; c.globalAlpha = 1;
+    c.clearRect(0, 0, W, H);
+    if (!run || run.blocked) return;
+    var mm = unit / 15;                             // pixels per millimetre: the view is about 30 mm across
+    var d = Math.sqrt(Math.max(run.d0 * run.d0 - run.K * tau, 0)), rd = d * mm / 2, prog = run.Tfull > 0 ? Math.min(1, tau / run.Tfull) : 0;
+    var heptane = run.fuel === "heptane", lit = Math.min(1, tau / (run.Tfull * 0.04 + 0.05));   // the flame takes a moment to wrap the droplet
+    var standoff = (heptane ? 3.4 : 2.6) + 3.2 * prog;                                         // the flame sits further out as the droplet shrinks
+    var rf = Math.max(rd * standoff, mm * 1.2) * lit * (1 + 0.012 * Math.sin(now / 210));
+    var bright = Math.min(1, 0.4 + (run.o2 - 12) / 26) * fade * lit;
+
+    // the support fibre the droplet sits on
+    c.strokeStyle = "rgba(190,200,225,0.28)"; c.lineWidth = Math.max(1, dpr * 0.8);
+    c.beginPath(); c.moveTo(0, cy); c.lineTo(W, cy); c.stroke();
+    // igniter wires: in at the start, glowing, then pulled back
+    var pull = Math.min(1, tau / (run.Tfull * 0.05 + 0.08)), reach = rd + mm * (0.6 + 9 * pull);
+    c.lineWidth = dpr * 2.2;
+    [-1, 1].forEach(function (side) {
+      var glow = Math.max(0, 1 - pull * 1.6);
+      c.strokeStyle = "rgba(" + Math.round(150 + 105 * glow) + "," + Math.round(150 + 60 * glow) + "," + Math.round(160 - 60 * glow) + "," + (0.9 - 0.75 * pull).toFixed(2) + ")";
+      c.beginPath(); c.moveTo(cx + side * reach, cy - mm * 1.1); c.lineTo(cx + side * (reach + mm * 5), cy - mm * 5.5); c.stroke();
+    });
+
+    c.globalCompositeOperation = "lighter";
+    // a faint haze after a heptane flame goes out (the cool flame FLEX found). Not modelled: it only marks the idea.
+    if (heptane && sinceEnd != null && !run.burns) {
+      var haze = Math.max(0, Math.min(1, sinceEnd / 700)) * Math.max(0, 1 - sinceEnd / 5200) * 0.33;
+      var hz = c.createRadialGradient(cx, cy, rd, cx, cy, Math.max(rd * 5.5, mm * 5));
+      hz.addColorStop(0, "rgba(150,120,255,0)"); hz.addColorStop(0.45, "rgba(150,120,255," + haze.toFixed(3) + ")"); hz.addColorStop(1, "rgba(150,120,255,0)");
+      c.fillStyle = hz; c.beginPath(); c.arc(cx, cy, Math.max(rd * 5.5, mm * 5), 0, 6.2832); c.fill();
+    }
+    if (bright > 0.01) {
+      // outer glow, then the thin bright shell
+      var og = c.createRadialGradient(cx, cy, rf * 0.75, cx, cy, rf * 1.7);
+      og.addColorStop(0, "rgba(70,120,255,0)"); og.addColorStop(0.35, "rgba(70,120,255," + (0.42 * bright).toFixed(3) + ")"); og.addColorStop(1, "rgba(70,120,255,0)");
+      c.fillStyle = og; c.beginPath(); c.arc(cx, cy, rf * 1.7, 0, 6.2832); c.fill();
+      var sh = c.createRadialGradient(cx, cy, rf * 0.86, cx, cy, rf * 1.1);
+      sh.addColorStop(0, "rgba(150,200,255,0)"); sh.addColorStop(0.5, "rgba(215,235,255," + (0.95 * bright).toFixed(3) + ")"); sh.addColorStop(1, "rgba(110,160,255,0)");
+      c.fillStyle = sh; c.beginPath(); c.arc(cx, cy, rf * 1.1, 0, 6.2832); c.fill();
+      if (heptane) {                                // soot glows yellow inside a heptane flame, strongest early on
+        var sg = c.createRadialGradient(cx, cy, rd, cx, cy, rf * 0.92);
+        sg.addColorStop(0, "rgba(255,170,70,0)"); sg.addColorStop(0.6, "rgba(255,180,80," + (0.5 * bright * (1 - 0.6 * prog)).toFixed(3) + ")"); sg.addColorStop(1, "rgba(255,200,120,0)");
+        c.fillStyle = sg; c.beginPath(); c.arc(cx, cy, rf * 0.92, 0, 6.2832); c.fill();
+      }
+    }
+    // ignition flash
+    if (tau < run.Tfull * 0.03 + 0.04) {
+      var fl = 1 - tau / (run.Tfull * 0.03 + 0.04);
+      var fg = c.createRadialGradient(cx, cy, 0, cx, cy, mm * 7);
+      fg.addColorStop(0, "rgba(255,255,255," + (0.9 * fl).toFixed(3) + ")"); fg.addColorStop(1, "rgba(255,255,255,0)");
+      c.fillStyle = fg; c.beginPath(); c.arc(cx, cy, mm * 7, 0, 6.2832); c.fill();
+    }
+    // soot shell: specks gathering on a sphere between the droplet and the flame (heptane only)
+    c.globalCompositeOperation = "source-over";
+    if (heptane && fade > 0.02 && lit > 0.5) {
+      var want = Math.round(70 * Math.min(1, prog * 3.5));
+      while (SIM.parts.length < want) SIM.parts.push({ a: SIM.rand() * 6.2832, k: 0.42 + SIM.rand() * 0.2, s: 0.6 + SIM.rand() * 1.1, w: (SIM.rand() - 0.5) * 0.0005 });
+      for (var i = 0; i < SIM.parts.length; i++) {
+        var p = SIM.parts[i], pr = rd + (rf - rd) * p.k; p.a += p.w * 16;
+        c.globalAlpha = 0.75 * fade; c.fillStyle = "#3a2a1c";
+        c.beginPath(); c.arc(cx + pr * Math.cos(p.a), cy + pr * Math.sin(p.a), p.s * dpr, 0, 6.2832); c.fill();
+      }
+    }
+    // the droplet: a clear bead with a highlight, lit by its own flame
+    c.globalAlpha = 1;
+    if (rd > 0.5) {
+      var dg = c.createRadialGradient(cx - rd * 0.35, cy - rd * 0.4, rd * 0.05, cx, cy, rd);
+      dg.addColorStop(0, "rgba(245,250,255,0.95)"); dg.addColorStop(0.35, heptane ? "rgba(214,196,150,0.85)" : "rgba(170,205,235,0.8)"); dg.addColorStop(1, "rgba(40,55,90,0.9)");
+      c.fillStyle = dg; c.beginPath(); c.arc(cx, cy, rd, 0, 6.2832); c.fill();
+      c.strokeStyle = "rgba(230,240,255,0.5)"; c.lineWidth = dpr; c.beginPath(); c.arc(cx, cy, rd, 0, 6.2832); c.stroke();
+    }
+    // camera overlay: scale bar, clock, a dark rim
+    var vg = c.createRadialGradient(cx, cy, unit * 0.7, cx, cy, Math.max(W, H) * 0.75);
+    vg.addColorStop(0, "rgba(0,0,0,0)"); vg.addColorStop(1, "rgba(0,0,0,0.55)");
+    c.fillStyle = vg; c.fillRect(0, 0, W, H);
+    c.fillStyle = "rgba(225,235,255,0.85)"; c.strokeStyle = "rgba(225,235,255,0.85)"; c.lineWidth = dpr * 1.5;
+    c.font = Math.round(11 * dpr) + "px Bahnschrift, 'Segoe UI', sans-serif"; c.textBaseline = "alphabetic";
+    var bx = 14 * dpr, by = H - 16 * dpr;
+    c.beginPath(); c.moveTo(bx, by); c.lineTo(bx + 5 * mm, by); c.moveTo(bx, by - 4 * dpr); c.lineTo(bx, by + 4 * dpr); c.moveTo(bx + 5 * mm, by - 4 * dpr); c.lineTo(bx + 5 * mm, by + 4 * dpr); c.stroke();
+    c.textAlign = "left"; c.fillText("5 mm", bx, by - 8 * dpr);
+    c.fillText("MODEL RUN  " + (run.fuel === "heptane" ? "n-heptane" : "methanol") + "  O2 " + run.o2.toFixed(0) + " %", 14 * dpr, 22 * dpr);
+    c.textAlign = "right"; c.fillText("T+" + tau.toFixed(2) + " s", W - 14 * dpr, 22 * dpr);
+    c.fillText("illustration, not footage", W - 14 * dpr, H - 12 * dpr);
+  }
+  function simStart() {
+    cancelAnimationFrame(SIM.raf);
+    var run = simPlan(), key = simKey(), t0 = null, ended = null;
+    SIM.run = run; SIM.parts = [];
+    if (SIM.tally.key !== key) SIM.tally = { key: key, out: 0, burn: 0 };
+    simSize();
+    $("simEnd").textContent = run.blocked || "";
+    $("simWho").textContent = run.blocked ? "" : fuelLabel() + ", " + M.features.map(function (f) { return fmt(f, state.values[f.key]) + " " + f.unit + " " + (SHORT[f.key] != null ? SHORT[f.key].trim() : f.label.toLowerCase()); }).join(", ").replace(/ ,/g, ",");
+    simTally();
+    if (run.blocked) { simDraw(null, 0, 0, 0, null); simPlot(null, 0); $("simT").textContent = "0.0"; $("simD").textContent = "0.00"; $("simK").textContent = "0.00"; sfx.bad(); return; }
+    $("simK").textContent = run.K.toFixed(2);
+    var speed = run.T / Math.min(6, Math.max(3, 6 * run.T / run.Tfull));   // three to six seconds on screen
+    sfx.start(); buzz(120, false);
+    function frame(now) {
+      if (!SIM.open || SIM.run !== run) return;
+      if (t0 == null) t0 = now;
+      var tau = Math.min(run.T, (now - t0) / 1000 * speed), d = Math.sqrt(Math.max(run.d0 * run.d0 - run.K * tau, 0));
+      var fade = ended == null ? 1 : Math.max(0, 1 - (now - ended) / 900);
+      $("simT").textContent = tau.toFixed(1); $("simD").textContent = d.toFixed(2);
+      simDraw(run, tau, fade, now, ended == null ? null : now - ended); simPlot(run, tau);
+      if (tau >= run.T && ended == null) {
+        ended = now;
+        if (run.burns) SIM.tally.burn++; else SIM.tally.out++;
+        $("simEnd").textContent = run.burns
+          ? "This run: it burned all its fuel in " + run.T.toFixed(1) + " s."
+          : "This run: the flame went out after " + run.T.toFixed(1) + " s, with the droplet at " + run.dEnd.toFixed(2) + " mm"
+            + (run.from ? " (stopping size borrowed from real FLEX test " + run.from[0] + ")." : ".");
+        simTally();
+        if (run.burns) sfx.good(1); else sfx.close();
+      }
+      if (ended == null || now - ended < 5400) SIM.raf = requestAnimationFrame(frame);   // keep drawing while the haze fades
+    }
+    SIM.raf = requestAnimationFrame(frame);
+  }
+  function simTally() {
+    var t = SIM.tally, n = t.out + t.burn, pct = SIM.run && !SIM.run.blocked ? Math.round(SIM.run.pKeep * 100) : null;
+    $("simTally").textContent = pct == null ? "" : "The model gives \"burns all its fuel\" a " + pct + " % chance here. "
+      + (n ? "So far at these settings: " + t.burn + " of " + n + " run" + (n > 1 ? "s" : "") + " burned all their fuel, " + t.out + " went out." : "Press A to run it again and watch the tally.");
+  }
+  function openSim() {
+    if (view.page !== "console" || SIM.open || !last) return;
+    SIM.open = true; $("sim").hidden = false;
+    simStart();
+  }
+  function closeSim() {
+    if (!SIM.open) return;
+    SIM.open = false; cancelAnimationFrame(SIM.raf); $("sim").hidden = true; sfx.close();
+  }
+  $("igniteBtn").addEventListener("click", openSim);
+  $("simClose").addEventListener("click", closeSim);
+  $("simAgain").addEventListener("click", simStart);
+
   /* ---------- pages ---------- */
   var PAGES = [];
   if (R) PAGES.push("research");                   // what the challenge asks for comes first: summarize and rank the investigations
@@ -1588,7 +1931,7 @@ window.FLAME_MODEL = {
   /* ---------- Ask the AI ---------- */
   // A language model on the team's own PC, reached through server/serve.py. The page only shows the
   // button when it was opened from that server and the model is ready; opened as a file, nothing changes.
-  var AI = { ok: false, model: "", gpu: "", open: false, busy: false, sel: 0, qs: [] };
+  var AI = { ok: false, model: "", gpu: "", label: "", brains: [], brain: load("brain", "auto"), def: null, open: false, busy: false, sel: 0, qs: [] };
   function aiQuestions() {
     if (view.page === "research" && R) {
       var list = ranked(), it = list[view.sel];
@@ -1645,11 +1988,38 @@ window.FLAME_MODEL = {
       box.appendChild(b);
     });
   }
+  // Where Ember thinks: "auto" takes the big machine when it answers and this device when it does not.
+  function upBrains() { return AI.brains.filter(function (b) { return b.up; }); }
+  function brainNow() {
+    var up = upBrains(), mine = up.filter(function (b) { return b.id === AI.brain; })[0];
+    return mine || up[0] || null;
+  }
+  function renderBrains() {
+    var box = $("aiBrains"), up = upBrains();
+    box.innerHTML = ""; box.hidden = up.length < 2;
+    if (up.length < 2) return;
+    box.appendChild(el("kbd", "", "X")); box.appendChild(el("span", "", "Ember thinks on:"));
+    [{ id: "auto", text: "Auto" }].concat(up.map(function (b) { return { id: b.id, text: b.label }; })).forEach(function (o) {
+      var b = el("button", "", o.text); b.type = "button";
+      b.setAttribute("aria-pressed", String(o.id === (upBrains().some(function (x) { return x.id === AI.brain; }) ? AI.brain : "auto")));
+      b.addEventListener("click", function () { setBrain(o.id); });
+      box.appendChild(b);
+    });
+  }
+  function setBrain(id) { AI.brain = id; save("brain", id); sfx.preset(); renderBrains(); aiWho(); }
+  function cycleBrain() {
+    var ids = ["auto"].concat(upBrains().map(function (b) { return b.id; }));
+    if (ids.length > 2) setBrain(ids[(Math.max(0, ids.indexOf(AI.brain)) + 1) % ids.length]);
+  }
+  function aiWho() {
+    var b = brainNow();
+    $("aiWho").textContent = b ? "the on-board AI: " + b.label + ". No internet needed: nothing leaves the local network." : "";
+  }
   function openAI() {
     if (!AI.ok || AI.open) return;
     var qs = aiQuestions();
     if (!qs.length) return;
-    AI.open = true; AI.sel = 0; AI.qs = qs; renderAI();
+    AI.open = true; AI.sel = 0; AI.qs = qs; renderAI(); renderBrains(); aiWho();
     $("ai").hidden = false;
     sfx.open();
     askAI(AI.qs[0]);                               // one press is enough: the first question is asked straight away
@@ -1657,10 +2027,12 @@ window.FLAME_MODEL = {
   function closeAI() { if (AI.open) sfx.close(); AI.open = false; $("ai").hidden = true; $("aiInput").blur(); hush(); }
   // Send one question to the model on the PC. onText gets the answer so far, onEnd gets (error or null, full text).
   function aiStream(body, onText, onEnd) {
-    var got = "";
+    var got = "", meta = { label: "", fellBack: false };
+    body.brain = AI.brain;
     fetch("/ask", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
       .then(function (resp) {
         if (!resp.ok || !resp.body) throw new Error("HTTP " + resp.status);
+        meta.label = resp.headers.get("X-Brain-Label") || ""; meta.fellBack = resp.headers.get("X-Brain-Fallback") === "1";
         var reader = resp.body.getReader(), dec = new TextDecoder();
         function pump() {
           return reader.read().then(function (x) {
@@ -1672,8 +2044,8 @@ window.FLAME_MODEL = {
         }
         return pump();
       })
-      .then(function () { if (!got.trim()) throw new Error("empty answer"); onEnd(null, got); })
-      .catch(function (err) { onEnd(err, got); });
+      .then(function () { if (!got.trim()) throw new Error("empty answer"); onEnd(null, got, meta); })
+      .catch(function (err) { onEnd(err, got, meta); });
   }
   // Read an answer aloud with a voice that is already on the device. V turns it off.
   var VOICE = { on: load("voice", true), spoken: 0 };
@@ -1701,7 +2073,8 @@ window.FLAME_MODEL = {
     hush();
     var box = $("aiAns"); box.innerHTML = "";
     box.appendChild(el("span", "asked", q));
-    var out = el("span", "", "Ember is thinking on the " + (AI.gpu || "team's PC") + " ..."); box.appendChild(out);
+    var who = brainNow();
+    var out = el("span", "", "Ember is thinking" + (who ? " (" + who.label + ")" : "") + " ..."); box.appendChild(out);
     var body = { page: view.page === "research" ? "research" : "console", question: q };
     if (view.page === "research" && R) {
       var it = ranked()[view.sel];
@@ -1712,11 +2085,11 @@ window.FLAME_MODEL = {
     var t0 = Date.now();
     aiStream(body,
       function (text) { out.textContent = text; box.scrollTop = box.scrollHeight; },
-      function (err, text) {
+      function (err, text, meta) {
         if (err) out.textContent = "Ember did not answer (" + err.message + "). The rest of the dashboard still works.";
         else {
-          box.appendChild(el("span", "took", "Answered in " + ((Date.now() - t0) / 1000).toFixed(1) + " s by Ember (" + AI.model
-            + (AI.gpu ? " on this team's " + AI.gpu : "") + ")."));
+          box.appendChild(el("span", "took", "Answered in " + ((Date.now() - t0) / 1000).toFixed(1) + " s by Ember (" + (meta.label || (who ? who.label : AI.model)) + ")."));
+          if (meta.fellBack) notify("The machine you picked did not answer, so Ember answered from another one.", "warn");
           box.scrollTop = box.scrollHeight;
           sfx.reply();
           if (AI.open) say(text);
@@ -1727,14 +2100,29 @@ window.FLAME_MODEL = {
   $("aiBtn").addEventListener("click", openAI);
   $("aiClose").addEventListener("click", closeAI);
   $("aiForm").addEventListener("submit", function (ev) { ev.preventDefault(); askAI($("aiInput").value); });
-  if (/^https?:$/.test(location.protocol) && window.fetch) {
+  // Ask the server which machines can answer. Asked again every 20 seconds, so a lost or returning PC is noticed.
+  function refreshAI(first) {
     fetch("/ai").then(function (resp) { return resp.json(); }).then(function (j) {
-      if (!j || !j.ok) return;
-      AI.ok = true; AI.model = j.model; AI.gpu = j.gpu || "";
-      $("aiBtn").hidden = false; $("titleAI").hidden = false;
-      Array.prototype.forEach.call(document.querySelectorAll(".hintAI"), function (s) { s.hidden = false; });
-      $("aiWho").textContent = "the on-board AI: " + j.model + " running on this team's own PC" + (AI.gpu ? " (" + AI.gpu + ")" : "") + ". Nothing leaves the local network.";
-    }).catch(function () {});
+      var was = AI.def, wasOk = AI.ok, up = (j && j.brains ? j.brains : []).filter(function (b) { return b.up; });
+      if (first && j && j.brains) { BASE.ours = true; BASE.host = j.host || ""; sendButton(); setInterval(function () { refreshAI(false); }, 20000); }
+      AI.ok = !!(j && j.ok); AI.brains = j && j.brains ? j.brains : []; AI.def = up.length ? up[0] : null;
+      AI.model = AI.def ? AI.def.model : ""; AI.gpu = (j && j.gpu) || ""; AI.label = AI.def ? AI.def.label : "";
+      $("aiBtn").hidden = !AI.ok; $("titleAI").hidden = !AI.ok;
+      Array.prototype.forEach.call(document.querySelectorAll(".hintAI"), function (s) { s.hidden = !AI.ok; });
+      aiWho(); if (AI.open) renderBrains();
+      if (first) return;
+      if (wasOk && !AI.ok) notify("Ember is out of reach. Everything else still works.", "warn");
+      else if (!wasOk && AI.ok) notify("Ember is back: " + AI.label + ".", "good");
+      else if (was && AI.def && was.id !== AI.def.id) {
+        var toPeer = AI.def.id.indexOf("peer:") === 0;
+        notify(toPeer ? "The big machine is back. Ember thinks there again: " + AI.def.label + "." : "The big machine is out of reach. Ember now thinks on " + AI.def.where + ".", toPeer ? "good" : "warn");
+      }
+    }).catch(function () {
+      if (AI.ok) { AI.ok = false; AI.brains = []; AI.def = null; $("aiBtn").hidden = true; notify("Ember is out of reach. Everything else still works.", "warn"); }
+    });
+  }
+  if (/^https?:$/.test(location.protocol) && window.fetch) {
+    refreshAI(true);                               // asks again every 20 seconds once the team's server has answered
   }
 
   /* ---------- start screen and starfield ---------- */
@@ -1778,6 +2166,11 @@ window.FLAME_MODEL = {
       if (!e.ctrlKey && !e.metaKey && !e.altKey && e.key !== "F11") { e.preventDefault(); startGame(); }
       return;
     }
+    if (SIM.open) {                                // the Ignite screen: A or Enter runs it again, B or Esc closes
+      if (e.key === "Escape" || e.key === "Backspace") { e.preventDefault(); closeSim(); }
+      else if ((e.key === "Enter" || e.key === " " || e.key === "i" || e.key === "I") && !onButton) { e.preventDefault(); simStart(); }
+      return;
+    }
     if (AI.open) {
       var n = AI.qs.length;
       if (e.key === "Escape") { e.preventDefault(); closeAI(); }
@@ -1787,6 +2180,7 @@ window.FLAME_MODEL = {
         else if ((e.key === "Enter" || e.key === " ") && !onButton) { e.preventDefault(); askAI(AI.qs[AI.sel]); }
         else if (e.key === "Backspace") closeAI();
         else if (e.key === "v" || e.key === "V") toggleVoice();
+        else if (e.key === "x" || e.key === "X") cycleBrain();
       }
       return;
     }
@@ -1827,11 +2221,14 @@ window.FLAME_MODEL = {
       case "]": stepStar(1); break;
       case "p": case "P": replayStar(); break;     // replay the picked test, or the closest one
       case "g": case "G": flyToStar(); break;      // move the settings onto it
+      case "i": case "I": openSim(); break;        // Ignite: a full-screen run of the model
+      case "d": case "D": downloadCsv(); break;    // the real tests as a CSV file, on this device
+      case "s": case "S": sendCsv(); break;        // the same file, sent off this device
     }
   });
 
   /* ---------- gamepad ---------- */
-  // Standard mapping: 0=A 1=B 2=X 3=Y 4=LB 5=RB 7=RT 8=View 9=Menu 11=R3 12=up 13=down 14=left 15=right,
+  // Standard mapping: 0=A 1=B 2=X 3=Y 4=LB 5=RB 6=LT 7=RT 8=View 9=Menu 10=L3 11=R3 12=up 13=down 14=left 15=right,
   // axes 0/1 = left stick, axes 2/3 = right stick.
   var held = {};
   function fire(name, now, isDown, firstDelay, repeatMs, fn) {
@@ -1857,6 +2254,13 @@ window.FLAME_MODEL = {
         requestAnimationFrame(poll);
         return;
       }
+      if (SIM.open) {                              // the Ignite screen takes A, B and LT only
+        fire("a", now, b(0), 0, 0, simStart);
+        fire("lt", now, b(6), 0, 0, simStart);
+        fire("b", now, b(1), 0, 0, closeSim);
+        requestAnimationFrame(poll);
+        return;
+      }
       var ax = pad.axes[0] || 0, ay = pad.axes[1] || 0, ai = AI.open;
       var pg = ai ? "ai" : view.page, con = pg === "console";
       var aiMove = function (dir) { AI.sel = (AI.sel + dir + AI.qs.length) % AI.qs.length; renderAI(); };
@@ -1866,10 +2270,20 @@ window.FLAME_MODEL = {
       fire("down", now, b(13) || ay > 0.6, 350, 200, function () {
         if (pg === "ai") aiMove(1); else if (pg === "research") researchMove(1); else if (con) move(1);
       });
-      fire("left", now, b(14) || ax < -0.6, 350, con ? 90 : 0, function (m) {
+      // On the console the left stick slides the selected bar: a light push creeps, a full push sweeps the whole
+      // range in about a second. Big movements for gloved hands. The d-pad still moves one step at a time.
+      var slide = con && state.sel > 0 && !state.sheet;
+      if (slide && Math.abs(ax) > 0.18) {
+        var f = M.features[state.sel - 1], dt = Math.min(0.05, (now - (poll.then || now)) / 1000);
+        poll.acc = (poll.acc || 0) + ax * ax * ax * (f.max - f.min) / f.step * dt / 1.1;
+        var steps = poll.acc > 0 ? Math.floor(poll.acc) : Math.ceil(poll.acc);
+        if (steps) { poll.acc -= steps; nudge(steps > 0 ? 1 : -1, Math.abs(steps)); }
+      } else poll.acc = 0;
+      poll.then = now;
+      fire("left", now, b(14) || (!slide && ax < -0.6), 350, con ? 90 : 0, function (m) {
         if (pg === "research") researchNeed(-1); else if (pg === "drill") drillGuess("out"); else if (con) nudge(-1, m);
       });
-      fire("right", now, b(15) || ax > 0.6, 350, con ? 90 : 0, function (m) {
+      fire("right", now, b(15) || (!slide && ax > 0.6), 350, con ? 90 : 0, function (m) {
         if (pg === "research") researchNeed(1); else if (pg === "drill") drillGuess("burn"); else if (con) nudge(1, m);
       });
       fire("a", now, b(0), 0, 0, function () {
@@ -1878,11 +2292,13 @@ window.FLAME_MODEL = {
       fire("b", now, b(1), 0, 0, function () {
         if (pg === "ai") closeAI(); else if (con) toggleSheet(false); else if (pg === "drill") goPage(PAGES[0]);
       });
-      fire("y", now, b(3), 0, 0, function () { if (con) reset(); else if (pg === "drill") drillStart(); });
-      fire("x", now, b(2), 0, 0, function () { if (con) cyclePreset(); else if (pg === "research") toggleOrbit(); });
+      fire("y", now, b(3), 0, 0, function () { if (pg === "ai") toggleVoice(); else if (con) reset(); else if (pg === "drill") drillStart(); });
+      fire("x", now, b(2), 0, 0, function () { if (pg === "ai") cycleBrain(); else if (con) cyclePreset(); else if (pg === "research") toggleOrbit(); });
       fire("lb", now, b(4), 0, 0, function () { if (!ai) turnPage(-1); });
       fire("rb", now, b(5), 0, 0, function () { if (!ai) turnPage(1); });
-      fire("menu", now, b(9) || b(8), 0, 0, function () { if (ai) closeAI(); else openAI(); });   // Menu or View button
+      fire("menu", now, b(9), 0, 0, function () { if (ai) closeAI(); else openAI(); });             // Menu: Ember
+      fire("view", now, b(8), 0, 0, toggleSound);                                                    // View: sound on or off
+      fire("l3", now, b(10), 0, 0, function () { if (con && !ai) sendCsv(); });                      // left stick click: send the tests off this device
       // Right stick: point at a star on the map, or at an investigation in the orbit view. RT replays, R3 goes there.
       var rx = pad.axes[2] || 0, ry = pad.axes[3] || 0;
       if (!ai && rx * rx + ry * ry > 0.12) {
@@ -1890,6 +2306,7 @@ window.FLAME_MODEL = {
       }
       fire("rt", now, b(7), 0, 0, function () { if (con) replayStar(); });
       fire("r3", now, b(11), 0, 0, function () { if (con) flyToStar(); });
+      fire("lt", now, b(6), 0, 0, function () { if (con && !ai) openSim(); });
     }
     requestAnimationFrame(poll);
   }
@@ -1904,7 +2321,8 @@ window.FLAME_MODEL = {
                      AI: AI, openAI: openAI, askAI: askAI, readingText: readingText,
                      drill: function () { return drill; }, drillStart: drillStart, drillGuess: drillGuess, drillNext: drillNext, buzz: buzz,
                      pages: PAGES, sound: SND, voice: VOICE, title: function () { return titleOn; }, startGame: startGame,
-                     map: MAP, orb: ORB, replay: REPLAY, pickStar: pickStar, stepStar: stepStar, flyToStar: flyToStar, replayStar: replayStar, pickOrbit: pickOrbit };
+                     map: MAP, orb: ORB, replay: REPLAY, pickStar: pickStar, stepStar: stepStar, flyToStar: flyToStar, replayStar: replayStar, pickOrbit: pickOrbit,
+                     notes: NOTES, notify: notify, base: BASE, sendCsv: sendCsv, refreshAI: refreshAI, sim: SIM, openSim: openSim, closeSim: closeSim, simStart: simStart, testsCsv: testsCsv, downloadCsv: downloadCsv };
   render();
   showPage(PAGES[0]);                              // the NASA research dashboard is the home page when its data is present
   window.addEventListener("resize", function () { showPage(view.page); });   // the two drawings size themselves to the space they get
