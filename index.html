@@ -565,6 +565,7 @@
   </nav>
   <span class="spacer"></span>
   <button type="button" class="chip aibtn" id="aiBtn" hidden aria-haspopup="dialog" aria-controls="ai">Ask Ember</button>
+  <button type="button" class="guide-button tour-button" id="tourBtn" hidden title="A one-minute tour of the dashboard. Key T on the research page, or the View button on a controller."><span class="long">Take the tour</span><span class="short">Tour</span> <kbd aria-hidden="true">View</kbd></button>
   <button type="button" class="guide-button" id="guideBtn" aria-haspopup="dialog" aria-controls="controlGuide">Controls</button>
   <span class="chip mock" id="mockChip" hidden><span class="mark" aria-hidden="true">!</span><span id="mockText">Mock numbers, not NASA data yet</span></span>
 </header>
@@ -632,6 +633,7 @@
 
     <div class="line">
       <div id="oneLine"></div>
+      <button type="button" id="openAdvisor" hidden aria-haspopup="dialog" title="What would put this flame out? Key Q, or RT while the explanation is open">Put it out</button>
       <button type="button" id="openSheet">Explain reading <kbd>A</kbd></button>
     </div>
     <button type="button" id="crewMapToggle" aria-expanded="false" aria-controls="mapBox" hidden>Show FLEX star map</button>
@@ -670,6 +672,7 @@
         <button type="button" id="saveBaseline" title="Key H, or LT while this panel is open"><kbd class="wide">LT</kbd> <span id="saveBaselineText">Save as baseline and compare</span></button>
         <button type="button" id="openCompare" disabled title="Key C">Compare</button>
         <button type="button" id="sheetCounter" hidden title="Key E">Find counterexample</button>
+        <button type="button" id="sheetAdvisor" hidden aria-haspopup="dialog" title="Key Q, or RT while this panel is open"><kbd class="wide">RT</kbd> What would put it out?</button>
         <span id="baselineStatus" role="status">Save these settings as A, then change the bars to see B beside it.</span>
       </div>
       <details id="whyDetails"><summary>Why this prediction? <small>X / key W</small></summary><ul id="sheetList"></ul></details>
@@ -684,6 +687,7 @@
   <header class="research-hero">
     <div class="research-intro">
       <div class="research-intro-copy">
+        <p class="research-lead">Fire safety for the Moon and Mars, from NASA's microgravity experiments</p>
         <h2>NASA combustion research</h2>
         <p class="research-prompt">Choose a safety topic, then select an investigation.</p>
       </div>
@@ -839,6 +843,7 @@
     <span>Pick a setting <kbd>↑ ↓ / D-pad</kbd></span>
     <span>Change its value <kbd>← → / D-pad</kbd></span>
     <span>Explain reading <kbd>Enter / A</kbd></span>
+    <span id="hintAdvisor" hidden>What would put it out <kbd>Q / A, then RT</kbd></span>
     <span>Cycle cabin air <kbd>X / X</kbd></span>
     <span>Reset settings <kbd>R / Y</kbd></span>
   </div>
@@ -846,6 +851,7 @@
     <span>Change the question <kbd>← → / D-pad</kbd></span>
     <span>Pick an investigation <kbd>↑ ↓ / D-pad</kbd></span>
     <span>Find an investigation <kbd>F</kbd></span>
+    <span id="hintTour" hidden>Take the tour <kbd>T / View</kbd></span>
     <span>Moon evidence check <kbd>G</kbd></span>
     <span>Investigation details <kbd>Tab, Enter / A</kbd></span>
     <span>Switch list or orbit <kbd>X / X</kbd></span>
@@ -860,6 +866,7 @@
     <span class="hintAI" hidden>Ask Ember <kbd>/ / Menu</kbd></span>
     <span>Close controls <kbd>Esc / B</kbd></span>
   </div>
+  <button type="button" id="guideTour" hidden>Take the one-minute tour</button>
   <p class="guide-model" id="srcChip" hidden></p>
 </dialog>
 
@@ -979,6 +986,8 @@ window.FLAME_MODEL = {
 <script src="evidence-data.js" onerror="this.remove()"></script>
 <script src="evidence.js" onerror="this.remove()"></script>
 <script src="counterexample.js" onerror="this.remove()"></script>
+<script src="advisor.js" onerror="this.remove()"></script>
+<script src="tour.js" onerror="this.remove()"></script>
 <script src="view-link.js" onerror="this.remove()"></script>
 <script src="share-view.js" onerror="this.remove()"></script>
 
@@ -1307,8 +1316,8 @@ window.FLAME_MODEL = {
     $("crewConditions").textContent = [fuelLabel()].concat(conditions).join(" · ");
   }
 
-  function render() {
-    if (REPLAY.box && REPLAY.box === $("flame").parentNode) stopReplay();   // any change ends a replay on this page
+  // The reading for the present settings, with the checks that can lower its standing.
+  function assess() {
     var r = predict(), rc = rangeCheck();
     // Real tests right next to these settings outrank the model: flag it when most of them went the other way.
     var nb = rc.near ? rc.near.near : null, seen = nb ? nb.out + nb.done : 0;
@@ -1318,7 +1327,20 @@ window.FLAME_MODEL = {
     // The model threshold is distinct from the observed counts in the neighborhood.
     rc.mostlyDisrupted = r.pDis != null && r.pDis >= 0.5 && rc.level !== "outside";
     if (rc.mostlyDisrupted && rc.level === "inside") rc.level = "edge";
-    last = { r: r, rc: rc };
+    return { r: r, rc: rc };
+  }
+  // The same reading at other settings, without touching the screen: what the console would show there.
+  function assessAt(fuel, values) {
+    var fuelNow = state.fuel, valuesNow = state.values;
+    state.fuel = fuel; state.values = values;
+    try { return assess(); } finally { state.fuel = fuelNow; state.values = valuesNow; }
+  }
+
+  function render() {
+    if (REPLAY.box && REPLAY.box === $("flame").parentNode) stopReplay();   // any change ends a replay on this page
+    var now = assess(), r = now.r, rc = now.rc;
+    var nb = rc.near ? rc.near.near : null, seen = nb ? nb.out + nb.done : 0;
+    last = now;
 
     fuelVal.textContent = fuelLabel();
     Array.prototype.forEach.call(fuelBtns.children, function (b) { b.setAttribute("aria-pressed", String(b.dataset.fuel === state.fuel)); });
@@ -3453,7 +3475,9 @@ window.FLAME_MODEL = {
     if (action === "back") guide.close();
     else if (action === "confirm") document.activeElement.click();
     else if (action === "up" || action === "down" || action === "left" || action === "right") {
-      (document.activeElement === $("guideClose") ? $("sndBtn") : $("guideClose")).focus();
+      var stops = [$("guideClose"), $("sndBtn"), $("guideTour")].filter(function (b) { return !b.hidden; });
+      var step = action === "up" || action === "left" ? -1 : 1;
+      stops[(stops.indexOf(document.activeElement) + step + stops.length) % stops.length].focus();
     }
   } };
   function activeCasePanel() {
@@ -3462,6 +3486,8 @@ window.FLAME_MODEL = {
     if (guide.open) return guidePanel;
     if (window.FLAME_EVIDENCE && window.FLAME_EVIDENCE.isOpen()) return window.FLAME_EVIDENCE;
     if (window.FLAME_COUNTER && window.FLAME_COUNTER.isOpen()) return window.FLAME_COUNTER;
+    if (window.FLAME_ADVISOR && window.FLAME_ADVISOR.isOpen()) return window.FLAME_ADVISOR;
+    if (window.FLAME_TOUR && window.FLAME_TOUR.isOpen()) return window.FLAME_TOUR;
     return null;
   }
   function captureView() {
@@ -3504,10 +3530,12 @@ window.FLAME_MODEL = {
       }
     }
     // A link opened from the address bar may arrive while another tool owns focus.
+    if (window.FLAME_TOUR && window.FLAME_TOUR.isOpen()) window.FLAME_TOUR.close();
     if (guide.open) guide.close();
     if ($("findResearchDialog").open) $("findResearchDialog").close();
     if (shareView.isOpen()) shareView.close();
     if (window.FLAME_COUNTER && window.FLAME_COUNTER.isOpen()) window.FLAME_COUNTER.close();
+    if (window.FLAME_ADVISOR && window.FLAME_ADVISOR.isOpen()) window.FLAME_ADVISOR.close();
     if (window.FLAME_EVIDENCE && window.FLAME_EVIDENCE.isOpen()) window.FLAME_EVIDENCE.close();
     if (SIM.open) closeSim();
     if (AI.open) closeAI();
@@ -3550,6 +3578,66 @@ window.FLAME_MODEL = {
       return predictFor(row[2], drillValues(row)).pKeep;
     });
   }
+  // "What would put this flame out?": advisor.js steps one gas at a time through the tested range and reads each
+  // step off assessAt(), so every number it shows is the one the console shows after "Try it".
+  function advisorState() {
+    var fuel = state.fuel, ap = activePreset();
+    return {
+      fuel: fuel, fuelLabel: fuelLabel(), values: Object.assign({}, state.values), features: M.features,
+      cabin: ap && ap.key !== "earth" && ap.values.o2 != null ? { name: ap.label, o2: ap.values.o2 } : null,
+      exclusive: M.meta.exclusive || [], unsure: (M.meta.unsure && M.meta.unsure[fuel]) || [], watch: WATCH, rows: M.meta.rows || 0,
+      evaluate: function (values) {
+        var a = assessAt(fuel, values), nb = a.rc.near ? a.rc.near.near : { n: 0, out: 0, done: 0, other: 0 };
+        return { pKeep: a.r.pKeep, keep: shown(a.r.pKeep), pDis: a.r.pDis, dis: a.r.pDis == null ? null : shown(a.r.pDis),
+                 level: a.rc.level, near: { n: nb.n, out: nb.out, done: nb.done, other: nb.other } };
+      },
+      apply: function (values, message) {
+        state.values = Object.assign({}, values);
+        sfx.preset();
+        if (state.sheet) toggleSheet(false); else render();
+        notify(message, "info");
+      }
+    };
+  }
+  function openAdvisor() {
+    if (!window.FLAME_ADVISOR || M.meta.mock || view.page !== "console") return;
+    if (MAP.big) mapBig(false);
+    window.FLAME_ADVISOR.open(advisorState);
+  }
+  // The one-minute tour (tour.js): a card that points at one part of the dashboard at a time. It starts from a clean
+  // screen, turns the pages itself, and takes the arrows, A and B until it ends.
+  function clearPanels() {
+    if (guide.open) guide.close();
+    if ($("findResearchDialog").open) $("findResearchDialog").close();
+    if (shareView && shareView.isOpen()) shareView.close();
+    if (window.FLAME_COUNTER && window.FLAME_COUNTER.isOpen()) window.FLAME_COUNTER.close();
+    if (window.FLAME_ADVISOR && window.FLAME_ADVISOR.isOpen()) window.FLAME_ADVISOR.close();
+    if (window.FLAME_EVIDENCE && window.FLAME_EVIDENCE.isOpen()) window.FLAME_EVIDENCE.close();
+    if (SIM.open) closeSim();
+    if (AI.open) closeAI();
+    if (OX.open) closeOx();
+    if (MAP.big) mapBig(false);
+    if (state.sheet) toggleSheet(false);
+    if (state.comparing) toggleComparison(false);
+  }
+  function tourButton() { $("tourBtn").classList.toggle("fresh", !load("tour", false)); }
+  function startTour() {
+    if (!window.FLAME_TOUR || titleOn || window.FLAME_TOUR.isOpen()) return;
+    clearPanels();
+    window.FLAME_TOUR.start({
+      pages: PAGES.slice(), page: function () { return view.page; },
+      goPage: function (name) { if (name !== view.page) goPage(name); },
+      investigations: R ? R.items.length : 0, tests: M.meta.mock ? 0 : (M.meta.rows || 0),
+      ended: function () { save("tour", true); tourButton(); }
+    });
+  }
+  $("tourBtn").hidden = $("guideTour").hidden = $("hintTour").hidden = !window.FLAME_TOUR;
+  tourButton();
+  $("tourBtn").addEventListener("click", startTour);
+  $("guideTour").addEventListener("click", startTour);
+  $("openAdvisor").hidden = $("sheetAdvisor").hidden = $("hintAdvisor").hidden = !window.FLAME_ADVISOR || !!M.meta.mock;
+  $("openAdvisor").addEventListener("click", openAdvisor);
+  $("sheetAdvisor").addEventListener("click", openAdvisor);
   $("caseLaunchers").hidden = !(window.FLAME_EVIDENCE && window.FLAME_EVIDENCE_DATA);
   document.querySelectorAll(".hintCases").forEach(function (s) { s.hidden = $("caseLaunchers").hidden; });
   $("mapCounter").hidden = $("sheetCounter").hidden = !(window.FLAME_COUNTER && hasTests);
@@ -3637,6 +3725,7 @@ window.FLAME_MODEL = {
     if (typing) return;
     if (!e.ctrlKey && !e.altKey && !e.metaKey && !e.repeat) {
       var letter = e.key.toLowerCase();
+      if (view.page === "research" && letter === "t") { e.preventDefault(); startTour(); return; }
       if (view.page === "research" && letter === "f") { e.preventDefault(); openResearchFind(); return; }
       if (view.page === "research" && letter === "l") { e.preventDefault(); $("evidenceLab").click(); return; }
       if (view.page === "research" && letter === "g") { e.preventDefault(); $("moonCase").click(); return; }
@@ -3644,6 +3733,7 @@ window.FLAME_MODEL = {
         e.preventDefault(); openEvidence(letter === "e" ? "gravity" : "sensors"); return;
       }
       if (view.page === "console" && letter === "e") { e.preventDefault(); openCounterexample(); return; }
+      if (view.page === "console" && letter === "q") { e.preventDefault(); openAdvisor(); return; }
     }
     if (MAP.big) {                                 // the zoomed star map takes the arrows, X and 1 to 3
       cycleDialogTab(e, $("mapBox"));
@@ -3835,7 +3925,7 @@ window.FLAME_MODEL = {
       if (ai !== AI.open) { requestAnimationFrame(poll); return; }
       fire("view", now, b(8), 0, 0, function () {                                                    // View: zoom this page's chart
         if (ai) return;
-        if (con) mapBig(true); else if (pg === "research") openOx(); else toggleSound();
+        if (con) mapBig(true); else if (pg === "research") startTour(); else toggleSound();   // research: Y already opens the Oxygen map
       });
       fire("l3", now, b(10), 0, 0, function () {
         if (pg === "research") $("evidenceLab").click();
@@ -3851,7 +3941,12 @@ window.FLAME_MODEL = {
           else $("card").scrollTop += ry * 14;
         } else if (pg === "research") pickOrbit(rx, ry);
       }
-      fire("rt", now, b(7), 0, 0, function () { if (pg === "research") openEvidence("sensors"); else if (con) replayStar(); });
+      // RT: with the explanation or the comparison open, "what would put it out?"; otherwise replay the picked test.
+      fire("rt", now, b(7), 0, 0, function () {
+        if (pg === "research") openEvidence("sensors");
+        else if (con && (state.sheet || state.comparing)) openAdvisor();
+        else if (con) replayStar();
+      });
       fire("r3", now, b(11), 0, 0, function () {
         if (con) flyToStar();
         else if (pg === "research" && !$("shareResearch").hidden) {
@@ -3880,7 +3975,8 @@ window.FLAME_MODEL = {
                      drill: function () { return drill; }, drillStart: drillStart, drillGuess: drillGuess, drillNext: drillNext, buzz: buzz,
                      pages: PAGES, sound: SND, voice: VOICE, title: function () { return titleOn; }, startGame: startGame,
                      map: MAP, orb: ORB, replay: REPLAY, pickStar: pickStar, stepStar: stepStar, flyToStar: flyToStar, replayStar: replayStar, pickOrbit: pickOrbit,
-                     mapBig: mapBig, mapLevel: mapLevel, starAt: starAt, ox: OX, openOx: openOx, closeOx: closeOx, oxLevel: oxLevel, tables: T, notes: NOTES, notify: notify, base: BASE, sendCsv: sendCsv, refreshAI: refreshAI, sim: SIM, openSim: openSim, closeSim: closeSim, simStart: simStart, testsCsv: testsCsv, downloadCsv: downloadCsv };
+                     mapBig: mapBig, mapLevel: mapLevel, starAt: starAt, ox: OX, openOx: openOx, closeOx: closeOx, oxLevel: oxLevel, tables: T, notes: NOTES, notify: notify, base: BASE, sendCsv: sendCsv, refreshAI: refreshAI, sim: SIM, openSim: openSim, closeSim: closeSim, simStart: simStart, testsCsv: testsCsv, downloadCsv: downloadCsv,
+                     assessAt: assessAt, openAdvisor: openAdvisor, startTour: startTour };
   render();
   showPage(PAGES[0]);                              // the NASA research dashboard is the home page when its data is present
   var shareView = window.FLAME_SHARE_VIEW;
