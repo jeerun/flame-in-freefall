@@ -1,4 +1,4 @@
-"""Compare the per-fuel model with the current console model and with other candidates, on held-out tests.
+"""Compare the console's per-fuel model with its earlier one-slope model and with other candidates, on held-out tests.
 
 Run from the repo root:  python model/compare_models.py
 Needs: pandas, numpy, scikit-learn. Takes a few minutes.
@@ -44,8 +44,7 @@ def load(name):
 train = load("train")
 per_fuel = load("train_per_fuel")
 NUM, SEED, REPEATS, WATCH = train.NUM, train.SEED, train.REPEATS, per_fuel.WATCH
-PROPOSED = "per_fuel"
-BOOTSTRAPS = 1000
+PROPOSED = "per_fuel"            # the candidate the others are measured against: the model the console now uses
 
 
 def curved(df):
@@ -62,13 +61,13 @@ def logistic(**kw):
 
 # name: (what it is, design function, estimator factory)
 CLASSIFIERS = {
-    "current": ("Current console model: one set of slopes for both fuels, fixed penalty (model/train.py)",
-                train.design, lambda: logistic(C=1.0)),
-    "current_balanced": ("Current model with the rarer outcome weighted up (class_weight='balanced')",
-                         train.design, lambda: logistic(C=1.0, class_weight="balanced")),
-    "per_fuel_fixed": ("Per-fuel slopes, the current fixed penalty (C=1)",
+    "one_slope": ("The console's earlier model: one set of slopes for both fuels, fixed penalty (model/train.py)",
+                  train.design, lambda: logistic(C=1.0)),
+    "one_slope_balanced": ("The earlier model with the rarer outcome weighted up (class_weight='balanced')",
+                           train.design, lambda: logistic(C=1.0, class_weight="balanced")),
+    "per_fuel_fixed": ("Per-fuel slopes, the earlier fixed penalty (C=1)",
                        per_fuel.design, lambda: logistic(C=1.0)),
-    "per_fuel": ("PROPOSED. Per-fuel slopes, penalty picked inside the training rows (model/train_per_fuel.py)",
+    "per_fuel": ("THE CONSOLE'S MODEL. Per-fuel slopes, penalty picked inside the training rows (model/train_per_fuel.py)",
                  per_fuel.design, per_fuel.classifier),
     "per_fuel_curved": ("Per-fuel slopes plus two curved terms, penalty picked the same way",
                         curved, per_fuel.classifier),
@@ -80,9 +79,9 @@ CLASSIFIERS = {
                   train.design, lambda: DummyClassifier(strategy="prior")),
 }
 REGRESSORS = {
-    "current": ("Current console model: one set of slopes for both fuels (model/train.py)",
-                train.design, lambda: make_pipeline(StandardScaler(), LinearRegression())),
-    "per_fuel": ("PROPOSED. Per-fuel slopes (model/train_per_fuel.py)", per_fuel.design, per_fuel.regressor),
+    "one_slope": ("The console's earlier model: one set of slopes for both fuels (model/train.py)",
+                  train.design, lambda: make_pipeline(StandardScaler(), LinearRegression())),
+    "per_fuel": ("THE CONSOLE'S MODEL. Per-fuel slopes (model/train_per_fuel.py)", per_fuel.design, per_fuel.regressor),
     "per_fuel_curved": ("Per-fuel slopes plus two curved terms", curved, per_fuel.regressor),
     "boosting": ("Gradient-boosted trees (depth 3, 200 rounds, rate 0.05)",
                  train.design, lambda: HistGradientBoostingRegressor(max_depth=3, max_iter=200, learning_rate=0.05, random_state=SEED)),
@@ -159,32 +158,6 @@ def beaten_by(table, measures):
     return out
 
 
-def slope_stability(ext, c):
-    """Refit the proposed outcome model on resampled tests: which slopes keep their sign?"""
-    X, y = per_fuel.design(ext), (ext["test_end"] == "Extinction").to_numpy(int)
-
-    def raw(Xb, yb):
-        return train.raw_coefficients(logistic(C=c).fit(Xb, yb))[1]
-
-    n, k = len(y), len(NUM)
-    fitted, rng, boots = raw(X, y), np.random.default_rng(SEED), []
-    while len(boots) < BOOTSTRAPS:
-        i = rng.integers(0, n, n)
-        if y[i].min() != y[i].max():
-            boots.append(raw(X[i], y[i]))
-    boots = np.array(boots)
-    out = {}
-    for j, col in enumerate(NUM):
-        for fuel_name, value, draws in (("heptane", fitted[j], boots[:, j]),
-                                        ("methanol", fitted[j] + fitted[k + 1 + j], boots[:, j] + boots[:, k + 1 + j])):
-            lo, hi = np.percentile(draws, [5, 95])
-            out.setdefault(col, {})[fuel_name] = {
-                "slope": round(float(value), 3), "p5": round(float(lo), 3), "p95": round(float(hi), 3),
-                "sign_is_stable": bool(lo > 0 or hi < 0),
-            }
-    return out
-
-
 def calibration(ext):
     """Held-out chance of burning all the fuel, in bands, against what the tests did. Pooled over the repeats."""
     X, y = per_fuel.design(ext), (ext["test_end"] == "Extinction").to_numpy(int)
@@ -217,22 +190,22 @@ def main():
     outcome = {"rows": compare_outcome(ext, False), "grouped": compare_outcome(ext, True)}
     rate = {"rows": compare_rate(br, False), "grouped": compare_rate(br, True)}
     result = {
-        "proposed": PROPOSED,
+        "console_model": PROPOSED,
         "protocol": {"folds": 5, "repeats": REPEATS, "seed": SEED, "outcome_tests": int(len(ext)), "burn_rate_tests": int(len(br)),
                      "groups_fuel_and_gas_mix": int(len(set(gas_mix(ext)))), "watch_level": WATCH},
         "outcome_candidates": {k: v[0] for k, v in CLASSIFIERS.items()},
         "burn_rate_candidates": {k: v[0] for k, v in REGRESSORS.items()},
         "outcome": outcome,
         "burn_rate": rate,
-        "candidates_better_than_proposed": {
+        "candidates_better_than_the_console_model": {
             "outcome_rows": beaten_by(outcome["rows"], ["auc", "brier", "log_loss", "auc_heptane", "auc_methanol", "completions_found_at_50_pct"]),
             "outcome_grouped": beaten_by(outcome["grouped"], ["auc", "brier", "log_loss", "auc_heptane", "auc_methanol", "completions_found_at_50_pct"]),
             "burn_rate_rows": beaten_by(rate["rows"], ["r2", "mean_abs_error_mm2_s"]),
             "burn_rate_grouped": beaten_by(rate["grouped"], ["r2", "mean_abs_error_mm2_s"]),
         },
-        "proposed_slope_stability": {"penalty_c": chosen_c, "bootstrap_refits": BOOTSTRAPS,
-                                     "log_odds_of_going_out_per_unit": slope_stability(ext, chosen_c)},
-        "proposed_calibration_held_out": calibration(ext),
+        "slope_stability": {"penalty_c": chosen_c, "bootstrap_refits": per_fuel.BOOTSTRAPS,
+                            "log_odds_of_going_out_per_unit": per_fuel.slope_stability(ext, chosen_c)},
+        "calibration_held_out": calibration(ext),
     }
     OUT.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
 
@@ -241,8 +214,8 @@ def main():
     show("Flame outcome, held out by fuel and gas mix", outcome["grouped"], cols)
     show("Burning rate, held out by rows", rate["rows"], ["r2", "mean_abs_error_mm2_s"])
     show("Burning rate, held out by fuel and gas mix", rate["grouped"], ["r2", "mean_abs_error_mm2_s"])
-    print("\nCandidates that beat the proposed model, by measure (empty = none):")
-    print(json.dumps(result["candidates_better_than_proposed"], indent=2))
+    print("\nCandidates that beat the console's model, by measure (empty = none):")
+    print(json.dumps(result["candidates_better_than_the_console_model"], indent=2))
     print(f"\nwrote {OUT.relative_to(ROOT)}")
 
 

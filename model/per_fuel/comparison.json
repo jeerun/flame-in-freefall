@@ -1,5 +1,5 @@
 {
-  "proposed": "per_fuel",
+  "console_model": "per_fuel",
   "protocol": {
     "folds": 5,
     "repeats": 20,
@@ -10,25 +10,25 @@
     "watch_level": 0.3
   },
   "outcome_candidates": {
-    "current": "Current console model: one set of slopes for both fuels, fixed penalty (model/train.py)",
-    "current_balanced": "Current model with the rarer outcome weighted up (class_weight='balanced')",
-    "per_fuel_fixed": "Per-fuel slopes, the current fixed penalty (C=1)",
-    "per_fuel": "PROPOSED. Per-fuel slopes, penalty picked inside the training rows (model/train_per_fuel.py)",
+    "one_slope": "The console's earlier model: one set of slopes for both fuels, fixed penalty (model/train.py)",
+    "one_slope_balanced": "The earlier model with the rarer outcome weighted up (class_weight='balanced')",
+    "per_fuel_fixed": "Per-fuel slopes, the earlier fixed penalty (C=1)",
+    "per_fuel": "THE CONSOLE'S MODEL. Per-fuel slopes, penalty picked inside the training rows (model/train_per_fuel.py)",
     "per_fuel_curved": "Per-fuel slopes plus two curved terms, penalty picked the same way",
     "boosting": "Gradient-boosted trees (depth 3, 100 rounds, rate 0.05)",
     "forest": "Random forest (300 trees, at least 3 tests per leaf)",
     "base_rate": "No model: always the share of tests that went out"
   },
   "burn_rate_candidates": {
-    "current": "Current console model: one set of slopes for both fuels (model/train.py)",
-    "per_fuel": "PROPOSED. Per-fuel slopes (model/train_per_fuel.py)",
+    "one_slope": "The console's earlier model: one set of slopes for both fuels (model/train.py)",
+    "per_fuel": "THE CONSOLE'S MODEL. Per-fuel slopes (model/train_per_fuel.py)",
     "per_fuel_curved": "Per-fuel slopes plus two curved terms",
     "boosting": "Gradient-boosted trees (depth 3, 200 rounds, rate 0.05)",
     "mean": "No model: always the average burning rate"
   },
   "outcome": {
     "rows": {
-      "current": {
+      "one_slope": {
         "auc": 0.8127,
         "auc_heptane": 0.8458,
         "auc_methanol": 0.6046,
@@ -44,7 +44,7 @@
           "log_loss": 20
         }
       },
-      "current_balanced": {
+      "one_slope_balanced": {
         "auc": 0.8006,
         "auc_heptane": 0.7607,
         "auc_methanol": 0.679,
@@ -153,7 +153,7 @@
       }
     },
     "grouped": {
-      "current": {
+      "one_slope": {
         "auc": 0.805,
         "auc_heptane": 0.8525,
         "auc_methanol": 0.578,
@@ -169,7 +169,7 @@
           "log_loss": 20
         }
       },
-      "current_balanced": {
+      "one_slope_balanced": {
         "auc": 0.7894,
         "auc_heptane": 0.7607,
         "auc_methanol": 0.6435,
@@ -280,7 +280,7 @@
   },
   "burn_rate": {
     "rows": {
-      "current": {
+      "one_slope": {
         "r2": 0.7054,
         "mean_abs_error_mm2_s": 0.0481,
         "repeats_where_proposed_is_better": {
@@ -318,7 +318,7 @@
       }
     },
     "grouped": {
-      "current": {
+      "one_slope": {
         "r2": 0.6978,
         "mean_abs_error_mm2_s": 0.0492,
         "repeats_where_proposed_is_better": {
@@ -356,7 +356,7 @@
       }
     }
   },
-  "candidates_better_than_proposed": {
+  "candidates_better_than_the_console_model": {
     "outcome_rows": {
       "auc": [
         "per_fuel_curved"
@@ -368,7 +368,7 @@
         "per_fuel_curved"
       ],
       "completions_found_at_50_pct": [
-        "current_balanced"
+        "one_slope_balanced"
       ]
     },
     "outcome_grouped": {
@@ -384,7 +384,7 @@
         "per_fuel_curved"
       ],
       "completions_found_at_50_pct": [
-        "current_balanced"
+        "one_slope_balanced"
       ]
     },
     "burn_rate_rows": {
@@ -398,7 +398,7 @@
       "mean_abs_error_mm2_s": []
     }
   },
-  "proposed_slope_stability": {
+  "slope_stability": {
     "penalty_c": 10.0,
     "bootstrap_refits": 1000,
     "log_odds_of_going_out_per_unit": {
@@ -474,7 +474,7 @@
       }
     }
   },
-  "proposed_calibration_held_out": [
+  "calibration_held_out": [
     {
       "from": 0,
       "to": 0.1,

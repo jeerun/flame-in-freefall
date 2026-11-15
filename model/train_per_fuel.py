@@ -1,14 +1,15 @@
-"""Train the per-fuel version of the two console models and export it next to, not over, the current one.
+"""Step 2 of 2. Train the two models the console uses, where each fuel has its own slopes, and export them.
 
-Run from the repo root:  python model/train_per_fuel.py
-Needs: pandas, numpy, scikit-learn.
+Run from the repo root, after model/train.py:  python model/train_per_fuel.py
+Needs: pandas, numpy, scikit-learn (written and checked with scikit-learn 1.9).
 
-Writes only into model/per_fuel/:
-  model.js      the same export as console/model.js, with "fuel_coef" added
-  metrics.json  held-out accuracy, in the same shape as model/metrics.json
+Writes
+  console/model.js     the export the page reads: the base export from step 1 with the two formulas
+                       replaced, plus "fuel_coef", "meta.watch" and "meta.unsure"
+  model/metrics.json   held-out accuracy of these models
 
-It never touches console/model.js, model/metrics.json or the console page.
-Switching the console over is a separate step: see docs/per-fuel-model.md.
+The console was switched to this model on Nov 15, 2026 (see docs/per-fuel-model.md for the
+comparison that decided it).
 
 What is different from model/train.py
   - Each fuel has its own slope for every setting. train.py gives heptane and
@@ -25,7 +26,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import LinearRegression, LogisticRegressionCV
+from sklearn.linear_model import LinearRegression, LogisticRegression, LogisticRegressionCV
 from sklearn.metrics import brier_score_loss, mean_absolute_error, r2_score, roc_auc_score
 from sklearn.model_selection import KFold, StratifiedKFold, cross_val_predict
 from sklearn.pipeline import make_pipeline
@@ -33,13 +34,14 @@ from sklearn.preprocessing import StandardScaler
 
 ROOT = Path(__file__).resolve().parents[1]
 CLEAN = ROOT / "data" / "clean" / "flex_clean.csv"
-BASE_JS = ROOT / "console" / "model.js"          # read only: ranges, sliders and the test rows are copied from it
-OUT_DIR = ROOT / "model" / "per_fuel"
+BASE_JS = ROOT / "model" / "pooled" / "model.js"   # read only, written by model/train.py: ranges, sliders and the test rows are copied from it
+OUT_DIR = ROOT / "console"
 OUT_JS = OUT_DIR / "model.js"
-OUT_METRICS = OUT_DIR / "metrics.json"
+OUT_METRICS = ROOT / "model" / "metrics.json"
 
 C_GRID = [0.3, 1.0, 3.0, 10.0]   # penalty strengths tried (larger = weaker penalty)
-WATCH = 0.30                     # proposed "watch" level: chance of burning all the fuel at or above this
+WATCH = 0.30                     # the "watch" level: chance of burning all the fuel at or above this
+BOOTSTRAPS = 1000                # refits on resampled tests, to see which slopes keep their sign
 
 
 def load_train():
@@ -89,6 +91,36 @@ def as_parts(intercept, coef):
     }
 
 
+def slope_stability(ext, c):
+    """Refit the outcome model on resampled tests: which slopes keep their sign?
+
+    A slope whose sign flips in more than one refit in ten is one the tests do not settle. The console
+    says so next to any sentence that leans on it (the export lists them under meta.unsure).
+    """
+    X, y = design(ext), (ext["test_end"] == "Extinction").to_numpy(int)
+
+    def raw(Xb, yb):
+        return train.raw_coefficients(make_pipeline(StandardScaler(), LogisticRegression(C=c, max_iter=20000)).fit(Xb, yb))[1]
+
+    n, k = len(y), len(NUM)
+    fitted, rng, boots = raw(X, y), np.random.default_rng(SEED), []
+    while len(boots) < BOOTSTRAPS:
+        i = rng.integers(0, n, n)
+        if y[i].min() != y[i].max():
+            boots.append(raw(X[i], y[i]))
+    boots = np.array(boots)
+    out = {}
+    for j, col in enumerate(NUM):
+        for fuel_name, value, draws in (("heptane", fitted[j], boots[:, j]),
+                                        ("methanol", fitted[j] + fitted[k + 1 + j], boots[:, j] + boots[:, k + 1 + j])):
+            lo, hi = np.percentile(draws, [5, 95])
+            out.setdefault(col, {})[fuel_name] = {
+                "slope": round(float(value), 3), "p5": round(float(lo), 3), "p95": round(float(hi), 3),
+                "sign_is_stable": bool(lo > 0 or hi < 0),
+            }
+    return out
+
+
 def read_base_export():
     text = BASE_JS.read_text(encoding="utf-8")
     return json.loads(text[text.index("{"):text.rindex("}") + 1])
@@ -124,6 +156,8 @@ def main():
     clf.fit(Xe, ye)
     chosen_c = float(np.ravel(clf.steps[-1][1].C_)[0])
     ext_parts = as_parts(*train.raw_coefficients(clf))
+    stability = slope_stability(ext, chosen_c)
+    unsure = {k: [KEYS[c] for c in NUM if not stability[c][k]["sign_is_stable"]] for k, _ in FUELS}
 
     # ---------- model 2: burning rate ----------
     br = scope[scope["burn_rate_mm2_s"].notna()].copy()
@@ -158,6 +192,8 @@ def main():
             "watch_level": WATCH,
             "completions_at_or_above_watch": round(float(np.mean(watch_found)), 3),
             "went_out_at_or_above_watch": round(float(np.mean(watch_false)), 3),
+            "bootstrap_refits": BOOTSTRAPS,
+            "slopes_whose_sign_is_not_stable": unsure,
         },
         "burn_rate": {
             "rows": int(len(br)),
@@ -174,12 +210,13 @@ def main():
     # the nearest-test distance and the test rows do not depend on the formula, so they are kept as they are.
     model = read_base_export()
     if model["meta"].get("mock") is not False or [f["key"] for f in model["features"]] != [KEYS[c] for c in NUM]:
-        raise SystemExit("console/model.js is not the real export this script expects. Run model/train.py first.")
+        raise SystemExit("model/pooled/model.js is not the base export this script expects. Run model/train.py first.")
     if model["meta"]["rows"] != len(ext) or model["meta"]["rows_burn_rate"] != len(br) or len(model["tests"]) != len(scope):
-        raise SystemExit("console/model.js was built from different rows. Run model/train.py first.")
+        raise SystemExit("model/pooled/model.js was built from different rows. Run model/train.py first.")
     model["meta"]["auc"] = metrics["extinction"]["auc"]
     model["meta"]["burn_rate_mae"] = metrics["burn_rate"]["mean_abs_error_mm2_s"]
     model["meta"]["watch"] = WATCH
+    model["meta"]["unsure"] = unsure      # per fuel: settings whose direction the tests do not settle
     model["extinction"] = ext_parts
     model["burn_rate"] = br_parts
     OUT_JS.write_text(

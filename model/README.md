@@ -1,16 +1,29 @@
 # Model
 
-The training script lives here and writes one file: `../console/model.js`.
+Two scripts, run in this order, write the file the console reads, `../console/model.js`.
 The console reads that file and replaces its built-in mock numbers.
+
+1. `train.py` builds the base export in `pooled/`: the scope, the tested range of every
+   input, the sliders, the test rows, and the earlier models where both fuels share one
+   slope per setting (the console used those until Nov 15, 2026).
+2. `train_per_fuel.py` trains the models the console uses, where each fuel has its own
+   slopes, puts them into that export and writes `../console/model.js` and
+   `metrics.json`.
+
+`compare_models.py` measures the console's model against the earlier one and six other
+candidates on held-out tests, and `verify_per_fuel.py` checks that result with separate
+code. Both write into `per_fuel/`. The write-up is `../docs/per-fuel-model.md`.
 
 ## What model.js must look like
 
 See `model.example.js` in this folder. Copy its shape exactly.
 
 - `extinction` is a logistic regression:
-  P(flame goes out) = sigmoid(intercept + fuel[fuel] + sum(coef[key] * value))
+  P(flame goes out) = sigmoid(intercept + fuel[fuel] + sum((coef[key] + fuel_coef[fuel][key]) * value))
 - `burn_rate` is a linear regression, in mm^2/s:
-  K = intercept + fuel[fuel] + sum(coef[key] * value)
+  K = intercept + fuel[fuel] + sum((coef[key] + fuel_coef[fuel][key]) * value)
+- `fuel_coef` holds what each fuel adds to the shared slopes. It may be left out: the
+  page then uses the shared slopes alone, as in the example file and the base export.
 - Coefficients apply to raw values in the units shown. Do not standardize the
   inputs, or convert the coefficients back to raw units before exporting.
 - `data_min` and `data_max` are the real minimum and maximum of each column in
@@ -22,8 +35,14 @@ See `model.example.js` in this folder. Copy its shape exactly.
 
 ## Extra fields in the real export
 
-`train.py` also writes these. The console uses them when present and still runs
-without them (the example file leaves them out).
+The training scripts also write these. The console uses them when present and still
+runs without them (the example file leaves them out).
+
+- `meta.watch`: the chance of burning all the fuel from which the page says "could go
+  either way" and shows a "Watch" banner. 0.30 in the real export, 0.35 without it.
+- `meta.unsure`: per fuel, the settings whose slope changes sign in more than one in
+  ten refits on resampled tests. The explanation panel says so next to any sentence
+  that leans on one of them.
 
 - `meta.auc`, `meta.burn_rate_mae`, `meta.rows_burn_rate`: held-out accuracy,
   shown in the fine print of the explanation panel.

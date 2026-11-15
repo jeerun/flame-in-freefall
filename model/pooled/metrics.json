@@ -1,0 +1,22 @@
+{
+  "tests_in_source": 274,
+  "tests_in_scope": 252,
+  "extinction": {
+    "rows": 199,
+    "went_out": 172,
+    "burned_to_completion": 27,
+    "cv": "5-fold stratified, repeated 20 times",
+    "auc": 0.813,
+    "accuracy": 0.887,
+    "accuracy_if_always_guessing_went_out": 0.864,
+    "brier": 0.0865,
+    "brier_if_always_guessing_base_rate": 0.1173
+  },
+  "burn_rate": {
+    "rows": 252,
+    "cv": "5-fold, repeated 20 times",
+    "r2": 0.705,
+    "mean_abs_error_mm2_s": 0.048,
+    "target_std_mm2_s": 0.138
+  }
+}
