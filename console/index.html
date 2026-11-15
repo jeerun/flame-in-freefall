@@ -1334,13 +1334,35 @@ window.FLAME_MODEL = {
         if (t[2] !== state.fuel || (known ? t[8] !== end : end !== "Disruption")) return;
         var cx = X(t[3]), cy = Y(t[7]), star;
         star = starMark(cx, cy, t, big ? 1.35 : 1);
-        if (lvl >= 2) star.appendChild(svgEl("text", { x: cx + (big ? 9 : 6), y: cy - (big ? 7 : 5), "font-size": 9.5, style: "fill:var(--ink-3)" }, String(t[0])));
         star.appendChild(svgEl("title", {}, "FLEX test " + t[0] + ": " + testSettings(t) + ". " + testEnd(t)));
         star.addEventListener("click", function () { selectStar(t); });
         svg.appendChild(star);
         MAP.stars.push({ x: cx, y: cy, t: t });
       });
     });
+    MAP.unnumbered = 0;
+    if (lvl >= 2) {
+      // Test numbers. Stars on one spot share a label. A label goes where it covers no star and no other label;
+      // if there is no such place it is left out, and the fine print says how many were.
+      var spots = {}, taken = MAP.stars.map(function (st) { return { x0: st.x - 6, x1: st.x + 6, y0: st.y - 6, y1: st.y + 6 }; }), nums = svgEl("g", { id: "mapNums" });
+      MAP.stars.forEach(function (st) {
+        var k = Math.round(st.x / 4) + ":" + Math.round(st.y / 4);
+        (spots[k] = spots[k] || { x: st.x, y: st.y, ids: [] }).ids.push(st.t[0]);
+      });
+      Object.keys(spots).map(function (k) { return spots[k]; }).sort(function (a, b) { return a.ids.length - b.ids.length || a.y - b.y || a.x - b.x; }).forEach(function (sp) {
+        var text = sp.ids.length > 3 ? sp.ids.slice(0, 2).join(", ") + " +" + (sp.ids.length - 2) : sp.ids.join(", "), w = text.length * 5.3 + 3, ok = null;
+        var tries = [[9, -3], [9, 10], [-9 - w, -3], [-9 - w, 10], [-w / 2, -11], [-w / 2, 20], [16, 3], [-16 - w, 3]];
+        for (var i = 0; i < tries.length && !ok; i++) {
+          var bx = sp.x + tries[i][0], by = sp.y + tries[i][1], bb = { x0: bx - 1, y0: by - 9, x1: bx + w, y1: by + 2 };
+          if (bb.x0 < L || bb.x1 > W - Rt || bb.y0 < T || bb.y1 > H - B) continue;
+          if (!taken.some(function (q) { return bb.x0 < q.x1 && bb.x1 > q.x0 && bb.y0 < q.y1 && bb.y1 > q.y0; })) ok = bb;
+        }
+        if (!ok) { MAP.unnumbered += sp.ids.length; return; }
+        taken.push(ok);
+        nums.appendChild(svgEl("text", { x: ok.x0 + 1, y: ok.y1 - 2, "font-size": 9.5, style: "fill:var(--ink-2)" }, text));
+      });
+      svg.appendChild(nums);
+    }
     top.forEach(function (c) {
       svg.appendChild(svgEl("circle", { cx: X(c.t[3]), cy: Y(c.t[7]), r: 6.5, fill: "none", stroke: "#f1f4ff", "stroke-width": 1.2 }));
     });
@@ -1360,7 +1382,8 @@ window.FLAME_MODEL = {
       $("mapFine").textContent = "Up and down or the right stick picks a star, RT replays it, R3 moves the settings onto it, X or left and right changes the detail, B closes. "
         + (lvl >= 3 ? "Dashed lines: where this dashboard's model puts the chance of burning all the fuel at 25, 50 and 75 %, for the pressure, carbon dioxide and helium set now. They are the model's lines, not NASA's. "
           : lvl === 2 ? "The small numbers are FLEX test numbers. " : "")
-        + "Stars at the same oxygen and size sit on top of each other.";
+        + "Stars at the same oxygen and size sit on top of each other and share one label."
+        + (MAP.unnumbered ? " " + MAP.unnumbered + " numbers are left out where stars crowd together: pick the star to read its number." : "");
     }
   }
   function mapBig(on) {
