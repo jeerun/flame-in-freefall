@@ -129,6 +129,7 @@ if __name__ == "__main__":
 
     with Server(("127.0.0.1", 0), QuietHandler) as server, sync_playwright() as playwright:
         server.seen = {}
+        server.public_origin = f"http://crew-preview.test:{server.server_port}"
         worker = Thread(target=server.serve_forever, daemon=True)
         worker.start()
         try:
