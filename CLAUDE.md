@@ -636,6 +636,16 @@ Not done:
       the formula and the test rows) and `python tests/browser_guides.py --channel msedge`
       (sizes at 1280x800, Oxygen map labels, the round log, the panel by keyboard, touch
       and simulated gamepad with undo, the tour by keyboard, gamepad, Controls and phone).
+    - After the push (main `15112e0`, about 10:40 AM): the live copy was republished
+      (`gh-pages` `12783b8`, both new files answer there) and the PC's dashboard was
+      restarted as `py server/serve.py --public-origin http://run`, the form the Tailscale
+      route needs since pull request 7. Through `http://run/` in Edge on the PC, at
+      1280x800 with devicePixelRatio 2 and touch: both new files load, the top bar stays
+      on one line with Ask Ember present, the tour runs to its end by touch, the panel on
+      Moon Base shows the three changes and "Try it" gives 25 %, nothing scrolls, no page
+      error and no failed request. On that commit, on the PC: 69 Python unit tests, the
+      parity check, the CSV digest, three Node tests, 40 of 40 browser scenarios and
+      eight other browser tests all pass.
     - NOT checked: the physical Legion Go, a real gamepad, real touch. The demo script and
       the recorded video do not show the tour or the panel.
 
