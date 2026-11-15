@@ -28,7 +28,8 @@ owner's local time (confirm on the team page). "Submit for Judging" is final.
 - [ ] Open **Find**, enter `PSI-47` and select DAFT. Confirm that Detection becomes
       the active topic and the selected card names DAFT / DAFT-2.
 - [ ] From the downloaded copy, open **Research tools → Moon evidence check** (G).
-      Follow the atmosphere, specimen and gravity questions, expand **Inspect the
+      Select **Yes, the air matches** to see 20 of 746 rows. Choose **Change answer**
+      and **We need more evidence** to see that all 20 matches are gas flames. Expand **Inspect the
       matching NASA rows**, and compare test 21106A4 with line 32 of the PSI-159
       normal-flame CSV (oxygen fraction 0.3926, approximate pressure 0.50665 bar).
 - [ ] In the Oxygen map, select an investigation and switch between the three chart

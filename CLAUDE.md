@@ -47,6 +47,7 @@ X switches between Orbit and List. Find (F) searches all 24 investigations by na
 or PSI ID. Share beside NASA source copies the selected view through the Share dialog.
 
 Research tools → Moon evidence check (G) opens `console/moon-evidence.html` offline.
+The opening choice determines whether the first chart shows atmosphere matches or fuel types.
 The activity traces the 20 atmosphere matches among 746 eligible rows to the CFI-G
 normal-flame CSV. All 20 are gas flames and the rows provide no measured gravity.
 Rebuild the bundled rows with `python data/clean/build_moon_evidence.py`.
