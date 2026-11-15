@@ -124,9 +124,12 @@ def main():
             "data_min": round(float(lo[col]), 3), "data_max": round(float(hi[col]), 3),
         })
 
+    # The last two values (burn time, extinction diameter) are measured after the burn. They are never model
+    # inputs: the console only uses them to replay a real test on screen.
     tests = [
         [int(t.test), t.flex_id, t.fuel, t.o2_pct, round(t.pressure_atm, 3), t.co2_pct, t.he_pct, t.d0_mm,
-         t.test_end, None if pd.isna(t.burn_rate_mm2_s) else t.burn_rate_mm2_s]
+         t.test_end, None if pd.isna(t.burn_rate_mm2_s) else t.burn_rate_mm2_s,
+         None if pd.isna(t.burn_time_s) else t.burn_time_s, None if pd.isna(t.ext_diameter_mm) else t.ext_diameter_mm]
         for t in scope.itertuples()
     ]
 

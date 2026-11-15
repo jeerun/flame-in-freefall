@@ -32,8 +32,11 @@ without them (the example file leaves them out).
 - `meta.far_distance`: the 95th percentile of each test's distance to its nearest
   same-fuel neighbour. A reading farther than this from every test gets a warning.
 - `tests`: one row per in-scope test,
-  `[test, id, fuel, o2 %, pressure atm, co2 %, he %, droplet mm, test end, burning rate]`.
-  The console shows the closest one and counts how the nearby ones ended.
+  `[test, id, fuel, o2 %, pressure atm, co2 %, he %, droplet mm, test end, burning rate, burn time s, end diameter mm]`.
+  The console shows the closest ones, counts how the nearby ones ended, draws every
+  test as a star on its map, and replays a test on screen. Burn time and end diameter
+  are measured after the burn: they are there for the replay only and are never
+  model inputs.
   Distance: same fuel only, each setting divided by its tested range
   (`data_max - data_min`), then the straight-line distance.
 
