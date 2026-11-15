@@ -7,10 +7,11 @@ Challenge: Flame in Freefall: SI-Powered Fire Safety Insights from Microgravity 
 
 A dashboard that summarizes, ranks and interprets NASA's microgravity combustion
 investigations for fire safety, built to be driven with a gamepad on a handheld. Its
-AI runs on the team's own machines, not in the cloud, and needs no internet.
+documented Ember setup uses a downloaded Gemma model on the team's hardware.
 
-Try it in a browser: https://jeerun.github.io/flame-in-freefall/ (everything except
-Ember, the AI, which needs the team's PC).
+Open `console/index.html` from this checkout to try the three new evidence activities.
+The [published dashboard](https://jeerun.github.io/flame-in-freefall/) tracks the deployed version.
+[Watch the short desktop demo](docs/crew-console-demo.mp4).
 
 - **NASA research** (the home page) summarizes the 24 combustion investigations in
   NASA's PSI database and ranks them for the question you pick: prevention,
@@ -21,11 +22,19 @@ Ember, the AI, which needs the team's PC).
   one oxygen axis, read from nine of NASA's own test tables. It has three levels of
   detail: the range each investigation covered, every test as a dot, and every test
   against pressure with the Moon Base air from the challenge brief marked. Its
-  headline is counted from the tables: of 746 microgravity tests that record both
-  the oxygen and the pressure of the surrounding gas, 20 were run in Moon Base air.
+  headline counts published rows. Of 746 rows with ambient oxygen and pressure,
+  20 CFI-G rows meet the brief’s thresholds. The CFI source repeats eight rows,
+  and FLEX has no flight/ground label per row.
+- **Earth or orbit?** Pick which environment gave the longer burn for a Saffire-II
+  material, then reveal the measured lengths side by side (Research, LT or E).
+- **Read the sensors.** See the initial and final oxygen readings from BASS-II,
+  then reveal how CO and CO₂ changed in the same test (Research, RT or N).
+- **Find counterexample.** From a selected FLEX star, compare a real test with the
+  same fuel and gas mix and the opposite outcome. The panel shows differences in
+  pressure and droplet size alongside both fitted estimates (Console, E or A in the zoomed map).
 - **Flame console** goes deep on one investigation, the Flame Extinguishment
   Experiment (FLEX). Set the fuel, oxygen, pressure, carbon dioxide, helium and
-  droplet size, and it shows the chance a droplet flame burns until the fuel is gone,
+  droplet size, and it estimates completion among tests with a clear outcome,
   the burning rate, and an explanation that opens with the prediction, the evidence
   from real tests and the limits, with the reasoning and the closest real NASA tests
   one press away. Any set of settings can be saved as a baseline and compared side by
@@ -47,9 +56,8 @@ Ember, the AI, which needs the team's PC).
   `server/serve.py`. It is a language model running on the team's PC (RTX 5080), or
   a smaller one on the handheld itself. Left on "Auto" it uses the PC while the PC
   answers and the handheld when it does not, and says so. It answers from the NASA
-  PSI records, the counts from NASA's test tables and the numbers on screen, cites
-  the PSI ids it used, and can read its answers aloud. Nothing leaves the local
-  network.
+  PSI records, the counts from NASA's test tables and the numbers on screen, is prompted
+  to cite PSI IDs, and can read its answers with an installed English voice.
 - **The real tests go with you.** One button downloads the 252 FLEX tests in use,
   with the model's prediction beside each, as a CSV file. Another sends that file to
   the computer that serves the dashboard, so it is not left on the handheld.
@@ -57,7 +65,7 @@ Ember, the AI, which needs the team's PC).
 Why a gamepad: a crew member may be wearing gloves. Every function can be reached
 from the sticks and buttons, the left stick slides a setting across its whole range
 in about a second, and warnings come as sound and vibration as well as text. We
-have not tried it with gloves, or on the real handheld yet.
+have not verified glove use or the new controls on a physical handheld.
 
 The console numbers come from two small models trained on FLEX (PSI-69). The
 research summaries and ranks were written by an AI model from the PSI records and
@@ -73,7 +81,7 @@ Working on real data (Nov 15, 2026).
   the server on the one PC. Ember's answers to 18 fixed questions are in
   `docs/ember-check.md`, with automatic checks but no human check yet.
 - Not done yet: trying it on the real Lenovo Legion Go (alone, over Wi-Fi to the PC,
-  and with its own small model), the demo video, the submission form.
+  and with its own small model) and the official submission form. The preview demo was captured in desktop Edge.
 
 ## Run it
 
@@ -84,8 +92,7 @@ It is the `console/` folder, published with
 `git subtree push --prefix console origin gh-pages`. No Ember there.
 
 **Without the AI, fully offline.** Open `console/index.html` in Edge or Chrome and
-press F11. No install, no internet. Keep `model.js`, `research.js` and `tables.js`
-next to it. Without `model.js` the page falls back to made-up numbers and shows a
+press F11. Keep all the files in `console/` together. Without `model.js` the page falls back to made-up numbers and shows a
 yellow "Mock numbers" banner. Without `research.js` the NASA research page is
 hidden, and without `tables.js` the Oxygen map is.
 
@@ -135,6 +142,8 @@ B closes.
 | Where | Gamepad | Keyboard |
 |---|---|---|
 | NASA research | Left/Right change the question. Up/Down move through the ranked list. X switches between the list and the orbit view. In the orbit view the right stick points at an investigation. Y (or View) opens the Oxygen map. | Arrows, X, O |
+| Research evidence activities | LT opens Earth or orbit?, RT opens Read the sensors. D-pad Up/Down changes case, Left/Right chooses an answer, A reveals, B closes. | E / N, arrows, Enter, Esc |
+| FLEX counterexample | A on the zoomed star map opens the panel. Left/Right moves between actions, A activates, B closes. | E, arrows, Enter, Esc |
 | Oxygen map | Up/Down pick an investigation. Left/Right or X change the level of detail. B or Y closes. | Arrows, 1 to 3, X, Esc |
 | Flame console | Up/Down pick a setting. The left stick slides it: a light push creeps, a full push sweeps. The d-pad moves it one step. A explain, B close, X cabin air (Earth, Moon Base, Mars base), Y reset. Right stick picks a star, RT replays that test, pressing the right stick moves the settings onto it. LT Ignite. View zooms the star map. Pressing the left stick sends the tests to the base computer. | Arrows, Enter, Esc, X, R, `[` and `]` pick a star, P replay, G go there, I Ignite, Z zoom the map, D download the tests, S send or share them |
 | Explanation (A) | Up/Down or the right stick scroll it. X opens "Why this prediction?", Y opens "Test details and sources". LT saves the settings as baseline A and opens the comparison. B closes. | W, T, H, Esc |
@@ -150,7 +159,7 @@ The Legion Go's six extra buttons can be set to these keys in Legion Space; a
 suggested layout is in `docs/legion-go-setup.md`.
 
 Banners with a sound and a buzz appear when: the settings leave what NASA tested
-(alarm and a strong buzz) or come back inside; the fire risk turns high; real tests
+(alarm and a strong buzz) or come back inside; real tests
 nearby disagree with the model; Ember loses or regains the big machine; a file is
 saved or sent. The flame picture also turns into a question mark outside the tested
 range. Touch works too. Sound, voice and rumble depend on the browser and the
@@ -164,19 +173,28 @@ Needs Python with pandas, numpy and scikit-learn. From the repo root:
     python model/train.py
     python data/clean/build_research.py
     python data/clean/build_tables.py
+    python data/clean/build_evidence.py
+    python data/clean/fetch_psi_tables.py --verify
 
 The first builds `data/clean/flex_clean.csv` from the raw table. The second trains
 both models, writes `model/metrics.json` and exports `console/model.js`. The results
 are seeded, so a re-run gives the same numbers. The third joins the PSI records with
 the notes in `data/clean/research_notes.json` and writes `console/research.js`. The
 fourth reads the oxygen and pressure of each test from the PSI test tables and
-writes `console/tables.js` and the counts Ember is given. It needs no extra packages.
+writes `console/tables.js` and the counts Ember is given. The fifth generates the
+Saffire-II and BASS-II cases. The final command verifies the original PSI hashes
+offline, restoring the downloads’ CRLF line endings in memory where Git stored LF.
+
+After changing the shipped model or CSV layout, run `node server/export_digest.cjs`, review the new export and update `CSV_SHA256` in `server/serve.py`. The server verifies the digest before storing or forwarding a file.
 
 `python model/science_audit.py` repeats the independent audit, and
 `python -m unittest tests.test_science_audit` runs its tests.
 `python model/check_parity.py` repeats the page-versus-Python check (needs Node.js).
 `node tests/test_console_features.cjs` tests the explanation summary and the baseline
 comparison against the page's own code.
+`python -m unittest discover tests` also checks the source rows and server export.
+With Python Playwright and Edge installed, `python tests/browser_evidence.py --channel msedge`
+exercises the new activities with keyboard and simulated gamepad input.
 
 `python data/clean/fetch_psi_tables.py` downloads the PSI test tables again (it
 never overwrites a file that is already there). With the server running,
@@ -197,8 +215,8 @@ All from NASA Physical Sciences Informatics (PSI), the source named by the chall
   objectives, approach), from the repository's search for "combustion" on
   Nov 14, 2026: 26 records, 24 of them combustion science.
   https://psi.nasa.gov/physci/repo/search?q=combustion
-- The Experimental Table of every one of those investigations that has one: 25 files,
-  downloaded unchanged from PSI on Nov 14, 2026, listed with version, DOI, licence
+- The PSI search returned 25 Experimental Table files. They were downloaded on
+  Nov 14, 2026 and are listed with version, DOI, licence
   and SHA-256 in `data/raw/psi_tables/MANIFEST.json`. Nine of them give an oxygen
   value for each test and feed the Oxygen map: FLEX, CFI, CFI-G (two tables), Flame
   Design (two tables), BASS-II, Saffire-I and Saffire-II.
@@ -270,7 +288,8 @@ Inside the product, three kinds of AI, each labelled on screen:
   counts this project made from NASA's test tables, or the reading on screen, and
   tells it to answer only from that and to cite PSI ids. Its answers are written on
   the spot and can be wrong: `docs/ember-check.md` holds 18 of them for checking.
-  Nothing is sent to the internet.
+  The supplied Gemma setup runs inference on the configured machines. Optional
+  export syncing uses the service chosen by the operator.
 - The summaries, "why it matters" lines and 0 to 3 relevance scores on the NASA
   research page were written ahead of time by Claude (Anthropic) from each
   investigation's PSI record (`data/clean/research_notes.json`). Titles, project type
@@ -288,11 +307,15 @@ team member with OpenAI ChatGPT/Codex, then reviewed, fitted to the screen, give
 controller path and tested with Claude. The training code, the model coefficients and
 the NASA data were not changed by it.
 
+OpenAI Codex also helped implement and test the three evidence activities, the
+console and server fixes, and the captioned browser demonstration. Its scenes
+show the actual dashboard and NASA table values.
+
 A teammate contributed the independent audit and the parity check (`model/science_audit.py`,
 `model/check_parity.py` and their documents). We could not confirm whether AI tools
 helped write them, so treat that code and text as possibly AI-assisted. The audit was
 re-run on the team's PC and reproduced exactly.
 
-No AI-generated images, video or audio are used, and no data value was generated or
-changed by AI. Keep this section current: the submission form asks where and how AI
+The demo uses screen captures of the working dashboard. The NASA measurements
+come from the published tables. Keep this section current: the submission form asks where and how AI
 was used.

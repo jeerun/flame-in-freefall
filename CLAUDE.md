@@ -42,6 +42,8 @@ Submission closes Sunday Nov 15, 11:59 PM in the team owner's local time
 
 ## Status
 
+The evidence preview adds two research activities from Saffire-II and BASS-II and a FLEX counterexample comparison. The Oxygen map counts published table rows, including duplicates. Outcome estimates apply to clear outcomes only, and the Moon preset flags inconclusive nearby tests. Replays require recorded burn time and measured diameters, except for an inferred zero endpoint after fuel completion. The included video is a desktop capture. The notes below record earlier milestones.
+
 Last updated Sunday Nov 15, about 12:15 AM by the owner's PC clock (Pacific Time).
 
 Done:
