@@ -79,12 +79,13 @@ the per-fuel model has had a screen check on the handheld, not a controller run.
 
 ## Local AI, PC and Legion Go together (owner only)
 
-- [ ] On the PC, `Start dashboard.bat` prints "AI: ready, gemma4:12b on this team's
-      NVIDIA GeForce RTX 5080". The first time, Windows asks about the firewall: tick
-      the kind of network the PC is on (Private, Public, or both) and choose Allow.
-      A VPN on the PC can keep the handheld out: pause it for the test.
+- [ ] For a private LAN, start `py server/serve.py --lan --allow-device 192.168.1.42 --open`
+      on the PC using the handheld’s actual IPv4 address. Confirm that Ember is ready.
+      If Windows asks about the firewall, allow only the Private profile and scope
+      its rule to the handheld address. For Tailscale use the setup guide above.
 - [ ] When the Legion Go opens the address, the PC window prints "New device
-      connected", and `http://localhost:8000/who` on the PC lists it.
+      connected", and `http://localhost:8000/who` on the PC lists it after signing
+      in as `crew` with the per-run password printed by the server.
 - [x] On the Legion Go, on the same Wi-Fi, the address the window printed opens the
       dashboard, the start screen lists "Ember: the on-board AI", and the "Ask Ember"
       button is in the top bar. (Seen on Nov 15 over Tailscale at `http://run/`, not

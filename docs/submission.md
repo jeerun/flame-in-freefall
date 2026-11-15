@@ -421,6 +421,11 @@ Where and how we used AI. Copy from the README and add anything new.
 
 Inside the product:
 
+- The Ember evidence lab uses the locally installed vision model to identify a candidate
+  change in the visible flame rim in NASA's [FLEX footage](https://svs.gsfc.nasa.gov/11318/).
+  A viewer can inspect the saved frames or request another review. For English questions
+  about BASS-II gas readings, Ember proposes a filter and the dashboard returns original
+  CSV rows. OpenAI Codex helped implement and test both activities.
 - Ember, the on-board assistant, is Gemma 4 12B, an open language model from Google,
   run locally with Ollama on the team's own RTX 5080 PC. The smaller
   `gemma4:e2b` also answered on the Legion Go's CPU. Ember adds a
