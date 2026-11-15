@@ -9,29 +9,28 @@ The direct Wi-Fi route in A still needs a device test. [Device test record](../C
 
 ## A. The Legion Go as the screen, the PC as the brain (nothing to install)
 
-1. On the PC with the GPU, double-click `Start dashboard.bat`. Leave its window open.
-   It prints a line like `On the Legion Go (same Wi-Fi): http://192.168.x.x:8000`.
-2. The first time, Windows asks whether to let Python through the firewall. Tick the
-   kind of network the PC is on (Private, Public, or both) and choose Allow. If you
-   are not sure which kind it is, tick both.
+1. Find the handheld's IPv4 address in its Wi-Fi properties. On the GPU PC,
+   stop an existing PC-only dashboard. From the repo root run
+   `py server/serve.py --lan --allow-device 192.168.1.42 --open`, substituting
+   the **handheld's** address for the example. The server prints the **PC's**
+   address for the handheld to open. Leave the server window open.
+2. Use a trusted Private network. If Windows requests firewall access, enable
+   only the Private profile and scope the inbound rule to the handheld’s address.
 3. On the Legion Go, on the same Wi-Fi or router, open Edge at that address and
    press F11. NASA research opens immediately. Open Controls to check the gamepad connection.
-4. Proof that it got through: the PC window prints `New device connected: ...`, and
-   on the PC `http://localhost:8000/who` lists the handheld with a count of its
-   requests, its questions to Ember and the files it sent.
+4. On the PC, open `http://localhost:8000/who`. At the browser prompt use
+   `crew` and the per-run password printed in the PC's server window. The page
+   lists connected devices and counts requests, questions and exports.
 
 If the Legion Go cannot open the address:
 
-- The firewall prompt was closed without Allow. Windows then keeps a blocking rule.
-  On the PC open Windows Security, Firewall and network protection, "Allow an app
-  through firewall", "Change settings", find the Python entries and tick Private and
-  Public for them.
-- A VPN is running on the PC. Many VPN apps keep local devices out. Pause it, or
-  turn on its "allow local network" setting, and start the dashboard again.
+- Check that the handheld still has the address passed to `--allow-device`.
+  If it changed, restart with the new address and update the Private firewall rule.
+- Check whether the VPN permits the local network or use the Tailscale route below.
 - The two devices are not on the same network, or the network keeps devices apart
   (campus and guest Wi-Fi often do). Use a phone hotspot or a home router for both.
-- Double-clicking `Start dashboard.bat` a second time is harmless: it says the
-  dashboard is already running and opens it.
+- Double-clicking `Start dashboard.bat` starts PC-only mode. To change modes,
+  stop the running server before starting the private-LAN command above.
 
 ## B. The Legion Go with its own small AI model (works with no PC and no network)
 
@@ -61,29 +60,23 @@ Use a private network between your own devices, such as Tailscale. It also gets
 around Wi-Fi that keeps devices apart, because the two machines talk through it
 over the private network. The tested route used `http://run/` on Tailscale.
 
-1. Install Tailscale on the PC and on the Legion Go, signed in to the same account,
-   and switch it on (Connect) on both. If another VPN is running on either machine,
-   pause it: two VPNs often get in each other's way.
-2. On the PC double-click `Start dashboard.bat`. With Tailscale on, the window prints
-   a second line: `On the Legion Go (anywhere, both on Tailscale): http://100.x.y.z:8000`.
-   If Windows asks about the firewall, tick Private as well: Windows treats the
-   Tailscale network as a private one.
-3. On the Legion Go open that address in Edge. Or, for the handheld's own model with
-   the PC as the big machine, give that address to `Start on Legion Go.bat`.
+1. Connect the PC and the Legion Go to the same private Tailscale network.
+2. On the PC, stop any existing dashboard and run `tailscale serve --http=80 8000`
+   in one window. In another, start the dashboard with the exact origin the
+   handheld will open. For the team's hostname, the command is
+   `py server/serve.py --public-origin http://run`. If using the full tailnet
+   name printed by Tailscale, enter that name with its scheme instead.
+   The Python server remains bound to loopback. Limit the tailnet's access
+   policy to the devices that should use this service.
+3. Open that same origin in the handheld’s Edge browser, or give it to
+   `Start on Legion Go.bat` when configuring Ember's peer.
 
-If nobody is at the PC to answer the firewall question, Tailscale can pass the
-dashboard on by itself, with no firewall change. On the PC, in two windows:
-
-    py server/serve.py
-    tailscale serve --http=80 8000
-
-The second command prints the address, of the form `http://<pc-name>.<tailnet>.ts.net/`.
-Open it on the Legion Go. The numeric address does not work this way, only the
-name. On Nov 15 the handheld reached the PC at `http://run/`. The dashboard
+On Nov 15 the handheld reached the PC at `http://run/`. The dashboard
 confirmed a CSV export to RUN and the PC's `/tests.csv` returned 252 rows.
 The team did not inspect the PC's export folder during the handheld test.
 
-Do not use a public tunnel (`tailscale funnel` is one): the dashboard has no login.
+Keep this route inside your tailnet. The dashboard and Ember accept requests from
+clients allowed through the proxy. The PC's device log has a separate password.
 
 ## The Legion Go's extra controls
 

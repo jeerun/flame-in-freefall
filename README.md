@@ -124,22 +124,26 @@ install Ollama from https://ollama.com and pull the model.
 
     ollama pull gemma4:12b
 
-Then double-click `Start dashboard.bat` in the repo folder on that PC. It opens the
-dashboard in the browser and prints the address to open on the Legion Go. The same
-thing by hand, from the repo root:
+Double-click `Start dashboard.bat` for use on the PC. It opens
+`http://localhost:8000` and accepts loopback connections only.
+For a Legion Go on your trusted private LAN, stop the PC-only server, replace
+`192.168.1.42` below with the **handheld’s** IPv4 address, and run from the repo root:
 
-    py server/serve.py           (this PC only: open http://localhost:8000)
-    py server/serve.py --lan     (also the Legion Go on the same Wi-Fi)
+    py server/serve.py --lan --allow-device 192.168.1.42 --open
 
-The first time, Windows asks whether to let Python through the firewall: tick the
-kind of network the PC is on (Private, Public, or both) and allow it. When the
-handheld gets through, the PC window prints "New device connected". Step by step,
-with what to do when it does not connect: `docs/legion-go-setup.md`. The script
-needs only the Python standard library. When the PC is unreachable, a local copy
+Open the PC address printed by the server on the handheld. If Windows requests
+firewall access, allow the Private profile only and scope the inbound rule to
+the handheld address. The setup guide also covers Tailscale Serve with the
+dashboard bound to loopback. [Legion Go setup](docs/legion-go-setup.md)
+
+The server needs only the Python standard library. When the PC is unreachable, a local copy
 still runs the research, evidence activities, predictions and drill, and can save
 the CSV on the device. Ember and sending a CSV to base require a reachable server.
 
-**Two machines, each with its own model.** On
+**Two machines, each with its own model.** Update the base PC first, then the handheld.
+They use one-hop peer requests for model discovery, answers and CSV exports.
+A handheld running this version uses its local fallback if the base still has the older service.
+On
 the Legion Go download this repo as a ZIP, double-click `Setup Legion Go.bat` once
 (it installs Python and Ollama with winget and downloads the 4.3 GB model
 `gemma4:e2b`), then double-click `Start on Legion Go.bat`. It asks once for the
