@@ -26,7 +26,10 @@ Ember, the AI, which needs the team's PC).
 - **Flame console** goes deep on one investigation, the Flame Extinguishment
   Experiment (FLEX). Set the fuel, oxygen, pressure, carbon dioxide, helium and
   droplet size, and it shows the chance a droplet flame burns until the fuel is gone,
-  the burning rate, and an explanation that ranks the closest real NASA tests. One
+  the burning rate, and an explanation that opens with the prediction, the evidence
+  from real tests and the limits, with the reasoning and the closest real NASA tests
+  one press away. Any set of settings can be saved as a baseline and compared side by
+  side with a changed set, with the warnings of both kept in view. One
   button switches the cabin air between Earth-like air, the Moon Base case from the
   challenge brief, and a Mars base (same air, labelled as an assumption), and the
   background becomes the Earth, the Moon or Mars. Under the reading is a star map:
@@ -134,6 +137,8 @@ B closes.
 | NASA research | Left/Right change the question. Up/Down move through the ranked list. X switches between the list and the orbit view. In the orbit view the right stick points at an investigation. Y (or View) opens the Oxygen map. | Arrows, X, O |
 | Oxygen map | Up/Down pick an investigation. Left/Right or X change the level of detail. B or Y closes. | Arrows, 1 to 3, X, Esc |
 | Flame console | Up/Down pick a setting. The left stick slides it: a light push creeps, a full push sweeps. The d-pad moves it one step. A explain, B close, X cabin air (Earth, Moon Base, Mars base), Y reset. Right stick picks a star, RT replays that test, pressing the right stick moves the settings onto it. LT Ignite. View zooms the star map. Pressing the left stick sends the tests to the base computer. | Arrows, Enter, Esc, X, R, `[` and `]` pick a star, P replay, G go there, I Ignite, Z zoom the map, D download the tests, S send or share them |
+| Explanation (A) | Up/Down or the right stick scroll it. X opens "Why this prediction?", Y opens "Test details and sources". LT saves the settings as baseline A and opens the comparison. B closes. | W, T, H, Esc |
+| Comparison | The settings still change as usual and update B live. LT makes B the new baseline. The right stick scrolls. B closes. | H save or replace the baseline, C open or close, Esc |
 | Zoomed star map | Up/Down or the right stick pick a star. Left/Right or X change the level of detail. RT replay, right-stick press go there, B or View closes. | Arrows, 1 to 3, X, P, G, Esc |
 | Ignite | A or LT runs it again, B closes. | Enter, Esc |
 | Fire drill | Left "went out first", Right "burned all its fuel", A next test, Y new game, B home. | Arrows, Enter, R, Esc |
@@ -170,6 +175,8 @@ writes `console/tables.js` and the counts Ember is given. It needs no extra pack
 `python model/science_audit.py` repeats the independent audit, and
 `python -m unittest tests.test_science_audit` runs its tests.
 `python model/check_parity.py` repeats the page-versus-Python check (needs Node.js).
+`node tests/test_console_features.cjs` tests the explanation summary and the baseline
+comparison against the page's own code.
 
 `python data/clean/fetch_psi_tables.py` downloads the PSI test tables again (it
 never overwrites a file that is already there). With the server running,
@@ -226,7 +233,8 @@ Two independent checks by a teammate:
   out". Re-run on the team's PC: same results, 5 of 5 tests pass.
 - `docs/model-parity.md` (`model/check_parity.py`): runs the page's own prediction
   code in Node against the Python model on 820 inputs and finds the same numbers to
-  within rounding. It needs Node.js and was run by the teammate, not on the team's PC.
+  within rounding. Its three tests also pass on the team's PC, using the Node.js that
+  ships with Playwright.
 
 ## Folders, and who owns each
 
@@ -275,6 +283,11 @@ dashboard code, the server and the data-cleaning and training scripts, reviewing
 re-running them, reading the PSI-69 table and the challenge page, finding sources,
 and drafting the documentation.
 
+The summary-first explanation panel and the baseline comparison were written by a
+team member with OpenAI ChatGPT/Codex, then reviewed, fitted to the screen, given a
+controller path and tested with Claude. The training code, the model coefficients and
+the NASA data were not changed by it.
+
 A teammate contributed the independent audit and the parity check (`model/science_audit.py`,
 `model/check_parity.py` and their documents). We could not confirm whether AI tools
 helped write them, so treat that code and text as possibly AI-assisted. The audit was
@@ -283,26 +296,3 @@ re-run on the team's PC and reproduced exactly.
 No AI-generated images, video or audio are used, and no data value was generated or
 changed by AI. Keep this section current: the submission form asks where and how AI
 was used.
-
-
-## Explanation and comparison controls
-
-The Flame console explanation now starts with Prediction, Real-test evidence and
-Limitations. Expand **Why this prediction?** for model factors and **Test details &
-sources** for the nearest tests, validation metrics and NASA source. Use touch,
-Tab then Enter, W/T on the keyboard, or X/Y on the gamepad while the explanation is
-open. X/Y retain their previous actions when that panel is closed.
-
-Click **Save baseline** (H) to save scenario A and open the comparison. The left
-controls update B live; changed values are highlighted. **Compare** (C) reopens the
-panel. **Replace baseline** saves the current B; **Clear baseline** removes A.
-Esc or gamepad B closes the comparison. Save/replace/clear buttons support touch
-and keyboard; no existing gamepad shortcut was reassigned for these actions.
-Baseline includes settings, predictions and evidence warnings. It remains fixed
-across parameter edits, presets, page changes and Reset; refreshing clears it.
-Differences use percentage points, not relative percent. When either scenario is
-outside tested conditions, numeric deltas are withheld and warnings stay visible.
-This is a comparison of model outputs, not a ranking of overall fire safety.
-
-These UI additions were implemented with assistance from OpenAI ChatGPT/Codex.
-The training code, model coefficients and NASA data were not changed.
