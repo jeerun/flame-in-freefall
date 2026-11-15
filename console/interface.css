@@ -133,11 +133,12 @@ button:focus-visible, .tabs button:focus-visible, summary:focus-visible {
 .reading-heading h2 { margin: 0; }
 .research-actions { flex-wrap: wrap; justify-content: flex-end; }
 .view-action {
-  border: 1px solid var(--line); border-radius: .4rem; background: var(--panel);
-  color: var(--flame); font-size: 12px; line-height: 1.25; padding: .35em .65em;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  min-height: 44px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 7px;
+  background: transparent; color: var(--flame); font-size: 12px; line-height: 1.25;
   white-space: nowrap; cursor: pointer;
 }
-.view-action:hover { border-color: var(--flame); }
+.view-action:is(:hover, :focus-visible) { background: #243638; }
 .share-view { width: min(480px, calc(100% - 24px)); }
 .share-view #shareSubject { font-size: 18px; font-weight: 600; margin: 20px 0 4px; }
 .share-view #shareHelp { color: var(--ink-2); margin: 0 0 18px; line-height: 1.45; }
@@ -151,9 +152,6 @@ button:focus-visible, .tabs button:focus-visible, summary:focus-visible {
 .share-view details { border-top: 1px solid var(--line); margin-top: 22px; padding-top: 14px; }
 .share-view summary { cursor: pointer; }
 .share-view form { margin-top: 12px; }
-@media (max-width: 820px) {
-  .view-action { min-height: 38px; }
-}
 .title .go { border: 1px solid var(--accent); color: var(--ink); background: #243033; padding: .45em 1em; border-radius: .55em; animation: none; cursor: pointer; }
 .flame { --flame: #7db8ff; --flame-core: #e6f2ff; }
 .sim .box, .ai .box, .map.big { background-color: #172023; border-color: #506365; }
