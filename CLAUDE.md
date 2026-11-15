@@ -139,12 +139,15 @@ Not done:
 - Ember's answers were spot-checked by hand (about twenty), not evaluated formally.
 - Sound and voice need one touch, click or key press before a browser will play
   them. Whether a gamepad button alone unlocks them on the Legion Go is untested.
+  (Tested Nov 15: a gamepad button alone starts the sound. See "Verified on the real
+  Legion Go" below.)
 - Reaching the PC from the Legion Go over Wi-Fi has not been tried. It needs the
   owner to answer the Windows firewall prompt on the PC (Allow, private networks).
-- Rumble has only been tried with a simulated gamepad.
+- Rumble has only been tried with a simulated gamepad. (Felt on the real controller
+  on Nov 15, see below.)
 - Console has not been tried on the real Legion Go yet (a simulated gamepad is not
   the real one). If the gamepad moves the mouse instead, the device is in desktop
-  mode and needs gamepad mode.
+  mode and needs gamepad mode. (Tried on Nov 15, see below.)
 - Owner only: try the console on the Legion Go, film and upload the demo, fill in
   the Space Apps form (see `docs/checklist.md`).
 - Teammates still need to join the team on the Space Apps site. Join requests only
@@ -245,9 +248,135 @@ Not done:
     teammate's parity tests run here with the Node.js bundled in Playwright
     (`<venv>/Lib/site-packages/playwright/driver/node.exe`): all pass.
 
+  - Verified on the real Legion Go on Nov 15, 00:37 to 02:08 by the handheld's clock
+    (Pacific Standard Time, 08:37 to 10:08 UTC), by a Claude session running on the
+    handheld with the owner pressing the controls (`docs/handheld-agent-brief.md`).
+    How: a second Edge window (Edge 157, guest mode) opened full screen at `http://run/`
+    (Tailscale) and read over the DevTools protocol, so every line below is a control
+    the owner pressed and a state the page reported. Full screen came from Edge's
+    `--start-fullscreen` switch, not from the F11 key. `console/` was not changed; the
+    only code change is two lines of `Setup Legion Go.bat` (see the model point below).
+    Which page: the PC serves its working copy, and main moved while this ran (the
+    summary-first explanation and Save baseline / Compare, 08:48 to 08:57 UTC). The
+    00:41 screen check saw the page before that merge; the checklist run at 01:13 came
+    after those commits; a second screen check at 01:50 ran on the page as it is at
+    commit `dd72ee2` (the served file matched it line for line).
+    - Screen (00:41): `innerWidth` 1280, `innerHeight` 800, `devicePixelRatio` 2. On the
+      start screen, on the three pages and with each overlay open (explanation, Ember,
+      Ignite, Oxygen map and zoomed star map at their three levels) `scrollHeight` was
+      800, the top bar was one line with the Ember button showing, and there were no
+      console errors.
+    - Screen again (01:50), on the merged page: the same numbers on every page and
+      overlay, no console errors. The explanation with its three boxes fits its panel
+      exactly (674 px). With "Why this prediction?" or "Test details" open, and in the
+      comparison, the panel scrolls inside itself (content 702 to 1079 px, comparison
+      938 px) and stays inside the screen.
+    - Controller (00:58): Edge reports "Xbox 360 Controller for Windows (STANDARD
+      GAMEPAD)", mapping "standard", 17 buttons, 4 axes, sticks at 0 at rest. Every index
+      the code assumes was seen from the real control: 0 A, 1 B, 2 X, 3 Y, 4 LB, 5 RB,
+      6 LT, 7 RT, 8 View, 9 Menu, 10 L3, 11 R3, 12 to 15 d-pad up, down, left, right,
+      axes 0/1 left stick, 2/3 right stick.
+    - Sound starts from a gamepad button alone: with no touch, click or key before it,
+      pressing A on the start screen set `navigator.userActivation.hasBeenActive` and
+      the page's audio context was running in the same frame. The owner heard the start
+      sound, and later heard Ember read an answer aloud; by then the owner had also
+      pressed the volume key, so voice after a gamepad press alone was not isolated.
+    - Rumble: `vibrationActuator` exists (dual-rumble), `playEffect` resolved
+      "complete", and the owner felt it on the high-risk banner, on the red state and on
+      a wrong Fire drill answer.
+    - Wheel on the right controller: real `wheel` events, deltaY +100 or -100,
+      deltaMode 0. One notch moved the selected setting one step (oxygen by 0.5).
+    - Checklist run on the dashboard (01:13 to 01:20: 49 steps by the controller or its
+      wheel, 6 yes/no answers from the owner, all yes, and 2 steps by touch): the start
+      screen lists Ember and A
+      starts on "NASA research"; the chip reads "Controller connected"; d-pad moves the
+      list and changes the question (four of them); X orbit view and the right stick
+      points; Y Oxygen map, d-pad picks and changes the level, B closes; Menu opens
+      Ember, the answer came in 2.2 s and ended with the model and the graphics card;
+      RB and LB turn the pages; d-pad steps oxygen by 0.5; the left stick creeps at a
+      light push (0.5 % every quarter second at 0.4) and sweeps at a full push (14.5 %
+      in half a second); A, B, Y; X steps Earth air, Moon Base, Mars with the scene
+      following (the owner confirmed Mars); the right stick picks a star, RT replays it,
+      R3 moves the settings onto it; LT Ignite, A again, B closes; View zooms the star
+      map, d-pad changes the level, B closes; carbon dioxide and helium both above zero
+      give the red box, the "Outside what NASA tested" banner, sound and a strong buzz;
+      Fire drill guesses with d-pad left and right, the test replays, Ember's line
+      appears after each of three answers, A goes on, Y starts a new game; the Sound
+      button on screen mutes and unmutes by touch. The page reported no script errors.
+    - Ember's first answer of the session from the handheld took 8.5 s (one sample, at
+      00:41); the next two took 2.2 s each.
+    - The handheld's own model (01:27 to 01:48). `Setup Legion Go.bat` as committed
+      failed on this device: winget 1.11 could not check the Microsoft Store source
+      (error 0x8A15005E, "Failed when searching source: msstore") and both
+      `winget install` lines stopped within seconds, installing nothing. Fixed by
+      adding `--source winget` to those two lines. The owner then ran it to the end:
+      Python 3.13.17, Ollama 0.40.16 and `gemma4:e2b` (4.27 GB on disk, downloaded in
+      about 4 minutes). `Start on Legion Go.bat`, with `http://run` in
+      `pc-address.txt`, printed both "AI: ready" lines, and `http://localhost:8000/ai`
+      lists the PC's `gemma4:12b` first and the handheld's `gemma4:e2b` second, both up.
+      Asked through the page in a hidden (headless) Edge on the handheld, with keys
+      instead of the controller: on Auto the PC answered in 2.2 s; X stepped Auto, the
+      PC, the handheld; from the handheld three research answers took 13.6, 14.4 and
+      14.5 s and two console answers 5.7 and 5.5 s; back on the PC 1.6 s. None took
+      longer than 20 s. One handheld answer got the physics wrong (it said the droplet
+      diameter shrinks by the burning rate every second; the rate is in mm2/s), so the
+      small model is less careful, as expected. With the model loaded Windows reported
+      0.9 GB of memory free (16 GB installed, 12.7 GB visible, 3 GB kept for graphics).
+      `ollama ps` showed the model running 100% on the CPU, not on the Radeon graphics.
+      Fallback: a second copy on port 8001 with `--peer http://127.0.0.1:9` printed
+      "AI: NOT ready, the other machine cannot be reached", listed the peer as down and
+      answered by itself in 5.7 and 8.0 s. The PC and Tailscale were not touched, so
+      the "big machine is out of reach" banner after closing the PC's window was not
+      seen.
+    - Second controller run (02:04 to 02:08), on the merged page. On the PC's dashboard:
+      A opens the explanation with its three boxes (the owner confirmed them); X and Y
+      open and close the two sections; the right stick scrolls the open panel and the
+      comparison; LT saves the baseline and opens the comparison; the d-pad picks a bar
+      and steps it (oxygen 21 to 21.5 and back); the owner saw column B follow while
+      changing the oxygen bar; LT in the comparison made B the new baseline; B closes;
+      Y resets; L3 (button 10) showed "Sent 252 real FLEX tests to RUN, folder
+      "exports"", and `http://run/tests.csv` then answered with 252 rows. Then on the
+      handheld's own dashboard (`http://localhost:8000/`, the same page): Menu opens
+      Ember, Auto answered from the PC in 1.4 s, X stepped to "gemma4:e2b on the Legion
+      Go itself", A asked, the answer came in 3.7 s with that label (the owner confirmed
+      it), X went back to Auto and B closed.
+    - This handheld: Legion Go 8APU1, Ryzen Z1 Extreme (8 cores, 16 threads), 16 GB,
+      Radeon graphics with 3 GB, Windows 11 Home build 22631, power plan Balanced, on
+      mains power during the tests.
+    Not verified there, or different from what the code assumes:
+    - Windows on this Legion Go has "Animation effects" switched off, so Edge reports
+      `prefers-reduced-motion: reduce` and the page turns off every CSS animation and
+      transition: the flame picture does not pulse and the starfield stands still.
+      For the demo the owner can switch it on (Settings, Accessibility, Visual effects).
+      The session did not change it.
+    - "Send to base" was not pressed in the 01:13 checklist run; it was seen in the
+      second controller run. The `exports` folder on the PC itself was not looked at.
+    - In the comparison the wheel on the right controller scrolls the panel instead of
+      changing the selected setting, and a finger on a bar still moves it. Not a fault.
+    - Star 42 (FLEX test 42) answers RT with "cannot be replayed: NASA's record has no
+      end diameter for it", as designed. The replay was seen on other stars.
+    - The extra buttons (Y1 to Y3, M1 to M3): in 30 seconds of free pressing only one
+      middle mouse click reached the page. No gamepad button and no key.
+    - FPS mode, key M (the handheld has no keyboard) and `console/index.html` opened as
+      a file on the handheld: not tried.
+    - Once, at the start of the controller test, Edge listed another device for 4.5
+      seconds before the Xbox one: "Legion-Controller 1-11 (Vendor: 17ef Product: 6184)",
+      mapping "", with axes 3 and 4 at -1 and axis 9 at 1.29 at rest. The page takes the
+      first connected pad whatever its mapping, so for those seconds it would have read
+      the right stick as pushed up. It did not come back in the checklist run, where
+      the Xbox device was the only one from the first press. Nothing was changed.
+    - On the NASA research page the "Oxygen map" and "Orbit view" buttons wrap onto two
+      lines at 1280x800 in real Edge. Cosmetic.
+    - The hardware volume keys reach the page as key presses ("AudioVolumeUp"). On the
+      start screen any plain key starts, so a volume key would too. Harmless.
+    - Git is not installed on the handheld: the repo was downloaded as `main.zip` at
+      00:37 and brought up to `dd72ee2` at 01:51 from a second download, so
+      `Start on Legion Go.bat` there serves the same page as the PC.
+
 Not done, or not verified:
 - Everything in the list above is unverified on the real Legion Go, with real
-  gloves, and over real Wi-Fi, except what the previous point says.
+  gloves, and over real Wi-Fi, except what the two points about the real Legion Go
+  above say.
 - The share sheet ("Share" button) cannot be tested in a headless browser.
 - `gemma4:e2b` exists in the Ollama library (checked Nov 14) but was never run here.
 - Owner or teammate: read `docs/ember-check.md` and fill in the verdict lines.
