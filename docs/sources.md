@@ -54,6 +54,23 @@ Saffire-II (PSI-99, 10.60555/2chp-m469). PSI lists CC0-1.0 for these except PSI-
 whose licence field is empty. The BASS-II and Saffire-II tables also supply the
 gas sensor and burn-length activities. [Download manifest](../data/raw/psi_tables/MANIFEST.json)
 
+### Source rows for the Moon evidence check
+
+Four of the nine mapped tables supply 746 published rows with measured ambient
+oxygen and positive pressure. The filter compares values before rounding. All
+20 rows at or above 30% oxygen and at or below 10.2 psi come from CFI-G normal
+flames (PSI-159). For example, test 21106A4 on CSV line 32 records an oxygen
+fraction of 0.3926 and approximate pressure of 0.50665 bar. The activity
+preserves both original cells and the physical CSV line for each match.
+[NASA investigation](https://doi.org/10.60555/cyt1-kh64) ·
+[Original CSV](../data/raw/psi_tables/PSI-159_Experimental%20table_CFI-G_Normal%20Flames.csv) ·
+[Row exporter](../data/clean/build_moon_evidence.py)
+
+Every matching row describes a gas flame. The CFI-G table provides no per-test
+gravity measurement, and the three mapped solid-material tables provide no
+pressure column. These rows alone cannot establish how a solid panel burns in
+lunar gravity. [Table definitions and units](../data/clean/build_tables.py)
+
 ## Other sources (papers, NASA pages)
 
 The evidence lab plays the unmodified FLEX experiment clip from NASA SVS release 11318.

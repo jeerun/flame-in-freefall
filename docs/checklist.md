@@ -22,9 +22,15 @@ owner's local time (confirm on the team page). "Submit for Judging" is final.
 ## Handheld recheck of the redesigned page
 
 - [ ] Open the dashboard in landscape. NASA research opens in Orbit view. Select a point,
-      open its investigation details and use the magnifying glass to share it. Check the
+      open its investigation details and select **Share** to share it. Check the
       controller status under Controls and all six settings on the Flame console.
       The optional `/#title` presentation screen still accepts A.
+- [ ] Open **Find**, enter `PSI-47` and select DAFT. Confirm that Detection becomes
+      the active topic and the selected card names DAFT / DAFT-2.
+- [ ] From the downloaded copy, open **Research tools → Moon evidence check** (G).
+      Follow the atmosphere, specimen and gravity questions, expand **Inspect the
+      matching NASA rows**, and compare test 21106A4 with line 32 of the PSI-159
+      normal-flame CSV (oxygen fraction 0.3926, approximate pressure 0.50665 bar).
 - [ ] In the Oxygen map, select an investigation and switch between the three chart
       views. LT and RT on Research open the two evidence activities. A reveals a
       result and B returns. In the zoomed FLEX map, A opens Find counterexample.

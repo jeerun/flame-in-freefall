@@ -1,6 +1,7 @@
 """Research home checks. Run python tests/browser_research_home.py --channel msedge."""
 
 import argparse
+import re
 
 from playwright.sync_api import expect, sync_playwright
 
@@ -16,19 +17,25 @@ def check_home(page, width, height):
     details = page.locator("#investigationDetails")
     summary = details.locator("summary")
     share = page.locator("#shareResearch")
+    photo = page.locator('.research-hero img[src$="flex-flame.webp"]')
+    expect(photo).to_be_visible()
+    expect(photo).to_be_in_viewport()
+    photo.evaluate("image => image.decode()")
     expect(orbit).to_be_visible()
     expect(rank).to_be_hidden()
     expect(tools).to_have_js_property("open", False)
     expect(details).to_have_js_property("open", False)
     expect(share).to_have_accessible_name("Share view")
     expect(share).to_have_attribute("title", "Share view")
+    expect(share).to_have_text("Share", use_inner_text=True)
     assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
     if width > 820:
         for target in (orbit, summary, share):
             expect(target).to_be_in_viewport()
 
     tools_summary = tools.locator("summary")
-    tools_summary.press("Enter")
+    tools_summary.click()
+    expect(tools).to_have_js_property("open", True)
     for control_id in ("oxBtn", "gravityCase", "sensorCase", "evidenceLab"):
         page.keyboard.press("Tab")
         expect(page.locator("#" + control_id)).to_be_focused()
@@ -84,6 +91,97 @@ def check_controller(page):
     expect(page.locator("#researchTools summary")).to_be_focused()
 
 
+def check_find(page):
+    page.goto(CONSOLE.as_uri())
+    find = page.get_by_role("button", name="Find", exact=True)
+    dialog = page.locator("#findResearchDialog")
+    search = dialog.get_by_role("searchbox")
+    results = page.locator("#findResearchResults").get_by_role("button")
+    card = page.locator("#card")
+    original = card.get_attribute("data-investigation")
+    expect(find).to_be_visible()
+    expect(dialog).to_be_hidden()
+    page.keyboard.press("f")
+    expect(search).to_be_focused()
+    search.press_sequentially("unmatched flight record")
+    expect(search).to_have_value("unmatched flight record")
+    expect(results).to_have_count(0)
+    expect(page.locator("#findResearchStatus")).to_contain_text(re.compile(r"\b(?:no|0)\b", re.I))
+    page.keyboard.press("Enter")
+    expect(search).to_be_focused()
+    page.keyboard.press("Escape")
+    expect(find).to_be_focused()
+    expect(card).to_have_attribute("data-investigation", original)
+
+    # PSI-47 has zero Prevention relevance and ranks only under Detection.
+    find.press("Enter")
+    search.fill("dust and aerosol measurement feasibility")
+    expect(results).to_have_count(1)
+    expect(results).to_contain_text("PSI-47")
+    search.press("ArrowDown")
+    page.keyboard.press("Enter")
+    expect(dialog).to_be_hidden()
+    expect(card).to_have_attribute("data-investigation", "PSI-47")
+    expect(page.locator("#hCard")).to_be_focused()
+    detection = page.get_by_role("button", name="Detection")
+    expect(detection).to_have_attribute("aria-pressed", "true")
+    expect(page.locator("#orbit")).to_be_visible()
+    page.locator("#shareResearch").click()
+    page.keyboard.press("f")
+    expect(dialog).to_be_hidden()
+    code = page.locator("#shareOutput").input_value()
+    restored = page.context.new_page()
+    restored.goto(CONSOLE.as_uri() + code)
+    expect(restored.locator("#card")).to_have_attribute("data-investigation", "PSI-47")
+    expect(restored.get_by_role("button", name="Detection")).to_have_attribute("aria-pressed", "true")
+    expect(restored.locator("#orbit")).to_be_visible()
+    restored.close()
+    page.keyboard.press("Escape")
+
+    find.click()
+    page.evaluate("window.pressPad(1)")  # B cancels and returns to the Find button.
+    expect(dialog).to_be_hidden()
+    expect(find).to_be_focused()
+    page.locator("#orbitBtn").click()
+    find.click()
+    search.fill("PSI-10")
+    expect(results.first.get_by_text("PSI-10", exact=True)).to_be_visible()
+    search.fill("psi-101")
+    expect(results).to_have_count(1)
+    page.evaluate("window.pressPad(13)")
+    expect(results.first).to_be_focused()
+    page.evaluate("window.pressPad(0)")
+    expect(dialog).to_be_hidden()
+    expect(card).to_have_attribute("data-investigation", "PSI-101")
+    expect(detection).to_have_attribute("aria-pressed", "true")
+    expect(page.locator("#rank .sel")).to_contain_text("SAME-R")
+
+    # FLEX has no Detection score; Suppression outranks both Prevention and Cabin air.
+    find.click()
+    search.fill("FLEX")
+    expect(results.first).to_contain_text("PSI-69")
+    search.press("Enter")
+    expect(card).to_have_attribute("data-investigation", "PSI-69")
+    expect(page.get_by_role("button", name="Suppression")).to_have_attribute("aria-pressed", "true")
+    expect(page.locator("#rank .sel")).to_contain_text("FLEX")
+
+
+def check_find_touch(page):
+    page.goto(CONSOLE.as_uri())
+    page.get_by_role("button", name="Find", exact=True).tap()
+    dialog = page.locator("#findResearchDialog")
+    dialog.get_by_role("searchbox").fill("PSI-69")
+    result = dialog.get_by_role("button").filter(has_text="PSI-69")
+    expect(result).to_be_in_viewport()
+    assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
+    result.tap()
+    expect(dialog).to_be_hidden()
+    expect(page.locator("#card")).to_have_attribute("data-investigation", "PSI-69")
+    expect(page.locator("#hCard")).to_be_in_viewport()
+    # Keep the active Prevention topic even though FLEX's highest score is Suppression.
+    expect(page.get_by_role("button", name="Prevention")).to_have_attribute("aria-pressed", "true")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--channel", help="Installed Chromium channel, e.g. msedge")
@@ -94,11 +192,17 @@ if __name__ == "__main__":
         context.add_init_script(GAMEPAD)
         errors = []
         context.on("page", lambda page: page.on("pageerror", lambda error: errors.append(str(error))))
-        for size in ((1280, 800), (1280, 680), (390, 844)):
+        for size in ((1280, 800), (1280, 680), (390, 844), (320, 568)):
             page = context.new_page()
             check_home(page, *size)
             page.close()
         check_controller(context.new_page())
+        check_find(context.new_page())
+        phone = browser.new_context(viewport={"width": 390, "height": 844}, is_mobile=True, has_touch=True)
+        phone.on("page", lambda page: page.on("pageerror", lambda error: errors.append(str(error))))
+        check_find_touch(phone.new_page())
+        phone.close()
         assert not errors, errors
         browser.close()
-    print("PASS: orbit-first home, disclosures, share focus, list links, responsive layout and controller.")
+    print("PASS: FLEX banner, orbit-first home, disclosures, Find by title and PSI ID, topic fallback, "
+          "shared selection, responsive layout, keyboard, touch and controller.")
