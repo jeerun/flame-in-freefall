@@ -859,15 +859,14 @@
   from the Python training script. data_min / data_max must be the real min and
   max of each column in the training data: the range warning depends on them.
 
-  extinction: logistic regression. P(flame goes out) = sigmoid(intercept + fuel + sum(coef * value))
-              "Goes out" is FLEX "Extinction": the flame went out before the fuel was gone.
-              The other outcome is "Completion": it burned until the fuel was gone.
-  burn_rate:  linear regression.  K in mm^2/s       = intercept + fuel + sum(coef * value)
+  Each model score is intercept + fuel offset + sum((shared slope + fuel-specific slope) * value).
+  extinction: sigmoid(score) estimates visible extinction among FLEX Extinction and Completion rows.
+  burn_rate: max(0, score) gives the fitted burning rate in mm^2/s.
 
   Optional fields the real export adds (the page works without them):
   meta.exclusive     pairs of settings no test ever combined, e.g. [["co2","he"]]
   meta.far_distance  nearest-test distance above which a reading counts as far from the data
-  meta.auc, meta.burn_rate_mae, meta.rows_burn_rate   held-out accuracy, shown in the fine print
+  meta.auc, meta.burn_rate_mae, meta.rows_burn_rate   cross-validation metrics and burning-rate sample size
   tests              one row per real test:
                      [test, id, fuel, o2 %, pressure atm, co2 %, he %, droplet mm, test end, burning rate,
                       burn time s, end diameter mm]
@@ -905,6 +904,7 @@ window.FLAME_MODEL = {
   var state = { sel: 0, fuel: M.fuels[0].key, values: {}, sheet: false, baseline: null, comparing: false };
   var last = null;                                // the reading on screen: { r: prediction, rc: range check }
   var lastLevel = null, lastNoClear = false, lastDisagree = false;
+  var WATCH = (M.meta && M.meta.watch) || 0.35, lastWatch = false;
 
   /* ---------- saved preferences and sound ---------- */
   function load(key, fallback) {
@@ -1052,10 +1052,14 @@ window.FLAME_MODEL = {
 
   /* ---------- model ---------- */
   function linear(part, fuel, values) {
+    var own = (part.fuel_coef && part.fuel_coef[fuel]) || {};   // this fuel's own slopes, when the model has them
     var z = part.intercept + (part.fuel[fuel] || 0);
-    M.features.forEach(function (f) { z += (part.coef[f.key] || 0) * values[f.key]; });
+    M.features.forEach(function (f) { z += ((part.coef[f.key] || 0) + (own[f.key] || 0)) * values[f.key]; });
     return z;
   }
+  // The percentage as the page shows it. The model can come out at 0.1 % or 99.9 %, but a few hundred tests cannot
+  // support that much certainty, so no chance is shown below 1 % or above 99 %.
+  function shown(p) { return Math.min(99, Math.max(1, Math.round(p * 100))); }
   function predictFor(fuel, values) {
     var pOut = 1 / (1 + Math.exp(-linear(M.extinction, fuel, values)));
     var K = Math.max(0, linear(M.burn_rate, fuel, values));
@@ -1133,11 +1137,16 @@ window.FLAME_MODEL = {
   }
   // How far each setting pushes the flame toward burning until the fuel is gone, measured from its default.
   function drivers() {
+    var own = (M.extinction.fuel_coef && M.extinction.fuel_coef[state.fuel]) || {};
+    var unsure = (M.meta.unsure && M.meta.unsure[state.fuel]) || [];   // settings whose direction the tests do not settle for this fuel
     var list = M.features.map(function (f) {
-      return { label: f.label, f: f, push: -(M.extinction.coef[f.key] || 0) * (state.values[f.key] - f.default) };
+      return { label: f.label, f: f, unsure: unsure.indexOf(f.key) >= 0,
+        push: -((M.extinction.coef[f.key] || 0) + (own[f.key] || 0)) * (state.values[f.key] - f.default) };
     });
-    var base = M.extinction.fuel[M.fuels[0].key] || 0;
-    list.push({ label: "Fuel", f: null, push: -((M.extinction.fuel[state.fuel] || 0) - base) });
+    // The fuel's own push: this fuel against the first one, with every setting at its starting value.
+    var start = {};
+    M.features.forEach(function (f) { start[f.key] = f.default; });
+    list.push({ label: "Fuel", f: null, push: -(linear(M.extinction, state.fuel, start) - linear(M.extinction, M.fuels[0].key, start)) });
     return list.filter(function (d) { return Math.abs(d.push) > 0.15; })
                .sort(function (a, b) { return Math.abs(b.push) - Math.abs(a.push); });
   }
@@ -1172,7 +1181,7 @@ window.FLAME_MODEL = {
     // Real tests right next to these settings outrank the model: flag it when most of them went the other way.
     var nb = rc.near ? rc.near.near : null, seen = nb ? nb.out + nb.done : 0;
     rc.disagree = rc.level === "inside" && seen >= 2 &&
-      ((r.pKeep < 0.35 && nb.done * 2 > seen) || (r.pKeep >= 0.65 && nb.out * 2 > seen));
+      ((r.pKeep < WATCH && nb.done * 2 > seen) || (r.pKeep >= 0.65 && nb.out * 2 > seen));
     if (rc.disagree) rc.level = "edge";
     last = { r: r, rc: rc };
 
@@ -1200,11 +1209,11 @@ window.FLAME_MODEL = {
         : "";
     });
 
-    var keep = Math.round(r.pKeep * 100);
+    var keep = shown(r.pKeep);
     $("pKeep").textContent = keep; $("pOut").textContent = 100 - keep;
     $("jumpValue").textContent = rc.level === "outside" ? "Outside range" : rc.level === "edge" ? "Limited data" : keep + "%";
     $("meterFill").style.width = Math.max(2, keep) + "%";
-    $("meter").className = "meter" + (rc.level !== "inside" ? "" : r.pKeep >= 0.65 ? " high" : r.pKeep >= 0.35 ? " mid" : "");
+    $("meter").className = "meter" + (rc.level !== "inside" ? "" : r.pKeep >= 0.65 ? " high" : r.pKeep >= WATCH ? " mid" : "");
     $("meter").setAttribute("aria-label", "Estimated completion chance among clear outcomes: " + keep + " percent");
     $("kVal").textContent = r.K.toFixed(2);
     var d0 = state.values.d0;
@@ -1216,13 +1225,16 @@ window.FLAME_MODEL = {
     flame.style.setProperty("--beat", Math.max(1.1, 3.2 - r.K * 2.4).toFixed(2) + "s");
     flame.parentNode.classList.toggle("unknown", rc.level === "outside");
     // notifications: only when something changes, never on the first reading
+    var watch = !!M.meta.watch && rc.level === "inside" && r.pKeep >= WATCH;
     if (lastLevel) {
       if (rc.level === "outside" && lastLevel !== "outside") notify("Outside the FLEX model range. The flame outcome is unknown.", "alert");
       else if (rc.level !== "outside" && lastLevel === "outside") notify("Back within the FLEX input ranges.", "info");
       if (rc.level !== "outside" && rc.noClear && !lastNoClear) notify("All nearby FLEX outcomes are inconclusive.", "warn");
       if (rc.disagree && !lastDisagree) notify("Real tests nearby disagree with the model. Trust the tests.", "warn");
+      if (watch && !lastWatch) notify("Model watch level reached: at least " + shown(WATCH) + "% estimated completion among clear outcomes.", "info");
     }
     lastLevel = rc.level; lastNoClear = rc.level !== "outside" && rc.noClear; lastDisagree = !!rc.disagree;
+    lastWatch = watch;
     if (d0) $("droplet").style.setProperty("--drop", (0.04 + d0 * 0.022).toFixed(3));
 
     var conf = $("conf");
@@ -1236,7 +1248,7 @@ window.FLAME_MODEL = {
       $("confIco").textContent = "!";
       if (rc.disagree) {
         $("confTitle").textContent = "Nearby real tests disagree with the model";
-        $("confText").textContent = (r.pKeep < 0.35 ? nb.done + " of " + seen + " real tests close to these settings burned until the fuel was gone."
+        $("confText").textContent = (r.pKeep < WATCH ? nb.done + " of " + seen + " real tests close to these settings burned until the fuel was gone."
           : nb.out + " of " + seen + " real tests close to these settings went out early.") + " Trust the tests over the model.";
       } else if (rc.noClear) {
         $("confTitle").textContent = "No clear outcome in nearby tests";
@@ -1258,8 +1270,9 @@ window.FLAME_MODEL = {
     var line;
     if (rc.level === "outside") line = "These settings exceed the model's scope.";
     else if (rc.noClear) line = "Nearby tests cannot confirm the estimated outcome.";
+    else if (rc.level === "edge") line = "Check the nearby FLEX tests before interpreting the estimate.";
     else if (r.pKeep >= 0.65) line = "The model expects this flame to burn until the fuel is gone.";
-    else if (r.pKeep >= 0.35) line = "Could go either way: burn until the fuel is gone, or go out first.";
+    else if (r.pKeep >= WATCH) line = "Could go either way: burn until the fuel is gone, or go out first.";
     else line = "The model expects this flame to go out before the fuel is gone.";
     $("oneLine").textContent = line;
     drawMap(rc);
@@ -1290,12 +1303,14 @@ window.FLAME_MODEL = {
     ds.slice(0, rc.level === "outside" ? 1 : 3).forEach(function (d, n) {   // one line is enough when the reading is not usable
       var what = d.f ? d.label + " at " + fmt(d.f, state.values[d.f.key]) + " " + d.f.unit : fuelLabel() + " as the fuel";
       var dir = d.push > 0 ? "pushes toward burning until the fuel is gone" : "pushes toward going out early";
-      li((n === 0 ? "Biggest factor: " : "") + what + " " + dir + ".");
+      li((n === 0 ? "Biggest factor: " : "") + what + " " + dir + "."
+        + (d.unsure ? " The tests do not settle which way this setting pushes for " + fuelLabel().toLowerCase() + ", so do not lean on this line." : ""));
     });
     li("Burning rate " + r.K.toFixed(2) + " mm²/s means the droplet's diameter squared shrinks by that much every second.");
     ul = $("testList");
     if (ap && ap.key === "moon") li("Cabin air is the Moon Base case from the challenge brief: oxygen 30 % or more at 10.2 psi (0.69 atm) or less.");
-    if (ap && ap.key === "mars") li("Cabin air for a Mars base is an assumption: the challenge brief gives numbers only for the Moon Base and pressurized rovers, so the same air is used here. NASA has no fire tests at Mars gravity yet.");    if (rc.near) {
+    if (ap && ap.key === "mars") li("The Mars base scenario assumes the Moon Base cabin air. The FLEX records shown here do not establish a Mars-gravity outcome.");
+    if (rc.near) {
       var nb = rc.near.near;
       var ranked = el("li", "", "Closest real FLEX tests with this fuel, ranked (settings, outcome, measured burning rate):");
       var ol = el("ol");
@@ -1318,9 +1333,10 @@ window.FLAME_MODEL = {
       fine = "Trained on " + (M.meta.source || "NASA data")
         + (M.meta.rows ? " (" + M.meta.rows + " tests for the flame outcome"
           + (M.meta.rows_burn_rate ? ", " + M.meta.rows_burn_rate + " for burning rate" : "") + "). " : ". ");
-      if (M.meta.auc != null) fine += "Checked on tests held out of training: AUC " + M.meta.auc.toFixed(2)
+      if (M.meta.auc != null) fine += "In cross-validation with held-out FLEX rows: AUC " + M.meta.auc.toFixed(2)
         + " for telling the two outcomes apart (0.5 is a coin flip, 1 is perfect)"
         + (M.meta.burn_rate_mae != null ? ", and burning rate off by " + M.meta.burn_rate_mae + " mm²/s on average" : "") + ". ";
+      fine += "The main reading displays whole percentages from 1% to 99%. These display limits do not quantify model uncertainty. ";
       fine += "\"Goes out\" means the visible flame: FLEX found that fuel can keep reacting after it, in a cool flame. ";
     }
     $("sheetFine").textContent = fine + "This is a model reading for study and planning, not a crew procedure.";
@@ -1329,7 +1345,7 @@ window.FLAME_MODEL = {
   function readingSummary(r, rc) {
     var nb = rc.near && rc.near.near;
     var prediction = rc.level === "outside" ? "Outside the tested conditions. Do not rely on this prediction."
-      : "Among tests with a clear outcome, the model estimates " + Math.round(r.pKeep * 100) + "% completion and " + Math.round(r.pOut * 100) + "% visible extinction. Disruptions are excluded. Burning rate: " + r.K.toFixed(2) + " mm²/s.";
+      : "Among tests with a clear outcome, the model estimates " + shown(r.pKeep) + "% completion and " + (100 - shown(r.pKeep)) + "% visible extinction. Disruptions are excluded. Burning rate: " + r.K.toFixed(2) + " mm²/s.";
     var evidence = !rc.near ? "No real-test comparison is available."
       : rc.near.far ? "Closest: FLEX test " + rc.near.test[0] + ". " + testEnd(rc.near.test) + " Even this test is far from the current settings."
       : nb.n + " nearby test(s): " + nb.done + " burned to completion, " + nb.out + " went out early, " + nb.other + " had no clear outcome.";
@@ -1390,11 +1406,13 @@ window.FLAME_MODEL = {
       row(f.label, fmt(f, av) + " " + f.unit, fmt(f, bv) + " " + f.unit, Math.abs(av - bv) > 1e-9);
     });
     var usable = a.level !== "outside" && b.level !== "outside";
-    row("Burns to completion", Math.round(a.r.pKeep * 100) + "%", Math.round(b.r.pKeep * 100) + "%", Math.abs(a.r.pKeep - b.r.pKeep) > 1e-9,
-      usable ? signed((b.r.pKeep - a.r.pKeep) * 100, 1, "pp") : "Delta withheld: unsupported conditions");
-    row("Goes out first", Math.round(a.r.pOut * 100) + "%", Math.round(b.r.pOut * 100) + "%", Math.abs(a.r.pOut - b.r.pOut) > 1e-9);
-    row("Burning rate", a.r.K.toFixed(2) + " mm²/s", b.r.K.toFixed(2) + " mm²/s", Math.abs(a.r.K - b.r.K) > 1e-9,
-      usable ? signed(b.r.K - a.r.K, 2, "mm²/s") : "Delta withheld: unsupported conditions");
+    var aKeep = shown(a.r.pKeep), bKeep = shown(b.r.pKeep);
+    row("Burns to completion", aKeep + "%", bKeep + "%", aKeep !== bKeep,
+      usable ? signed(bKeep - aKeep, 0, "pp") : "Delta withheld: unsupported conditions");
+    row("Goes out first", (100 - aKeep) + "%", (100 - bKeep) + "%", aKeep !== bKeep);
+    var aRate = a.r.K.toFixed(2), bRate = b.r.K.toFixed(2);
+    row("Burning rate", aRate + " mm²/s", bRate + " mm²/s", aRate !== bRate,
+      usable ? signed(Number(bRate) - Number(aRate), 2, "mm²/s") : "Delta withheld: unsupported conditions");
     row("Data support", a.coverage, b.coverage, a.coverage !== b.coverage);
     var warnings = $("compareWarnings"); warnings.innerHTML = "";
     [a, b].forEach(function (snap, i) {
@@ -1526,7 +1544,8 @@ window.FLAME_MODEL = {
     if (lvl >= 3 && M.extinction && M.extinction.coef && M.extinction.coef.o2) {
       // Where the model puts the chance of burning all the fuel at 25, 50 and 75 %, with the other settings as they are
       // now. The model is a straight-line formula, so each of these is a straight line across the map.
-      var bo = M.extinction.coef.o2, bd = M.extinction.coef.d0 || 0, z0 = linear(M.extinction, state.fuel, state.values);
+      var own = (M.extinction.fuel_coef && M.extinction.fuel_coef[state.fuel]) || {};
+      var bo = M.extinction.coef.o2 + (own.o2 || 0), bd = (M.extinction.coef.d0 || 0) + (own.d0 || 0), z0 = linear(M.extinction, state.fuel, state.values);
       var Xr = function (v) { return L + (v - x0) / (x1 - x0) * (W - L - Rt); };
       var clip = svgEl("clipPath", { id: "mapClip" });
       clip.appendChild(svgEl("rect", { x: L, y: T, width: W - L - Rt, height: H - T - B }));
@@ -2061,7 +2080,7 @@ window.FLAME_MODEL = {
       $("drillIco").textContent = right ? "✓" : "✕";
       $("drillTitle").textContent = right ? "Correct." : "Not this time.";
       $("drillText").textContent = "This was FLEX test " + t[0] + (t[9] != null ? ", measured burning rate " + t[9].toFixed(2) + " mm²/s" : "")
-        + ". The model gave it " + (p * 100).toFixed(1) + "% completion among clear outcomes, so it answered \"" + (p >= 0.5 ? "burned all its fuel" : "went out first")
+        + ". The model gave it " + shown(p) + "% completion among clear outcomes, so it answered \"" + (p >= 0.5 ? "burned all its fuel" : "went out first")
         + "\": " + (drill.model[drill.i] ? "right" : "wrong") + ".";
       $("drillNextText").textContent = lastRound ? "Play again" : "Next test";
     }
@@ -2081,7 +2100,7 @@ window.FLAME_MODEL = {
   $("drillNext").addEventListener("click", drillNext);
   // The current drill test as plain text, for Ask the AI (only offered after the answer is shown).
   function drillText() {
-    var t = drill.rounds[drill.i], p = (predictFor(t[2], drillValues(t)).pKeep * 100).toFixed(1);
+    var t = drill.rounds[drill.i], p = shown(predictFor(t[2], drillValues(t)).pKeep);
     return "Fire drill page: the player is looking at one real test from the NASA FLEX table (PSI-69).\n"
       + "FLEX test " + t[0] + " (" + t[1] + "): " + t[2] + " at " + testSettings(t) + ".\n"
       + "NASA's recorded outcome: " + (t[8] === "Completion" ? "it burned until the fuel was gone" : "the flame went out before the fuel was gone")
@@ -2315,7 +2334,7 @@ window.FLAME_MODEL = {
     SIM.raf = requestAnimationFrame(frame);
   }
   function simTally() {
-    var t = SIM.tally, n = t.out + t.burn, pct = SIM.run && !SIM.run.blocked ? Math.round(SIM.run.pKeep * 100) : null;
+    var t = SIM.tally, n = t.out + t.burn, pct = SIM.run && !SIM.run.blocked ? shown(SIM.run.pKeep) : null;
     $("simTally").textContent = pct == null ? "" : "The model estimates " + pct + "% completion among clear outcomes. "
       + (n ? "So far at these settings: " + t.burn + " of " + n + " run" + (n > 1 ? "s" : "") + " burned all their fuel, " + t.out + " went out." : "Choose Ignite again to repeat the run at these settings.");
   }
@@ -3328,7 +3347,7 @@ window.FLAME_MODEL = {
   if (M.meta.mock) $("mockChip").hidden = false;
   else { $("srcChip").hidden = false; $("srcChip").textContent = "Model: " + (M.meta.source || "NASA data") + (M.meta.rows ? ", " + M.meta.rows + " tests" : ""); }
 
-  window.__flame = { readingSummary: readingSummary, saveBaseline: saveBaseline, clearBaseline: clearBaseline, toggleComparison: toggleComparison, render: render, state: state, predict: predict, rangeCheck: rangeCheck, nudge: nudge, select: select, toggleSheet: toggleSheet, reset: reset,
+  window.__flame = { shown: shown, drivers: drivers, readingSummary: readingSummary, saveBaseline: saveBaseline, clearBaseline: clearBaseline, toggleComparison: toggleComparison, render: render, state: state, predict: predict, rangeCheck: rangeCheck, nudge: nudge, select: select, toggleSheet: toggleSheet, reset: reset,
                      cyclePreset: cyclePreset, activePreset: activePreset, view: view, showPage: showPage,
                      AI: AI, openAI: openAI, askAI: askAI, readingText: readingText,
                      drill: function () { return drill; }, drillStart: drillStart, drillGuess: drillGuess, drillNext: drillNext, buzz: buzz,
