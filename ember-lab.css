@@ -64,10 +64,11 @@ p, summary { line-height: 1.48; }
 .film-layout, .table-layout { display: grid; align-items: start; gap: clamp(14px, 1.7vw, 26px); }
 .film-layout { grid-template-columns: minmax(0, 1.65fr) minmax(290px, 1fr); }
 .film-view { min-width: 0; display: grid; gap: 12px; }
-.film-picker { display: flex; flex-wrap: wrap; gap: 6px; }
+.film-picker { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.film-picker button { min-width: 0; min-height: 44px; padding: .45rem .5rem; }
 .film-picker [aria-pressed=true] { background: #304844; border-color: var(--teal); color: var(--ink); }
-#saffire-answer summary { cursor: pointer; color: var(--teal); }
-#saffire-answer[open] p { margin-top: .6rem; }
+#observation-answer summary { cursor: pointer; color: var(--teal); }
+#observation-answer[open] p { margin-top: .6rem; }
 .film-player { display: block; width: 100%; aspect-ratio: 16 / 9; background: #050909; border: 1px solid var(--line); border-radius: 12px; }
 .film-finding { display: grid; justify-items: start; align-content: start; gap: 14px; }
 .film-actions { display: flex; gap: .5rem; flex-wrap: wrap; }
@@ -141,4 +142,7 @@ footer b { margin: 0 .2rem; }
   .lab-back { font-size: .8rem; }
   .sensor-grid { gap: 4px; }
   .reading { font-size: .88rem; }
+}
+@media (max-width: 520px) {
+  .film-picker { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

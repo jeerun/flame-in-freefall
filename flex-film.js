@@ -4,28 +4,77 @@
   const host = document.getElementById("lab-film");
   if (!host) return;
   const saved = window.FLEX_FILM_ANALYSIS;
+  const saffireIV = {
+    label: "Watch Saffire-IV fabric footage online ↗",
+    url: "https://www.nasa.gov/humans-in-space/the-flame-of-discovery-grows-as-saffire-sets-new-fires-in-space/"
+  };
   const clips = {
     flex: {
-      title: "FLEX on the space station", file: "flex-iss.webm", poster: "flex-before.jpg",
+      button: "FLEX · Droplet", title: "FLEX on the space station", file: "flex-iss.webm", poster: "flex-before.jpg",
       label: "NASA FLEX fuel-droplet experiment",
       note: "Original footage from Science@NASA and NASA’s Goddard Space Flight Center.",
       source: "https://svs.gsfc.nasa.gov/11318/"
     },
     saffire: {
-      title: "Saffire-I aboard Cygnus", file: "saffire-1.webm", poster: "saffire-1-poster.jpg",
+      button: "Saffire-I · Fabric", title: "Saffire-I aboard Cygnus", file: "saffire-1.webm", poster: "saffire-1-poster.jpg",
       label: "NASA Saffire-I image sequence of a burning fabric sample with flashing green illumination",
       note: "NASA’s camera sequence from June 14, 2016. The green light flashes during playback. The two frame buttons show stills.",
-      source: "https://www.nasa.gov/centers-and-facilities/glenn/nasa-ignites-fire-experiment-aboard-space-cargo-ship/"
+      source: "https://www.nasa.gov/centers-and-facilities/glenn/nasa-ignites-fire-experiment-aboard-space-cargo-ship/",
+      related: saffireIV,
+      question: "Why does the fabric turn green on camera?",
+      prompt: "Compare the bright flame near the right edge with the later green frame. Both show the same cotton–fiberglass sample.",
+      frames: [[2, "Flame"], [22, "Green light"]],
+      explanation: "Green LEDs illuminate the smoke so the cameras can record its movement. The player clock measures time in NASA’s image compilation."
+    },
+    flex2: {
+      button: "FLEX-2 · Soot", title: "Soot around a burning droplet", file: "flex-2.webm", poster: "flex-2-poster.jpg",
+      label: "NASA FLEX-2 footage with annotated soot near the flame",
+      note: "Silent excerpt from Spherical Flames, 2:08–2:40. The arrows are from Science@NASA and NASA’s Goddard Space Flight Center.",
+      source: "https://svs.gsfc.nasa.gov/11640/",
+      related: { label: "Watch FLEX-2 flame oscillations online ↗", url: "https://www.youtube.com/watch?v=qQQ1OHW1_F4" },
+      question: "Where does the glowing soot go?",
+      prompt: "Follow the specks marked by NASA’s arrows, then pause at the flame rim.",
+      frames: [[2, "Soot"], [12, "Soot exiting"]],
+      explanation: "The first arrows identify glowing soot near the droplet. In the later frame, NASA marks soot leaving the flame."
+    },
+    sofie: {
+      button: "SoFIE-GEL · Extinction", title: "A flame appears to spin", file: "sofie-gel.webm", poster: "sofie-gel-poster.jpg",
+      label: "NASA SoFIE-GEL footage of a moving blue flame around solid fuel",
+      note: "Silent experiment footage from NASA’s Johnson Space Center archive.",
+      source: "https://images.nasa.gov/details/SoFIE-GEL",
+      question: "How much of the fuel does the blue flame surround?",
+      prompt: "Compare the early blue rim with the remaining bright patches near the end of the clip.",
+      frames: [[3, "Blue rim"], [36, "Separated patches"]],
+      explanation: "The visible flame appears to chase itself around the fuel. The research team suggests that limited oxygen may let only part of the hot surface support a flame at a given time."
+    },
+    saffire5: {
+      button: "Saffire-V · Ribbed plastic", title: "Ribbed plastic aboard Cygnus", file: "saffire-5.webm", poster: "saffire-5-poster.jpg",
+      label: "NASA Saffire-V footage of flame spread over ribbed acrylic",
+      note: "Silent NASA Glenn Research Center footage of a ribbed acrylic (PMMA) sample.",
+      source: "https://images.nasa.gov/details/GRC-2021-CN-00008",
+      related: saffireIV,
+      question: "Where does the flame advance first?",
+      prompt: "Compare the thinner ribs with the thicker material on the right.",
+      frames: [[4, "Early flame"], [15, "Later flame"]],
+      explanation: "NASA reports that the flame typically grows and spreads faster on the thinner ribs than on the thicker material to the right."
+    },
+    saffire6: {
+      button: "Saffire-VI · Acrylic", title: "Two views of burning acrylic", file: "saffire-6.webm", poster: "saffire-6-poster.jpg",
+      label: "NASA Saffire-VI front and edge views of a burning acrylic sample and temperature sensors",
+      note: "NASA Glenn Research Center. This sequence plays at 20× experiment speed. Frame buttons use the video clock.",
+      source: "https://www.nasa.gov/centers-and-facilities/glenn/flame-burns-out-on-nasas-long-running-spacecraft-fire-experiment/",
+      related: saffireIV,
+      question: "What is the glowing wire in the camera view?",
+      prompt: "Pause on the labelled wire, then look for the flame front when the airflow changes.",
+      frames: [[30, "Glowing wire"], [47, "Airflow reduced"]],
+      explanation: "NASA labels the glowing wires as thermocouples. These sensors measure temperature. Their brightness alone does not give a temperature reading."
     }
   };
 
   host.innerHTML = `
     <div class="film-layout">
       <div class="film-view">
-        <div class="film-picker" role="group" aria-label="Choose an experiment">
-          <button type="button" class="lab-btn" data-clip="flex" aria-pressed="true">FLEX · Droplet</button>
-          <button type="button" class="lab-btn" data-clip="saffire" aria-pressed="false">Saffire-I · Fabric</button>
-        </div>
+        <div class="film-picker" role="group" aria-label="Choose an experiment"></div>
         <h2 id="film-title"></h2>
         <video class="film-player" controls playsinline preload="metadata"
                aria-describedby="film-note">
@@ -49,17 +98,13 @@
           <p class="lab-subtle">Select a time to pause the original clip there. In FLEX, combustion can continue after a flame becomes too faint to see.</p>
         </div>
       </section>
-      <section class="film-finding lab-card" id="saffire-reading" aria-labelledby="saffire-question" hidden>
+      <section class="film-finding lab-card" id="observation" aria-labelledby="observation-question" hidden>
         <p class="lab-kicker">Read the footage</p>
-        <h3 id="saffire-question">Why does the fabric turn green on camera?</h3>
-        <p>Compare the bright flame near the right edge with the later green frame. Both show the same cotton–fiberglass sample.</p>
-        <div class="film-actions">
-          <button type="button" class="lab-btn" data-seconds="2">Flame · 0:02</button>
-          <button type="button" class="lab-btn" data-seconds="22">Green light · 0:22</button>
-        </div>
-        <details id="saffire-answer"><summary>Reveal NASA’s explanation</summary>
-          <p>Green LEDs illuminate the smoke so the cameras can record its movement. The player clock measures time in NASA’s image compilation.</p>
-        </details>
+        <h3 id="observation-question"></h3>
+        <p id="observation-prompt"></p>
+        <div class="film-actions"></div>
+        <details id="observation-answer"><summary>Reveal NASA’s explanation</summary><p></p></details>
+        <a id="film-related" class="lab-source" target="_blank" rel="noopener noreferrer" hidden></a>
       </section>
     </div>`;
 
@@ -70,7 +115,8 @@
   const live = host.querySelector("#film-live");
   const showSaved = host.querySelector("#film-saved");
   const flexPanel = showSaved.closest("section");
-  const saffirePanel = host.querySelector("#saffire-reading");
+  const observation = host.querySelector("#observation");
+  const answer = observation.querySelector("details");
   const playerError = host.querySelector("#film-error");
   let clipKey;
   let pendingTime = null;
@@ -90,7 +136,7 @@
     frames.replaceChildren();
     results.hidden = true;
     status.textContent = showSaved.disabled ? "The saved frame selection could not be loaded." : "";
-    host.querySelector("#saffire-answer").open = false;
+    answer.open = false;
   }
 
   function chooseClip(key) {
@@ -102,7 +148,29 @@
       button.setAttribute("aria-pressed", String(button.dataset.clip === key));
     }
     flexPanel.hidden = key !== "flex";
-    saffirePanel.hidden = key !== "saffire";
+    observation.hidden = key === "flex";
+    if (!observation.hidden) {
+      host.querySelector("#observation-question").textContent = clip.question;
+      host.querySelector("#observation-prompt").textContent = clip.prompt;
+      answer.querySelector("p").textContent = clip.explanation;
+      const related = host.querySelector("#film-related");
+      related.hidden = !clip.related;
+      if (clip.related) {
+        related.href = clip.related.url;
+        related.textContent = clip.related.label;
+      }
+      const cues = observation.querySelector(".film-actions");
+      cues.replaceChildren();
+      for (const [seconds, label] of clip.frames) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "lab-btn";
+        btn.dataset.seconds = seconds;
+        btn.textContent = `${label} · ${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+        btn.addEventListener("click", () => seek(seconds));
+        cues.append(btn);
+      }
+    }
     host.querySelector("#film-title").textContent = clip.title;
     host.querySelector("#film-note").textContent = clip.note;
     host.querySelector("#film-source").href = clip.source;
@@ -113,11 +181,14 @@
     player.querySelector("a").href = player.src;
     player.load();
   }
-  for (const button of host.querySelectorAll("[data-clip]")) {
-    button.addEventListener("click", () => chooseClip(button.dataset.clip));
-  }
-  for (const button of saffirePanel.querySelectorAll("[data-seconds]")) {
-    button.addEventListener("click", () => seek(Number(button.dataset.seconds)));
+  for (const [key, clip] of Object.entries(clips)) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "lab-btn";
+    button.dataset.clip = key;
+    button.textContent = clip.button;
+    button.addEventListener("click", () => chooseClip(key));
+    host.querySelector(".film-picker").append(button);
   }
   host.addEventListener("leave-film", resetActivity);
 
