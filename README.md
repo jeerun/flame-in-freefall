@@ -113,8 +113,8 @@ Working on real data (Nov 15, 2026).
   use remain unverified. The preview demo was captured in desktop Edge.
   [Device test record](CLAUDE.md)
 - The official submission form is still pending.
-- Draft PR #10 contains the orbit-first home, investigation search and Moon
-  evidence check. Open the PR checkout to try this version. [Draft pull request](https://github.com/jeerun/flame-in-freefall/pull/10)
+- Open `console/index.html` from a checkout to try the orbit-first home,
+  investigation search and Moon evidence check. [Pull request #10](https://github.com/jeerun/flame-in-freefall/pull/10)
 
 ## Run it
 
