@@ -36,7 +36,8 @@ OUTSIDE = ("Fuel: Heptane. Oxygen 40.0 %, Pressure 0.69 atm, Carbon dioxide 0 %,
 # (question, page, selected investigation, need, reading)
 QUESTIONS = [
     ("Which investigations matter most for a Moon Base cabin with 30 percent oxygen at 10.2 psi?", "research", "", "Cabin air", ""),
-    ("How many tests were run in Moon Base air, and in which investigations?", "research", "", "Cabin air", ""),
+    # The page's own second question for Cabin air, word for word (console/index.html, aiQuestions).
+    ("How many table rows meet both Moon Base oxygen and pressure thresholds, and in which investigations?", "research", "", "Cabin air", ""),
     ("Which investigations tested the highest oxygen levels, and how high?", "research", "", "Cabin air", ""),
     ("What did FLEX measure, and what did it change from test to test?", "research", "PSI-69", "Suppression", ""),
     ("How did carbon dioxide and helium matter in FLEX?", "research", "PSI-69", "Suppression", ""),
@@ -99,7 +100,10 @@ def main():
            f"Made by `server/ember_check.py` on {datetime.date.today().isoformat()}. Ember is the local AI model in the dashboard. "
            "Every answer below was written by that model, not by a person.", "",
            "How to use this page: read each answer, open the NASA PSI pages listed under it, and fill in the **Human verdict** line. "
-           "The two automatic checks only catch invented numbers and mixed-up ids. An answer that passes them can still be wrong, vague or beside the point.", ""]
+           "The two automatic checks only catch invented numbers and mixed-up ids. An answer that passes them can still be wrong, vague or beside the point.", "",
+           "One thing to watch for in answers 1 and 2: the value 20 counts published CFI-G table rows that meet the challenge brief's oxygen and "
+           "pressure thresholds. The records do not establish that those experiments were designed for a Moon Base. "
+           "How the rows were counted is in `docs/sources.md`.", ""]
     flagged = 0
     for i, (question, page, selected, need, reading) in enumerate(QUESTIONS, 1):
         if page == "console":

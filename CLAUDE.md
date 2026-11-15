@@ -495,6 +495,14 @@ Not done:
       `tests/browser_dialogs.py` in Edge (keyboard and a simulated gamepad), the CSV
       digest, the parity report, the 25 NASA source hashes, and frames of the demo
       recording (57 % at the starting values, 25.6 % and 25.7 % for the pair).
+    - After the merge the PC's dashboard server was restarted (the old process could
+      not serve the new style sheets and scripts) and tried through it in Edge: Ember
+      answered on the research page and on the reading, and "Send to base" passed the
+      digest check (252 rows back from `/tests.csv`). `docs/ember-check.md` was made
+      again with the server's new instructions: 18 answers, none flagged, none read
+      by a person yet. Its second question is now the page's own ("table rows meeting
+      both thresholds"), and Ember is told to call an outside-range reading an
+      unknown flame outcome, as the page does.
     - NOT checked: the redesigned page on the real Legion Go. `docs/checklist.md` has
       the open recheck list and `docs/handheld-agent-brief.md` says what a second run
       needs.
