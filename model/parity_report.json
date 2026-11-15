@@ -4,15 +4,15 @@
   "source_rows": 252,
   "classification_rows": 199,
   "regression_rows": 252,
-  "negative_raw_K_cases": 1,
+  "negative_raw_K_cases": 3,
   "max_absolute_errors": {
-    "artifact_vs_js_pOut": 3.3306690738754696e-16,
-    "artifact_vs_js_rawK": 4.440892098500626e-16,
+    "artifact_vs_js_pOut": 1.1102230246251565e-15,
+    "artifact_vs_js_rawK": 3.3306690738754696e-16,
     "completion_complement": 0.0,
     "zero_clamp": 0.0,
-    "refit_vs_js_pOut": 5.299414820414405e-06,
-    "refit_vs_js_rawK": 3.917437887346331e-05,
-    "refit_vs_js_clampedK": 3.917437887346331e-05
+    "refit_vs_js_pOut": 7.918941365980814e-06,
+    "refit_vs_js_rawK": 4.193639827798634e-05,
+    "refit_vs_js_clampedK": 4.193639827798634e-05
   },
   "absolute_tolerances": {
     "artifact_vs_js_pOut": 1e-12,
@@ -28,22 +28,23 @@
     "burn_rate": true
   },
   "sha256": {
-    "model/train.py": "b57b82badabd6e3f57a33fe4dce1d677da87f1398dd06ff1faa4c127edb86467",
-    "console/model.js": "af7cb18f2451e2f8a9f52d988d66e4596e580ce8e64b6ca2aff326e47cb0c93d",
-    "console/index.html": "f487806eb8195440d29d7694a8fac4e88e2ad9a82ba7c9bea7ebd06b6d1f3348",
+    "model/train.py": "d19bfe04cbb9e56cd47d49dc27f03228df099b0f0c6be8ccbbe24a0658cf9e7c",
+    "model/train_per_fuel.py": "edea71532b7f4d6a11afae4e769a9af5f1f0b3047407dbf4a0a099427edd3784",
+    "console/model.js": "148248e0e18c84eb74747935bd59c59868acf7054a107242235aaa3591e15372",
+    "console/index.html": "974b92731481679819c878bc6b6b8de2089ed4aefc56edabae006fc414e2beb7",
     "data/clean/flex_clean.csv": "4f8c5b93feb3be16391fe5d8bcccfb827de08e2d3a50b62f5107e9e512c5fc32"
   },
   "versions": {
-    "python": "3.12.10",
+    "python": "3.14.5",
     "sklearn": "1.9.1",
     "numpy": "2.5.4",
     "pandas": "3.1.1",
-    "node": "v24.16.0"
+    "node": "v26.13.1"
   },
   "limitations": [
     "Numerical inference parity only; not out-of-sample performance or safety validation.",
     "Executes actual pure Console functions in Node VM; does not test browser DOM, sliders, formatting, or live hosted deployment.",
-    "Refits current training configuration, not a serialized historical Python estimator.",
+    "Refits the current training configuration (model/train_per_fuel.py), not a serialized historical Python estimator.",
     "Random/corner cases include physically invalid and OOD combinations; used only as arithmetic stress probes.",
     "Training pipeline changes require review of the explicit fit/scope setup in this checker."
   ]

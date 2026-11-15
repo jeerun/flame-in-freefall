@@ -1,0 +1,6 @@
+{
+  "name": "flame-console-e2e",
+  "private": true,
+  "scripts": {"test": "node console_e2e.cjs"},
+  "devDependencies": {"playwright": "1.62.1"}
+}

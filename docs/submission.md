@@ -139,7 +139,7 @@ inconclusive.
 **Ignite.** One button plays a single run of the model full screen. A droplet drawn
 at true scale shrinks at the predicted burning rate, and whether this run burns all
 its fuel is drawn at random with the model's odds, so pressing it a few times shows
-what "35%" means. When a run goes out, the size it stops at is borrowed from a real
+what "57%" means. When a run goes out, the size it stops at is borrowed from a real
 nearby test. The picture is drawn to look like FLEX footage and is labelled an
 illustration. Outside the tested range it refuses to run.
 
@@ -191,7 +191,11 @@ except Ember works, fully offline.
 2. Models. Two deliberately small models, so every number can be explained: a
    logistic regression for "the flame went out before the fuel was gone" against "it
    burned until the fuel was gone", and a linear regression for the burning rate.
-   Inputs are only things known before ignition.
+   Inputs are only things known before ignition. Each fuel has its own slope for
+   every setting, because the tests show heptane and methanol respond differently:
+   carbon dioxide clearly pushes heptane flames toward going out and shows no such
+   effect for methanol. The strength of the logistic model's penalty is picked by
+   cross-validation inside the training rows.
 3. Export. Scripts write the model, the list of real tests, the research notes and
    the oxygen and pressure of each test in nine tables into three small JavaScript
    files.
@@ -215,11 +219,20 @@ except Ember works, fully offline.
 - If most nearby real tests ended the other way from the model, the page says so and
   tells the user to trust the tests.
 - Accuracy is measured on tests held out of training and shown on screen.
-- A teammate checked the model independently, twice: an audit that reports each
-  outcome separately instead of one accuracy figure (`docs/scientific-validation.md`),
-  and a test that runs the page's own prediction code against the Python model on 820
-  inputs and finds the same numbers to within rounding (`docs/model-parity.md`).
-  Both were re-run on the team's PC.
+- The model was chosen in the open. A teammate's audit showed that our first model,
+  with one set of slopes for both fuels, found fewer than a quarter of the tests that
+  burned to completion (`docs/scientific-validation.md`). Another teammate trained a
+  model with separate slopes for each fuel and compared eight candidates on the same
+  held-out tests (`docs/per-fuel-model.md`). We re-ran both, checked the gain with a
+  separate script and stricter hold-outs (`model/verify_per_fuel.py`), and only then
+  switched the console. A third check runs the page's own prediction code against
+  the Python model on 820 inputs and finds the same numbers to within rounding
+  (`docs/model-parity.md`).
+- No chance is shown below 1% or above 99%: 199 tests cannot support more certainty
+  than that.
+- Where resampling the tests does not settle which way a setting pushes for a fuel
+  (pressure for both fuels; droplet size and carbon dioxide for methanol), the
+  explanation says so on the line that leans on it.
 - AI-written text is labelled as AI-written, next to facts copied from PSI.
 - The Oxygen map counts rows of NASA's tables as published. A row whose oxygen cell
   is not a number is left out and reported as left out. Inverse gas flames, where the
@@ -235,18 +248,28 @@ except Ember works, fully offline.
 **Results, on held-out tests** (5-fold cross-validation repeated 20 times):
 
 - Flame outcome, 199 tests (172 went out, 27 burned until the fuel was gone):
-  AUC 0.81. Accuracy 0.887, against 0.864 for always answering "goes out". The two
-  outcomes are lopsided, so the AUC is the fairer number.
-- Burning rate, 252 tests: mean absolute error 0.048 mm²/s, R² 0.71. The measured
+  AUC 0.90 (0.91 within heptane, 0.85 within methanol). Accuracy 0.915, against 0.864
+  for always answering "goes out". The two outcomes are lopsided, so the AUC is the
+  fairer number.
+- Read as a yes or no at 50%, the model finds 52% of the tests that burned to
+  completion and wrongly calls about 2% of those that went out. At a "watch" level of
+  30%, which the page marks with a banner, it flags 64% of the completions and about
+  8% of the tests that went out.
+- Burning rate, 252 tests: mean absolute error 0.045 mm²/s, R² 0.73. The measured
   values spread about 0.14 mm²/s around their mean.
-- Keeping repeat tests at the same conditions together in one fold gives almost the
-  same numbers (AUC 0.80, R² 0.70).
-- When the page says under 10%, 4% of those tests burned to completion; at
-  35 to 65%, 67% did. The model rarely goes above 65%.
-- An independent audit by a teammate, with a separately fitted model on the same 199
-  tests (five-fold cross-validation over five seeds): mean accuracy 88.8%, balanced
-  accuracy 61.4%. Read as a yes or no at 50%, it finds on average only 23.7% of the
-  tests that burned to completion (heptane 19%, methanol 35%).
+- Keeping all tests with the same fuel and gas mix together in one fold gives almost
+  the same numbers (AUC 0.90, R² 0.72).
+- Do the percentages mean what they say? When the page says under 10%, 3% of those
+  tests burned to completion; at 10 to 30%, about one in five; at 30 to 65%, 33%; at
+  65% and above, 93%.
+- Against the model the console used before (one set of slopes for both fuels): AUC
+  0.81 to 0.90, within methanol 0.60 to 0.85, completions found at 50% from 22% to
+  52%, burning-rate R² 0.71 to 0.73. Of eight candidates tried, including gradient
+  boosting and a random forest, the per-fuel model has the best Brier score and log
+  loss, and is level with the best on AUC.
+- The gain holds when checked another way: with models built from separate code and
+  held out one gas mix or one test day at a time, AUC goes from 0.80 to 0.90, and the
+  per-fuel model is ahead in more than 99% of 4000 paired resamples of the tests.
 
 **Limits we know about.**
 
@@ -273,12 +296,18 @@ except Ember works, fully offline.
 - The star map shows oxygen and droplet size only. Two stars that sit close together
   can still differ in pressure, carbon dioxide or helium, which is why the "closest
   three" lines do not always point at the nearest-looking stars.
-- The outcome model separates heptane tests well (AUC about 0.8 within heptane) and
-  methanol tests poorly (about 0.6): only 8 of 124 methanol tests burned to completion.
-- Read as a yes or no at 50%, the model misses most of the tests that burned to
-  completion (about three in four in the independent audit). A low percentage means
-  "less likely", not "it will go out".
-- Pressure sits at only two levels, about 0.7 and 1.0 atm, so its effect is weakly known.
+- Only 8 of 124 methanol tests burned to completion. The tests do not settle which
+  way droplet size and carbon dioxide push for methanol: refits on resampled tests
+  disagree on the sign. The page says so where it matters.
+- Read as a yes or no at 50%, the model still misses about half of the tests that
+  burned to completion. A low percentage means "less likely", not "it will go out".
+- Pressure sits at only two levels, about 0.7 and 1.0 atm. Its effect is not settled
+  for either fuel.
+- The model was chosen and scored on the same 199 and 252 tests. There is no separate
+  test set, and picking the best of eight candidates flatters the winner a little.
+- For heptane in Moon Base air the model says 99.9% and the page shows 99%, but the
+  three nearest real tests ended in a disruption, with no clear outcome. The page
+  says that too.
 - "Goes out" means the visible flame. FLEX found that fuel can keep reacting afterwards
   in a cool flame, which the page does not model.
 - The PSI-69 page says the investigation used both space-based data and ground-based
@@ -374,6 +403,10 @@ While building it we used Claude (Anthropic), an AI assistant, for:
 - writing the dashboard (`console/index.html`) and the local server (`server/serve.py`);
 - writing the data-cleaning and training scripts, then reviewing them and re-running
   them to confirm the numbers;
+- (Claude, used by a team member) the per-fuel model the console now uses: the
+  training script, the comparison of eight candidates, the page patch, the tests and
+  the write-up, re-run and independently checked on the team's PC before the console
+  was switched;
 - (OpenAI ChatGPT/Codex, used by a team member) writing the summary-first
   explanation panel and the baseline comparison, which were then reviewed, fitted to
   the screen and tested with Claude;
@@ -396,7 +429,7 @@ possibly AI-assisted. Their results do not rest on that: the audit was re-run on
 team's PC and reproduced exactly, and its five tests pass.
 
 ## Model accuracy (for the description)
-Held-out accuracy for "does the flame go out": AUC 0.81; accuracy 0.887 against 0.864 for always answering "goes out" (199 tests, 5-fold cross-validation repeated 20 times).
-Held-out error for burning rate: mean absolute error 0.048 mm²/s, R² 0.71 (252 tests).
+Held-out accuracy for "does the flame go out": AUC 0.90; accuracy 0.915 against 0.864 for always answering "goes out"; 52% of the completions found at a 50% cut-off (199 tests, 5-fold cross-validation repeated 20 times).
+Held-out error for burning rate: mean absolute error 0.045 mm²/s, R² 0.73 (252 tests).
 Number of tests used: 252 of the 274 in the table (199 for the flame outcome, 252 for burning rate).
-Independent audit (separately fitted model, five seeds): balanced accuracy 61.4%; finds 23.7% of the tests that burned to completion at a 50% cut-off.
+The earlier one-slope model, for comparison: AUC 0.81, 22% of the completions found at 50% (an independent audit of it, with five seeds, found 23.7% and a balanced accuracy of 61.4%).

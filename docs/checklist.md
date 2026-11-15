@@ -26,6 +26,8 @@ fails: `docs/legion-go-setup.md`.
 
 Ticked on Nov 15 from the run on the real handheld, with the owner pressing the
 controls: see "Verified on the real Legion Go" in `CLAUDE.md` for what was seen and how.
+Both controller runs were on the page before the model switch of Nov 15. The page with
+the per-fuel model has had a screen check on the handheld, not a controller run.
 
 - [x] Opens in Edge, F11, nothing needs scrolling. (Full screen came from Edge's
       start-fullscreen switch, not the F11 key: 1280x800, no page scrolls.)
