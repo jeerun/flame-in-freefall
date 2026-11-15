@@ -172,8 +172,10 @@ ratio when available. Otherwise it labels the assumed stopping size. The picture
 illustration. The player shows playback speed and can pause on a modelled time
 and diameter. Outside the tested range it withholds the run.
 
-**Controller operation.** An optional Crew mode puts the evidence limits above the
-estimate and enlarges controls for handheld practice. A stick sweep moves
+**Controller operation.** Crew mode opens a cabin briefing for handheld practice.
+It shows the current conditions and the evidence limits above the FLEX estimate.
+The crew can open the settings or the star map as needed, then return to the full
+console with the same inputs. A stick sweep moves
 a selected setting across its range. Banners and, on supported devices, sound and
 vibration report changes in the evidence, including leaving the input ranges,
 finding only inconclusive nearby tests or seeing nearby results disagree with the

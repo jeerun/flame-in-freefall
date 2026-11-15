@@ -61,9 +61,12 @@ or open `console/index.html` from a checkout.
   one press away. Any set of settings can be saved as a baseline and compared side by
   side with a changed set, with the warnings of both kept in view. Three photo
   buttons select Earth-like air, the Moon Base case from the challenge brief,
-  or a Mars base assumed to have the same cabin air. **Crew mode** enlarges the
-  controls and puts the evidence limits above the estimate for handheld training.
-  Press B on the main console to toggle it with a controller. Under the reading is a star map:
+  or a Mars base assumed to have the same cabin air. **Crew mode** opens a cabin
+  briefing with the current conditions and the evidence limits above the FLEX
+  estimate. Open the experiment settings to adjust an input, or reveal the star
+  map to inspect individual tests. Exit Crew mode to return to the full console
+  with your current settings. Controller B switches layouts when panels are closed.
+  On the star map,
   every star is a real FLEX test, its shape and colour say how it ended, its size how
   fast it burned. Point at a star with the right stick to read it, replay it from
   NASA's measurements, or move the settings onto it. The map zooms to the whole
@@ -192,7 +195,7 @@ B closes.
 | Research evidence activities | LT opens Earth or orbit?, RT opens Read the sensors. D-pad Up/Down changes case, Left/Right chooses an answer, A reveals, B closes. | E / N, arrows, Enter, Esc |
 | FLEX counterexample | A on the zoomed star map opens the panel. Left/Right moves between actions, A activates, B closes. | E, arrows, Enter, Esc |
 | Oxygen map | Up/Down pick an investigation. Left/Right or X change the level of detail. B or Y closes. | Arrows, 1 to 3, X, Esc |
-| Flame console | Up/Down pick a setting. The left stick slides it: a light push creeps, a full push sweeps. The d-pad moves it one step. A explain, B close, X cabin air (Earth, Moon Base, Mars base), Y reset. Right stick picks a star, RT replays that test, pressing the right stick moves the settings onto it. LT Ignite. View zooms the star map. Pressing the left stick sends the tests to the base computer. | Arrows, Enter, Esc, X, R, `[` and `]` pick a star, P replay, G go there, I Ignite, Z zoom the map, D download the tests, S send or share them |
+| Flame console | Up/Down pick a setting. The left stick slides it: a light push creeps, a full push sweeps. The d-pad moves it one step. A explain, B close a panel or toggle Crew mode, X cabin air (Earth, Moon Base, Mars base), Y reset. Right stick picks a star, RT replays that test, pressing the right stick moves the settings onto it. LT Ignite. View zooms the star map. Pressing the left stick sends the tests to the base computer. | Arrows, Enter, Esc, X, R, `[` and `]` pick a star, P replay, G go there, I Ignite, Z zoom the map, D download the tests, S send or share them |
 | Explanation (A) | Up/Down or the right stick scroll it. X opens "Why this prediction?", Y opens "Test details and sources". LT saves the settings as baseline A and opens the comparison. B closes. | W, T, H, Esc |
 | Comparison | The settings still change as usual and update B live. LT makes B the new baseline. The right stick scrolls. B closes. | H save or replace the baseline, C open or close, Esc |
 | Zoomed star map | Up/Down or the right stick pick a star. Left/Right or X change the level of detail. RT replay, right-stick press go there, B or View closes. | Arrows, 1 to 3, X, P, G, Esc |
