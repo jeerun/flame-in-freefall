@@ -39,6 +39,9 @@ run('clearBaseline()');assert.equal(run('state.baseline'),null);assert.equal(nod
 run('reset();renderSheet(last.r,last.rc)');assert.match(nodes.summaryPrediction.textContent,/35%/);assert.ok(nodes.sheetList.children.length);assert.ok(nodes.testList.children.length);assert.match(nodes.sheetFine.textContent,/AUC/);
 run('toggleExplanationDetail("whyDetails");renderSheet(last.r,last.rc)');assert.equal(nodes.whyDetails.open,true,'rerender preserves expanded state');
 run('state.values.p=.694;state.values.o2=30;state.values.d0=3.2;preset={key:"mars"};render();renderSheet(last.r,last.rc)');assert.match(nodes.summaryLimits.textContent,/no clear flame outcome/);assert.match(nodes.summaryLimits.textContent,/assumed scenario/);
+assert.equal(run('last.rc.noClear'),true);
+assert.equal(run('last.rc.level'),'edge','nearby disruptions must give amber coverage');
+assert.match(nodes.summaryPrediction.textContent,/clear outcome/);
 run('state.values.co2=33;state.values.p=.94;preset=null;render();renderSheet(last.r,last.rc)');assert.match(nodes.summaryLimits.textContent,/no close experimental match/);
 run('state.values.co2=60;state.values.he=55;render();renderSheet(last.r,last.rc)');assert.match(nodes.summaryPrediction.textContent,/Do not rely/);assert.match(nodes.summaryLimits.textContent,/more than 100/);
 run('M.meta.mock=true;renderSheet(last.r,last.rc)');assert.match(nodes.summaryLimits.textContent,/Mock model/);
@@ -49,7 +52,7 @@ let keyHandler;
 document.addEventListener=(name,fn)=>{if(name==='keydown')keyHandler=fn;};
 const keyStart=html.indexOf('  document.addEventListener("keydown", function (e) {');
 vm.runInContext(html.slice(keyStart,html.indexOf('\n  });',keyStart)+6),c);
-run('var titleOn=false,SIM={open:false},OX={open:false},AI={open:false},view={page:"console"};');
+run('var titleOn=false,SIM={open:false},OX={open:false},AI={open:false},view={page:"console"}; function activeCasePanel(){return null;}');
 function key(k,target='BODY',extra={}){keyHandler({key:k,target:{tagName:target},preventDefault(){},...extra});}
 run('M.meta.mock=false;reset();clearBaseline()');key('h');assert.equal(run('state.comparing'),true);
 key('Escape');assert.equal(run('state.comparing'),false);key('c');assert.equal(run('state.comparing'),true);
@@ -57,4 +60,22 @@ run('state.sheet=true;state.comparing=false');key('w');assert.equal(nodes.whyDet
 const fixed=run('JSON.stringify(state.baseline)');run('state.values.o2=28;render()');key('h','BODY',{ctrlKey:true});assert.equal(run('JSON.stringify(state.baseline)'),fixed,'Ctrl+H must not replace baseline');
 key('Enter','SUMMARY'); // Browser owns native summary toggle; global handler must not close the sheet.
 assert.equal(run('state.sheet'),true);
+// FLEX 234 and 267 share the same position, and 234 is drawn last.
+for (const name of ['starAt', 'pickStar', 'replayTest', 'say']) run(source(name));
+nodes.map.getBoundingClientRect = () => ({left:0, top:0, width:100, height:100});
+nodes.map.viewBox = {baseVal:{width:100, height:100}};
+run(`var visible=M.tests.find(t=>t[0]===234), underneath=M.tests.find(t=>t[0]===267);
+  MAP.stars=[{x:50,y:50,t:underneath},{x:50,y:50,t:visible}];
+  MAP.plot={cx:50,cy:50,w:100,h:100};function selectStar(t){MAP.sel=t;}`);
+assert.equal(run('starAt({clientX:50,clientY:50},10)[0]'),234);
+run('pickStar(0,0)');assert.equal(run('MAP.sel[0]'),234);
+run('function stopReplay(){}');
+for (const id of [54,109]) assert.equal(run('replayTest(M.tests.find(t=>t[0]==='+id+'),null,null,false)'),false,'replay needs measured inputs for test '+id);
+run(`var VOICE={on:true,spoken:0}, voices=[], spoken=[];
+  var speechSynthesis=window.speechSynthesis={getVoices:()=>voices,cancel(){},speak(u){spoken.push(u.voice.name)}};
+  var SpeechSynthesisUtterance=window.SpeechSynthesisUtterance=function(text){this.text=text};
+  voices.push({name:"Aria",lang:"en-US",localService:false});say("remote only");`);
+assert.equal(run('spoken.length'),0);
+run('voices.push({name:"Local English",lang:"en-US",localService:true});say("local voice");');
+assert.equal(run('spoken.join()'),'Local English');
 console.log('PASS: baseline isolation, live deltas, unsupported A/B warnings, replace/clear/reset, fuel changes, disclosure persistence, unclear/far/Mars/mock summaries, Ember context wiring, syntax.');

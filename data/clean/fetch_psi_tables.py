@@ -1,6 +1,7 @@
 """Download the Experimental Table of every combustion investigation in NASA PSI, as PSI publishes it.
 
     py data/clean/fetch_psi_tables.py
+    py data/clean/fetch_psi_tables.py --verify
 
 For each investigation in data/raw/psi_search/combustion_investigations.json this asks PSI's own web service
 (the one its pages use) for the investigation record, and saves each file listed under "Experimental table" to
@@ -9,6 +10,7 @@ file: investigation, PSI version, DOI, licence, size, SHA-256 and the day it was
 
 Needs only the Python standard library and an internet connection. Nothing else in the repo needs the internet.
 """
+import argparse
 import datetime
 import hashlib
 import json
@@ -26,6 +28,27 @@ AGENT = {"User-Agent": "space-apps-student-project"}
 def get(url):
     with urllib.request.urlopen(urllib.request.Request(url, headers=AGENT), timeout=60) as resp:
         return resp.read()
+
+def verify():
+    manifest = json.loads((OUT / "MANIFEST.json").read_text(encoding="utf-8"))
+    failed, restored = [], 0
+    for name, entry in manifest.items():
+        file = OUT / name
+        if not file.is_file():
+            failed.append(name)
+            continue
+        data = file.read_bytes()
+        original = entry["sha256"].lower()
+        if hashlib.sha256(data).hexdigest() == original:
+            continue
+        # The original NASA downloads use CRLF. A Git text checkout can contain LF.
+        if b"\r" not in data and hashlib.sha256(data.replace(b"\n", b"\r\n")).hexdigest() == original:
+            restored += 1
+        else:
+            failed.append(name)
+    if failed:
+        raise SystemExit("Missing or mismatched PSI tables: " + ", ".join(failed))
+    print(f"Verified {len(manifest)} NASA source hashes ({restored} after restoring CRLF in memory).")
 
 
 def main():
@@ -61,4 +84,9 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--verify", action="store_true", help="check the downloaded source hashes offline")
+    if parser.parse_args().verify:
+        verify()
+    else:
+        main()
