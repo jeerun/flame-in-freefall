@@ -42,7 +42,7 @@ Submission closes Sunday Nov 15, 11:59 PM in the team owner's local time
 
 ## Status
 
-Last updated Saturday Nov 14, about 9:25 PM Mountain Time.
+Last updated Saturday Nov 14, about 10:05 PM Mountain Time.
 
 Done:
 - Team created on the Space Apps site, challenge selected.
@@ -81,9 +81,18 @@ Done:
   cleaned table (test outcome by oxygen and droplet size, one panel per fuel). It
   is in the README. The local LLM stretch has not been started.
 
+- Step 4 done: the official challenge page was read on Nov 14 and compared with
+  the build (see "Challenge fit" below). The owner approved three additions.
+  Two are in: the cabin-air buttons (X: Earth-like air, Moon Base) and the ranked
+  list of the three closest real tests in the explanation panel. Checked in
+  headless Edge like step 3, including X on keyboard and gamepad.
+
 Not done:
-- Step 4 is waiting for the owner to paste the official challenge page text. After
-  it, revisit the summary and description in `docs/submission.md`.
+- Third approved addition, in progress: a "NASA research" page in the console that
+  summarizes and ranks the PSI combustion investigations. Raw PSI metadata is
+  already in `data/raw/psi_search/`.
+- After that page lands: rewrite the summary and description in
+  `docs/submission.md`, the README and the demo script around the challenge wording.
 - Console has not been tried on the real Legion Go yet (a simulated gamepad is not
   the real one). If the gamepad moves the mouse instead, the device is in desktop
   mode and needs gamepad mode.
@@ -92,8 +101,40 @@ Not done:
 - Teammates still need to join the team on the Space Apps site. Join requests only
   work while the team's "looking for members" box is ticked; untick it after all
   five are in. Teammates must also be invited to this repo as collaborators.
-- Nobody has read the official challenge page closely yet. Do that before adding features.
-- `docs/submission.md` is still an empty template.
+
+## Challenge fit (step 4)
+
+Official page: https://www.spaceappschallenge.org/2026/challenges/flame-in-freefall/
+(Details and Resources tabs, read Nov 14, 2026).
+
+What it asks for: an interactive, "super intelligence (SI) powered", web-based
+dashboard that summarizes, ranks and interprets NASA's microgravity combustion
+investigations in the PSI database, to give fire-safety insights for human space
+exploration. Teams may let users (1) find the investigations most relevant to crew
+habitats, (2) extract data that supports predictive modelling of flammability, and
+(3) highlight research that informs fire-safety equipment. The data source is the
+PSI repository, combustion science. The page frames fire safety as prevention,
+detection and suppression, and says the Moon Base will likely run at 30% oxygen or
+more and 10.2 psi or less.
+
+How the build compared before the additions:
+- Covered: interactive and web-based; built on PSI data; interprets in plain
+  language; predictive modelling of flammability (option 2) from FLEX, the
+  suppression investigation the page names; honest about the tested range.
+- Gap: only one investigation (FLEX) of the 24 combustion ones in PSI.
+- Gap: nothing was ranked.
+- Gap: no AI inside the product. The models are plain regressions.
+- Gap: no link to the crew atmospheres the page talks about.
+
+What closes the gaps (owner approved all three on Nov 14):
+- Cabin-air buttons with the Moon Base case from the page. Done.
+- Ranked closest real tests. Done.
+- "NASA research" page: all PSI combustion investigations, summarized and ranked by
+  relevance to prevention, detection or suppression. Summaries and ranks are
+  written by an AI model from the PSI pages and labelled as such. In progress.
+
+Still not covered, and not planned: comparing raw data across investigations,
+partial-gravity data (PSI has none yet), a live AI model running on the device.
 
 ## Next steps, in order
 
@@ -105,8 +146,9 @@ and update Status above each time.
    (needs pandas, numpy, scikit-learn). The numbers must match `metrics.json`.
 2. DONE. Wire `console/index.html` to the real model.
 3. DONE. Check the console in a browser with `model.js`, then commit `model.js`.
-4. Ask the owner for the text of the official challenge page, compare it with what
-   we built, and propose the smallest thing that closes any gap.
+4. DONE (comparison; one approved addition still in progress, see Status). Compare
+   the official challenge page with what we built, and propose the smallest thing
+   that closes any gap.
 5. DONE. Fill `docs/sources.md`: NASA dataset, DOI, link, download date, and a source
    for every sentence shown on screen. If the wording on screen changes, update the
    claims table in that file too.
