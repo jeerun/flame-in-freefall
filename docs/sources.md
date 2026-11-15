@@ -21,7 +21,14 @@ tab-separated text in `data/raw/`, and checked each page with SHA-256 against a 
 computed inside the browser. If someone downloads the official CSV, compare the two
 and keep the official one.
 
-What is in it and what we used:
+Second PSI source, for the NASA research page: the repository's search for
+"combustion" (https://psi.nasa.gov/physci/repo/search?q=combustion), downloaded
+Nov 14, 2026 as the JSON the page itself loads and kept unchanged in
+`data/raw/psi_search/`. It returns 26 investigation records; 24 are listed under
+combustion science and are shown. Each record carries the title, project type,
+hardware, keywords, objectives and approach text of the investigation's PSI page.
+
+What is in the FLEX table and what we used:
 
 - 274 tests (methanol 157, heptane 117), run between March 2009 and December 2011.
 - Columns used as model inputs: fuel, ambient pressure, initial O2, CO2 and He mole
@@ -72,6 +79,10 @@ Wording in quotes is the text on screen. "Our model" means the two regressions i
 | "Checked on tests held out of training: AUC 0.81 ... burning rate off by 0.048 mm²/s on average" | `model/metrics.json`: 5-fold cross-validation repeated 20 times. |
 | ""Goes out" means the visible flame: FLEX found that fuel can keep reacting after it, in a cool flame." | NASA "Studying Combustion and Fire Safety". The PSI-69 column is named "Visible flame extinction diameter". |
 | "This is a model reading for study and planning, not a crew procedure." | Our own statement. |
+| NASA research page: "Prevention", "Detection", "Suppression" | The three parts of NASA's spacecraft fire-safety work named in the Space Apps challenge brief. |
+| NASA research page: investigation title, "Flight experiment" or "Ground study", "Hardware", the PSI identifier | Copied from the PSI search records in `data/raw/psi_search/` ("Title", "Project Type", "Experiment Hardware", "Accession"). Spelling is PSI's. |
+| NASA research page: "What it did", "What varied", "Why it matters", the fuel label, and the ranks "Direct", "Strong", "Related" | Written by an AI model (Claude) from the "Objectives", "Approach" and "Keywords" text of each PSI record, and for two entries from the challenge brief (ACME E-FIELD Flames mimicking partial gravity; ACME CFI-G having the highest oxygen levels). Kept in `data/clean/research_notes.json`. The page says they are AI-written. Not NASA's wording and not a NASA rating. |
+| NASA research page: "... other investigations are not about ..." | Count of investigations the notes score 0 for that need. |
 
 ## What we do not claim
 
@@ -81,3 +92,5 @@ Wording in quotes is the text on screen. "Our model" means the two regressions i
 - That the model is physics. It is two straight-line fits to 252 tests.
 - That a flame that "goes out" is safe. The outcome is about the visible flame.
 - Anything outside the tested ranges. The console marks those readings as unknown.
+- That the research summaries and ranks are NASA's. They are an AI model's reading
+  of the PSI records, and the team has not yet reviewed them line by line.

@@ -3,14 +3,17 @@
 Rules from the challenge: up to 30 seconds, English subtitles, hosted outside the
 Space Apps site, public, no login.
 
-The readings below were checked in a desktop browser with the committed `model.js`.
-They have not been checked on the Legion Go itself yet: do the "Before filming" list first.
+The readings below were checked in a desktop browser with the committed `model.js`
+and `research.js`. They have not been checked on the Legion Go itself yet: do the
+"Before filming" list first.
 
 ## Before filming
 
-1. On the Legion Go open `console/index.html` in Edge and press F11.
-2. Top right must read "Model: NASA PSI-69 FLEX, 199 tests". If a yellow "Mock
-   numbers" banner shows instead, `model.js` is missing next to the page. Stop and fix that.
+1. Get the whole `console` folder onto the Legion Go (`index.html`, `model.js` and
+   `research.js` must sit together). Open `index.html` in Edge and press F11.
+2. Top right must read "Model: NASA PSI-69 FLEX, 199 tests", and the top bar must show
+   two tabs, "Flame console" and "NASA research". A yellow "Mock numbers" banner means
+   `model.js` is missing; no tabs means `research.js` is missing. Stop and fix that.
 3. Press any button. The chip must change to "Controller connected". If the stick
    moves a mouse pointer instead, the device is in desktop mode: switch it to
    gamepad mode.
@@ -19,22 +22,22 @@ They have not been checked on the Legion Go itself yet: do the "Before filming" 
 6. Film in landscape with both hands and the screen in frame, screen brightness up,
    room lights down so the screen does not glare.
 
-Buttons use the Xbox layout: A bottom, B right, Y top. "Hold" means keep the d-pad
-pressed: the value moves faster the longer it is held, so tap to land on the exact number.
+Buttons use the Xbox layout: A bottom, B right, X left, Y top, RB the right bumper.
 
 ## Shots
 
 | # | Time | Press on the Legion Go | What the screen shows | Subtitle (English) |
 |---|---|---|---|---|
-| 1 | 0:00 to 0:04 | Nothing. Hold the device still. | Heptane, oxygen 21.0 %, big number 35 %, green "Inside the tested range". | Fire in space does not behave like fire on Earth. |
-| 2 | 0:04 to 0:10 | D-pad Down once (Oxygen). Hold Right to 30.0 %. | Big number climbs to 85 %, bar turns red: "The model expects this flame to burn until the fuel is gone." | More oxygen: this droplet flame burns until the fuel is gone. |
-| 3 | 0:10 to 0:15 | Hold Left to 15.0 %. | Big number drops to 10 %: "The model expects this flame to go out before the fuel is gone." | Less oxygen: it goes out first. Learned from 252 real NASA FLEX tests. |
-| 4 | 0:15 to 0:20 | Press A. | Explanation panel. "Closest real test: FLEX test 79 ... Its flame went out before the fuel was gone." | Every reading names the closest real NASA test and how it ended. |
-| 5 | 0:20 to 0:26 | Press B. D-pad Down twice (Carbon dioxide), tap Right 5 times. Down once (Helium), tap Right once. | Red box: "Outside the tested range. No experiment mixed carbon dioxide and helium. Do not rely on these numbers." The numbers dim. | Where NASA never tested, it says so instead of guessing. |
-| 6 | 0:26 to 0:30 | Nothing. End card over the last frame. | Text card: "Flame in Freefall Crew Fire Console. Team Second Toe. Data: NASA PSI-69 FLEX. Runs offline on a handheld." | Team Second Toe. Built on NASA FLEX data. Runs offline on a handheld. |
+| 1 | 0:00 to 0:04 | Nothing. Hold the device still. | Heptane, oxygen 21.0 %, big number 35 %, green "Inside the tested range". "Earth-like air" is lit. | Fire in space does not behave like fire on Earth. |
+| 2 | 0:04 to 0:09 | Press X once. | "Moon Base (expected)" lights up. Oxygen 30.0 %, pressure 0.69 atm. Big number jumps to 90 %, bar turns red: "The model expects this flame to burn until the fuel is gone." | Moon Base air, 30% oxygen: the model gives this flame a 90% chance to burn all its fuel. |
+| 3 | 0:09 to 0:14 | Press A. | Explanation panel: "Closest real FLEX tests with this fuel, ranked", three tests at 30 % oxygen, and the accuracy line at the bottom. | Every reading ranks the closest real NASA tests and states its accuracy. |
+| 4 | 0:14 to 0:19 | Press B. D-pad Down three times (Carbon dioxide), tap Right 5 times. Down once (Helium), tap Right once. | Red box: "Outside the tested range. No experiment mixed carbon dioxide and helium. Do not rely on these numbers." The numbers dim. | Where NASA never tested, it says so instead of guessing. |
+| 5 | 0:19 to 0:26 | Press RB. D-pad Right twice (Suppression). Down once. | "NASA research" page. "Ranked for suppression: 9 of 24 investigations", BASS first, FLEX second and selected, its summary on the right. | A second page summarizes and ranks 24 NASA combustion investigations by what you need. |
+| 6 | 0:26 to 0:30 | Nothing. End card over the last frame. | Text card: "Flame in Freefall Crew Fire Console. Team Second Toe. Data: NASA PSI. Runs offline on a handheld." | Team Second Toe. Built on NASA PSI data. Runs offline on a handheld. |
 
-If a shot runs long, speed up shots 2, 3 and 5 in the edit instead of cutting shot 4
-or the red warning: those two are what makes the project different.
+If a shot runs long, speed up shots 4 and 5 in the edit instead of cutting shot 3 or
+the red warning: the ranked real tests and the honest warning are what make the
+project different.
 
 ## After filming
 

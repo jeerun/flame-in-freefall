@@ -1,4 +1,4 @@
-# Project context
+﻿# Project context
 
 Handoff notes so a new Claude session can pick this project up without the
 earlier conversation. Written Saturday Nov 14, 2026, about 8:35 PM Mountain Time.
@@ -42,7 +42,7 @@ Submission closes Sunday Nov 15, 11:59 PM in the team owner's local time
 
 ## Status
 
-Last updated Saturday Nov 14, about 10:05 PM Mountain Time.
+Last updated Saturday Nov 14, about 9:49 PM Mountain Time.
 
 Done:
 - Team created on the Space Apps site, challenge selected.
@@ -87,12 +87,20 @@ Done:
   list of the three closest real tests in the explanation panel. Checked in
   headless Edge like step 3, including X on keyboard and gamepad.
 
+- Third approved addition done: the "NASA research" page (LB/RB or key 2). It lists
+  the 24 PSI combustion investigations, ranked by relevance to prevention, detection
+  or suppression, with a summary card for each. Facts come from
+  `data/raw/psi_search/combustion_investigations.json`; the summaries and 0 to 3
+  scores are AI-written, in `data/clean/research_notes.json`;
+  `data/clean/build_research.py` joins them into `console/research.js`. Checked in
+  headless Edge at 1280x680 and 1280x800: no page scrolling, every card fits, the
+  list scrolls inside its own box, keyboard and simulated gamepad work.
+- `docs/submission.md`, `README.md`, `docs/demo-script.md`, `docs/checklist.md` and
+  `docs/sources.md` were rewritten around the challenge wording. The demo script was
+  replayed with a simulated gamepad and each shot shows what the script says.
+
 Not done:
-- Third approved addition, in progress: a "NASA research" page in the console that
-  summarizes and ranks the PSI combustion investigations. Raw PSI metadata is
-  already in `data/raw/psi_search/`.
-- After that page lands: rewrite the summary and description in
-  `docs/submission.md`, the README and the demo script around the challenge wording.
+- Nobody on the team has reviewed the AI-written research notes line by line.
 - Console has not been tried on the real Legion Go yet (a simulated gamepad is not
   the real one). If the gamepad moves the mouse instead, the device is in desktop
   mode and needs gamepad mode.
@@ -131,7 +139,7 @@ What closes the gaps (owner approved all three on Nov 14):
 - Ranked closest real tests. Done.
 - "NASA research" page: all PSI combustion investigations, summarized and ranked by
   relevance to prevention, detection or suppression. Summaries and ranks are
-  written by an AI model from the PSI pages and labelled as such. In progress.
+  written by an AI model from the PSI records and labelled as such. Done.
 
 Still not covered, and not planned: comparing raw data across investigations,
 partial-gravity data (PSI has none yet), a live AI model running on the device.
@@ -146,7 +154,7 @@ and update Status above each time.
    (needs pandas, numpy, scikit-learn). The numbers must match `metrics.json`.
 2. DONE. Wire `console/index.html` to the real model.
 3. DONE. Check the console in a browser with `model.js`, then commit `model.js`.
-4. DONE (comparison; one approved addition still in progress, see Status). Compare
+4. DONE (comparison and the three approved additions, see Status). Compare
    the official challenge page with what we built, and propose the smallest thing
    that closes any gap.
 5. DONE. Fill `docs/sources.md`: NASA dataset, DOI, link, download date, and a source
@@ -272,14 +280,23 @@ under 10% predicted, 4% completed (115 tests); 10 to 20%, 7% (30); 20 to 35%, 13
 It misses four methanol tests at 0.7 atm with 20 to 30% CO2 that burned to
 completion (it gives them under 5%); the nearby-test count on screen shows them.
 
-Controls: Up/Down pick a setting, Left/Right change it (hold to repeat), A explain,
-B close, Y reset. Touch and keyboard (arrows, Enter, Esc, R) also work.
+Controls on the Flame console page: Up/Down pick a setting (or scroll the
+explanation while it is open), Left/Right change it (hold to repeat), A explain,
+B close, X switch cabin air (Earth-like air, Moon Base), Y reset. LB or RB switches
+page. On the NASA research page: Left/Right change the question, Up/Down move through
+the ranked list, B goes back. Touch and keyboard (arrows, Enter, Esc, X, R, 1, 2)
+also work.
+
+The Moon Base button sets oxygen 30% and 10.2 psi from the challenge brief. It
+stores 0.694 atm, not the slider step 0.69, because 0.69 falls just under the
+lowest pressure FLEX tested (about 0.6925 atm) and would be flagged as untested.
 
 The flame picture is an illustration, not a simulation, and says so on screen.
 The explanation panel says it is a model reading, not a crew procedure. Keep both.
 
-Agreed features: range and confidence warning, gamepad control, explanation panel.
-Deliberately cut: flame video analysis, combining several experiments.
+Agreed features: range and confidence warning, gamepad control, explanation panel,
+cabin-air presets, ranked closest tests, the NASA research page.
+Deliberately cut: flame video analysis, combining the raw data of several experiments.
 
 ## Submission requirements
 
