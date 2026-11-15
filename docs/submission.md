@@ -90,10 +90,15 @@ endpoints. Both activities show the PSI identifier, DOI and CSV line for each ca
 274-test table something you can explore by hand. Set the fuel (heptane or methanol),
 oxygen, pressure, carbon dioxide, helium and droplet size, and the page shows:
 
-- the estimated chances of completion and visible extinction among clear outcomes;
+- the estimated chances of completion and visible extinction among clear outcomes,
+  with the range in which that estimate falls when the model is refitted on
+  resampled tests;
+- the modelled chance that a test like this ends in "Disruption", NASA's label for
+  an ending with no clear outcome, which is how most tests in oxygen-rich air ended;
 - the burning rate and how long the droplet would last at that rate;
-- an evidence box. Amber marks a distant match, inconclusive nearby tests or
-  disagreement. Red flags settings beyond the model's scope;
+- an evidence box. Amber marks a distant match, inconclusive nearby tests,
+  disagreement, or settings where most tests were disrupted. Red flags settings
+  beyond the model's scope;
 - an explanation that opens with three short boxes, the prediction, the evidence from
   nearby real tests and the limits, and keeps the detail one press away: which
   settings push the result which way, the three closest real tests, how the nearby
@@ -239,6 +244,19 @@ to base require a reachable server.
   the Python model on 820 inputs and finds the same numbers to within rounding
   (`docs/model-parity.md`).
 - The main reading displays estimates from 1% to 99%. This is a display rule.
+- We looked for holes in our own model design and wrote down all nine, closed or not
+  (`docs/model-design-audit.md`). The largest: the outcome model leaves out the 53
+  tests NASA labels "Disruption", and they are not scattered at random. At 25%
+  oxygen or more, 11 of 12 heptane tests and 12 of 17 methanol tests ended that way,
+  and none at 15% or less. So a third formula gives the chance of a disruption, the
+  page shows it beside the reading, and at 50% or more the reading turns amber and
+  says the percentage describes only the rest.
+- Beside the main reading is a range: where the estimate falls in the middle 90% of
+  300 refits on resampled tests. Heptane at the starting values reads 57%, range 34%
+  to 75%.
+- "The visible flame went out" does not mean little burned. Where nearby flames went
+  out, the evidence box gives the share of the droplet's volume that was already
+  gone: across the table a median of 40% for heptane and 82% for methanol.
 - Where resampling the tests does not settle which way a setting pushes for a fuel
   (pressure for both fuels; droplet size and carbon dioxide for methanol), the
   explanation says so on the line that leans on it.
@@ -269,6 +287,14 @@ These scores describe performance within this FLEX dataset.
 - In row-held-out predictions, 2.6% of the rows assigned a completion chance below
   10% completed. The share was 33% for predictions from 30% to below 65%, and 92.5%
   at 65% or above. These are averages across repeated splits of the same rows.
+- With the tests themselves resampled, the 95% interval of the AUC is 0.83 to 0.96
+  (heptane 0.82 to 0.98, methanol 0.64 to 0.97: methanol has 8 completions).
+- The disruption formula, held out on all 252 tests: AUC 0.892, Brier score 0.101
+  against 0.166 for no model. When it said under 10%, 3.4% of those tests were
+  disrupted. At 65% or above, 82%.
+- By fuel the burning rate is uneven: heptane R² 0.62 (MAE 0.069 mm²/s), methanol
+  R² 0.87 (MAE 0.026). For the 27 completions, the page's time to consume the
+  droplet is a median 1.18 times NASA's burn time (middle half 0.94 to 1.42).
 - The earlier pooled-slope model reached AUC 0.813. Its independent five-seed
   audit found 23.7% completion recall at 50% and 61.4% balanced accuracy.
   The current per-fuel classifier had the lowest Brier score and log loss of the
@@ -299,14 +325,27 @@ These scores describe performance within this FLEX dataset.
   can still differ in pressure, carbon dioxide or helium, which is why the "closest
   three" lines do not always point at the nearest-looking stars.
 - Only 8 of the 124 clear methanol outcomes completed. Bootstrap refits disagree
-  on the direction of the methanol diameter and CO₂ effects.
+  on the direction of the methanol diameter and CO₂ effects. When the model put a
+  methanol test between 30% and 65%, 14% completed, on about five tests per split.
+  Smaller and more heavily penalised methanol models were tried and scored worse
+  held out, so the model stays and the range on screen is wide there.
 - At a 50% cutoff the model misses about half the recorded completions.
 - In-scope pressures cluster near 0.7 and 1.0 atm. The direction of the pressure
-  effect is unstable for both fuels.
+  effect is unstable for both fuels. At 0.7 atm nearly every clear outcome comes with
+  carbon dioxide or helium: only 2 heptane and 4 methanol tests are plain oxygen and
+  nitrogen, which is the Moon Base preset's mix.
 - We selected the model family and evaluated it on the same FLEX dataset. No
   independent flight or external test set was used.
 - At the default heptane droplet size the Moon Base preset gives a very high
   fitted completion chance. All three nearby measured outcomes were disruptions.
+  The disruption formula puts that chance at 98%, so the 99% describes a rare case.
+  Its range (98% to 99%) is narrow only because the range covers which tests were
+  run, not how far the formula is stretched.
+- NASA's table does not say what a disruption is. We report how often it was
+  recorded, not what it means for a fire.
+- The range shows sampling uncertainty only. The tested range on screen is pooled
+  over both fuels: methanol was never run below 1.61 mm, heptane never above 45%
+  carbon dioxide. A methanol droplet of 1.3 mm still reads "Inside the tested range".
 - "Goes out" means the visible flame. FLEX found that fuel can keep reacting afterwards
   in a cool flame, which the page does not model.
 - The PSI-69 page says the investigation used both space-based data and ground-based
@@ -434,5 +473,8 @@ team's PC and reproduced exactly, and its five tests pass.
   extinction would give accuracy 0.864.
 - Burning-rate prediction on 252 rows gave mean absolute error 0.045 mm²/s and
   R² 0.732. Both evaluations used five folds repeated 20 times.
+- A third formula for the chance of a disruption, on all 252 rows: AUC 0.892, Brier
+  score 0.101 against 0.166 for no model.
+- With the tests resampled the 95% interval of the outcome AUC is 0.83 to 0.96.
 - The old pooled model's separate five-seed audit gave completion recall 23.7%
   and balanced accuracy 61.4%.

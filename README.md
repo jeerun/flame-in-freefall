@@ -188,7 +188,8 @@ device: if one is missing, nothing else breaks.
 ## Rebuild
 
 Needs Python with pandas, numpy and scikit-learn (the model scripts were written and
-checked with scikit-learn 1.9). From the repo root:
+checked with scikit-learn 1.9). `pip install -r requirements.txt` installs the versions
+they were checked with. From the repo root:
 
     python data/clean/build_clean.py
     python model/train.py
@@ -200,8 +201,9 @@ checked with scikit-learn 1.9). From the repo root:
 
 The first builds `data/clean/flex_clean.csv` from the raw table. The second builds
 the base export (ranges, sliders, test rows) with the earlier one-slope model, in
-`model/pooled/`. The third trains the two models the console uses, writes
-`model/metrics.json` and exports `console/model.js`. The results are seeded, so a
+`model/pooled/`. The third trains the models the console uses (the flame outcome, the
+burning rate and the chance of a disruption), writes `model/metrics.json` and exports
+`console/model.js`. The results are seeded, so a
 re-run gives the same files. The fourth joins the PSI records with the notes in
 `data/clean/research_notes.json` and writes `console/research.js`. The fifth reads
 the oxygen and pressure of each test from the PSI test tables and writes
@@ -211,6 +213,8 @@ hashes offline, restoring CRLF line endings in memory when necessary.
 
 After changing the shipped model or CSV layout, run `node server/export_digest.cjs`, review the new export and update `CSV_SHA256` in `server/serve.py`. The server verifies the digest before storing or forwarding a file.
 
+`python model/design_audit.py` repeats the search for holes in the model design
+(about a minute; what it found is in `docs/model-design-audit.md`).
 The comparison of eight candidate outcome models is in `model/compare_models.py`.
 Run `python model/verify_per_fuel.py` for a separately implemented check of the
 pooled and per-fuel models. `python model/science_audit.py` reproduces the audit of
@@ -269,10 +273,14 @@ family using this same dataset. [Evaluation results](model/metrics.json)
 | Model | Tests | Result |
 |---|---|---|
 | Completion versus visible extinction, with separate slopes per fuel | 199 clear outcomes | AUC 0.902 (0.906 within heptane, 0.847 within methanol). Accuracy 0.915, against 0.864 for always predicting extinction. A 50% cutoff identifies 52.4% of completions. |
-| Burning rate in mm²/s, with separate slopes per fuel | 252 | Mean absolute error 0.045 mm²/s, R² 0.732. The measured rates have a standard deviation of 0.138 mm²/s. |
+| Burning rate in mm²/s, with separate slopes per fuel | 252 | Mean absolute error 0.045 mm²/s, R² 0.732 (heptane 0.619, methanol 0.873). The measured rates have a standard deviation of 0.138 mm²/s. |
+| Chance that a test ends in "Disruption", NASA's label for an ending with no clear outcome, with separate slopes per fuel | 252 | AUC 0.892. Brier score 0.101, against 0.166 for no model. When it said 65% or more, 82% of those tests were disrupted. |
 
 Keeping each fuel and gas mixture in the same fold gave AUC 0.9005 and burning-rate
 R² 0.724. [Grouped evaluation](model/per_fuel/comparison.json)
+
+With the tests themselves resampled, the 95% interval of the outcome AUC is 0.83 to
+0.96 (heptane 0.82 to 0.98, methanol 0.64 to 0.97).
 
 **How the model got here.** Until Nov 15 the console used a simpler model: one set
 of slopes for both fuels. It scored AUC 0.81 (0.60 within methanol) and found 22 %
@@ -302,6 +310,17 @@ on the direction of the methanol CO₂ and diameter effects and of pressure for
 both fuels. Pressures cluster near 0.7 and 1.0 atm. The main reading limits the
 displayed probability to 1–99%. Extinction refers to the visible flame.
 The dataset does not validate the model for a crewed cabin. [Model limitations](docs/submission.md)
+
+**The holes we found in our own design.** The outcome model leaves out the 53 tests
+NASA labels "Disruption", and they are not scattered at random: 11 of 12 heptane
+tests and 12 of 17 methanol tests at 25% oxygen or more ended that way, and all four
+heptane tests near Moon Base air. So the page now shows a modelled chance of
+disruption beside the reading (98% for heptane in Moon Base air, where the 99% is
+the chance among the few clear outcomes), a range from refits on resampled tests
+(57% at the starting values, range 34 to 75%), and, where nearby flames went out,
+how much of the droplet was already gone (a median of 82% for methanol across the
+table, 40% for heptane). Nine holes, what closed each and what is still open:
+[Model design audit](docs/model-design-audit.md)
 
 ## Folders, and who owns each
 

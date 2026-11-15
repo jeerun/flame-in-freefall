@@ -13,6 +13,10 @@ in a Windows checkout). The suite now opens the default dashboard directly, read
 model source from Controls, and checks the completion meter’s conditional-outcome
 label. It retains the per-fuel numeric comparisons. The earlier run is recorded below.
 
+On branch `fix/model-design-gaps` the oracle also works out, for every scenario, the
+disruption chance (the export's third formula) and the range beside the main reading
+(from the exported refits), and checks both on the page: 40 of 40 again.
+
 **40 of 40 scenarios pass.** Run on 15 November 2026:
 
 | | |
