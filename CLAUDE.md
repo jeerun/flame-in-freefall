@@ -41,28 +41,54 @@ Submission closes Sunday Nov 15, 11:59 PM in the team owner's local time
 
 ## Status
 
+Last updated Saturday Nov 14, about 9:00 PM Mountain Time.
+
 Done:
 - Team created on the Space Apps site, challenge selected.
 - This repo created (public) with the folder skeleton.
 - `console/index.html` works on mock numbers. Checked in headless Chrome with
   keyboard input and a simulated gamepad. Fits 1280x680 and 1280x800.
+- FLEX data is in `data/raw/psi69_flex_experimental_table.tsv` (see Data below
+  for how it was obtained).
+- `data/clean/build_clean.py` builds `data/clean/flex_clean.csv` (274 tests).
+- `model/train.py` has been run once. Numbers are in `model/metrics.json`.
+  Nobody has reviewed that script or its output yet.
 
 Not done:
+- `console/model.js` is NOT committed on purpose. The console has not been wired
+  to the real model or checked with it, so it must keep showing the mock banner.
 - Console has not been tried on the real Legion Go yet. If the gamepad moves the
   mouse instead, the device is in desktop mode and needs gamepad mode.
-- FLEX data is not downloaded yet. This blocks the model.
 - Teammates still need to join the team on the Space Apps site. Join requests only
   work while the team's "looking for members" box is ticked; untick it after all
   five are in. Teammates must also be invited to this repo as collaborators.
 - Nobody has read the official challenge page closely yet. Do that before adding features.
+- `docs/sources.md` and `docs/submission.md` are still empty templates.
 
 ## Next steps, in order
 
-1. Download the FLEX experimental table (CSV) into `data/raw/`.
-2. Write `data/clean/` from it: one tidy CSV, units converted, column notes.
-3. Train the two models in `model/`, report held-out accuracy, export `console/model.js`.
-4. Open the console with the real `model.js`, check the range warning uses real min/max.
-5. Fill `docs/sources.md` and `docs/submission.md`.
+1. Review `model/train.py` and `model/metrics.json`. Then run, from the repo root:
+   `python data/clean/build_clean.py` and `python model/train.py`
+   (needs pandas, numpy, scikit-learn). This writes `console/model.js`.
+2. Wire the console to the real model. The model now has a fifth input, helium,
+   and extra fields. In `console/index.html`:
+   - The helium row appears by itself (rows are built from `features`), but the
+     "rest of the air is nitrogen" note must subtract helium too, and should warn
+     if the gases add up to more than 100%.
+   - Use `meta.exclusive` ([["co2","he"]]): no test mixed CO2 and helium, so both
+     above zero counts as outside the tested range.
+   - Use `tests` and `meta.far_distance` to find the closest real test (same fuel,
+     range-normalised distance). Show it in the explanation panel, and warn when
+     the closest test is farther than `far_distance`.
+   - Fix the wording. "Extinction" in FLEX means the flame went out before the
+     fuel was gone; "Completion" means it burned until the fuel was gone. The
+     headline should say "burns until the fuel is gone", not "keeps burning".
+   - Show the held-out accuracy (`meta.auc`, `meta.burn_rate_mae`) in the fine print.
+   - Check that six rows still fit at 1280x680.
+3. Open the console in a browser with `model.js` present, check the numbers and
+   warnings make sense, then commit `console/model.js`.
+4. Fill `docs/sources.md` and `docs/submission.md`, including the accuracy numbers.
+5. Try the console on the Legion Go.
 6. Film the 30-second demo on the Legion Go.
 
 ## Data
@@ -75,20 +101,41 @@ Columns shown on the PSI page: test number, identifier, date, fuel, ambient pres
 (mmHg), initial O2, N2, CO2 and He as mole fractions, initial droplet diameter (mm),
 visible flame extinction diameter (mm), burning rate, burn time (s), test end.
 
-Unverified, taken from other teams' public READMEs. Check each against the file:
-- 274 tests.
-- Test end is one of Extinction, Disruption, Completion.
-- Fuels are methanol and n-heptane, pressure only about 0.7 to 1 atm.
-- The dataset mixes space and ground tests and has no column saying which is which.
+How the raw file was obtained: the downloadable CSV was not fetched. The table
+shown on the PSI-69 page was read in a browser, 100 rows per page over three pages,
+and saved as tab-separated text. Each page's text was checked by SHA-256 against a
+hash computed inside the page, and all three matched. If someone downloads the
+official Experimental Table CSV, compare it with this file and keep the official one.
 
-Consequences for us:
-- Convert mmHg to atm and mole fraction to percent so they match the console.
-- Helium is a diluent in the data but not a console input yet. Decide: add it, or
-  restrict training to rows without helium. Write the choice down.
-- Decide how to treat Disruption rows (probably exclude) and write it down.
-- If pressure really spans only 0.7 to 1 atm, the pressure slider will mostly sit
-  outside the tested range. That is fine and is what the warning is for, but the
-  default and the slider limits in `model.js` should reflect the real data.
+Checked against the file:
+- 274 tests, plus one empty row at the end. Methanol 157, heptane 117.
+- Test end: Extinction 186, Disruption 61, Completion 27.
+- Pressure clusters at about 0.7 atm (103 tests) and 1.0 atm (161 tests). Nine
+  early tests sit at 2 to 3 atm, all with 70% CO2. Test 114 has pressure 0, which
+  is a bad value.
+- O2 12 to 34%. CO2 0 to 70%. Helium 0 to 45%. No test has both CO2 and helium.
+- Some cells show a replacement character (unreadable in the source), and two burn
+  times are written "~6" and "~9". The cleaning script flags all of these.
+- Identifier 193F001 appears twice (tests 70 and 73) with different measurements.
+
+Still unverified: the PSI description says FLEX used both space-based data and
+ground-based tests, and the table has no column saying which row is which. Do not
+claim that every row is a space experiment.
+
+Decisions made in `model/train.py` (change them if the team disagrees, and say so here):
+- Scope is tests at or below 1.1 atm with a known droplet size: 252 tests. The nine
+  2 to 3 atm tests are left out because nothing covers 1.1 to 2 atm, so a min-to-max
+  range would wrongly look continuous.
+- Helium is a model input, because CO2 and helium are the two suppressants FLEX compares.
+- Disruption tests are left out of the "goes out" model (the outcome is unknown) but
+  kept for the burning-rate model.
+
+First run, held out by repeated 5-fold cross-validation, not yet reviewed:
+- "Goes out" model: 199 tests (172 went out, 27 burned to completion). AUC 0.81.
+  Accuracy 0.887, against 0.864 for always guessing "goes out". The classes are
+  lopsided, so accuracy says little. Quote the AUC and the baseline together.
+- Burning-rate model: 252 tests. R2 0.71, mean absolute error 0.048 mm^2/s
+  (the values spread about 0.14 mm^2/s).
 
 ## Model rules
 
