@@ -103,6 +103,7 @@ def load_records():
             "kind": "flight experiment" if flat(s.get("Project Type")) == "Microgravity Investigation" else "ground study",
             "objectives": flat(s.get("Objectives"), 1500), "approach": flat(s.get("Approach"), 900),
             "keywords": flat(s.get("Keywords"), 300),
+            "benefits": flat(s.get("Research Impacts/Earth Benefits"), 520),
             "hardware": flat(hardware.get("Name") if isinstance(hardware, dict) else hardware, 200),
         })
     records.sort(key=lambda r: int(r["id"].split("-")[1]))
@@ -147,13 +148,13 @@ def research_material(records, question, selected, need):
     chosen = pick(records, question, selected)
     key = {"prevention": "prevention", "detection": "detection", "suppression": "suppression", "cabin air": "cabin"}.get(need.lower())
     if key:                                                # the top of the dashboard's own ranking for that need always comes along
-        for r in sorted(records, key=lambda r: -r["scores"].get(key, 0))[:2]:
-            if r not in chosen:
-                chosen.append(r)
+        extras = [r for r in sorted(records, key=lambda r: -r["scores"].get(key, 0))[:2] if r not in chosen]
+        chosen = chosen[:5 - len(extras)] + extras          # five records at most, so the prompt stays inside the model's window
     lines.append("\nDETAILED NASA PSI RECORDS for the investigations closest to the question")
     for r in chosen:
         lines.append(f"\n{r['id']} {r['name']}: {r['title']} ({r['kind']})\nObjectives: {r['objectives']}\nApproach: {r['approach']}"
-                     f"\nKeywords: {r['keywords']}\nHardware: {r['hardware']}")
+                     f"\nKeywords: {r['keywords']}\nHardware: {r['hardware']}"
+                     + (f"\nBenefits in space and on Earth, in NASA's words: {r['benefits']}" if r["benefits"] else ""))
     if FACTS:
         lines.append(FACTS)
     lines.append("\nBACKGROUND FROM THE 2026 NASA SPACE APPS CHALLENGE BRIEF (use it for questions about future missions and about what is "

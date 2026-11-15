@@ -364,7 +364,7 @@
     border: 1px solid var(--flame); background: var(--panel-hi); font-size: 1.05rem; font-weight: 600; white-space: nowrap;
   }
   .ignite:disabled { opacity: 0.45; cursor: default; }
-  .sim { position: fixed; inset: 0; z-index: 6; background: rgba(4, 7, 18, 0.9); display: grid; place-items: center; padding: 1rem; }
+  .sim { position: fixed; inset: 0; z-index: 6; background: rgba(4, 7, 18, 0.9); display: grid; grid-template: minmax(0, 1fr) / minmax(0, 1fr); place-items: center; padding: 1rem; }
   .sim .box {
     width: min(70rem, 100%); height: min(42rem, 100%); background: #0a1124; border: 1px solid var(--flame); border-radius: 0.6rem;
     padding: 0.8rem 1.2rem; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 0.5rem;
@@ -420,7 +420,7 @@
   .ai .brains button[aria-pressed=true] { background: var(--flame); border-color: var(--flame); color: #0b1020; font-weight: 600; }
   .aibtn { cursor: pointer; background: transparent; color: var(--ink); border-color: var(--flame); font: inherit; font-size: 0.85rem; }
   .aibtn kbd { height: 1.2rem; min-width: 1.2rem; font-size: 0.75rem; }
-  .ai { position: fixed; inset: 0; z-index: 5; background: rgba(6, 10, 24, 0.8); display: grid; place-items: center; padding: 1rem; }
+  .ai { position: fixed; inset: 0; z-index: 5; background: rgba(6, 10, 24, 0.8); display: grid; grid-template: minmax(0, 1fr) / minmax(0, 1fr); place-items: center; padding: 1rem; }
   .ai .box {
     width: min(66rem, 100%); height: min(42rem, 100%); background: var(--panel-hi); border: 1px solid var(--flame);
     border-radius: 0.6rem; padding: 0.9rem 1.2rem; display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto; gap: 0.6rem;
@@ -571,7 +571,7 @@
         <span id="mapTitle"></span>
         <span class="maplegend" id="mapLegend"></span>
         <span class="mapzoom" id="mapZoom" aria-label="Level of detail"></span>
-        <button type="button" class="mapbtn" id="mapBigBtn" title="Key Z, or the View button on the controller"><span id="mapBigText">Zoom in</span></button>
+        <button type="button" class="mapbtn" id="mapBigBtn" title="Key Z, or the View button on the controller"><span id="mapBigText">View: zoom in</span></button>
       </div>
       <svg id="map" role="img" aria-label="Star map of the real FLEX tests with this fuel: oxygen across, droplet size up"></svg>
       <p class="mapfine" id="mapFine" hidden></p>
@@ -596,6 +596,7 @@
       <button type="button" id="oxBtn" hidden title="Key O"><kbd>Y</kbd> Oxygen map</button>
       <button type="button" id="orbitBtn"><kbd>X</kbd> <span id="orbitBtnText">Orbit view</span></button>
     </div>
+    <div class="legend" id="rankFact" hidden style="margin:0 0 0.3rem"></div>
     <div class="rank" id="rank"></div>
     <svg id="orbit" hidden role="img" aria-label="Orbit view: investigations closer to the centre are more relevant to the question"></svg>
     <div class="legend" id="rankNote"></div>
@@ -1391,7 +1392,7 @@ window.FLAME_MODEL = {
     on = on == null ? !MAP.big : !!on;
     if (on === MAP.big || (on && (box.hidden || view.page !== "console" || !last))) return;
     if (on && state.sheet) toggleSheet(false);
-    MAP.big = on; box.classList.toggle("big", on); $("mapFine").hidden = !on; $("mapBigText").textContent = on ? "Close" : "Zoom in";
+    MAP.big = on; box.classList.toggle("big", on); $("mapFine").hidden = !on; $("mapBigText").textContent = on ? "View: close" : "View: zoom in";
     if (on) sfx.open(); else sfx.close();
     render();
   }
@@ -1587,6 +1588,11 @@ window.FLAME_MODEL = {
     view.sel = Math.max(0, Math.min(view.sel, list.length - 1));
     Array.prototype.forEach.call($("needs").children, function (b, i) { b.setAttribute("aria-pressed", String(i === view.need)); });
     $("hRank").textContent = "Ranked for " + need.label.toLowerCase() + ": " + list.length + " of " + R.items.length + " investigations";
+    // For the cabin-air question, the count from NASA's own test tables comes first: it is the short answer.
+    var note = $("rankFact"), showNote = !!T && need.key === "cabin" && !view.orbit;
+    note.hidden = !showNote;
+    if (showNote) note.textContent = "Counted from NASA's test tables: of " + T.meta.ambient_with_pressure + " tests that record oxygen and pressure, "
+      + T.meta.in_moon_zone + " ran in Moon Base air. Y opens the Oxygen map.";
     var box = $("rank"); box.innerHTML = "";
     list.forEach(function (it, i) {
       var row = el("div", "item" + (i === view.sel ? " sel" : ""));
@@ -1619,6 +1625,15 @@ window.FLAME_MODEL = {
     pair("What varied", it.varied);
     pair("Why it matters", it.why);
     pair("Hardware", it.hardware || "Not listed in PSI");
+    if (T) {                                       // counted from this investigation's own test table, not AI-written
+      var facts = T.rows.map(function (row, i) { return { row: row, st: OX.stats[i] }; }).filter(function (x) { return x.row.id === it.id; }).map(function (x) {
+        var st = x.st, amb = x.row.oxygen_is === "ambient", part = x.row.name.indexOf(",") >= 0 ? x.row.name.split(", ")[1] + ": " : "";
+        return part.charAt(0).toUpperCase() + part.slice(1) + st.n + " tests, " + (amb ? "oxygen " : "burner oxygen ") + oxNum(st.lo) + " to " + oxNum(st.hi) + " %"
+          + (st.np ? ", " + st.plo.toFixed(2) + " to " + st.phi.toFixed(2) + " atm" : ", no pressure given")
+          + (amb && st.np ? ", " + st.zone + " in Moon Base air" + (st.near ? " and " + st.near + " just above its pressure line" : "") : "") + ".";
+      });
+      if (facts.length) pair("NASA's test table", facts.join(" "));
+    }
     var rel = el("span", "rel");
     R.needs.forEach(function (nd) {
       var one = el("span", "", nd.label); one.appendChild(dots(it.scores[nd.key])); rel.appendChild(one);
@@ -1826,7 +1841,7 @@ window.FLAME_MODEL = {
   function sendButton() {
     var b = $("sendBtn");
     if (!hasTests) return;
-    if (BASE.ours) { b.textContent = "Send to base"; b.title = "Left stick click, or key S. Stores the file on " + (BASE.host || "the computer that serves this page") + "."; b.hidden = false; }
+    if (BASE.ours) { b.textContent = "L3: send to base"; b.title = "Left stick click, or key S. Stores the file on " + (BASE.host || "the computer that serves this page") + "."; b.hidden = false; }
     else if (canShare()) { b.textContent = "Share"; b.title = "Key S. Opens this device's share sheet (mail, chat, nearby share)."; b.hidden = false; }
     else b.hidden = true;
   }
@@ -2148,7 +2163,8 @@ window.FLAME_MODEL = {
       + oxNum(st.lo) + " to " + oxNum(st.hi) + " %. " + (st.np ? "Pressure " + st.plo.toFixed(2) + " to " + st.phi.toFixed(2) + " atm. " : "The table gives no pressure. ")
       + (row.oxygen_is === "ambient"
         ? "At 30 % oxygen or more: " + st.rich + "." + (st.np ? " In Moon Base air: " + st.zone + ". Just above its pressure line: " + st.near + "." : "")
-        : "This is the oxygen in the burner flow of an inverse flame, which burns inside fuel gas. It is not a cabin atmosphere, so it is left out of the counts above.");
+        : "This is the oxygen in the burner flow of an inverse flame, which burns inside fuel gas. It is not a cabin atmosphere, so it is left out of the counts above.")
+      + " Source: PSI table version " + row.version + (row.doi ? ", DOI " + row.doi : "") + ".";
     oxDraw();
   }
   function oxLevel(n) { OX.level = Math.min(3, Math.max(1, n)); save("oxlevel", OX.level); sfx.preset(); oxRender(); }
@@ -2237,7 +2253,10 @@ window.FLAME_MODEL = {
         "Which investigations help design fire-safety equipment such as smoke detectors and extinguishers, and how?"
       ].filter(Boolean);
       // While the list is ranked for cabin air, the Moon Base question is the one asked first.
-      if (R.needs[view.need].key === "cabin") qs = [moon].concat(qs.filter(function (q) { return q !== moon; }));
+      if (R.needs[view.need].key === "cabin") {
+        qs = [moon].concat(qs.filter(function (q) { return q !== moon; }));
+        if (T) { qs.splice(1, 0, "How many tests were run in Moon Base air, and in which investigations?"); qs = qs.slice(0, 5); }
+      }
       return qs;
     }
     if (view.page === "drill") {
@@ -2325,6 +2344,7 @@ window.FLAME_MODEL = {
       .then(function (resp) {
         if (!resp.ok || !resp.body) throw new Error("HTTP " + resp.status);
         meta.label = resp.headers.get("X-Brain-Label") || ""; meta.fellBack = resp.headers.get("X-Brain-Fallback") === "1";
+        meta.used = (resp.headers.get("X-Records-Used") || "").split(",").filter(Boolean);
         var reader = resp.body.getReader(), dec = new TextDecoder();
         function pump() {
           return reader.read().then(function (x) {
@@ -2381,6 +2401,12 @@ window.FLAME_MODEL = {
         if (err) out.textContent = "Ember did not answer (" + err.message + "). The rest of the dashboard still works.";
         else {
           box.appendChild(el("span", "took", "Answered in " + ((Date.now() - t0) / 1000).toFixed(1) + " s by Ember (" + (meta.label || (who ? who.label : AI.model)) + ")."));
+          if (meta.used && meta.used.length) {
+            box.appendChild(el("span", "took", "NASA records it was given in full: " + meta.used.map(function (id) {
+              var rec = R ? R.items.filter(function (x) { return x.id === id; })[0] : null;
+              return rec ? rec.name + " [" + id + "]" : id;
+            }).join(", ") + "."));
+          }
           if (meta.fellBack) notify("The machine you picked did not answer, so Ember answered from another one.", "warn");
           box.scrollTop = box.scrollHeight;
           sfx.reply();
