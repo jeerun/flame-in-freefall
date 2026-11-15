@@ -375,7 +375,13 @@ No AI-generated images, video or audio are used. No data value was generated or
 changed by AI: every number on screen comes from the NASA table or from the two
 regressions trained on it.
 
-TO ADD (owner): anything teammates did with AI tools outside this repo.
+Two pieces were contributed by a teammate outside this workflow: the independent
+audit (`model/science_audit.py`, `docs/scientific-validation.md`) and the check that
+the page and the Python model give the same numbers (`model/check_parity.py`,
+`docs/model-parity.md`). We could not confirm before submitting whether AI tools
+helped write them, so we list them here to be safe: treat that code and text as
+possibly AI-assisted. Their results do not rest on that: the audit was re-run on the
+team's PC and reproduced exactly, and its five tests pass.
 
 ## Model accuracy (for the description)
 Held-out accuracy for "does the flame go out": AUC 0.81; accuracy 0.887 against 0.864 for always answering "goes out" (199 tests, 5-fold cross-validation repeated 20 times).
