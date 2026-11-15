@@ -33,9 +33,27 @@ def paste_copy(page, value):
 def check_offline(context):
     page = context.new_page()
     page.goto(FILE)
+    orbit = page.get_by_role("listbox", name="Research investigations by relevance")
+    expect(orbit).to_be_visible()
+    expect(page.locator("#rank")).to_be_hidden()
+    expect(page.locator("#orbitBtn")).to_have_accessible_name("List view")
+    orbit.focus()
+    page.keyboard.press("ArrowDown")
+    expect(orbit.get_by_role("option", selected=True)).to_have_attribute("aria-posinset", "2")
+    page.keyboard.press("x")
+    expect(page.locator("#rank")).to_be_visible()
+    expect(page.locator("#rank .sel")).to_be_focused()
     page.get_by_role("button", name="Detection").click()
     page.locator("#rank button").nth(1).click()
     chosen = page.locator("#card").get_attribute("data-investigation")
+    list_code = share(page, "shareResearch")
+    assert "&orbit=" not in list_code
+    previous = context.new_page()
+    previous.goto(FILE + list_code)
+    expect(previous.locator("#rank")).to_be_visible()
+    expect(previous.locator("#card")).to_have_attribute("data-investigation", chosen)
+    previous.close()
+    page.keyboard.press("Escape")
     page.locator("#orbitBtn").click()
     code = share(page, "shareResearch")
     assert code.startswith("#view=v1&") and f"id={chosen}" in code and "&orbit=1" in code
@@ -103,6 +121,11 @@ def check_served(context, port):
     origin = f"http://crew-preview.test:{port}/"
     for url, label in ((loopback, "Copy code"), (origin, "Copy link")):
         page.goto(url)
+        option = page.locator('#orbit [aria-posinset="2"]')
+        expected_id = option.get_attribute("id").removeprefix("orbit-")
+        option.click()
+        expect(page.locator("#card")).to_have_attribute("data-investigation", expected_id)
+        expect(page.locator("#hCard")).to_be_in_viewport()
         value = share(page, "shareResearch")
         expect(page.locator("#shareCopy")).to_have_text(label)
         assert value.startswith("#view=" if url == loopback else origin + "#view=")
@@ -115,6 +138,10 @@ def check_served(context, port):
     target = context.new_page()
     target.goto(value)
     assert share(target, "shareResearch") == value
+    target.keyboard.press("Escape")
+    target.set_viewport_size({"width": 844, "height": 390})
+    expect(target.locator("#orbit [aria-selected='true']")).to_be_visible()
+    assert target.locator("#orbit").bounding_box()["height"] >= 150
     target.close()
     page.close()
 

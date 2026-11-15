@@ -42,6 +42,9 @@ Submission closes Sunday Nov 15, 11:59 PM in the team owner's local time
 
 ## Status
 
+The Research home opens in Orbit view. The tools and investigation details open on demand.
+X switches between Orbit and List. The magnifying glass beside NASA source opens Share view.
+
 The Ember evidence lab opens from Research with L or left-stick click. It includes original
 NASA FLEX footage with a saved local-model frame review and three offline BASS-II table
 questions. Use the Python server with Ollama for fresh image reviews and custom English
