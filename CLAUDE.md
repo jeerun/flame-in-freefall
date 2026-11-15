@@ -42,7 +42,7 @@ Submission closes Sunday Nov 15, 11:59 PM in the team owner's local time
 
 ## Status
 
-Draft PR #10 opens Research in Orbit view. The tools and investigation details open on demand.
+Research opens in Orbit view. The tools and investigation details open on demand.
 X switches between Orbit and List. Find (F) searches all 24 investigations by name, title
 or PSI ID. Share beside NASA source copies the selected view through the Share dialog.
 

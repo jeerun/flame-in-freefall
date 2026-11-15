@@ -39,9 +39,9 @@ https://github.com/jeerun/flame-in-freefall
 
 Published browser copy without live Ember inference: https://jeerun.github.io/flame-in-freefall/
 
-Team note for this draft: the investigation search and Moon evidence check are
-in the PR checkout. Check the published build before copying its link into the
-final form. [Draft pull request](https://github.com/jeerun/flame-in-freefall/pull/10)
+Before submitting the form, open the published link and try **Find** and
+**Research tools → Moon evidence check**. Both are available in the repository
+checkout. [Pull request #10](https://github.com/jeerun/flame-in-freefall/pull/10)
 
 ## Detailed project description
 What it does, how it works, what benefit it has, what tools and languages we used.
