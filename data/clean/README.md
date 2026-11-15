@@ -33,6 +33,23 @@ investigation in the PSI file has no note, or a note has no PSI record. Two of t
 search results are left out because PSI lists them under other research areas
 (PSI-108 fluid physics, PSI-181 materials science).
 
+## PSI test tables
+
+`build_tables.py` reads nine of the tables in `data/raw/psi_tables/` and takes one
+thing from each row: the oxygen level of the test and, where the table has it, the
+pressure. It writes `console/tables.js` for the Oxygen map and
+`psi_tables_summary.json`, the same counts as sentences, for the local AI. Which
+column is read from which table, and what its oxygen value means, is listed at the
+top of the script. Nothing is filled in: a row whose oxygen cell is not a number
+("RAMP", "LOW O2", blank) is counted as unread and not plotted, a cell such as
+"21.5 - 21.7" is read as its middle, and a pressure of 0 (FLEX test 114) is treated
+as no pressure. For inverse gas flames the oxygen is the burner flow, so those two
+tables are marked `burner` and kept out of the Moon Base counts.
+
+Counts on Nov 14, 2026: 887 rows with the oxygen of the surrounding gas, 746 of them
+with pressure too, 20 at 30 % oxygen or more and 10.2 psi or less (all CFI-G normal
+flames), 17 more between 10.2 and 10.5 psi (all FLEX).
+
 ## FLEX table
 
 Cleaning rules: the empty last row is dropped; blank cells stay blank; cells the

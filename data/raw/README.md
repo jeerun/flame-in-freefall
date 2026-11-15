@@ -22,4 +22,15 @@ investigation's PSI page. 195,005 bytes as downloaded, SHA-256
 PSI asks users to cite investigations by their DOI, shown under "Cite this
 Investigation" on each PSI page.
 
+`psi_tables/`: the Experimental Table of every combustion investigation in the PSI
+search result that has one, 25 CSV files, exactly as PSI serves them. Downloaded
+Nov 14, 2026 by `data/clean/fetch_psi_tables.py`, which asks PSI's own web service
+for each investigation's record and then for each file listed under "Experimental
+table". `psi_tables/MANIFEST.json` lists, for every file, the investigation, the PSI
+version, the DOI, the licence PSI states (CC0-1.0, except PSI-10 where the field is
+empty), the size and the SHA-256. `PSI-69_Experimental table_FLEX.csv` is the same
+table as `psi69_flex_experimental_table.tsv` above, this time as the downloadable
+file. Two files belong to investigations that are not combustion science (PSI-108,
+PSI-181); they are kept because the search returned them, and nothing reads them.
+
 Do not edit files in this folder.
