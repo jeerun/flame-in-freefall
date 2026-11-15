@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101b20">
+  <title>Moon evidence check · Flame in Freefall</title>
+  <link rel="stylesheet" href="moon-evidence.css">
+  <script defer src="moon-evidence-data.js"></script>
+  <script defer src="moon-evidence.js"></script>
+</head>
+<body>
+  <header><nav aria-label="Research navigation"><a href="index.html" id="backLink">← Back to research</a><span>Flame in Freefall</span></nav></header>
+  <main>
+    <h1>Moon evidence check</h1>
+    <p class="lead">A crew wants to use a solid panel inside a future Moon cabin. What can NASA’s combustion tables actually tell them?</p>
+    <ol id="trail" aria-label="Evidence checks">
+      <li>Atmosphere</li><li>Specimen</li><li>Gravity</li>
+    </ol>
+    <section class="board" aria-labelledby="stageTitle">
+      <div class="decision">
+        <p class="kicker" id="stageLabel">Your call</p>
+        <h2 id="stageTitle" tabindex="-1">Is matching the cabin air enough to predict how the panel burns?</h2>
+        <p id="reason"></p>
+        <div class="actions" id="actions"></div>
+      </div>
+      <figure class="plot">
+        <figcaption id="plotTitle">NASA table rows with ambient oxygen and pressure</figcaption>
+        <div id="reading"></div>
+        <div id="graphic"></div>
+        <p id="plotNote"></p>
+      </figure>
+    </section>
+    <details id="sourceDetails" hidden>
+      <summary>Inspect the matching NASA rows</summary>
+      <p id="sourceNote"></p>
+      <div class="table-scroll" role="region" aria-label="Matching NASA rows" tabindex="0">
+        <table id="sourceRows">
+          <caption>Original values from the matching rows</caption>
+          <thead><tr><th scope="col">Test ID</th><th scope="col">Fuel</th><th scope="col">O₂ fraction</th><th scope="col">Approx. pressure (bar)</th><th scope="col">CSV line</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p><a id="nasaRecord" href="https://doi.org/10.60555/cyt1-kh64" target="_blank" rel="noopener noreferrer">NASA investigation (PSI-159) ↗</a></p>
+    </details>
+    <noscript>Enable JavaScript to explore the bundled NASA rows.</noscript>
+  </main>
+</body>
+</html>
