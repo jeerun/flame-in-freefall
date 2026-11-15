@@ -216,7 +216,7 @@ Not done:
     key layout for the six extra buttons is in `docs/legion-go-setup.md`. Research
     cards show counts from NASA's test tables, Ember lists the records it was given
     and gets NASA's benefits text, overlays size against the screen.
-  - Tailscale: the PC and the Legion Go ("runma" in the owner's tailnet) are on one
+  - Tailscale: the PC and the Legion Go are on one
     tailnet since Nov 15. `tailscale serve --http=80 8000` on the PC passes the
     dashboard on without a firewall change; it answered from the PC itself. The
     server reads the proxy's X-Forwarded-For so `/who` shows the real device.
