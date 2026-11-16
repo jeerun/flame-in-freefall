@@ -153,7 +153,7 @@ the per-fuel model has had a screen check on the handheld, not a controller run.
 
 ## Form on the Space Apps site (owner only)
 
-Copy each field from `docs/submission.md`.
+Use `docs/submission.md` for the draft answers. Complete the disclosure on the official form.
 
 - [ ] Project name, in English.
 - [ ] High-level summary, in English.
@@ -166,10 +166,11 @@ Copy each field from `docs/submission.md`.
 - [ ] Space Agency Partner Data and Other References: no partner data, then the list of
       other resources and tools from `docs/submission.md`. The form asks for all data,
       resources and tools, including code, text and images, so "None" is not enough.
-- [ ] Use of Super Intelligence (SI), the form's 2026 name for the use of AI. Required.
-      In English, including anything teammates did with AI outside this repo. The guide
-      says SI should not be used to come up with the idea: check the text says truthfully
-      what the team did itself.
+- [ ] Complete the required “Use of Super Intelligence (SI)” field in English on the
+      official form. Check the answer with all contributors, including anyone who
+      worked outside the repository.
+- [ ] Check the version at the final project link for the required acknowledgements
+      in the descriptive text and metadata of generated code or data.
 - [ ] Every "TO ADD" in `docs/submission.md` is filled before copying.
 - [ ] No Thai or other non-English text in any field.
 

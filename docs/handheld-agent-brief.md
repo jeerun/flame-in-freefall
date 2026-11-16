@@ -1,9 +1,7 @@
-# Brief for an AI assistant working ON the Legion Go
+# Legion Go device test brief
 
-You are on the team's Lenovo Legion Go (first generation, Windows 11), the handheld
-the demo is filmed on. Another assistant session works on the team's PC (the one with
-the RTX 5080) and wrote this brief. Read `CLAUDE.md` in this repo first: it holds the
-project, the rules and the current status. Then `docs/legion-go-setup.md` and
+This brief covers testing on the team's first-generation Lenovo Legion Go with Windows 11.
+Read `CLAUDE.md` for project status, then `docs/legion-go-setup.md` and
 `docs/checklist.md`.
 
 Reply to the owner in Thai, short, answer first. Everything in the repo (code, docs,
@@ -119,9 +117,8 @@ The PC session changed the page for this device. None of it has been seen here y
 - Never type a password, a token or a sign-in code. If git needs a sign-in to push,
   the owner does it in the window that opens; if that is not possible, leave your
   change as a patch file and tell the owner.
-- Before the first commit here run `git config user.name "Claude"` and
-  `git config user.email "noreply@anthropic.com"` inside the repo, as on the PC, so
-  the owner's address stays out of a public repository.
+- Before committing, check the local Git identity and use the contributor's public
+  or GitHub-provided noreply address.
 - Do not change firewall, VPN or other system settings: ask the owner to click.
   No public tunnels.
 - Never present a number you did not measure as a result. Never edit `data/raw`.

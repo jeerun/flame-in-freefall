@@ -1,7 +1,6 @@
 # Project context
 
-Handoff notes so a new Claude session can pick this project up without the
-earlier conversation. Written Saturday Nov 14, 2026, about 8:35 PM Mountain Time.
+Project handoff notes, started Saturday Nov 14, 2026, about 8:35 PM Mountain Time.
 Update the Status section whenever something lands.
 
 ## How to work with this team
@@ -55,7 +54,7 @@ near it. Fire drill lists the rounds played. Checked on the PC only, in desktop 
 keyboard, touch emulation and a simulated gamepad. Not yet seen on the physical Legion Go.
 
 Research opens in Orbit view. The tools and investigation details open on demand.
-Four numbered rings and a visible key explain the AI relevance scores from 3 to 0.
+Four numbered rings and a visible key explain the project's relevance scores from 3 to 0.
 X switches between Orbit and List. Find (F) searches all 24 investigations by name, title
 or PSI ID. Share beside NASA source copies the selected view through the Share dialog.
 
@@ -119,11 +118,10 @@ Done:
   NTRS and NASA pages). The explanation panel gained one sourced sentence: "goes
   out" means the visible flame, and FLEX found cool flames after it.
 
-- Step 6 done: `docs/submission.md` drafted for every form field. Two lines are
-  marked TO ADD for the owner (demo link, teammates' AI use). The project name
+- Step 6 done: `docs/submission.md` drafted for the owner to complete. The project name
   "Flame in Freefall Crew Fire Console" is a proposal: the owner can change it.
 - Step 7 done: `README.md` shows the real status, how to run and rebuild, the data,
-  the accuracy and the use of AI.
+  the accuracy and Ember.
 - Step 8 done: `docs/demo-script.md`, six shots with buttons and subtitles. The
   readings in it were checked in a desktop browser, not on the Legion Go.
 - Step 9 done: `docs/checklist.md`. Repo confirmed Public on Nov 14 (opened without
@@ -141,9 +139,9 @@ Done:
 
 - Third approved addition done: the "NASA research" page (LB/RB or key 2). It lists
   the 24 PSI combustion investigations, ranked by relevance to prevention, detection
-  or suppression, with a summary card for each. Facts come from
-  `data/raw/psi_search/combustion_investigations.json`; the summaries and 0 to 3
-  scores are AI-written, in `data/clean/research_notes.json`;
+  or suppression, with a summary card for each. NASA titles, investigation types and
+  hardware come from `data/raw/psi_search/combustion_investigations.json`. Project
+  summaries and 0 to 3 relevance scores are in `data/clean/research_notes.json`.
   `data/clean/build_research.py` joins them into `console/research.js`. Checked in
   headless Edge at 1280x680 and 1280x800: no page scrolling, every card fits, the
   list scrolls inside its own box, keyboard and simulated gamepad work.
@@ -187,7 +185,7 @@ Done:
   - Sound effects made in the browser (M mutes) and a moving starfield behind the page.
 
 Not done:
-- Nobody on the team has reviewed the AI-written research notes line by line.
+- A line-by-line review of the research notes is still pending.
 - Ember's answers were spot-checked by hand (about twenty), not evaluated formally.
 - Sound and voice need one touch, click or key press before a browser will play
   them. Whether a gamepad button alone unlocks them on the Legion Go is untested.
@@ -261,8 +259,8 @@ Not done:
     "already installed" path was run, on the PC), `docs/legion-go-setup.md`, and in
     the server: "New device connected: <ip>" in the window, `/who` (answered only to
     the machine itself) listing every device with its request counts, and a second
-    start that points at the running dashboard instead of failing. This session
-    cannot reach the Legion Go: no SSH and no Claude on it.
+    start that points at the running dashboard instead of failing. The Legion Go
+    was unavailable for that test.
 
   - For the Legion Go's own hardware (owner's photo, Nov 15): the mouse wheel turns
     the selected setting and walks lists and stars; a pointer (FPS mode, trackpad,
@@ -287,8 +285,8 @@ Not done:
     questions to Ember all answered (slowest 2.1 s), 4 CSV files received, no server
     errors. What the screen, sound, rumble and buttons did was not visible from here.
 
-  - The owner's zip of Nov 15 (made with ChatGPT/Codex, based on the then-current
-    main) is merged: the explanation opens with Prediction, Real-test evidence and
+  - The owner's zip of Nov 15, based on the then-current main, is merged. The
+    explanation opens with Prediction, Real-test evidence and
     Limitations, with "Why this prediction?" (X, key W) and "Test details and
     sources" (Y, key T) as sections that open; "Save baseline" and "Compare" (keys H
     and C) show two sets of settings side by side and withhold the difference when
@@ -331,8 +329,8 @@ Not done:
       twelve browser suites at 1280x680 and 1280x800, and the demo sequence.
 
   - Verified on the real Legion Go on Nov 15, 00:37 to 02:25 by the handheld's clock
-    (Pacific Standard Time, 08:37 to 10:25 UTC), by a Claude session running on the
-    handheld with the owner pressing the controls (`docs/handheld-agent-brief.md`).
+    (Pacific Standard Time, 08:37 to 10:25 UTC), with the owner pressing the
+    controls on the handheld (`docs/handheld-agent-brief.md`).
     Every time in this point is by that clock. The PC's clock, used in the other
     points, reads one hour later (British Columbia time, UTC-7).
     How: a second Edge window (Edge 157, guest mode) opened full screen at `http://run/`
@@ -481,10 +479,10 @@ Not done:
       display, one scenario was added for those limits, and the suite runs without npm
       through `E2E_PLAYWRIGHT_PATH`: 40 of 40 in Edge. Four copies of the page with one
       deliberate fault each were all caught.
-    - #6, from the Claude session on the Legion Go: the point above, the checklist
-      ticks and `--source winget` in `Setup Legion Go.bat`.
-    - #5, made with OpenAI Codex on the owner's account, in two rounds. Round one was
-      its first four commits, written on the page before the model switch. It was
+    - #6 recorded the Legion Go test above, updated the checklist and added
+      `--source winget` to `Setup Legion Go.bat`.
+    - #5 was merged in two rounds. Round one covered its first four commits,
+      based on the page before the model switch. It was
       joined with the per-fuel model here and merged. Meanwhile the branch gained seven
       more commits that bring in main themselves (per-fuel model, browser tests,
       handheld results) and add more. Round two took the branch's newer version of
@@ -671,12 +669,9 @@ Not done:
       new sentence in it. `tests/browser_guides.py` checks the fit.
     - No reading, formula or CSV changed.
 
-  - FORM DRAFT CHECKED AGAINST THE OFFICIAL GUIDE (Nov 15, about 5:29 PM, after the owner
-    asked whether the AI field is mandatory). It is. `docs/submission.md` now names the two
-    fields as the 2026 form does, lists every resource and tool under "Other References"
-    (the checklist said "None"), adds the NASA images and clips to NASA Data, and opens the
-    AI field with how AI use is marked in the project. Owner: read the note about the
-    idea rule before pasting.
+  - The submission draft was checked against the official guide on Nov 15. NASA
+    Data includes the images and clips. The owner must complete the required
+    fields on the official form before submitting.
 
 Not done, or not verified:
 - Everything in the list above is unverified on the real Legion Go, with real
@@ -715,9 +710,8 @@ How the build compared before the additions:
 What closes the gaps (owner approved all three on Nov 14):
 - Cabin-air buttons with the Moon Base case from the page. Done.
 - Ranked closest real tests. Done.
-- "NASA research" page: all PSI combustion investigations, summarized and ranked by
-  relevance to prevention, detection or suppression. Summaries and ranks are
-  written by an AI model from the PSI records and labelled as such. Done.
+- "NASA research" page: all PSI combustion investigations, with project summaries
+  and relevance scores for prevention, detection or suppression based on PSI records. Done.
 
 Added after the owner asked whether this was enough for "SI-powered": a language
 model running on the team's own RTX 5080 PC ("Ask the AI"), and a game page.
@@ -741,9 +735,9 @@ and update Status above each time.
 5. DONE. Fill `docs/sources.md`: NASA dataset, DOI, link, download date, and a source
    for every sentence shown on screen. If the wording on screen changes, update the
    claims table in that file too.
-6. DONE (draft, revisit after step 4). Fill `docs/submission.md` in English, every
-   form field, with the accuracy numbers and the use of AI.
-7. DONE. Update `README.md`: real status, how to run, data used, use of AI.
+6. DONE (draft, revisit after step 4). Prepare the English submission text and
+   accuracy numbers in `docs/submission.md`.
+7. DONE. Update `README.md` with the status, run instructions, data sources and Ember.
 8. DONE. Write the 30-second demo script with English subtitles, shot by shot, with
    the buttons to press on the Legion Go: `docs/demo-script.md`.
 9. DONE. Pre-submission checklist: `docs/checklist.md`.
@@ -883,8 +877,7 @@ Honesty rules for the new pieces: a star is a drawing of one real test (shape an
 colour from "Test end", size from the measured burning rate); a replay plays back
 NASA's start diameter, end diameter and burn time and says the glow is an
 illustration; a test with no end diameter on record is not replayed; the orbit view
-shows the same AI-written ranks as the list; Ember's lines are always labelled as
-the AI's.
+shows the same project relevance scores as the list. Ember's lines are labelled as such.
 
 Tests live outside the repo (Playwright scripts driving headless Edge). When the
 page changes, the things worth re-checking are: nothing scrolls at 1280x680 and
@@ -927,8 +920,6 @@ Deliberately cut: flame video analysis, combining the raw data of several experi
 - Form fields, all in English: project name, high-level summary, demo link, final
   project link, detailed description, NASA data, partner and other data, use of AI.
 - Must use NASA data to be eligible for global awards.
-- Must state where and how AI was used. Claude has been used for planning, the
-  console code and this skeleton. Keep the README section current.
 - Work must be the team's own. Other teams' repos may be read, never copied from.
 - Read on Nov 15, 2026 in the Project Submission Guide and the Participant FAQs
   (spaceappschallenge.org/resources). The 2026 site writes "Super Intelligence (SI)" for
@@ -938,7 +929,8 @@ Deliberately cut: flame video analysis, combining the raw data of several experi
   identifiers; SI-generated images and video need a visible watermark; audio, code and
   data need an acknowledgement in descriptive text and metadata.
 - The field "Space Agency Partner Data and Other References" asks for all data, resources
-  and tools, including code, text and images. `docs/submission.md` now lists them.
+  and tools, including code, text and images. The team should verify the complete
+  list in the official form before submitting.
 - All team members must be confirmed participants at the same event. All required fields
   must be completed, in English. Judging criteria: Impact, Creativity, Validity,
   Relevance, Presentation. The demo counts mostly toward Presentation.

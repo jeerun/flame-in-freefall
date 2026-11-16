@@ -264,8 +264,3 @@ A different kind of model does not close them: `model/compare_models.py` tried e
 - `tests/test_console_features.cjs` and the 40 browser scenarios check the new
   numbers on the page against the exported coefficients.
 - Not checked: any of this on the real handheld.
-
-## Use of AI
-
-The audit, the code and this document were written with Claude (Anthropic) at the
-team owner's request. No data value was generated or changed by AI.

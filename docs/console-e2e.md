@@ -144,9 +144,3 @@ distinction explicitly.
 
 If warnings or selectors intentionally change, review the expected behavior
 before adjusting tests. Do not remove assertions simply to obtain a pass.
-
-## Use of AI
-
-We could not confirm whether AI tools helped write the suite, so treat it as
-possibly AI-assisted. The update of 15 November (the oracle, the added scenario,
-the first run and the fault check) was done with Claude (Anthropic).

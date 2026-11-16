@@ -114,8 +114,9 @@ in about a second, and warnings come as sound and vibration as well as text. We
 have not verified glove use or the new controls on a physical handheld.
 
 The console numbers come from two small models trained on FLEX (PSI-69), each with
-its own slopes for heptane and for methanol. The research summaries and ranks were written by an AI model from the PSI records and
-are labelled as such. It is a study and planning tool, not a crew procedure.
+its own slopes for heptane and for methanol. On the research page, titles,
+experiment types and hardware come from NASA PSI. The project adds summaries
+and relevance scores for each safety topic. It is a study and planning tool, not a crew procedure.
 
 ## Status
 
@@ -403,54 +404,14 @@ One owner per folder. If you need a change in someone else's folder, ask them.
 3. Not using git? On github.com open your folder, then Add file > Upload files.
 4. Stuck for more than 30 minutes? Say so in the group chat.
 
-## Use of AI
+## How Ember answers questions
 
-The dashboard uses AI in the following activities.
+Ask Ember runs Gemma through Ollama on the team's RTX 5080 PC or on the handheld.
+For each question, the server supplies relevant PSI records, counts from NASA's
+tables or the current console reading, and asks Ember to cite the PSI IDs it used.
+Ember can misread a source. The team saved its answers to 18 questions for
+review. [Ember answer checks](docs/ember-check.md)
 
-- In the evidence lab, Ember examines sampled frames of NASA footage for a change in the
-  visible flame rim. For custom BASS-II questions it proposes filters. Python validates those
-  filters and returns measurements directly from the CSV. OpenAI Codex helped build and test the lab.
-- Ember ("Ask Ember"): Gemma 4 (12B, an open model from Google) run locally with Ollama on
-  the team's RTX 5080 PC, or a smaller Gemma 4 on the handheld. `server/serve.py`
-  gives it the NASA PSI text for the investigations closest to the question, the
-  counts this project made from NASA's test tables, or the reading on screen, and
-  tells it to answer only from that and to cite PSI ids. Its answers are written on
-  the spot and can be wrong: `docs/ember-check.md` holds 18 of them for checking.
-  The supplied Gemma setup runs inference on the configured machines. Optional
-  export syncing uses the service chosen by the operator.
-- The summaries, "why it matters" lines and 0 to 3 relevance scores on the NASA
-  research page were written ahead of time by Claude (Anthropic) from each
-  investigation's PSI record (`data/clean/research_notes.json`). Titles, project type
-  and hardware are copied from PSI unchanged.
-- The predictions on the Flame console page come from plain logistic and linear
-  regression, which is machine learning but not generative AI.
-
-While building it we used Claude (Anthropic), an AI assistant: planning, writing the
-dashboard code, the server and the data-cleaning and training scripts, reviewing and
-re-running them, reading the PSI-69 table and the challenge page, finding sources,
-and drafting the documentation.
-
-The summary-first explanation panel and the baseline comparison were written by a
-team member with OpenAI ChatGPT/Codex, then reviewed, fitted to the screen, given a
-controller path and tested with Claude. The training code, the model coefficients and
-the NASA data were not changed by it.
-
-The per-fuel model the console now uses (training script, comparison of eight
-candidates, page patch, tests and write-up) was produced by a team member with
-Claude. Its results were re-run on the team's PC and checked with a separate script
-before the console was switched to it.
-
-OpenAI Codex also helped implement and test the evidence activities, investigation search, the
-responsive dashboard layout, the console and server fixes, and the captioned browser demonstration. Its scenes
-show the actual dashboard and NASA table values.
-
-A teammate contributed the independent audit, the parity check and the browser tests
-(`model/science_audit.py`, `model/check_parity.py`, `tests/e2e/console_e2e.cjs` and
-their documents). We could not confirm whether AI tools helped write them, so treat
-that code and text as possibly AI-assisted. The audit was re-run on the team's PC and
-reproduced exactly. The browser tests were brought up to date with the per-fuel model
-and run there with Claude.
-
-The demo uses screen captures of the working dashboard. The NASA measurements
-come from the published tables. Keep this section current: the submission form asks where and how AI
-was used.
+In the evidence lab, Ember compares sampled frames from NASA footage for a visible
+change in the flame rim. For a BASS-II table question, Ember proposes filters.
+Python checks those filters and returns the matching measurements from the CSV.

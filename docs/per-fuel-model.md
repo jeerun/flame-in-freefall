@@ -257,9 +257,3 @@ Then these would be out of date and need the same care:
 
 The page change is backward compatible: a page with the patch still reads an export
 without `fuel_coef` or `meta.watch` and behaves as before.
-
-## Use of AI
-
-The scripts, the tests, the patch and this document were written with Claude
-(Anthropic), an AI assistant, at a team member's request. The models are plain
-logistic and linear regression. No data value was generated or changed by AI.

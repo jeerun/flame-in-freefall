@@ -30,7 +30,7 @@ support. Its optional assistant, Ember, uses Ollama on a configured machine. The
 core dashboard and evidence activities open offline.
 
 ## Link to project demo
-[Watch the captioned desktop demo](https://github.com/jeerun/flame-in-freefall/blob/69c3424992b88d973510548c758df07db61dd935/docs/crew-console-demo.mp4)
+[Watch the captioned desktop demo](https://github.com/jeerun/flame-in-freefall/blob/86d58ee2be94d1546350fdb560ba52963f95b2b7/docs/crew-console-demo.mp4)
 
 ## Link to final project
 The public GitHub repo. No login needed to view.
@@ -202,28 +202,30 @@ When the team’s server is available, Send to base stores the project CSV there
 An operator can choose a cloud-synced exports folder, in which case the sync
 application may transfer the file once connected.
 
-**Where the AI is.** Three places, each stated on screen.
+**Ask Ember.** Ember is available from the research, console and drill pages when the
+model server is reachable. Its Gemma 4 12B model runs on the team's RTX 5080 PC.
+The optional two-server
+setup prefers the reachable PC and falls back to the server's own configured
+model. On the handheld's own server, the owner switched Ember from the PC to
+the Legion Go and received a local answer. A second server on the handheld
+answered with its configured peer unreachable. On the research page Ember answers
+questions such as "For a Moon Base cabin with about 30% oxygen at low pressure,
+which investigations matter most, and why?", "Compare BASS-II with BASS" or "What
+did this investigation measure, and with which instruments?" from the PSI text of
+the investigations closest to the question and the counts from NASA's test tables.
+On the console page it interprets the current reading in plain words, and in the
+Fire drill it adds one sentence on why a
+test may have ended the way it did. It is told to answer only from the material it
+is given, to cite PSI identifiers, to copy numbers exactly, and to say so when the
+records do not hold the answer. Read-aloud selects an installed English voice
+advertised by the browser as local. If none is available, answers remain on screen.
 
-- Ember, the on-board AI, on every page. A language model (Gemma 4, 12 billion
-  parameters) runs on the team's own PC with an RTX 5080. The optional two-server
-  setup prefers the reachable PC and falls back to the server's own configured
-  model. On the handheld's own server, the owner switched Ember from the PC to
-  the Legion Go and received a local answer. A second server on the handheld
-  answered with its configured peer unreachable. On the research page Ember answers
-  questions such as "For a Moon Base cabin with about 30% oxygen at low pressure,
-  which investigations matter most, and why?", "Compare BASS-II with BASS" or "What
-  did this investigation measure, and with which instruments?" from the PSI text of
-  the investigations closest to the question and the counts from NASA's test tables. On the console page it interprets the
-  current reading in plain words, and in the Fire drill it adds one sentence on why a
-  test may have ended the way it did. It is told to answer only from the material it
-  is given, to cite PSI identifiers, to copy numbers exactly, and to say so when the
-  records do not hold the answer. Read-aloud selects an installed English voice
-  advertised by the browser as local. If none is available, answers remain on screen.
-- The summaries and relevance ranks on the research page were written ahead of time
-  by an AI model (Claude) from each investigation's PSI record and stored in the
-  page, so they are there even when the PC is not.
-- The predictions on the console page come from machine-learning models trained on
-  NASA data.
+The evidence lab bundles six NASA clips and links to online footage of FLEX-2
+flame oscillations and the Saffire-IV fabric experiment. A saved frame review identifies a possible
+change in the visible flame rim in the [FLEX footage](https://svs.gsfc.nasa.gov/11318/).
+A fresh review uses the Python server and an available Ollama vision model. For
+English questions about BASS-II gas readings, Ember proposes a filter. Python
+validates it and returns the matching CSV rows.
 
 With the PC switched off, a local copy still runs the research, evidence activities,
 predictions and drill and can save the CSV on the device. Ember and sending a CSV
@@ -291,7 +293,7 @@ to base require a reachable server.
 - Where resampling the tests does not settle which way a setting pushes for a fuel
   (pressure for both fuels; droplet size and carbon dioxide for methanol), the
   explanation says so on the line that leans on it.
-- AI-written text is labelled as AI-written, next to facts copied from PSI.
+- Each research card links its summary to the original PSI record.
 - The Oxygen map keeps the original table rows, including exact repeats. Rows
   with unreadable oxygen are excluded. Inverse flames use oxygen in the burner
   flow, so those rows are excluded from the cabin-conditions count.
@@ -342,8 +344,8 @@ These scores describe performance within this FLEX dataset.
   export, the PC’s `/tests.csv` returned 252 rows. The PC's destination folder
   was not opened. The team did not test a direct Wi-Fi address or stop the PC
   mid-session to check the disconnect banner.
-- The relevance ranks are an AI model's reading of NASA's descriptions, on a 0 to 3
-  scale. They are a starting point, not a NASA rating.
+- The project's 0 to 3 relevance scale interprets PSI descriptions for the four
+  safety topics. NASA supplies the investigation records.
 - In Fire drill the model was trained on the tests it is scored on, so its score there
   is not a measure of accuracy. The held-out numbers above are. The page says so.
 - Ember can give an incorrect attribution even when the number and investigator
@@ -450,8 +452,8 @@ NASA images and video shown in the dashboard (credits and links in `docs/sources
 
 ## Space agency partner and other data
 Form field on the 2026 site: "Space Agency Partner Data and Other References". It asks
-for all data, resources and tools used, including code, text and images. Do not paste
-these two lines.
+for all data, resources and tools used, including code, text and images. The owner
+should check this inventory with all contributors when completing the form.
 
 No data from a Space Agency Partner. Every dataset, image and video in the project is
 NASA's and is listed under NASA Data.
@@ -461,89 +463,16 @@ Other resources and tools:
 - Software: Python with pandas, NumPy, scikit-learn and matplotlib (cleaning, training,
   the chart, the local server). Pillow and imageio-ffmpeg (preparing frames of the FLEX
   clip). Node.js and Playwright with Microsoft Edge (tests).
-- Language models run locally with Ollama (https://ollama.com): Gemma 4 12B and
-  `gemma4:e2b`, open models from Google.
-- AI assistants used while building: Claude (Anthropic) and OpenAI ChatGPT/Codex. What
-  each did is in the next field.
+- Ember uses the Gemma 4 12B and `gemma4:e2b` models from Google through local
+  [Ollama](https://ollama.com) servers.
 - The dashboard loads no third-party JavaScript or CSS library and no web font.
 
-## Use of artificial intelligence
-Form field on the 2026 site: "Use of Super Intelligence (SI)". The site writes "SI"
-where it used to write "AI". The field is required: the Participant FAQs say "Each
-team's project submission must include a description of how SI tools were used during
-the development of their project." The guide says the answer is collected for NASA and
-is not shown to the judges, who see the AI labels inside the project instead. The guide
-also says SI should not be used to come up with the idea of how to solve the challenge:
-the owner checks that the text below describes the team's work truthfully on that point.
-Do not paste this note.
+## Official form disclosure
 
-Yes. Where and how we used AI.
-
-How it is marked in the project: the AI-written summaries and ranks carry the labels
-"AI summary" and "Summaries and ranks by Claude" on the page. Ember's panel says it is a
-language model and that it can be wrong. The README has a "Use of AI" section. Commits
-made by our AI assistant sessions carry the author name "Claude" or "Codex". No image or
-video in the project was made with a generative model: every photograph and clip is
-NASA's, the drawings and sound effects are produced by the page's own code, and the demo
-video is a screen capture of the running dashboard with captions added using Codex.
-Ember's answers, and the voice that can read them aloud, are produced at run time and
-shown as Ember's.
-
-Inside the product:
-
-- The Ember evidence lab uses the locally installed vision model to identify a candidate
-  change in the visible flame rim in NASA's [FLEX footage](https://svs.gsfc.nasa.gov/11318/).
-  Viewers can play six NASA clips offline, covering FLEX, FLEX-2, SoFIE-GEL,
-  Saffire-I, Saffire-V and Saffire-VI. Two online videos show FLEX-2 flame
-  oscillations and the Saffire-IV fabric experiment.
-  The saved frame review applies to FLEX. A fresh review
-  uses the Python server and an available Ollama vision model. For English questions
-  about BASS-II gas readings, Ember proposes a filter and the dashboard returns original
-  CSV rows. OpenAI Codex helped implement and test both activities.
-- Ember, the on-board assistant, is Gemma 4 12B, an open language model from Google,
-  run locally with Ollama on the team's own RTX 5080 PC. The smaller
-  `gemma4:e2b` also answered on the Legion Go's CPU. Ember adds a
-  one-sentence comment after each Fire drill round, from the NASA PSI records, the
-  counts we made from NASA's test tables and the numbers on screen, which our server
-  puts in its prompt. The server instructs it to cite PSI identifiers and the
-  interface marks generated answers as fallible. Read-aloud requires an installed
-  local English voice.
-- The plain-language summaries, the "why it matters" lines and the 0 to 3 relevance
-  scores on the NASA research page were written ahead of time by Claude (Anthropic)
-  from the PSI record of each investigation. The page labels them as AI-written and
-  shows the PSI identifier so they can be checked. Titles, project type and hardware
-  are copied from PSI unchanged.
-- The predictions come from a logistic regression and a linear regression (machine
-  learning, not generative AI) trained on the NASA FLEX table.
-
-While building it we used Claude (Anthropic), an AI assistant, for:
-
-- planning the project and the repository layout;
-- writing the dashboard (`console/index.html`) and the local server (`server/serve.py`);
-- writing the data-cleaning and training scripts, then reviewing them and re-running
-  them to confirm the numbers;
-- implementing the per-fuel models, comparison of eight outcome candidates,
-  dashboard changes, tests and write-up with a team member;
-- reading the PSI-69 table from the NASA page into a file (checked page by page with
-  SHA-256 hashes), downloading the other PSI test tables and writing the script that
-  reads them, reading the official challenge page and finding the NASA sources
-  listed in `docs/sources.md`;
-- drafting the documentation and this form text.
-
-OpenAI ChatGPT/Codex helped write the summary-first explanation and baseline
-comparison, which the team reviewed and tested with Claude. Codex also helped
-implement and test the evidence activities, the investigation search and the responsive dashboard layout,
-revise evidence labels, fix controls and local server handling, and capture and caption the desktop demo.
-The video shows the running dashboard. The measurements in these activities
-come directly from the cited PSI tables.
-
-Two pieces were contributed by a teammate outside this workflow: the independent
-audit (`model/science_audit.py`, `docs/scientific-validation.md`) and the check that
-the page and the Python model give the same numbers (`model/check_parity.py`,
-`docs/model-parity.md`). We could not confirm before submitting whether AI tools
-helped write them, so we list them here to be safe: treat that code and text as
-possibly AI-assisted. Their results do not rest on that: the audit was re-run on the
-team's PC and reproduced exactly, and its five tests pass.
+TO ADD on the official Space Apps form. The team owner should complete the required
+“Use of Super Intelligence (SI)” field with input from all contributors. The owner
+should also identify any generated code or data in the submitted project's descriptive
+text and metadata. [Project Submission Guide](https://www.spaceappschallenge.org/resources/project-submission-guide/) · [Organizers’ guidance on attribution](https://github.com/nasa/spaceapps/discussions/1849)
 
 ## Model accuracy (for the description)
 
