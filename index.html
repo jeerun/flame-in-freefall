@@ -662,6 +662,7 @@
     </div>
     <div class="sheet" id="sheet" hidden role="dialog" aria-labelledby="sheetTitle">
       <button type="button" class="close" id="closeSheet"><kbd>B</kbd> Close</button>
+      <button type="button" id="sheetAdvisor" hidden aria-haspopup="dialog" title="What would put this flame out? Key Q, or RT while this panel is open"><kbd class="wide">RT</kbd> Put it out</button>
       <h3 id="sheetTitle">Why the model says this</h3>
       <div class="reading-summary">
         <section><h4>Prediction</h4><p id="summaryPrediction"></p></section>
@@ -672,7 +673,6 @@
         <button type="button" id="saveBaseline" title="Key H, or LT while this panel is open"><kbd class="wide">LT</kbd> <span id="saveBaselineText">Save as baseline and compare</span></button>
         <button type="button" id="openCompare" disabled title="Key C">Compare</button>
         <button type="button" id="sheetCounter" hidden title="Key E">Find counterexample</button>
-        <button type="button" id="sheetAdvisor" hidden aria-haspopup="dialog" title="Key Q, or RT while this panel is open"><kbd class="wide">RT</kbd> What would put it out?</button>
         <span id="baselineStatus" role="status">Save these settings as A, then change the bars to see B beside it.</span>
       </div>
       <details id="whyDetails"><summary>Why this prediction? <small>X / key W</small></summary><ul id="sheetList"></ul></details>
@@ -1482,7 +1482,7 @@ window.FLAME_MODEL = {
     });
     li("Burning rate " + r.K.toFixed(2) + " mm²/s means the droplet's diameter squared shrinks by that much every second.");
     ul = $("testList");
-    if (ap && ap.key === "moon") li("Cabin air is the Moon Base case from the challenge brief: oxygen 30 % or more at 10.2 psi (0.69 atm) or less.");
+    if (ap && ap.key === "moon") li("Cabin air is the Moon Base case from the challenge brief: oxygen 30 % or more at 10.2 psi (0.69 atm) or less. The FLEX records shown here do not establish a lunar-gravity outcome.");
     if (ap && ap.key === "mars") li("The Mars base scenario assumes the Moon Base cabin air. The FLEX records shown here do not establish a Mars-gravity outcome.");
     if (rc.near) {
       var nb = rc.near.near;
@@ -1541,6 +1541,7 @@ window.FLAME_MODEL = {
     if (rc.level !== "outside" && r.pDis != null && r.pDis >= 0.5) limits.push("The model estimates at least a 50% chance of disruption. The completion estimate applies only to clear outcomes.");
     if (rc.edge.length) limits.push("These conditions are near the edge of the tested range.");
     var ap = activePreset();
+    if (ap && ap.key === "moon") limits.push("This is Moon Base cabin air only, not a lunar-gravity validation.");
     if (ap && ap.key === "mars") limits.push("Mars cabin air is an assumed scenario, not a Mars-gravity validation.");
     if (!limits.length) limits.push("Experimental coverage does not guarantee accuracy for this exact combination.");
     limits.push("Visible flame extinction does not establish safety; cool-flame reactions may continue.");

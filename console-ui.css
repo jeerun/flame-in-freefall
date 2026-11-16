@@ -425,7 +425,7 @@ body[data-page="console"]:has(#viewConsole.crew-mode) #stars { visibility: hidde
   #oxLevels button, #oxStudy { min-height: 42px; }
   .sim .ahead button, .ai .ahead button { min-height: 42px; }
   .sheet .close, .baseline-actions button { min-height: 42px; }
-  .sheet summary { padding-block: .5rem; }
+  .sheet summary { padding-block: .4rem; }
   #viewConsole .map.big :is(.mapzoom button, .mapbtn) { min-height: 40px; }
 }
 
@@ -496,3 +496,13 @@ body[data-page="research"]:has(#padChip.on) .top .tour-button kbd { display: inl
 @media (min-width: 821px) and (max-height: 725px) {
   #viewResearch .research-lead { display: none; }
 }
+
+/* The explanation's door to "What would put it out?" sits beside Close, so the panel keeps its height. */
+.sheet #sheetAdvisor {
+  position: absolute; top: .8rem; right: 7.6rem; display: inline-flex; align-items: center; gap: .4rem;
+  padding: .35rem .7rem; font-size: .9rem; color: var(--ink); background: transparent;
+  border: 1px solid var(--line); border-radius: .5rem; cursor: pointer; white-space: nowrap;
+}
+.sheet #sheetAdvisor:hover { border-color: var(--flame); }
+@media (max-width: 1023px) { .sheet #sheetAdvisor { display: none; } }
+@media (min-width: 1024px) and (min-height: 760px) { .sheet #sheetAdvisor { min-height: 42px; } }
