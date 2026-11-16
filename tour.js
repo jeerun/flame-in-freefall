@@ -20,12 +20,12 @@
     const all = [
       { page: "research", targets: ["#orbit", "#rank"], title: "NASA's fire research at a glance",
         text: () => options.investigations + " microgravity combustion investigations from NASA's PSI archive. "
-          + (shown(document.getElementById("orbit")) ? "Each mark is one investigation: the closer to the centre, the higher its AI-rated relevance to the safety topic."
-            : "Each row is one investigation, ranked by its AI-rated relevance to the safety topic.") },
+          + (shown(document.getElementById("orbit")) ? "The investigations most relevant to the selected safety topic sit closest to the centre."
+            : "The investigations most relevant to the selected safety topic appear first.") },
       { page: "research", targets: ["#needs"], title: "Ask a safety question",
         text: () => "Prevention, detection, suppression or cabin air: the ranking changes with the topic. Left and right switch topic, up and down pick an investigation." },
       { page: "research", targets: [".research-detail"], title: "What one investigation found",
-        text: () => "A plain summary of the NASA record, written by AI and labelled as such. NASA source opens the record itself." },
+        text: () => "The project notes explain why this investigation matters for fire safety. Select NASA source to read the original record." },
       { page: "research", targets: ["#researchTools"], title: "Dig into the data",
         enter: () => { if (tools()) { toolsWereOpen = tools().open; tools().open = true; } },
         leave: () => { if (tools() && toolsWereOpen === false) tools().open = false; toolsWereOpen = null; },

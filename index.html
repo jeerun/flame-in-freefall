@@ -736,7 +736,7 @@
     <div class="rank" id="rank" hidden role="group" aria-labelledby="hRank"></div>
     <svg id="orbit" tabindex="0" role="listbox" aria-label="Research investigations by relevance" aria-describedby="orbitLegend"></svg>
     <div id="orbitLegend">
-      <p>Each mark is one investigation. Rings show AI-rated relevance to <strong id="orbitTopic">Prevention</strong>.</p>
+      <p>Each mark is one investigation. Marks closer to the centre are more relevant to <strong id="orbitTopic">Prevention</strong>.</p>
       <dl>
         <div><dt><b>3</b> Direct</dt><dd>Stated objective</dd></div>
         <div><dt><b>2</b> Strong</dt><dd>Directly useful measurements</dd></div>
@@ -1961,7 +1961,7 @@ window.FLAME_MODEL = {
 
   /* ---------- NASA research page ---------- */
   // research.js (built by data/clean/build_research.py) lists the PSI combustion investigations.
-  // Facts come from NASA PSI; summaries and relevance scores are AI-written and say so on screen.
+  // NASA PSI supplies the investigation metadata. The research notes supply the summaries and scores.
   var R = window.FLAME_RESEARCH || null;
   var view = { page: "console", need: 0, sel: 0, orbit: true };
   var FUELS = ["Solid materials", "Liquid fuel droplets", "Gas flames", "Smoke and dust particles"];
@@ -2242,7 +2242,7 @@ window.FLAME_MODEL = {
       $("orbitTopic").textContent = need.label;
       drawOrbit(list, need);
     } else {
-      $("rankNote").textContent = "AI relevance ranking · " + (R.items.length - list.length) + " investigations outside this topic.";
+      $("rankNote").textContent = (R.items.length - list.length) + " investigations outside this topic.";
     }
 
     var it = list[view.sel], card = $("card");
@@ -2257,7 +2257,7 @@ window.FLAME_MODEL = {
     var head = el("div", "chead"), name = el("h3", "", it.name);
     name.id = "investigationName";
     head.appendChild(name); head.appendChild(el("span", "pid", it.id)); card.appendChild(head);
-    card.appendChild(el("p", "research-why-label", "Why it matters · AI summary"));
+    card.appendChild(el("p", "research-why-label", "Why it matters"));
     card.appendChild(el("p", "research-why", it.why));
     var details = el("details", "investigation-details"), summary = el("summary", "", "Investigation details");
     details.id = "investigationDetails";
@@ -2276,7 +2276,7 @@ window.FLAME_MODEL = {
     }
     pair("What varied", it.varied);
     pair("Hardware", it.hardware || "Not listed in PSI");
-    if (T) {                                       // counted from this investigation's own test table, not AI-written
+    if (T) {                                       // Counted from this investigation's own test table.
       var facts = T.rows.map(function (row, i) { return { row: row, st: OX.stats[i] }; }).filter(function (x) { return x.row.id === it.id; }).map(function (x) {
         var st = x.st, amb = x.row.oxygen_is === "ambient", part = x.row.name.indexOf(",") >= 0 ? x.row.name.split(", ")[1] + ": " : "";
         return part.charAt(0).toUpperCase() + part.slice(1) + st.n + " rows with " + (amb ? "ambient oxygen " : "burner oxygen ") + oxNum(st.lo) + " to " + oxNum(st.hi) + " %"
@@ -2294,7 +2294,7 @@ window.FLAME_MODEL = {
     });
     pair("Relevance", rel);
     details.appendChild(dl);
-    details.appendChild(el("p", "fine", "Summaries and ranks by Claude. Title, type and hardware from NASA PSI, retrieved " + R.meta.retrieved + "."));
+    details.appendChild(el("p", "fine", "Summaries and relevance scores reflect the project's interpretation. Title, type and hardware come from NASA PSI, retrieved " + R.meta.retrieved + "."));
     if (restoreCardFocus) summary.focus({ preventScroll: true });
   }
   function setInvestigationDetails(open) {
