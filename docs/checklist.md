@@ -155,7 +155,7 @@ the per-fuel model has had a screen check on the handheld, not a controller run.
 
 ## Demo video (owner only)
 
-- [ ] Review the included captioned desktop demo or record the alternative handheld demo in `docs/demo-script.md`.
+- [ ] Review the [28-second captioned desktop demo](https://cdn.jsdelivr.net/gh/jeerun/flame-in-freefall@86d58ee2be94d1546350fdb560ba52963f95b2b7/docs/crew-console-demo.mp4) or record the alternative handheld demo in `docs/demo-script.md`. The included video was captured in desktop Edge.
 - [ ] 30 seconds or less.
 - [ ] English subtitles burned into the picture.
 - [ ] Hosted outside the Space Apps site.
@@ -171,18 +171,16 @@ Use `docs/submission.md` for the draft answers. Complete the disclosure on the o
 - [ ] Link to project demo.
 - [ ] Link to final project: https://github.com/jeerun/flame-in-freefall
 - [ ] Detailed project description, in English.
-- [ ] NASA data: names the PSI repository, PSI-69 FLEX and the seven other
+- [ ] NASA data: names the PSI repository, PSI-69 FLEX and the six other
       investigations whose test tables feed the Oxygen map, with their links. Needed
       to be eligible for global awards.
 - [ ] Space Agency Partner Data and Other References: no partner data, then the list of
       other resources and tools from `docs/submission.md`. The form asks for all data,
       resources and tools, including code, text and images, so "None" is not enough.
-- [ ] Complete the required “Use of Super Intelligence (SI)” field in English on the
-      official form. Check the answer with all contributors, including anyone who
-      worked outside the repository.
+- [ ] The owner writes field 8, “Use of Super Intelligence (SI)”, in English on
+      the official form after checking the answer with all contributors.
 - [ ] Check the version at the final project link for the required acknowledgements
       in the descriptive text and metadata of generated code or data.
-- [ ] Every "TO ADD" in `docs/submission.md` is filled before copying.
 - [ ] No Thai or other non-English text in any field.
 
 ## Team

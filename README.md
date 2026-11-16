@@ -110,11 +110,12 @@ or open `console/index.html` from a checkout.
 
 Why a gamepad: a crew member may be wearing gloves. The research activities,
 model controls and drill work from the sticks and buttons. The left stick slides a setting across its whole range
-in about a second, and warnings come as sound and vibration as well as text. We
-have not verified glove use or the new controls on a physical handheld.
+in about a second, and warnings come as sound and vibration as well as text. Glove
+use remains untested.
 
-The console numbers come from two small models trained on FLEX (PSI-69), each with
-its own slopes for heptane and for methanol. On the research page, titles,
+The console uses three models trained on FLEX (PSI-69), with separate slopes for heptane and
+methanol. One uses 199 clear outcomes to estimate completion versus visible extinction.
+The other two use 252 in-scope tests to estimate disruption and burning rate. On the research page, titles,
 experiment types and hardware come from NASA PSI. The project adds summaries
 and relevance scores for each safety topic. It is a study and planning tool, not a crew procedure.
 
@@ -137,11 +138,10 @@ Working on real data (Nov 15, 2026).
   in desktop Edge with simulated gamepad input. Direct Wi-Fi operation and glove
   use remain unverified. The preview demo was captured in desktop Edge.
   [Device test record](CLAUDE.md)
-- Later on Nov 15 the page was tuned for the handheld's full screen (1280×800): no
-  text under 12 px, thumb-sized controls, a pressure scale that no longer lies on the
-  data in the Oxygen map, plus the tour and "What would put it out?". These were checked
-  in desktop Edge with keyboard, touch emulation and a simulated gamepad, not yet on the
-  physical Legion Go.
+- In a later check on the physical Legion Go at `b405c0e`, the three pages fit at
+  1280×800 with text of at least 12 px. Using the controller and touch screen, the
+  owner tried the tour, the Moon preset, “What would put it out?”, the Oxygen map,
+  the Fire drill round log and Ember. The handheld run was a rehearsal for the demo.
 - The official submission form is still pending.
 - Open `console/index.html` from a checkout to try the orbit-first home,
   investigation search and Moon evidence check. [Pull request #10](https://github.com/jeerun/flame-in-freefall/pull/10)

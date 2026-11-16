@@ -44,13 +44,13 @@ residence".
 
 ## Status
 
-Handheld recheck of the final page (Nov 15, 5:30 to 5:48 PM by the Legion Go's clock,
-Pacific Standard Time, which is 6:30 to 6:48 PM by the PC's clock), on commit `b405c0e`,
-by the Claude session on the handheld with the owner on the controller and the touch
-screen. The clone was pulled to `b405c0e`, and the PC served the same files (five compared
+Handheld recheck of the final page on commit `b405c0e` (Nov 15, 5:30 to 5:48 PM
+by the Legion Go's clock, Pacific Standard Time, or 6:30 to 6:48 PM by the PC's
+clock). The screen checks used automated keyboard input. The owner operated the
+controller and touch screen. The clone was pulled to `b405c0e`, and the PC served the same files (five compared
 by hash). As before, a second Edge 157 window in guest mode ran full screen from Edge's
 `--start-fullscreen` switch, not the F11 key, and was read over the DevTools protocol.
-- Screen (5:34 PM, keys sent by the session): `innerWidth` 1280, `innerHeight` 800,
+- Screen (5:34 PM): `innerWidth` 1280, `innerHeight` 800,
   `devicePixelRatio` 2. Nothing scrolls and the top bar is one line on the three pages, on
   the start screen at `#title`, and with each of these open: the tour (cards 1, 4, 7, 9),
   Find, the Oxygen map in its three views, "Earth or orbit?", "Read the sensors",

@@ -1,60 +1,38 @@
-# Submission form draft
+# Flame in Freefall · Space Apps submission draft
 
-Everything in English. Deadline: Sunday Nov 15, 11:59 PM, team owner's local time
-(confirm on the team page). "Submit for Judging" is final.
-
-The captioned demo was recorded in desktop Edge. On Nov 15 the owner tested the
-earlier dashboard's gamepad controls, wheel, sound and rumble on a Lenovo Legion Go.
-A separate screen check covered the per-fuel build at `f8374e5` at 1280×800.
-The newer evidence activities, shared views and redesigned controls were tested
-in desktop Edge with simulated gamepad input. [Handheld test record](../CLAUDE.md)
-
-## Project name
+## 1. Project name
 
 Flame in Freefall Crew Fire Console
 
-## High-level project summary
+## 2. High-level project summary
 
-The console ranks 24 investigations from NASA’s Physical Sciences Informatics (PSI)
-repository for prevention, detection, suppression or cabin atmosphere. Its Oxygen map
-compares nine tables across seven investigations. Of 746 rows with ambient oxygen and
-pressure, 20 meet the Moon Base thresholds in the challenge brief. The Moon evidence
-check traces all 20 to gas-flame tests. Other activities compare Earth and orbital
-burn lengths, reveal gas sensor readings and find a comparable droplet test with
-the opposite outcome.
+Could a crew choose a solid panel for a Moon cabin from NASA’s combustion data?
+Our dashboard ranks 24 investigations by fire-safety topic. Its Oxygen map compares
+nine tables from seven investigations. Of 746 rows with ambient oxygen and pressure,
+20 match the challenge’s Moon Base thresholds. All 20 describe gas flames, leaving
+the solid-panel question open. The Flame console uses NASA’s FLEX droplet tests to
+estimate visible extinction or completion, disruption and burning rate. Users can
+compare predictions with recorded outcomes offline. Ember, an optional local assistant,
+answers questions using the selected research and measurements.
 
-Two models use the Flame Extinguishment Experiment (FLEX). One estimates completion
-versus visible extinction from 199 tests with a clear outcome. The other estimates
-burning rate from 252 tests. The dashboard marks settings with little experimental
-support. Its optional assistant, Ember, uses Ollama on a configured machine. The
-core dashboard and evidence activities open offline.
+## 3. Link to project demo
 
-## Link to project demo
-[Watch the captioned desktop demo](https://github.com/jeerun/flame-in-freefall/blob/86d58ee2be94d1546350fdb560ba52963f95b2b7/docs/crew-console-demo.mp4)
+https://cdn.jsdelivr.net/gh/jeerun/flame-in-freefall@86d58ee2be94d1546350fdb560ba52963f95b2b7/docs/crew-console-demo.mp4
 
-## Link to final project
-The public GitHub repo. No login needed to view.
+## 4. Link to final project
 
 https://github.com/jeerun/flame-in-freefall
 
-Published browser copy without live Ember inference: https://jeerun.github.io/flame-in-freefall/
+## 5. Detailed project description
 
-Before submitting the form, open the published link and try **Find** and
-**Research tools → Moon evidence check**. Both are available in the repository
-checkout. [Pull request #10](https://github.com/jeerun/flame-in-freefall/pull/10)
+Open the dashboard in Orbit view, choose a fire-safety question and follow the evidence
+from a research summary to its NASA source. [Open the dashboard](https://jeerun.github.io/flame-in-freefall/)
 
-## Detailed project description
-What it does, how it works, what benefit it has, what tools and languages we used.
-
-**The challenge asks for** an interactive, SI-powered, web-based dashboard that
-summarizes, ranks and interprets NASA's microgravity combustion investigations for
-fire safety. Here is how each word is answered.
-
-**Summarizes: the NASA research page.** It lists the 24 combustion-science
-investigations that the PSI repository returns for "combustion" (BASS, Saffire, SAME,
-FLEX, FLEX-2, the ACME experiments and others). For each one it shows what the
-experiment did, what changed between tests, the kind of fuel, the hardware, and why it
-matters for fire safety, in plain language. **Find** searches all 24 records by
+**NASA research.** The page covers 24 combustion investigations from NASA’s Physical
+Sciences Informatics (PSI) repository, including BASS, Saffire, SAME, FLEX, FLEX-2
+and the ACME experiments. For each one it shows what the experiment did, what
+changed between tests, the kind of fuel, the hardware and why it matters for fire
+safety. **Find** searches all 24 records by
 name, title or PSI identifier. Research tools shows the collection counts by
 kind of fuel and by flight or ground.
 
@@ -88,7 +66,7 @@ panel? The offline activity lets readers inspect every matching CFI-G test's
 fuel, original oxygen fraction, approximate pressure and CSV line, then open the
 NASA investigation. All 20 concern gas flames, and the table has no measured
 gravity per row. A solid panel's behaviour in lunar gravity remains unknown
-from this comparison. [Open the activity](../console/moon-evidence.html)
+from this comparison. [Open the activity](https://jeerun.github.io/flame-in-freefall/moon-evidence.html)
 
 **Earth or orbit?** Four Saffire-II cases show a material's 1-g burn length. Choose
 whether the Earth sample burned farther, both burned equally or the orbital sample
@@ -159,21 +137,16 @@ and it shows the model's misses as openly as its hits.
 One button switches the cabin air between Earth-like air, the Moon Base case from
 the challenge brief (oxygen 30% or more at 10.2 psi or less) and a Mars base. The
 brief gives no cabin air for Mars, so the Moon Base air is used there and the page
-says it is an assumption. The background follows: the Earth from orbit, the lunar
-surface, or Mars. FLEX ran tests close to that pressure and oxygen level, so the page
+labels that assumption. NASA photographs on the preset controls identify Earth, the Moon and Mars. FLEX ran tests close to that pressure and oxygen level, so the page
 can show both what the model expects there and that the nearest real tests were
 inconclusive.
 
 **What would put it out?** One button beside the explanation turns the model around.
 It moves oxygen, carbon dioxide and helium one at a time through the range FLEX tested
 and shows the first value at which the reading drops under the model's 30% watch level,
-together with what the real tests near that value did. For heptane in Earth-like air,
-two points less oxygen or ten percent carbon dioxide is enough. For the same fuel in Moon
-Base air neither carbon dioxide nor helium gets there within the tested range, and oxygen
-has to fall to 19%, which is no longer Moon Base air. A reading under 30% is no promise
-either: of the held-out tests the model rated 20 to 30%, 22% still burned all their fuel,
-and the panel says so. The panel reads the flame model only: it does not
-check that the changed air is safe to breathe, and it is not a crew procedure.
+together with what nearby tests recorded. Some held-out tests below the threshold
+still burned to completion. The panel explores model sensitivity. It does not
+evaluate whether a gas mixture is safe to breathe or suitable for a crew.
 
 **A one-minute tour.** A button in the top bar walks a first-time user through the three
 pages in nine steps, with one part of the screen outlined at a time.
@@ -239,17 +212,18 @@ to base require a reachable server.
    endings. `python data/clean/fetch_psi_tables.py --verify` checks the originals’
    hashes offline, restoring CRLF in memory as needed. Of the FLEX rows, 252
    have usable pressure at or below 1.1 atm and a known droplet size.
-2. Models. Two deliberately small models, so every number can be explained: a
-   logistic regression for "the flame went out before the fuel was gone" against "it
-   burned until the fuel was gone", and a linear regression for the burning rate.
-   Inputs are settings known before ignition. Each fuel has its own slopes. The
-   outcome model selects penalty strength inside each outer training fold.
+2. Models. One logistic regression estimates completion versus visible extinction on
+   the 199 clear outcomes. A second logistic regression estimates disruption from
+   all 252 in-scope rows. A linear regression uses those 252 rows to estimate
+   burning rate. The inputs are settings known before ignition. Each fuel has its own
+   slopes. The clear-outcome model selects penalty strength inside each outer
+   training fold.
 3. Export. Scripts write the fitted model, in-scope tests, research notes, oxygen
    map and selected evidence rows as JavaScript data files for offline use.
-4. Dashboard. One HTML file with no libraries reads them. It works with a gamepad,
-   touch or keyboard and fits a 1280x680 screen.
-5. Local AI. A small Python script on the PC serves the dashboard on the local
-   network. For each question it picks the PSI records that share the most words with
+4. Dashboard. HTML, CSS and plain JavaScript read the bundled data. The interface
+   supports a gamepad, touch and keyboard.
+5. Local AI. The Python server can serve the dashboard to devices on a configured
+   local network. For research questions it picks the PSI records that share the most words with
    the question, adds the top of our own ranking for the need on screen, a one-line
    catalogue of all 24 and the counts from the test tables, and hands that to the
    language model through Ollama. The answer streams back to the handheld. The same
@@ -259,7 +233,7 @@ to base require a reachable server.
 
 - The page checks inputs against the in-scope range of each variable and flags
   unsupported combinations. Beyond that scope it dims the model reading.
-- No FLEX test mixed carbon dioxide and helium, so setting both counts as untested.
+- No in-scope FLEX row mixed carbon dioxide and helium, so setting both counts as untested.
 - Gas settings above 100% in total are flagged as physically impossible.
 - Inside the range, the page still measures the distance to the closest real test and
   warns when it is far, or when the nearby tests had no clear outcome.
@@ -391,8 +365,7 @@ These scores describe performance within this FLEX dataset.
 
 **Benefit.** NASA's combustion results are public but hard to find, compare and read.
 This dashboard lets a student, engineer or mission planner find the investigations
-that matter for their question in seconds, then explore one of them by hand, and it
-always shows where the data stops.
+that matter for their question and explore individual tests, compare readings and see where evidence is sparse.
 
 **Tools and languages.** Python (pandas, NumPy, scikit-learn, matplotlib) for
 cleaning, training and the chart, and the Python standard library for the local
@@ -400,10 +373,10 @@ server. HTML, CSS and plain JavaScript with the browser Gamepad API for the
 dashboard, including the drawings (inline SVG), the sound effects (Web Audio) and the
 voice (the browser's speech synthesis). Node.js for the test that runs the page's
 prediction code outside a browser. Ollama running the open Gemma 4 12B model on
-an NVIDIA RTX 5080 for Ember. The captioned demo was captured in desktop Edge.
+an NVIDIA RTX 5080 for Ember. We tested the dashboard on a Lenovo Legion Go.
+The captioned demo was captured in desktop Edge.
 
-## NASA data
-Copy from docs/sources.md.
+## 6. NASA data
 
 NASA Physical Sciences Informatics (PSI) data repository, combustion science, the
 source named by the challenge. https://psi.nasa.gov/physci/repo/search?q=combustion
@@ -416,17 +389,17 @@ source named by the challenge. https://psi.nasa.gov/physci/repo/search?q=combust
   and opposite-outcome comparisons.
 - The PSI records of the 24 combustion investigations (title, project type, hardware,
   objectives, approach), read through the repository's search on Nov 14, 2026.
-  Used for: the NASA research page.
+  The NASA research page uses these records.
 - Together with FLEX, six other investigations supply the nine Oxygen map tables
   downloaded from PSI on Nov 14, 2026: CFI, PSI-39, DOI 10.60555/m6pj-a914. ACME CFI-G, PSI-159,
   DOI 10.60555/cyt1-kh64. ACME Flame Design, PSI-10, DOI 10.60555/w4zy-bt45.
   BASS-II, PSI-25, DOI 10.60555/4qc4-de67. Saffire-I, PSI-98, DOI 10.60555/0t15-1z43.
   Saffire-II, PSI-99, DOI 10.60555/2chp-m469. The BASS-II gas endpoint columns
   and Saffire-II Earth/orbit burn lengths also supply the two reveal activities.
-  All 25 downloaded tables are listed in `data/raw/psi_tables/MANIFEST.json`.
+  The manifest lists the 25 downloaded tables. [Table manifest](https://github.com/jeerun/flame-in-freefall/blob/main/data/raw/psi_tables/MANIFEST.json)
 
-NASA pages and documents used for the wording on screen (full list with what we took
-from each in `docs/sources.md`):
+NASA pages and documents used for the wording on screen are listed below. The source
+notes identify what each contributed. [Full source notes](https://github.com/jeerun/flame-in-freefall/blob/main/docs/sources.md)
 
 - NASA Space Apps challenge brief, "Flame in Freefall".
   https://www.spaceappschallenge.org/2026/challenges/flame-in-freefall/
@@ -443,22 +416,18 @@ from each in `docs/sources.md`):
 - "Mechanisms of droplet combustion", NASA NTRS 19820015551.
   https://ntrs.nasa.gov/citations/19820015551
 
-NASA images and video shown in the dashboard (credits and links in `docs/sources.md`):
+NASA images and video shown in the dashboard include the following.
 
 - Cabin-air buttons: the Apollo 17 Blue Marble photograph AS17-148-22727, the Galileo
   Moon mosaic PIA00405 and the Viking Orbiter 1 Valles Marineris mosaic PIA04304.
 - Evidence lab: NASA clips of FLEX (SVS release 11318), FLEX-2 (SVS release 11640),
   SoFIE-GEL, Saffire-I, Saffire-V and Saffire-VI, and two stills taken from the FLEX clip.
 
-## Space agency partner and other data
-Form field on the 2026 site: "Space Agency Partner Data and Other References". It asks
-for all data, resources and tools used, including code, text and images. The owner
-should check this inventory with all contributors when completing the form.
+## 7. Space Agency Partner Data and Other References
 
-No data from a Space Agency Partner. Every dataset, image and video in the project is
-NASA's and is listed under NASA Data.
-
-Other resources and tools:
+The project uses NASA data and did not use data from another space agency.
+NASA supplied the source experiment footage and planetary photographs. The team
+captured the dashboard screenshots and demonstration.
 
 - Software: Python with pandas, NumPy, scikit-learn and matplotlib (cleaning, training,
   the chart, the local server). Pillow and imageio-ffmpeg (preparing frames of the FLEX
@@ -467,22 +436,4 @@ Other resources and tools:
   [Ollama](https://ollama.com) servers.
 - The dashboard loads no third-party JavaScript or CSS library and no web font.
 
-## Official form disclosure
-
-TO ADD on the official Space Apps form. The team owner should complete the required
-“Use of Super Intelligence (SI)” field with input from all contributors. The owner
-should also identify any generated code or data in the submitted project's descriptive
-text and metadata. [Project Submission Guide](https://www.spaceappschallenge.org/resources/project-submission-guide/) · [Organizers’ guidance on attribution](https://github.com/nasa/spaceapps/discussions/1849)
-
-## Model accuracy (for the description)
-
-- Row-held-out classification on 199 clear FLEX outcomes gave AUC 0.902, accuracy
-  0.915 and completion recall 52.4% at a 50% cutoff. Always predicting visible
-  extinction would give accuracy 0.864.
-- Burning-rate prediction on 252 rows gave mean absolute error 0.045 mm²/s and
-  R² 0.732. Both evaluations used five folds repeated 20 times.
-- A third formula for the chance of a disruption, on all 252 rows: AUC 0.892, Brier
-  score 0.101 against 0.166 for no model.
-- With the tests resampled the 95% interval of the outcome AUC is 0.83 to 0.96.
-- The old pooled model's separate five-seed audit gave completion recall 23.7%
-  and balanced accuracy 61.4%.
+## 8. Use of Super Intelligence (SI)

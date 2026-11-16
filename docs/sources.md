@@ -7,7 +7,7 @@ activities to their source records or calculation.
 
 | Dataset | Identifier | Link | Downloaded on | What we used it for |
 |---|---|---|---|---|
-| Flame Extinguishment Experiment (FLEX), Experimental Table, version 5. NASA Physical Sciences Informatics (PSI). | PSI-69. DOI 10.60555/mbq8-0451. Licence listed on the page: CC0-1.0. | https://psi.nasa.gov/physci/repo/data/investigations/PSI-69 | Nov 14, 2026 | The only data behind the two models and the list of real tests the console shows. |
+| Flame Extinguishment Experiment (FLEX), Experimental Table, version 5. NASA Physical Sciences Informatics (PSI). | PSI-69. DOI 10.60555/mbq8-0451. Licence listed on the page: CC0-1.0. | https://psi.nasa.gov/physci/repo/data/investigations/PSI-69 | Nov 14, 2026 | Training data for all three FLEX models and the source of the tests shown in the console. |
 
 What the PSI-69 page says about the investigation (read Nov 14, 2026): proposal
 title "Droplet Flame Extinguishment in Microgravity"; flight platform International
@@ -38,7 +38,8 @@ What is in the FLEX table and what we used:
   methanol 146, heptane 106. Left out: 9 tests at 2 to 3 atm, 1 with pressure
   recorded as 0, 12 with no droplet diameter.
 - The flame-outcome model uses 199 of them (172 "Extinction", 27 "Completion").
-  The 53 "Disruption" tests are left out of that model and kept for burning rate.
+  The disruption and burning-rate models use all 252 in-scope rows, including the
+  53 recorded as "Disruption".
 
 The November 14, 2026 search yielded 25 Experimental Table CSV downloads, including
 three from two records outside combustion science. The manifest records investigation,
@@ -145,9 +146,9 @@ viewing. [Burning in Microgravity, May 25, 2011](https://www.nasa.gov/image-arti
 
 ## Claims shown in the console, and where each comes from
 
-Wording in quotes is the text on screen. "Our model" means the two regressions in
-`model/train_per_fuel.py` (own slopes for each fuel; the console's model since
-Nov 15, 2026), trained only on the PSI-69 table.
+Wording in quotes is the text on screen. `model/train_per_fuel.py` trains three
+regressions on the PSI-69 table with separate slopes for each fuel. Two logistic
+regressions estimate clear outcomes and disruption. A linear regression estimates burning rate.
 
 | Text on screen | Source |
 |---|---|
@@ -244,8 +245,8 @@ exporter reads the selected columns directly from the downloaded files. [Case ex
 - That all completions can be predicted from the starting conditions. The current
   per-fuel classifier found 52.4% of completions at a 50% cutoff
   (`model/metrics.json`). The earlier pooled model's five-seed audit reported 23.7%.
-- The outcome regression is fitted on 199 clear outcomes and the burning-rate
-  regression on 252 measurements. Neither is a physical model of flame behaviour.
+- The outcome regression is fitted on 199 clear outcomes. The disruption and
+  burning-rate regressions each use 252 rows. All three are empirical models.
 - That a flame that "goes out" is safe. The outcome is about the visible flame.
 - Anything outside the tested ranges. The console marks those readings as unknown.
 - That the Oxygen map says how flammable anything is. It shows where tests were run.
