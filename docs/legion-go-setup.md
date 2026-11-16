@@ -5,7 +5,7 @@ the PC over Tailscale and the handheld's own Ollama installation. Controller
 operation, sound and rumble were checked before the model switch. The per-fuel
 build at `f8374e5` received a separate 1280×800 screen check. The newer activities,
 shared views and controls were tested in desktop Edge with simulated gamepad input.
-The direct Wi-Fi route in A still needs a device test. [Device test record](../CLAUDE.md)
+The direct Wi-Fi route in A still needs a device test. [Device test record](../PROJECT-NOTES.md)
 
 ## A. The Legion Go as the screen, the PC as the brain (nothing to install)
 

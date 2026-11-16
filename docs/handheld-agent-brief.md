@@ -1,7 +1,7 @@
 # Legion Go device test brief
 
 This brief covers testing on the team's first-generation Lenovo Legion Go with Windows 11.
-Read `CLAUDE.md` for project status, then `docs/legion-go-setup.md` and
+Read `PROJECT-NOTES.md` for project status, then `docs/legion-go-setup.md` and
 `docs/checklist.md`.
 
 Reply to the owner in Thai, short, answer first. Everything in the repo (code, docs,
@@ -20,7 +20,7 @@ commit messages) is in English.
 
 ## Update, Nov 15, about 4 AM: a second run is needed
 
-The first run (steps 1 to 7 below) was done on Nov 15 and is written up in `CLAUDE.md`
+The first run (steps 1 to 7 below) was done on Nov 15 and is written up in `PROJECT-NOTES.md`
 under "Verified on the real Legion Go". After it the page changed twice: the console
 switched to the per-fuel model, and pull request 5 redesigned the page. Nothing of the
 redesigned page has been seen on this device. For the second run:
@@ -109,7 +109,7 @@ The PC session changed the page for this device. None of it has been seen here y
    pull conflicts, stop and tell the owner instead of forcing it. After a change in
    `console/`, republish the live copy:
    `git subtree push --prefix console origin gh-pages`.
-7. **Write down what you verified** in the Status section of `CLAUDE.md` (what was
+7. **Write down what you verified** in the Status section of `PROJECT-NOTES.md` (what was
    seen working on the real Legion Go, what was not, with the time) and push it.
 
 ## Rules that are easy to break

@@ -63,7 +63,7 @@ owner's local time (confirm on the team page). "Submit for Judging" is final.
 - [x] Fire drill: after an answer, a line for that round appears under the scoreboard.
 
 The three boxes ticked above were seen on the physical Legion Go on Nov 15, 5:41 to 5:45 PM
-by its clock, with the owner on the controller and the touch screen. `CLAUDE.md`, "Handheld
+by its clock, with the owner on the controller and the touch screen. `PROJECT-NOTES.md`, "Handheld
 recheck of the final page", has the rest of that run and the demo rehearsal.
 
 ## Earlier Legion Go runs recorded by the owner
@@ -72,7 +72,7 @@ How to get it onto the handheld, three ways, with fixes for a connection that
 fails: `docs/legion-go-setup.md`.
 
 Ticked on Nov 15 from the run on the real handheld, with the owner pressing the
-controls: see "Verified on the real Legion Go" in `CLAUDE.md` for what was seen and how.
+controls: see "Verified on the real Legion Go" in `PROJECT-NOTES.md` for what was seen and how.
 Both controller runs were on the page before the model switch of Nov 15. The page with
 the per-fuel model has had a screen check on the handheld, not a controller run.
 
@@ -144,7 +144,7 @@ the per-fuel model has had a screen check on the handheld, not a controller run.
       lines, both machines are offered and X on the controller switches, the handheld's
       model answered in 3.7 to 14.5 s, and a copy with a peer that cannot answer
       answered by itself. Not ticked: the PC's window was not closed, so the "out of
-      reach" banner was not seen. Details in `CLAUDE.md`.)
+      reach" banner was not seen. Details in `PROJECT-NOTES.md`.)
 - [ ] A teammate has read `docs/ember-check.md` and filled in the "Human verdict"
       line under each of the 18 answers. Until then, say "not checked by a person"
       wherever Ember's accuracy comes up.

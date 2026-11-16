@@ -137,7 +137,7 @@ Working on real data (Nov 15, 2026).
   The newer evidence activities, shared views and redesigned controls were checked
   in desktop Edge with simulated gamepad input. Direct Wi-Fi operation and glove
   use remain unverified. The preview demo was captured in desktop Edge.
-  [Device test record](CLAUDE.md)
+  [Device test record](PROJECT-NOTES.md)
 - In a later check on the physical Legion Go at `b405c0e`, the three pages fit at
   1280×800 with text of at least 12 px. Using the controller and touch screen, the
   owner tried the tour, the Moon preset, “What would put it out?”, the Oxygen map,

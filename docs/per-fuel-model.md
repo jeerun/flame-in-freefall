@@ -248,7 +248,7 @@ Then these would be out of date and need the same care:
 - `model/check_parity.py` refits the `train.py` recipe and would report a mismatch.
   `tests/test_per_fuel_model.py` holds the same check for the new model.
 - The accuracy numbers in `README.md`, `docs/submission.md` and `docs/sources.md`, the
-  readings in `docs/demo-script.md`, and the notes in `CLAUDE.md`.
+  readings in `docs/demo-script.md`, and the notes in `PROJECT-NOTES.md`.
 - `tests/test_console_features.cjs` expects the current model's reading (35 % at the
   starting values) and fails on the new one (57 %) until that number is updated.
 - `docs/scientific-validation.md` audits a refit of the current recipe.
