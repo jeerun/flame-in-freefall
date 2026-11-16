@@ -21,12 +21,12 @@ https://youtu.be/wffEO0Ag2Go
 
 ## 4. Link to final project
 
-https://github.com/jeerun/flame-in-freefall
+https://jeerun.github.io/flame-in-freefall/
 
 ## 5. Detailed project description
 
 Open the dashboard in Orbit view, choose a fire-safety question and follow the evidence
-from a research summary to its NASA source. [Open the dashboard](https://jeerun.github.io/flame-in-freefall/)
+from a research summary to its NASA source. [Source code and documentation](https://github.com/jeerun/flame-in-freefall)
 
 [Watch the full walkthrough (6:55)](https://youtu.be/LwbnjOe0VXI)
 

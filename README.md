@@ -40,7 +40,7 @@ or open `console/index.html` from a checkout.
   material, then reveal the measured lengths side by side (Research, LT or E).
 - **Read the sensors.** See the initial and final oxygen readings from BASS-II,
   then reveal how CO and CO₂ changed in the same test (Research, RT or N).
-- **[Ember evidence lab](console/ember-lab.html).** Open **Research tools → Evidence lab**
+- **[Ember evidence lab](https://jeerun.github.io/flame-in-freefall/ember-lab.html).** Open **Research tools → Evidence lab**
   (or press L or the left stick). **Experiment footage** includes six offline NASA clips.
   Compare the visible flame rim in FLEX with the soot in FLEX-2, or follow the blue
   patches in SoFIE-GEL. Saffire-I shows a fabric sample, Saffire-V shows ribbed
@@ -142,7 +142,7 @@ Working on real data (Nov 15, 2026).
   1280×800 with text of at least 12 px. Using the controller and touch screen, the
   owner tried the tour, the Moon preset, “What would put it out?”, the Oxygen map,
   the Fire drill round log and Ember. The handheld run was a rehearsal for the demo.
-- The official submission form is still pending.
+- NASA Space Apps confirmed the project was submitted for judging on November 15, 2026.
 - Open `console/index.html` from a checkout to try the orbit-first home,
   investigation search and Moon evidence check. [Pull request #10](https://github.com/jeerun/flame-in-freefall/pull/10)
 

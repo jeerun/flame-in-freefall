@@ -28,8 +28,8 @@ Hardware the team wants to show off:
 
 ## Deadline and checkpoints
 
-Submission closes Sunday Nov 15, 11:59 PM in the team owner's local time
-(Mountain, UTC-7). Confirm the time on the team page. "Submit for Judging" is final.
+NASA Space Apps confirmed submission on November 15, 2026. The confirmation email
+allowed the team to edit and resubmit until 11:59 PM local time that day.
 The Project Submission Guide (read Nov 15) gives the rule: for the Universal Event the
 deadline is 11:59 p.m. "in accordance with the local time of your Team Owner's area of
 residence".

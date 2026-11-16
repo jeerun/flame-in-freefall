@@ -1,7 +1,8 @@
 # Pre-submission checklist
 
-Target: submit by 9 PM Sunday Nov 15. The form closes at 11:59 PM in the team
-owner's local time (confirm on the team page). "Submit for Judging" is final.
+NASA Space Apps confirmed submission on November 15, 2026. Its confirmation email
+allowed edits and resubmission until 11:59 PM local time that day. The checkboxes
+below record the team's pre-submission checks.
 
 ## Repo
 
@@ -169,7 +170,7 @@ Use `docs/submission.md` for the draft answers. Complete the disclosure on the o
 - [ ] Project name, in English.
 - [ ] High-level summary, in English.
 - [ ] Link to project demo.
-- [ ] Link to final project: https://github.com/jeerun/flame-in-freefall
+- [x] Link to the submitted project: https://jeerun.github.io/flame-in-freefall/
 - [ ] Detailed project description, in English.
 - [ ] NASA data: names the PSI repository, PSI-69 FLEX and the six other
       investigations whose test tables feed the Oxygen map, with their links. Needed
