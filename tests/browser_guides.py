@@ -98,6 +98,15 @@ def check_sizes(page):
     for tab in ("#tabResearch", "#tabConsole", "#tabDrill"):
         loc(tab).click()
         assert not page.evaluate(MEASURE)["scrolls"], tab
+    # Short landscape screens: the orbit keeps the 150 px it needs to draw, whatever the topic.
+    for width, height in ((844, 390), (1024, 560), (1280, 521)):
+        page.set_viewport_size({"width": width, "height": height})
+        loc("#tabResearch").click()
+        for _ in range(4):
+            page.wait_for_timeout(150)
+            drawn = page.evaluate("() => [document.querySelectorAll('#orbit [aria-selected]').length, Math.round(document.getElementById('orbit').getBoundingClientRect().height)]")
+            assert drawn[0] > 0 and drawn[1] >= 150, (width, height, drawn)
+            key("ArrowRight")
 
 
 def check_advisor(page):

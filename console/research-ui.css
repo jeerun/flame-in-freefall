@@ -133,8 +133,9 @@
 #viewResearch #orbit { border-radius: 8px; background: radial-gradient(ellipse at center, #19373b 0%, #11242b 45%, #101b20 79%); }
 #viewResearch #orbit [aria-selected="true"] { filter: drop-shadow(0 0 3px #ffb18466); }
 #viewResearch #orbit:focus-visible { outline: 2px solid var(--res-ice); outline-offset: -2px; }
-@media (min-width: 821px) and (max-height: 520px) {
-  #viewResearch { grid-template-rows: auto minmax(375px, 1fr); overflow-y: auto; }
+@media (min-width: 821px) and (max-height: 600px) {
+  /* The orbit needs 150 px to draw. Its caption can wrap to a fourth line here, so the panel keeps room for both. */
+  #viewResearch { grid-template-rows: auto minmax(410px, 1fr); overflow-y: auto; }
 }
 #viewResearch .rank .item {
   width: 100%; min-width: 0; display: grid; align-items: center;

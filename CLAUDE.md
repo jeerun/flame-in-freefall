@@ -44,6 +44,13 @@ residence".
 
 ## Status
 
+Final pass (Nov 15, about 6:02 PM): on landscape screens up to 600 px high the
+investigation orbit was left empty, because it needs 150 px to draw and its caption had
+grown by a line. The results panel now keeps 410 px there, for every topic and for widths
+from 821 px up. `tests/browser_guides.py` checks three such sizes. The demo script's
+subtitles for shots 3 and 7 say what Ember does and no longer say "no internet". All 15
+checks pass on this commit, and the live copy was republished from it.
+
 Handheld pass (Nov 15, about 10:34 AM): the page is tuned for the Legion Go's full
 screen, 1280x800. No text is under 12 px and the controls are thumb-sized there; a lower
 window keeps the earlier sizes. **Take the tour** in the top bar (T on Research, or View)
@@ -82,7 +89,7 @@ the handheld's IPv4 address. The local device log requires the per-run password
 printed on the PC. For a two-server setup, update the base first and then the
 handheld so both support one-hop peer requests. [Current setup](docs/legion-go-setup.md)
 
-Last updated Sunday Nov 15, about 5:14 PM by the owner's PC clock (British Columbia time, UTC-7).
+Last updated Sunday Nov 15, about 6:02 PM by the owner's PC clock (British Columbia time, UTC-7).
 
 Pull request 5, merged on Nov 15, includes shared research views and FLEX readings. Open a shared URL on
 the hosted dashboard, or paste a view code into another offline copy. The Oxygen

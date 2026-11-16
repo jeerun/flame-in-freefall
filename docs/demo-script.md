@@ -27,7 +27,7 @@ The [28-second captioned desktop demo](crew-console-demo.mp4) opens on the inves
    is in desktop mode: switch it to gamepad mode. Open Controls to check for
    "Controller connected", then close it.
 5. Check that all six settings fit on the Flame console in landscape (RB turns the page).
-   On the research page press Y: the Oxygen map must open with "2 Every test" lit.
+   On the research page press Y: the Oxygen map must open with "2 Every row" lit.
    If another level is lit, press Left or Right until it is, then B. The page
    remembers the level.
 6. Touch the screen once, then press the Menu button and wait for Ember's answer.
@@ -50,11 +50,11 @@ RT the right trigger, Menu the small button with three lines.
 |---|---|---|---|---|
 | 1 | 0:00 to 0:03 | Nothing, then press A. | Start screen "Flame in Freefall", then the NASA research page. | NASA has decades of microgravity fire data. It is hard to find, compare and read. |
 | 2 | 0:03 to 0:09 | D-pad Right three times (Cabin air). Press Y, wait a second, press D-pad Right. | "Ranked for cabin air: 8 of 24 investigations". Then the Oxygen map: every test of seven investigations as a dot, then the same tests against pressure with the Moon Base air marked in orange. Headline: 20 of 746 published rows meet both atmosphere thresholds. | Of 746 table rows with ambient oxygen and pressure, 20 meet the Moon Base thresholds. |
-| 3 | 0:09 to 0:14 | Press B, then Menu. | "Ask Ember" opens and answers by itself in a few seconds, aloud: which investigations matter most for a Moon Base cabin. It ends "Answered in ... s by Ember (gemma4:12b on this team's NVIDIA GeForce RTX 5080)". | Ember, an AI model on our own RTX 5080, interprets them. No cloud, no internet. |
+| 3 | 0:09 to 0:14 | Press B, then Menu. | "Ask Ember" opens and answers by itself in a few seconds, aloud: which investigations matter most for a Moon Base cabin. It ends "Answered in ... s by Ember (gemma4:12b on this team's NVIDIA GeForce RTX 5080)". | Ember, our local AI, reads the NASA records and answers with their PSI IDs. No cloud. |
 | 4 | 0:14 to 0:19 | Press B, then RB (Flame console). Press X. | "Moon Base" lights up. The heptane reading shows the fitted completion estimate and explains that all three nearby tests ended in disruption. Under the number, once the model design audit is merged: "Disruption chance 98%". | The model estimates completion among clear outcomes. All three nearby FLEX tests were inconclusive. |
 | 5 | 0:19 to 0:24 | Push the right stick toward a star, then press RT. | A yellow ring picks a star, the heading names that test, and the flame picture replays it: the droplet shrinks, a timer runs, the flame goes out. | Every star is a real test. Pick one and replay it from NASA's measurements. |
 | 6 | 0:24 to 0:28 | Press RB (Fire drill). Press Left or Right to guess. | The settings of a real NASA test, then the reveal: "Correct." or "Not this time.", the test replayed, the score "You" against "Model". | And it is a game: guess how a real test ended, and try to beat the model. |
-| 7 | 0:28 to 0:30 | Nothing. End card over the last frame. | Text card: "Flame in Freefall Crew Fire Console. Team Second Toe. Data: NASA PSI. AI runs locally." | Team Second Toe. NASA PSI data. AI on our own hardware. |
+| 7 | 0:28 to 0:30 | Nothing. End card over the last frame. | Text card: "Flame in Freefall Crew Fire Console. Team Second Toe. Data: NASA PSI. AI runs locally." | Team Second Toe. NASA PSI data. AI runs on our own machines. |
 
 Ember writes a different answer each time, the right stick may land on a different
 star, and the Fire drill picks its tests at random, so do not script their exact
