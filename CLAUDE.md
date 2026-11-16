@@ -44,6 +44,62 @@ residence".
 
 ## Status
 
+Handheld recheck of the final page (Nov 15, 5:30 to 5:48 PM by the Legion Go's clock,
+Pacific Standard Time, which is 6:30 to 6:48 PM by the PC's clock), on commit `b405c0e`,
+by the Claude session on the handheld with the owner on the controller and the touch
+screen. The clone was pulled to `b405c0e`, and the PC served the same files (five compared
+by hash). As before, a second Edge 157 window in guest mode ran full screen from Edge's
+`--start-fullscreen` switch, not the F11 key, and was read over the DevTools protocol.
+- Screen (5:34 PM, keys sent by the session): `innerWidth` 1280, `innerHeight` 800,
+  `devicePixelRatio` 2. Nothing scrolls and the top bar is one line on the three pages, on
+  the start screen at `#title`, and with each of these open: the tour (cards 1, 4, 7, 9),
+  Find, the Oxygen map in its three views, "Earth or orbit?", "Read the sensors",
+  investigation details, Ember, Controls, the explanation, "What would put this flame
+  out?", the comparison, Ignite, the zoomed star map, Find counterexample and Crew mode.
+  No console errors. The smallest text is 12 px. Controls are 40 px or taller except the
+  star map's zoom button (`mapBigBtn`), 96x38 px. The Controls dialog and the comparison
+  scroll inside themselves (765 of 848 px, 702 of 1054 px). Starting values: 57 %, "range
+  34–75%", "Disruption chance 32%". Moon Base: 99 %, "range 98–99%", "Disruption chance
+  98%", amber box "No clear outcome in nearby tests".
+- Controller and touch (5:41 to 5:45 PM). Each step was done by the owner and read back
+  from the page; the owner also answered five yes/no questions, all yes.
+  - Tour: View starts it. A goes on through nine cards, each with a part of the page
+    outlined (the owner confirmed). D-pad Left goes back. B ends it. It was ended with B
+    on the last card and the page stayed on Fire drill; finishing with A was not tried.
+  - Moon Base: X gives 99 %, the amber box, the banner "All nearby FLEX outcomes are
+    inconclusive." and a buzz (the owner confirmed the reading and the box). A opens the
+    explanation. RT opens "What would put this flame out?" with "Lower oxygen to 19 %"
+    first (25 %, under the watch level) and carbon dioxide and helium "not enough alone".
+    D-pad Down moves. B closes it and the explanation stays. RT again, then A tries it:
+    oxygen 30 to 19 %, reading 25 %. A then RT offers "Put it back", and A puts it back:
+    99 % again. B closes.
+  - Touch, one thumb tap each, every one hit on the first touch: the plus and minus steps
+    (43x43 px), "Put it out" (81x42), the Fire drill and NASA research tabs (89x42 and
+    134x42), Find (70x40) and its Close, and NASA source (96x44; the session kept the new
+    tab from opening).
+  - Oxygen map: Y opens it. In the third view the pressure scale is on the right and none
+    of its 35 labels overlaps another (measured, and the owner confirmed).
+  - Fire drill: after an answer, a line for the round appeared under the scoreboard (the
+    owner confirmed).
+  - Ember: Menu opens it, the answer came in 1.3 s, the owner heard the voice, B closes.
+- Demo rehearsal (5:45 to 5:48 PM) from `http://run/#title`: the six pressed shots of
+  `docs/demo-script.md` in order, prompted on screen. From the A press to the Fire drill
+  guess it took 129.6 s; the script allows 28 s. Every button did what the script says.
+  Where the time went, and what to know before filming:
+  - Shot 2 took 34 s. A D-pad Left in the Oxygen map went to view 1 and the map was
+    closed and opened again. It reopens on the view last used, so it then needed two
+    presses of Right.
+  - Shot 3: Ember answered by itself in 1.7 s, then read the answer aloud for 47.5 s,
+    and the owner waited for it. B stops the voice.
+  - Shot 5 took 20 s. On the Flame console the left stick changes the selected setting:
+    with the Fuel row selected it switched heptane to methanol, which ended the replay and
+    led to "FLEX test 41 cannot be replayed". The shot needs the right stick only. Test 39
+    replayed.
+- Not seen in this recheck: the F11 key itself; Share, Find by typing, the Moon evidence
+  check, the two evidence activities and Find counterexample with the controller; the CSV
+  buttons by touch; Ignite with the controller. Windows on the handheld still has
+  "Animation effects" off, so the page shows no CSS animation there.
+
 Final pass (Nov 15, about 6:02 PM): on landscape screens up to 600 px high the
 investigation orbit was left empty, because it needs 150 px to draw and its caption had
 grown by a line. The results panel now keeps 410 px there, for every topic and for widths
@@ -89,7 +145,8 @@ the handheld's IPv4 address. The local device log requires the per-run password
 printed on the PC. For a two-server setup, update the base first and then the
 handheld so both support one-hop peer requests. [Current setup](docs/legion-go-setup.md)
 
-Last updated Sunday Nov 15, about 6:02 PM by the owner's PC clock (British Columbia time, UTC-7).
+Last updated Sunday Nov 15, about 6:50 PM by the owner's PC clock (British Columbia time, UTC-7),
+from the Legion Go, whose own clock read 5:50 PM.
 
 Pull request 5, merged on Nov 15, includes shared research views and FLEX readings. Open a shared URL on
 the hosted dashboard, or paste a view code into another offline copy. The Oxygen

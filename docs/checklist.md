@@ -43,17 +43,28 @@ owner's local time (confirm on the team page). "Submit for Judging" is final.
 - [ ] In full screen (F11) the browser reports 1280x800. On each page, check that the
       small text is easy to read at arm's length and that a thumb hits the plus and minus
       steps, the tabs, **Find**, **NASA source** and the CSV buttons the first time.
+      (Nov 15, 5:34 to 5:45 PM on the handheld: 1280x800 in full screen from Edge's
+      start-fullscreen switch; the plus and minus steps, both tabs, Find and NASA source
+      were each hit on the first thumb tap. Not ticked: the F11 key, the CSV buttons and
+      reading at arm's length were not checked.)
 - [ ] On NASA research press View (or tap **Take the tour**). Nine cards follow, each
       with one part of the page outlined. A goes on, D-pad Left goes back, B ends it.
       After the last card the page returns to NASA research.
-- [ ] On the Flame console press X for Moon Base, A for the explanation, then RT. "What
+      (Nov 15, 5:41 PM on the handheld, with the controller: View, nine outlined cards,
+      A, D-pad Left and B all seen. Not ticked: the tour was ended with B on the last
+      card and the page stayed on Fire drill; finishing with A was not tried.)
+- [x] On the Flame console press X for Moon Base, A for the explanation, then RT. "What
       would put this flame out?" lists "Lower oxygen to 19 %" (25 %, under the watch
       level) and marks carbon dioxide and helium "not enough alone". D-pad Down moves
       between the changes, A tries one, B closes. Open it again (A, RT) and use
       **Put it back**. Tapping **Put it out** beside **Explain reading** opens the same panel.
-- [ ] Oxygen map, third view: the pressure scale ("5 atm" to "0.3 atm") is on the right
+- [x] Oxygen map, third view: the pressure scale ("5 atm" to "0.3 atm") is on the right
       of the chart and no label lies on another.
-- [ ] Fire drill: after an answer, a line for that round appears under the scoreboard.
+- [x] Fire drill: after an answer, a line for that round appears under the scoreboard.
+
+The three boxes ticked above were seen on the physical Legion Go on Nov 15, 5:41 to 5:45 PM
+by its clock, with the owner on the controller and the touch screen. `CLAUDE.md`, "Handheld
+recheck of the final page", has the rest of that run and the demo rehearsal.
 
 ## Earlier Legion Go runs recorded by the owner
 
