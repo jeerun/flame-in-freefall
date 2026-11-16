@@ -155,11 +155,11 @@ the per-fuel model has had a screen check on the handheld, not a controller run.
 
 ## Demo video (owner only)
 
-- [ ] Review the [submission video](https://youtu.be/y8v7ydXIyy8).
+- [ ] Review the [submission video](https://youtu.be/wffEO0Ag2Go).
 - [x] 30 seconds or less.
 - [ ] English subtitles burned into the picture.
 - [x] Hosted outside the Space Apps site.
-- [x] The submission video plays in a fresh Edge session without logging in.
+- [x] YouTube lists the submission video as playable without signing in.
 - [x] Submission video in field 3 and [full walkthrough](https://youtu.be/LwbnjOe0VXI) in field 5 of `docs/submission.md`.
 
 ## Form on the Space Apps site (owner only)

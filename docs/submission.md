@@ -17,7 +17,7 @@ answers questions using the selected research and measurements.
 
 ## 3. Link to project demo
 
-https://youtu.be/y8v7ydXIyy8
+https://youtu.be/wffEO0Ag2Go
 
 ## 4. Link to final project
 

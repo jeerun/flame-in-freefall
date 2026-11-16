@@ -11,7 +11,7 @@ documented Ember setup uses a downloaded Gemma model on the team's hardware.
 
 Try it in a browser: the [published dashboard](https://jeerun.github.io/flame-in-freefall/),
 or open `console/index.html` from a checkout.
-[Watch the submission video (0:30)](https://youtu.be/y8v7ydXIyy8) · [Watch the full walkthrough (6:55)](https://youtu.be/LwbnjOe0VXI)
+[Watch the submission video (0:30)](https://youtu.be/wffEO0Ag2Go) · [Watch the full walkthrough (6:55)](https://youtu.be/LwbnjOe0VXI)
 
 ![Research home with the orbit map and a short summary of the selected investigation.](docs/console-preview.png)
 
