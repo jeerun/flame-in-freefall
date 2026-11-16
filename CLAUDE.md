@@ -80,7 +80,7 @@ the handheld's IPv4 address. The local device log requires the per-run password
 printed on the PC. For a two-server setup, update the base first and then the
 handheld so both support one-hop peer requests. [Current setup](docs/legion-go-setup.md)
 
-Last updated Sunday Nov 15, about 10:34 AM by the owner's PC clock (British Columbia time, UTC-7).
+Last updated Sunday Nov 15, about 5:14 PM by the owner's PC clock (British Columbia time, UTC-7).
 
 Pull request 5, merged on Nov 15, includes shared research views and FLEX readings. Open a shared URL on
 the hosted dashboard, or paste a view code into another offline copy. The Oxygen
@@ -648,6 +648,25 @@ Not done:
       eight other browser tests all pass.
     - NOT checked: the physical Legion Go, a real gamepad, real touch. The demo script and
       the recorded video do not show the tour or the panel.
+
+  - TWO HONESTY LINES (Nov 15, about 5:14 PM by the PC clock, after the owner asked
+    "does the model still have holes?" and whether they can be closed).
+    - The Moon Base preset now says in the explanation "This is Moon Base cabin air only,
+      not a lunar-gravity validation." Only the Mars preset had such a line before.
+    - "What would put this flame out?" now says that it reads how FLEX tests with such
+      settings ended, not a proven effect of the change, and that under the watch level is
+      not "out": held out, 22 % of the tests rated 20 to 30 % still burned all their fuel
+      (`model/per_fuel/comparison.json`; `tests/test_advisor.cjs` keeps the figure in step).
+    - Looked for more data to close the methanol and pressure holes. There is none in the
+      repo: of the 22 FLEX tests outside the model none burned to completion, and the
+      FLEX-2 table (PSI-68) is a test plan without outcomes. Written up as holes 10 and 11
+      and section 9 of `docs/model-design-audit.md`.
+    - Found while measuring: since the morning's change the explanation on the Moon and
+      Mars presets no longer fitted its panel at 1280x800 (27 px too long, from the row the
+      "What would put it out?" button added). That button now sits beside Close as
+      "RT Put it out" (hidden below 1024 px of width), and the panel fits again with the
+      new sentence in it. `tests/browser_guides.py` checks the fit.
+    - No reading, formula or CSV changed.
 
 Not done, or not verified:
 - Everything in the list above is unverified on the real Legion Go, with real

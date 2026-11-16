@@ -170,7 +170,9 @@ and shows the first value at which the reading drops under the model's 30% watch
 together with what the real tests near that value did. For heptane in Earth-like air,
 two points less oxygen or ten percent carbon dioxide is enough. For the same fuel in Moon
 Base air neither carbon dioxide nor helium gets there within the tested range, and oxygen
-has to fall to 19%, which is no longer Moon Base air. The panel reads the flame model only: it does not
+has to fall to 19%, which is no longer Moon Base air. A reading under 30% is no promise
+either: of the held-out tests the model rated 20 to 30%, 22% still burned all their fuel,
+and the panel says so. The panel reads the flame model only: it does not
 check that the changed air is safe to breathe, and it is not a crew procedure.
 
 **A one-minute tour.** A button in the top bar walks a first-time user through the three

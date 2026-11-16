@@ -81,7 +81,9 @@ or open `console/index.html` from a checkout.
   drops under its 30 % watch level, and what the real tests near that value did. It says
   so when a change is not enough alone: for heptane in Moon Base air only less oxygen gets
   there, at 19 %, which is no longer Moon Base air. **Try it** moves the setting and the
-  panel can put it back. It reads the flame model only. It does not check that the changed
+  panel can put it back. A reading under 30 % is not a promise: held out of training,
+  22 % of the tests the model rated 20 to 30 % still burned all their fuel, and the panel
+  says so. It reads the flame model only. It does not check that the changed
   air is safe to breathe, and it is not a crew procedure.
 - **Fire drill** is a ten-round game. It shows the settings of a real FLEX test and
   you guess how it ended. It then replays the test, shows NASA's recorded result and

@@ -10,6 +10,9 @@
     { key: "he", dir: 1, verb: "Add helium", gas: "helium" }
   ];
   const GASES = ["o2", "co2", "he"];
+  // Held-out check of the outcome formula (model/per_fuel/comparison.json, "calibration_held_out"): of the tests it
+  // rated between 20 and 30 %, this share burned all their fuel. tests/test_advisor.cjs keeps the figure in step.
+  const HELD_OUT = { from: 20, to: 30, burned: 22 };
 
   function tidy(value) { return String(Math.round(value * 100) / 100); }
 
@@ -228,7 +231,10 @@
     if (api.features.some(f => f.key === "p")) left.append(element("p", "Pressure is not offered: the tests sat at two pressures, about 0.7 and 1 atm, so its direction is not known."));
     body.append(left);
     body.append(element("p", "A reading of the console's model" + (api.rows ? " (" + api.rows + " FLEX droplet tests)" : "")
-      + ", for study and planning. Not a crew procedure. It looks only at the flame: it does not check that the changed air is safe to breathe."
+      + ", for study and planning. Not a crew procedure. It reads how FLEX tests with such settings ended. It is not a proven effect of making the change."
+      + (result.goal === HELD_OUT.to ? " Under the watch level is not \"out\": held out of training, " + HELD_OUT.burned + " % of the tests the model rated "
+        + HELD_OUT.from + " to " + HELD_OUT.to + " % still burned all their fuel." : "")
+      + " It looks only at the flame: it does not check that the changed air is safe to breathe."
       + " \"Out\" means the visible flame; FLEX found that fuel can keep reacting after it, in a cool flame.", "fine"));
     body.append(element("p", "D-pad or arrows: choose · A or Enter: try it · B or Esc: close", "keys"));
   }
@@ -278,5 +284,5 @@
     return true;
   }
 
-  window.FLAME_ADVISOR = { open, isOpen, handle, close, plan, support };
+  window.FLAME_ADVISOR = { open, isOpen, handle, close, plan, support, heldOut: HELD_OUT };
 })();

@@ -126,6 +126,8 @@ def check_advisor(page):
     expect(panel.locator(".left")).to_contain_text("Pressure is not offered")
     expect(panel.locator(".fine")).to_contain_text("Not a crew procedure")
     expect(panel.locator(".fine")).to_contain_text("does not check that the changed air is safe to breathe")
+    expect(panel.locator(".fine")).to_contain_text("It is not a proven effect of making the change.")
+    expect(panel.locator(".fine")).to_contain_text("22 % of the tests the model rated 20 to 30 % still burned all their fuel")
     clean(page, "advisor")
     promised = options.nth(0).locator(".result b").inner_text()
     expect(options.nth(0).locator("button")).to_be_focused()
@@ -155,6 +157,11 @@ def check_advisor(page):
     expect(panel).to_be_hidden()
     pad(0)
     assert values()["sheet"]
+    expect(loc("#summaryLimits")).to_contain_text("This is Moon Base cabin air only, not a lunar-gravity validation.")
+    assert page.evaluate("() => { const s = document.getElementById('sheet'); return s.scrollHeight <= s.clientHeight; }"), "the explanation still fits its panel"
+    assert page.evaluate("""() => { const a = document.getElementById('sheetAdvisor').getBoundingClientRect(), c = document.getElementById('closeSheet').getBoundingClientRect(),
+      t = document.getElementById('sheetTitle'); const r = document.createRange(); r.selectNodeContents(t); const w = r.getBoundingClientRect();
+      return a.right < c.left && a.left > w.right && Math.abs(a.top - c.top) < 2; }"""), "the panel's button sits between the title and Close"
     expect(loc("#sheetAdvisor")).to_be_visible()
     pad(7)
     expect(panel).to_be_visible()

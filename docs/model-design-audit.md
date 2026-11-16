@@ -28,6 +28,8 @@ them.
 | 7 | "Time to consume the droplet" has no check. | For the 27 completions it is a median 1.18 times NASA's burn time. | Documented, with the spread. | The number on screen is unchanged. |
 | 8 | The page's "tested range" pools both fuels. | Methanol was never run below 1.61 mm, heptane never above 45 % carbon dioxide. | Documented, not changed: per-fuel ranges would turn the Moon Base preset red over 0.001 atm. | Yes, a small one. |
 | 9 | No file pins the package versions. | The scripts need scikit-learn 1.9. | `requirements.txt`. | |
+| 10 | The Moon Base preset said nothing about gravity. The Mars preset did. | The model has no gravity input. The preset changes oxygen and pressure only. | The explanation now says "Moon Base cabin air only, not a lunar-gravity validation." | The model still knows nothing about partial gravity. |
+| 11 | "What would put this flame out?" reads a fitted model as cause and effect, and "under the watch level" can be read as "out". | Held out, 22 % of the tests the model rated 20 to 30 % burned all their fuel. | The panel says both, with that figure. | The changes it lists are not proven effects. No further droplet tests are left to add (see section 9). |
 
 ## 1. A third ending
 
@@ -220,6 +222,36 @@ Read "about".
 - **No variable left unused.** NASA's FLEX table gives the fuel, the pressure, the
   gas mix and the droplet size before ignition. The model uses all of them. Things
   the table does not record (a support fibre, the igniter) cannot be checked.
+
+## 9. Two holes found after the panel was added, and whether more data exists
+
+Found on Nov 15, in the afternoon, after "What would put this flame out?" went in.
+
+**Hole 10: the Moon Base preset and gravity.** The Mars preset carried the line "not a
+Mars-gravity validation". The Moon Base preset carried no such line, so "Moon Base, 99 %"
+could be read as a prediction for the Moon. The model has no gravity input. The explanation
+now says "This is Moon Base cabin air only, not a lunar-gravity validation."
+
+**Hole 11: the panel reads the model as cause and effect.** The model is fitted to the
+tests NASA chose to run, where pressure and the gas mix move together (hole 6). "Lower
+oxygen to 19 %" therefore means that tests with such settings mostly went out. It does not
+show that making the change puts a flame out. And a reading under the 30 % watch level is
+not "out": held out of training, 22 % of the tests the model rated 20 to 30 % burned all
+their fuel (`model/per_fuel/comparison.json`, `calibration_held_out`). The panel now says
+both.
+
+**Is there more data to close holes 5 and 6?** Checked in the repo on Nov 15:
+
+- PSI-69 has 274 FLEX tests. The model uses 252. Of the other 22, 12 have no droplet size,
+  one has no pressure, and nine are above 1.1 atm. None of those nine burned to completion
+  (seven went out, two were disrupted), so they would add nothing to methanol's eight
+  completions.
+- The FLEX-2 table in PSI (PSI-68) lists eight fuels with the ranges of the test plan. It
+  has no row per test and no outcomes, so it cannot be used for training.
+- Of the 25 PSI tables in `data/raw/psi_tables/`, only these two mention droplets.
+
+So holes 5 and 6 stay open until more droplet tests with recorded outcomes are published.
+A different kind of model does not close them: `model/compare_models.py` tried eight.
 
 ## How this was checked
 

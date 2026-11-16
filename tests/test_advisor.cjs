@@ -112,5 +112,12 @@ assert.match(say({ n: 13, out: 7, done: 3, other: 3 }).text, /7 of 10 with a cle
 assert.match(say({ n: 4, out: 1, done: 3, other: 0 }).text, /only 1 of 4 .* Trust the tests/);
 assert.ok(say({ n: 4, out: 1, done: 3, other: 0 }).rank < say({ n: 13, out: 7, done: 3, other: 3 }).rank);
 
+// 7. The held-out figure the panel quotes is the one in the model comparison, for the band under the watch level.
+const comparison = JSON.parse(fs.readFileSync(path.join(root, "model", "per_fuel", "comparison.json"), "utf8"));
+const band = comparison.calibration_held_out.find(b => Math.round(b.from * 100) === advisor.heldOut.from && Math.round(b.to * 100) === advisor.heldOut.to);
+assert.ok(band, "the comparison has the band the panel quotes");
+assert.equal(Math.round(band.share_that_burned_to_completion * 100), advisor.heldOut.burned);
+assert.equal(advisor.heldOut.to, goal);
+
 console.log("PASS: the smallest single change of oxygen, carbon dioxide or helium that takes the reading under the watch level; "
   + "tested-range limits, gases never mixed, unsettled directions, and the wording about nearby tests.");
