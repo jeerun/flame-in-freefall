@@ -155,12 +155,12 @@ the per-fuel model has had a screen check on the handheld, not a controller run.
 
 ## Demo video (owner only)
 
-- [ ] Review the [28-second captioned desktop demo](https://cdn.jsdelivr.net/gh/jeerun/flame-in-freefall@86d58ee2be94d1546350fdb560ba52963f95b2b7/docs/crew-console-demo.mp4) or record the alternative handheld demo in `docs/demo-script.md`. The included video was captured in desktop Edge.
-- [ ] 30 seconds or less.
+- [ ] Review the [submission video](https://youtu.be/y8v7ydXIyy8).
+- [x] 30 seconds or less.
 - [ ] English subtitles burned into the picture.
-- [ ] Hosted outside the Space Apps site.
-- [ ] The link opens and plays in a private browser window without logging in.
-- [ ] Link pasted into `docs/submission.md`.
+- [x] Hosted outside the Space Apps site.
+- [x] The submission video plays in a fresh Edge session without logging in.
+- [x] Submission video in field 3 and [full walkthrough](https://youtu.be/LwbnjOe0VXI) in field 5 of `docs/submission.md`.
 
 ## Form on the Space Apps site (owner only)
 

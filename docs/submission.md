@@ -17,7 +17,7 @@ answers questions using the selected research and measurements.
 
 ## 3. Link to project demo
 
-https://cdn.jsdelivr.net/gh/jeerun/flame-in-freefall@86d58ee2be94d1546350fdb560ba52963f95b2b7/docs/crew-console-demo.mp4
+https://youtu.be/y8v7ydXIyy8
 
 ## 4. Link to final project
 
@@ -27,6 +27,8 @@ https://github.com/jeerun/flame-in-freefall
 
 Open the dashboard in Orbit view, choose a fire-safety question and follow the evidence
 from a research summary to its NASA source. [Open the dashboard](https://jeerun.github.io/flame-in-freefall/)
+
+[Watch the full walkthrough (6:55)](https://youtu.be/LwbnjOe0VXI)
 
 **NASA research.** The page covers 24 combustion investigations from NASA’s Physical
 Sciences Informatics (PSI) repository, including BASS, Saffire, SAME, FLEX, FLEX-2
@@ -374,7 +376,6 @@ dashboard, including the drawings (inline SVG), the sound effects (Web Audio) an
 voice (the browser's speech synthesis). Node.js for the test that runs the page's
 prediction code outside a browser. Ollama running the open Gemma 4 12B model on
 an NVIDIA RTX 5080 for Ember. We tested the dashboard on a Lenovo Legion Go.
-The captioned demo was captured in desktop Edge.
 
 ## 6. NASA data
 
