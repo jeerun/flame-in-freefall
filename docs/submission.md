@@ -441,14 +441,53 @@ from each in `docs/sources.md`):
 - "Mechanisms of droplet combustion", NASA NTRS 19820015551.
   https://ntrs.nasa.gov/citations/19820015551
 
-## Space agency partner and other data
+NASA images and video shown in the dashboard (credits and links in `docs/sources.md`):
 
-No other data: the project uses NASA data only. Software and models: Python, pandas,
-NumPy, scikit-learn and matplotlib (open source); Ollama (https://ollama.com) to run
-a language model locally; Gemma 4 12B, an open model from Google, as that model.
+- Cabin-air buttons: the Apollo 17 Blue Marble photograph AS17-148-22727, the Galileo
+  Moon mosaic PIA00405 and the Viking Orbiter 1 Valles Marineris mosaic PIA04304.
+- Evidence lab: NASA clips of FLEX (SVS release 11318), FLEX-2 (SVS release 11640),
+  SoFIE-GEL, Saffire-I, Saffire-V and Saffire-VI, and two stills taken from the FLEX clip.
+
+## Space agency partner and other data
+Form field on the 2026 site: "Space Agency Partner Data and Other References". It asks
+for all data, resources and tools used, including code, text and images. Do not paste
+these two lines.
+
+No data from a Space Agency Partner. Every dataset, image and video in the project is
+NASA's and is listed under NASA Data.
+
+Other resources and tools:
+
+- Software: Python with pandas, NumPy, scikit-learn and matplotlib (cleaning, training,
+  the chart, the local server). Pillow and imageio-ffmpeg (preparing frames of the FLEX
+  clip). Node.js and Playwright with Microsoft Edge (tests).
+- Language models run locally with Ollama (https://ollama.com): Gemma 4 12B and
+  `gemma4:e2b`, open models from Google.
+- AI assistants used while building: Claude (Anthropic) and OpenAI ChatGPT/Codex. What
+  each did is in the next field.
+- The dashboard loads no third-party JavaScript or CSS library and no web font.
 
 ## Use of artificial intelligence
-Where and how we used AI. Copy from the README and add anything new.
+Form field on the 2026 site: "Use of Super Intelligence (SI)". The site writes "SI"
+where it used to write "AI". The field is required: the Participant FAQs say "Each
+team's project submission must include a description of how SI tools were used during
+the development of their project." The guide says the answer is collected for NASA and
+is not shown to the judges, who see the AI labels inside the project instead. The guide
+also says SI should not be used to come up with the idea of how to solve the challenge:
+the owner checks that the text below describes the team's work truthfully on that point.
+Do not paste this note.
+
+Yes. Where and how we used AI.
+
+How it is marked in the project: the AI-written summaries and ranks carry the labels
+"AI summary" and "Summaries and ranks by Claude" on the page. Ember's panel says it is a
+language model and that it can be wrong. The README has a "Use of AI" section. Commits
+made by our AI assistant sessions carry the author name "Claude" or "Codex". No image or
+video in the project was made with a generative model: every photograph and clip is
+NASA's, the drawings and sound effects are produced by the page's own code, and the demo
+video is a screen capture of the running dashboard with captions added using Codex.
+Ember's answers, and the voice that can read them aloud, are produced at run time and
+shown as Ember's.
 
 Inside the product:
 

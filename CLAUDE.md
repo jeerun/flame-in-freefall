@@ -31,6 +31,9 @@ Hardware the team wants to show off:
 
 Submission closes Sunday Nov 15, 11:59 PM in the team owner's local time
 (Mountain, UTC-7). Confirm the time on the team page. "Submit for Judging" is final.
+The Project Submission Guide (read Nov 15) gives the rule: for the Universal Event the
+deadline is 11:59 p.m. "in accordance with the local time of your Team Owner's area of
+residence".
 
 - Midnight Sat: clean CSV and a first chart exist. If not, switch challenge to
   Space Mission Design Game.
@@ -668,6 +671,13 @@ Not done:
       new sentence in it. `tests/browser_guides.py` checks the fit.
     - No reading, formula or CSV changed.
 
+  - FORM DRAFT CHECKED AGAINST THE OFFICIAL GUIDE (Nov 15, about 5:29 PM, after the owner
+    asked whether the AI field is mandatory). It is. `docs/submission.md` now names the two
+    fields as the 2026 form does, lists every resource and tool under "Other References"
+    (the checklist said "None"), adds the NASA images and clips to NASA Data, and opens the
+    AI field with how AI use is marked in the project. Owner: read the note about the
+    idea rule before pasting.
+
 Not done, or not verified:
 - Everything in the list above is unverified on the real Legion Go, with real
   gloves, and over real Wi-Fi, except what the two points about the real Legion Go
@@ -920,6 +930,18 @@ Deliberately cut: flame video analysis, combining the raw data of several experi
 - Must state where and how AI was used. Claude has been used for planning, the
   console code and this skeleton. Keep the README section current.
 - Work must be the team's own. Other teams' repos may be read, never copied from.
+- Read on Nov 15, 2026 in the Project Submission Guide and the Participant FAQs
+  (spaceappschallenge.org/resources). The 2026 site writes "Super Intelligence (SI)" for
+  AI. The field "Use of Super Intelligence (SI)" is required, is collected for NASA and is
+  not shown to the judges. Its rules: SI should not be used to come up with the idea of
+  how to solve the challenge; generated content may not use NASA logos, flags or mission
+  identifiers; SI-generated images and video need a visible watermark; audio, code and
+  data need an acknowledgement in descriptive text and metadata.
+- The field "Space Agency Partner Data and Other References" asks for all data, resources
+  and tools, including code, text and images. `docs/submission.md` now lists them.
+- All team members must be confirmed participants at the same event. All required fields
+  must be completed, in English. Judging criteria: Impact, Creativity, Validity,
+  Relevance, Presentation. The demo counts mostly toward Presentation.
 
 ## Repo rules
 

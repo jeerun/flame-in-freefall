@@ -163,15 +163,21 @@ Copy each field from `docs/submission.md`.
 - [ ] NASA data: names the PSI repository, PSI-69 FLEX and the seven other
       investigations whose test tables feed the Oxygen map, with their links. Needed
       to be eligible for global awards.
-- [ ] Space agency partner and other data: "None".
-- [ ] Use of artificial intelligence, in English, including anything teammates did
-      with AI outside this repo.
+- [ ] Space Agency Partner Data and Other References: no partner data, then the list of
+      other resources and tools from `docs/submission.md`. The form asks for all data,
+      resources and tools, including code, text and images, so "None" is not enough.
+- [ ] Use of Super Intelligence (SI), the form's 2026 name for the use of AI. Required.
+      In English, including anything teammates did with AI outside this repo. The guide
+      says SI should not be used to come up with the idea: check the text says truthfully
+      what the team did itself.
 - [ ] Every "TO ADD" in `docs/submission.md` is filled before copying.
 - [ ] No Thai or other non-English text in any field.
 
 ## Team
 
 - [ ] All five members have joined the team on the Space Apps site.
+- [ ] All five are confirmed participants of the same event as the team (the guide makes
+      this a condition for judging).
 - [ ] "Looking for members" is unticked after all five are in.
 - [ ] Everyone has read the summary and agrees with it.
 
