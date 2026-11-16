@@ -13,7 +13,7 @@ def check_orbit_rings(page):
     orbit = page.locator("#orbit")
     legend = page.locator("#orbitLegend")
     expect(legend).to_be_visible()
-    for label in ("AI-rated relevance", "Stated objective", "Directly useful measurements",
+    for label in ("closer to the centre", "Stated objective", "Directly useful measurements",
                   "Indirect link", "Outside topic", "Dotted outer ring"):
         expect(legend).to_contain_text(label)
     expect(orbit).to_have_accessible_description(re.compile("Direct.*Strong.*Related", re.S | re.I))

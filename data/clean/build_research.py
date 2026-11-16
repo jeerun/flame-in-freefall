@@ -5,7 +5,7 @@ Needs only the Python standard library. Nothing in data/raw is modified.
 
 It joins two files:
   data/raw/psi_search/combustion_investigations.json   facts, exactly as the NASA PSI search returned them
-  data/clean/research_notes.json                        plain-language notes and relevance scores (AI-written)
+  data/clean/research_notes.json                        the project's plain-language notes and relevance scores
 Titles, project type, platform, hardware and dates come from PSI. Summaries and scores come from the notes.
 The script stops if a combustion investigation in the PSI file has no note, or a note has no PSI record.
 """

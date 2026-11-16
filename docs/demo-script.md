@@ -7,7 +7,7 @@ The team recorded controller runs on the earlier dashboard and checked the per-f
 page on the physical Legion Go. Before filming the redesigned page, repeat the
 handheld checks below. [Device test record](../CLAUDE.md)
 
-The [28-second captioned desktop demo](crew-console-demo.mp4) opens on the research ranking, reveals the Saffire-II burn lengths at 0:09 and the BASS-II sensor readings at 0:16, then compares FLEX tests #108 and #183 at 0:22. The sequence below is an alternative if the team films its handheld and Ember.
+The [28-second captioned desktop demo](crew-console-demo.mp4) opens on the investigation orbits, reveals the Saffire-II burn lengths at 0:09 and the BASS-II sensor readings at 0:16, then compares FLEX tests #108 and #183 at 0:22. The sequence below is an alternative if the team films its handheld and Ember.
 
 ## Before filming
 

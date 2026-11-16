@@ -21,10 +21,9 @@
 for each of the 24 combustion investigations a short name, the kind of fuel, a
 summary, what varied between tests, why it matters for fire safety, and a 0 to 3
 relevance score for prevention, detection, suppression and cabin air (how much the
-tests say about oxygen level and pressure). An AI model (Claude) wrote
-them on Nov 14, 2026 from the objectives and approach text in
-`data/raw/psi_search/combustion_investigations.json`. They are a reading of NASA's
-text, not NASA's words, and nobody on the team has reviewed them line by line yet.
+tests say about oxygen level and pressure). The notes interpret the objectives and
+approach recorded in `data/raw/psi_search/combustion_investigations.json`.
+A line-by-line review of the notes is still pending.
 The score scale is described at the top of the file.
 
 `build_research.py` joins those notes with the facts in the raw PSI file (title,
