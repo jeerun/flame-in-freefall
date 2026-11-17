@@ -952,7 +952,6 @@
       </form>
     </div>
     <div class="ans" id="aiAns" tabindex="0" role="region" aria-label="Ember’s answer" aria-live="polite"></div>
-    <p class="fine" id="aiHostedNote" hidden>The submitted version ran Gemma locally. This post-event demo uses Claude to answer from the same NASA records.</p>
     <p class="fine" id="aiLocalNote">Local models use the records or readings on this screen. Check their answers against the original NASA data before drawing conclusions.</p>
   </div>
 </dialog>
@@ -3317,7 +3316,6 @@ window.FLAME_MODEL = {
     $("aiForm").querySelectorAll("input,button").forEach(function (control) { control.disabled = !source; });
     $("aiQs").querySelectorAll("button").forEach(function (button) { button.disabled = !source; });
     $("aiLocalNote").hidden = !source || isHosted;
-    $("aiHostedNote").hidden = !isHosted;
     var selectedButton = $("aiBrains").querySelector("[aria-pressed=true]");
     $("aiWho").textContent = source ? (AI.mode === "auto" ? "Auto · " : "") + source.label
       : selectedButton.textContent + " · " + (AI.mode === "pc" || AI.mode === "handheld" ? "Connect first" : "Unavailable");
