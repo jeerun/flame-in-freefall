@@ -935,7 +935,8 @@
       </form>
     </div>
     <div class="ans" id="aiAns" tabindex="0" role="region" aria-label="Ember’s answer" aria-live="polite"></div>
-    <p class="fine">Ember is a language model running on the team's own PC. It writes each answer on the spot from the NASA PSI records and the numbers on this screen. It can be wrong: check the PSI ids it cites. Not a crew procedure.</p>
+    <p class="fine" id="aiHostedNote" hidden>Post-event hosted research demo. Ask about the selected investigation or name another experiment. Follow the NASA links to check the evidence.</p>
+    <p class="fine" id="aiLocalNote">Ember is a language model running on the team's own PC. It writes each answer on the spot from the NASA PSI records and the numbers on this screen. It can be wrong: check the PSI ids it cites. Not a crew procedure.</p>
   </div>
 </dialog>
 
@@ -980,6 +981,7 @@ window.FLAME_MODEL = {
   burn_rate:  { intercept: 0.30, fuel: { heptane: 0, methanol: -0.08 }, coef: { o2: 0.012, p: 0.03, co2: -0.004, d0: 0.02 } }
 };
 </script>
+<script src="dashboard-hosted.js" data-origin="https://ember-research-demo.ember-hosted-preview.workers.dev"></script>
 <script src="model.js" onerror="this.remove()"></script>
 <script src="research.js" onerror="this.remove()"></script>
 <script src="tables.js" onerror="this.remove()"></script>
@@ -3056,6 +3058,7 @@ window.FLAME_MODEL = {
     }
     view.page = name;
     document.body.dataset.page = name;
+    if (AI) showAIAvailability();
     ["Console", "Research", "Drill"].forEach(function (p) {
       var on = p.toLowerCase() === name;
       $("view" + p).hidden = !on; $("hints" + p).hidden = !on;
@@ -3136,6 +3139,9 @@ window.FLAME_MODEL = {
   // A language model on the team's own PC, reached through server/serve.py. The page only shows the
   // button when it was opened from that server and the model is ready; opened as a file, nothing changes.
   var AI = { ok: false, model: "", gpu: "", label: "", brains: [], brain: load("brain", "auto"), def: null, open: false, busy: false, sel: 0, qs: [] };
+  function hostedResearchReady() {
+    return !AI.ok && view.page === "research" && !!hostedResearch.backend;
+  }
   function aiQuestions() {
     if (view.page === "research" && R) {
       var list = ranked(), it = list[view.sel];
@@ -3236,18 +3242,25 @@ window.FLAME_MODEL = {
     if (ids.length > 2) setBrain(ids[(Math.max(0, ids.indexOf(AI.brain)) + 1) % ids.length]);
   }
   function aiWho() {
+    var hosted = hostedResearchReady();
+    $("aiLocalNote").hidden = hosted;
+    $("aiHostedNote").hidden = !hosted;
+    if (hosted) {
+      $("aiWho").textContent = "Research answers by " + hostedResearch.backend + " (hosted).";
+      return;
+    }
     var b = brainNow();
     $("aiWho").textContent = b ? "Answering model: " + b.label + ". Read-aloud uses an installed English voice when available." : "Ember is offline.";
   }
   function openAI() {
-    if (!AI.ok || AI.open || document.querySelector("dialog[open]")) return;
+    if ((!AI.ok && !hostedResearchReady()) || AI.open || document.querySelector("dialog[open]")) return;
     var qs = aiQuestions();
     if (!qs.length) return;
     AI.returnFocus = document.activeElement;
     AI.open = true; AI.sel = 0; AI.qs = qs; renderAI(); renderBrains(); aiWho();
     $("ai").hidden = false; $("ai").showModal(); $("aiQs").firstElementChild.focus();
     sfx.open();
-    askAI(AI.qs[0]);                               // one press is enough: the first question is asked straight away
+    if (AI.ok) askAI(AI.qs[0]);
   }
   function closeAI() {
     if (!AI.open) return;
@@ -3260,6 +3273,9 @@ window.FLAME_MODEL = {
   // Send one question to the model on the PC. onText gets the answer so far, onEnd gets (error or null, full text).
   function aiStream(body, onText, onEnd, signal) {
     var got = "", meta = { label: "", fellBack: false };
+    if (body.page === "research" && hostedResearchReady()) {
+      return hostedResearch.ask(body, onText, onEnd, signal);
+    }
     body.brain = AI.brain;
     fetch("/ask", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), signal: signal })
       .then(function (resp) {
@@ -3306,7 +3322,7 @@ window.FLAME_MODEL = {
   function askAI(q) {
     q = (q || "").trim();
     if (!q || !AI.open || (AI.busy && AI.question === q)) return;
-    if (!AI.ok) { aiWho(); return; }
+    if (!AI.ok && !hostedResearchReady()) { aiWho(); return; }
     if (AI.request) AI.request.abort();
     var request = new AbortController();
     AI.request = request; AI.busy = true; AI.question = q;
@@ -3331,6 +3347,7 @@ window.FLAME_MODEL = {
         if (err) out.textContent = "Ember did not answer (" + err.message + "). The rest of the dashboard still works.";
         else {
           box.appendChild(el("span", "took", "Answered in " + ((Date.now() - t0) / 1000).toFixed(1) + " s by Ember (" + (meta.label || (who ? who.label : AI.model)) + ")."));
+          if (meta.sources) hostedResearch.showSources(box, meta.sources);
           if (meta.used && meta.used.length) {
             box.appendChild(el("span", "took", "NASA records it was given in full: " + meta.used.map(function (id) {
               var rec = R ? R.items.filter(function (x) { return x.id === id; })[0] : null;
@@ -3350,8 +3367,8 @@ window.FLAME_MODEL = {
   $("aiForm").addEventListener("submit", function (ev) { ev.preventDefault(); askAI($("aiInput").value); });
   // Ask the server which machines can answer. Asked again every 20 seconds, so a lost or returning PC is noticed.
   function showAIAvailability() {
-    $("aiBtn").hidden = !AI.ok; $("titleAI").hidden = !AI.ok;
-    Array.prototype.forEach.call(document.querySelectorAll(".hintAI"), function (s) { s.hidden = !AI.ok; });
+    $("aiBtn").hidden = !AI.ok && !hostedResearchReady(); $("titleAI").hidden = !AI.ok;
+    Array.prototype.forEach.call(document.querySelectorAll(".hintAI"), function (s) { s.hidden = !AI.ok && !hostedResearchReady(); });
     aiWho(); if (AI.open) renderBrains();
   }
   function refreshAI(first) {
@@ -3370,6 +3387,8 @@ window.FLAME_MODEL = {
       }
     }).catch(function () {
       if (AI.ok) { AI.ok = false; AI.brains = []; AI.def = null; showAIAvailability(); notify("Ember is out of reach. Everything else still works.", "warn"); }
+    }).then(function () {
+      if (!AI.ok) hostedResearch.probe().then(showAIAvailability);
     });
   }
   if (/^https?:$/.test(location.protocol) && window.fetch) {
