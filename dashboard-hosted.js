@@ -1,6 +1,7 @@
-// The dashboard uses this transport only for research when its local model is unavailable.
+// Hosted research is available on the public dashboard. The downloaded app uses its own server.
 const hostedResearch = (() => {
-  const origin = document.currentScript.dataset.origin || location.origin;
+  const origin = document.currentScript.dataset.origin || "https://ember-research-demo.ember-hosted-preview.workers.dev";
+  const isPublicSite = location.origin === "https://jeerun.github.io" || location.origin === origin;
   let backend = "";
   let statusRequest;
 
@@ -58,5 +59,5 @@ const hostedResearch = (() => {
     if (links.childNodes.length) box.append(links);
   }
 
-  return { probe, ask, showSources, get backend() { return backend; } };
+  return { origin, isPublicSite, probe, ask, showSources, get backend() { return backend; } };
 })();
