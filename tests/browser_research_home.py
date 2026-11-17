@@ -54,7 +54,8 @@ def check_home(page, width, height):
     expect(orbit).to_be_visible()
     check_orbit_rings(page)
     expect(rank).to_be_hidden()
-    expect(tools).to_have_js_property("open", False)
+    starts_open = width > 820 and height >= 500
+    expect(tools).to_have_js_property("open", starts_open)
     expect(details).to_have_js_property("open", False)
     expect(share).to_have_accessible_name("Share view")
     expect(share).to_have_attribute("title", "Share view")
@@ -65,6 +66,10 @@ def check_home(page, width, height):
             expect(target).to_be_in_viewport()
 
     tools_summary = tools.locator("summary")
+    if starts_open:
+        expect(tools.locator("#moonCase")).to_be_visible()
+        tools_summary.click()
+        expect(tools).to_have_js_property("open", False)
     tools_summary.click()
     expect(tools).to_have_js_property("open", True)
     for control_id in ("oxBtn", "gravityCase", "sensorCase", "evidenceLab"):
@@ -122,6 +127,7 @@ def check_controller(page):
     expect(page.locator("#shareViewDialog")).to_be_hidden()
     expect(page.locator("#shareResearch")).to_be_focused()
     page.reload()  # Direct controller shortcuts also work before a page control takes focus.
+    page.locator("#researchTools").evaluate("panel => { panel.open = false; }")
     page.evaluate("window.pressPad(6)")  # LT still opens an activity with the tools collapsed.
     expect(page.locator("#ev-dialog")).to_be_visible()
     page.evaluate("window.pressPad(1)")

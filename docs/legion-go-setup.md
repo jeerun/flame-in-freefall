@@ -9,6 +9,12 @@ The direct Wi-Fi route in A still needs a device test. [Device test record](../P
 
 ## A. The Legion Go as the screen, the PC as the brain (nothing to install)
 
+In **Ask Ember**, select **PC** to answer on the computer running the model, or
+**Handheld** to answer on the Legion Go itself. **Auto** on the handheld uses
+the connected PC first, then the handheld. On the public research page, Auto
+uses Claude online. The device buttons show the connection steps for the local
+dashboard. Use your own PC's address when connecting over Tailscale (section C).
+
 1. Find the handheld's IPv4 address in its Wi-Fi properties. On the GPU PC,
    stop an existing PC-only dashboard. From the repo root run
    `py server/serve.py --lan --allow-device 192.168.1.42 --open`, substituting
@@ -36,8 +42,8 @@ If the Legion Go cannot open the address:
 
 Needs internet once, about 5 GB of disk, and about 15 minutes.
 
-1. On the Legion Go open https://github.com/jeerun/flame-in-freefall , choose Code,
-   Download ZIP, and unzip it (for example on the Desktop).
+1. On the Legion Go open the [post-event demo source](https://github.com/jeerun/flame-in-freefall/tree/post-event-ember),
+   choose **Code → Download ZIP**, and unzip it (for example on the Desktop).
 2. In that folder double-click `Setup Legion Go.bat`. It installs Python and Ollama
    with winget and downloads the model `gemma4:e2b` (4.3 GB). winget shows each
    licence and asks you to agree. If Ollama was just installed and the script says

@@ -42,7 +42,8 @@ def check(page):
     pad(1)
     expect(loc("#controlGuide")).to_be_hidden()
     expect(loc("#guideBtn")).to_be_focused()
-    loc("#researchTools summary").click()
+    if not loc("#researchTools").evaluate("panel => panel.open"):
+        loc("#researchTools summary").click()
     expect(loc("#gravityCase")).to_be_visible()
     loc("#gravityCase").focus()
     key("Enter")  # Native activation of the launcher.

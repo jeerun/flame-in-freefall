@@ -221,6 +221,7 @@ def check_tour(page):
         page.evaluate("index => window.pressPad(index)", button)
 
     button = loc("#tourBtn")
+    loc("#researchTools summary").click()  # The tour restores a visitor's collapsed tools.
     expect(button).to_be_visible()
     expect(button).to_contain_text("Take the tour")
     expect(button).to_have_class("guide-button tour-button fresh")
@@ -287,8 +288,8 @@ def check_phone(page):
     page.set_viewport_size({"width": 390, "height": 844})
     page.goto(CONSOLE.as_uri())
     loc = page.locator
-    expect(loc("#tourBtn")).to_be_visible()
-    loc("#tourBtn").click()
+    loc("#guideBtn").click()
+    loc("#guideTour").click()
     card = loc("#tour")
     for n in range(1, 10):
         expect(card.locator(".count")).to_have_text(f"Tour · {n} of 9")

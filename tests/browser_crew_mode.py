@@ -7,6 +7,30 @@ from playwright.sync_api import expect, sync_playwright
 from browser_evidence import CONSOLE, GAMEPAD
 
 
+def check_settings_layout(page):
+    page.goto(CONSOLE.as_uri())
+    page.locator("#tabConsole").click()
+    page.locator('[data-preset="earth"]').click()
+    page.locator('#rows button[aria-label^="Raise Carbon dioxide"]').click()
+    expect(page.locator("#cabinContext")).to_have_text("Custom cabin air")
+
+    presets = page.locator("#presets button").all()
+    fuel_controls = page.locator("#rows .row:first-child .name, .fuels button").all()
+    assert len(presets) == 3 and len(fuel_controls) == 3
+    preset_boxes = [button.bounding_box() for button in presets]
+    fuel_top = min(control.bounding_box()["y"] for control in fuel_controls)
+    assert max(box["y"] + box["height"] for box in preset_boxes) <= fuel_top
+
+    page.locator('[data-fuel="methanol"]').click()
+    expect(page.locator('[data-fuel="methanol"]')).to_have_attribute("aria-pressed", "true")
+    export = page.locator("#csvBtn")
+    export.click(trial=True)
+    expect(export).to_be_in_viewport(ratio=.99)
+    footer = page.locator("#settingsExport").bounding_box()
+    settings = page.locator("#consoleSettings").bounding_box()
+    assert footer["y"] + footer["height"] <= settings["y"] + settings["height"] + 1
+
+
 def check_crew(page, touch):
     page.goto(CONSOLE.as_uri())
     page.locator("#tabConsole").click()
@@ -131,6 +155,10 @@ if __name__ == "__main__":
     channel = args.parse_args().channel
     with sync_playwright() as pw:
         browser = pw.chromium.launch(channel=channel)
+        for width, height in ((1366, 760), (1920, 864)):
+            page = browser.new_page(viewport={"width": width, "height": height})
+            check_settings_layout(page)
+            page.close()
         for width, height, touch in ((1280, 800, False), (844, 390, False), (320, 568, True)):
             page = browser.new_page(viewport={"width": width, "height": height}, has_touch=touch)
             errors = []

@@ -44,6 +44,66 @@ class PeerTests(unittest.TestCase):
         self.assertEqual(status["default"], "local:ember")
         self.assertEqual([b["id"] for b in status["brains"]], ["local:ember"])
 
+    def test_handheld_reports_its_role_without_a_pc_or_a_loaded_model(self):
+        self.server.device_role = "handheld"
+        self.server.peer = ""
+        status = serve.ai_status(self.server)
+        self.assertEqual(status["role"], "handheld")
+        self.assertEqual(status["brains"][0]["role"], "handheld")
+        self.local_models.return_value = []
+        self.assertEqual(serve.ai_status(self.server)["role"], "handheld")
+
+    def test_peer_device_roles_use_metadata_or_the_legacy_device_label(self):
+        for metadata, expected in [
+            ({"role": "handheld", "where": "my machine"}, "handheld"),
+            ({"role": "pc", "where": "handheld room"}, "pc"),
+            ({"where": "the Legion Go itself"}, "handheld"),
+            ({"where": "the base"}, "pc"),
+        ]:
+            with self.subTest(metadata=metadata):
+                remote = {**metadata, "up": True, "id": "local:ember", "model": "ember"}
+                with patch.object(serve, "peer_json", return_value={"brains": [remote]}):
+                    self.assertEqual(serve.brains(self.server)[0]["role"], expected)
+
+    def test_explicit_missing_model_is_not_replaced(self):
+        request = {"question": "Explain", "brain": "local:missing", "require_brain": True}
+        handler = self.handler("/peer/ask", json.dumps(request).encode())
+        with patch.object(serve, "ask_model") as infer:
+            handler.do_POST()
+        infer.assert_not_called()
+        self.assertEqual(handler.send_error.call_args.args[0], 503)
+        request["require_brain"] = "true"
+        handler = self.handler("/peer/ask", json.dumps(request).encode())
+        handler.do_POST()
+        self.assertEqual(handler.send_error.call_args.args[0], 400)
+
+    def test_explicit_peer_choice_never_relays_a_substitute(self):
+        remote = {"id": "peer:local:ember", "label": "PC", "up": True}
+        local = {"id": "local:ember", "model": "ember", "label": "handheld", "up": True}
+        request = {"question": "Explain", "brain": remote["id"], "require_brain": True}
+        substituted = self.response(b"Substitute answer", "text/plain")
+        substituted.headers["X-Brain-Fallback"] = "1"
+        selected = self.response(b"Selected answer", "text/plain")
+        selected.headers["X-Brain-Fallback"] = "0"
+        for response in [ConnectionError("unreachable"), substituted, selected]:
+            with self.subTest(response=response):
+                handler = self.handler("/ask", json.dumps(request).encode())
+                handler.start_answer = Mock()
+                with patch.object(serve, "brains", return_value=[remote, local]), \
+                     patch.object(serve, "open_peer", side_effect=[response]) as forward, \
+                     patch.object(serve, "ask_model") as infer:
+                    handler.do_POST()
+                sent = json.loads(forward.call_args.args[3])
+                self.assertIs(sent["require_brain"], True)
+                self.assertEqual(sent["brain"], "local:ember")
+                infer.assert_not_called()
+                if response is selected:
+                    handler.send_error.assert_not_called()
+                    self.assertEqual(handler.wfile.getvalue(), b"Selected answer")
+                else:
+                    self.assertEqual(handler.send_error.call_args.args[0], 503)
+                    handler.start_answer.assert_not_called()
+
     def test_peer_answer_falls_back_only_to_a_local_model(self):
         body = json.dumps({"question": "Explain this reading", "page": "console", "brain": "local:previous"}).encode()
         handler = self.handler("/peer/ask", body)

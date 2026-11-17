@@ -67,7 +67,7 @@ NOTES = ROOT / "data" / "clean" / "research_notes.json"
 TABLES = ROOT / "data" / "clean" / "psi_tables_summary.json"   # counts from the PSI Experimental Tables (build_tables.py)
 OLLAMA = "http://127.0.0.1:11434"
 STATIC = {"/": "index.html", **{"/" + name: name for name in (
-    "index.html", "model.js", "research.js", "tables.js", "counterexample.js", "advisor.js", "tour.js", "evidence.js", "evidence-data.js",
+    "index.html", "dashboard-hosted.js", "model.js", "research.js", "tables.js", "counterexample.js", "advisor.js", "tour.js", "evidence.js", "evidence-data.js",
     "interface.css", "research-ui.css", "console-ui.css", "flex-flame.webp", "view-link.js", "share-view.js",
     "moon-evidence.html", "moon-evidence.css", "moon-evidence-data.js", "moon-evidence.js",
     "preset-earth.jpg", "preset-moon.jpg", "preset-mars.jpg")}}
@@ -294,6 +294,10 @@ def peer_text(value, limit):
     return flat("".join(c if c.isprintable() else " " for c in value[:limit * 2]), limit)
 
 
+def legacy_device_role(name):
+    return "handheld" if re.search(r"\b(?:legion go|handheld)\b", name, re.I) else "pc"
+
+
 def peer_models(server):
     models = peer_json(server, "/peer/ai", 2).get("brains")
     if not isinstance(models, list):
@@ -307,7 +311,10 @@ def peer_models(server):
             continue
         where = peer_text(entry.get("where"), 80) or "the other machine"
         label = peer_text(entry.get("label"), 160) or f"{model} on {where}"
-        found.append({"id": "peer:local:" + model, "model": model, "where": where, "label": label, "up": True})
+        role = entry.get("role")
+        if role not in ("pc", "handheld"):
+            role = legacy_device_role(where + " " + label)
+        found.append({"id": "peer:local:" + model, "model": model, "where": where, "label": label, "role": role, "up": True})
     return found
 
 
@@ -317,8 +324,9 @@ def brains(server, local_only=False):
     The first brain in the list is the one "auto" uses: the peer's first (the big machine) when it is up, else this machine's.
     """
     here, names = [], local_models()
+    role = getattr(server, "device_role", "pc")
     for name in (names or [])[:4]:
-        here.append({"id": "local:" + name, "model": name, "where": server.where, "label": f"{name} on {server.where}", "up": True})
+        here.append({"id": "local:" + name, "model": name, "where": server.where, "label": f"{name} on {server.where}", "role": role, "up": True})
     here.sort(key=lambda b: b["model"] != server.model)                    # the model named with --model comes first
     there = []
     if server.peer and not local_only:
@@ -335,7 +343,8 @@ def ai_status(server, local_only=False):
     found = brains(server, local_only=local_only)
     up = [b for b in found if b["up"]]
     status = {"ok": bool(up), "brains": found, "default": up[0]["id"] if up else None,
-              "model": up[0]["model"] if up else server.model, "gpu": GPU, "where": server.where, "host": server.host}
+              "model": up[0]["model"] if up else server.model, "gpu": GPU, "where": server.where, "host": server.host,
+              "role": getattr(server, "device_role", "pc")}
     if not up:
         status["reason"] = ("Ollama is not answering on this machine." if local_models() is None
                             else f"No model is pulled on this machine. Run: ollama pull {server.model}")
@@ -644,6 +653,9 @@ class Handler(BaseHTTPRequestHandler):
             ask = json.loads(raw.decode("utf-8"))
             if not isinstance(ask, dict):
                 return self.send_error(400)
+            require_brain = ask.get("require_brain", False)
+            if not isinstance(require_brain, bool):
+                return self.send_error(400, "Expected a boolean for require_brain")
             ask = {key: ask[key] for key in ("question", "page", "reading", "selected", "need", "brain")
                    if ask.get(key) is not None}
             if any(not isinstance(value, str) for value in ask.values()):
@@ -657,7 +669,11 @@ class Handler(BaseHTTPRequestHandler):
         server, found = self.server, brains(self.server, local_only=self.path == "/peer/ask")
         up = [b for b in found if b["up"]]
         wanted = str(ask.get("brain") or "auto")
-        brain = next((b for b in up if b["id"] == wanted), None) or (up[0] if up else None)
+        require_brain = require_brain and wanted != "auto"
+        brain = next((b for b in up if b["id"] == wanted), None)
+        if require_brain and not brain:
+            return self.send_error(503, "The selected model is offline. Reconnect its device or select Auto.")
+        brain = brain or (up[0] if up else None)
         if not brain:
             return self.send_error(503, "No model is ready")
         fell_back = wanted not in ("auto", brain["id"])
@@ -666,6 +682,8 @@ class Handler(BaseHTTPRequestHandler):
         # The peer endpoint handles this question locally. If the peer is unavailable, try our local model.
         if brain["id"].startswith("peer:"):
             fwd = {"question": question, "brain": brain["id"][len("peer:"):]}
+            if require_brain:
+                fwd["require_brain"] = True
             if ask.get("page") == "console":
                 fwd.update(page="console", reading=str(ask.get("reading") or "")[:4000])
             else:
@@ -676,6 +694,8 @@ class Handler(BaseHTTPRequestHandler):
                     resp.close()
                     raise ValueError("Unexpected peer answer format")
             except PEER_ERRORS as err:
+                if require_brain:
+                    return self.send_error(503, "The selected device could not answer. Reconnect it or select Auto.")
                 mine = next((b for b in up if b["id"].startswith("local:")), None)
                 print(f"   the other machine did not answer ({err.__class__.__name__}); " + ("answering here" if mine else "no model here either"))
                 if not mine:
@@ -683,6 +703,8 @@ class Handler(BaseHTTPRequestHandler):
                 brain, fell_back = mine, True
             else:
                 with resp:
+                    if require_brain and resp.headers.get("X-Brain-Fallback") == "1":
+                        return self.send_error(503, "The selected device's model is offline. Reconnect it or select Auto.")
                     label = peer_text(resp.headers.get("X-Brain-Label"), 160) or brain["label"]
                     catalogue = {r["id"] for r in server.records}
                     sent_ids = (resp.headers.get("X-Records-Used") or "")[:256].split(",")
@@ -802,6 +824,7 @@ def main():
     server.model, server.records, server.one_at_a_time = args.model, load_records(), threading.Lock()
     server.peer = peer_origin
     server.where = args.name.strip() or (f"this team's {GPU}" if GPU else "this device")
+    server.device_role = "handheld" if args.handheld_peer else legacy_device_role(args.name)
     server.host, server.lan = args.name.strip() or socket.gethostname(), args.lan
     chosen = args.exports.strip()
     if not chosen and EXPORTS_NOTE.is_file():

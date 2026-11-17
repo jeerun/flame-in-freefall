@@ -424,6 +424,11 @@
   .ai .brains { display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; margin-bottom: 0.45rem; font-size: 0.85rem; color: var(--ink-2); }
   .ai .brains button { padding: 0.2rem 0.7rem; border-radius: 999px; border: 1px solid var(--line); background: transparent; cursor: pointer; font-size: 0.85rem; color: var(--ink-2); }
   .ai .brains button[aria-pressed=true] { background: var(--flame); border-color: var(--flame); color: #0b1020; font-weight: 600; }
+  .ai .brains label { display: inline-flex; align-items: center; gap: .3rem; }
+  .ai .brains select { max-width: 15rem; }
+  .ai .connection { background: var(--panel); border: 1px solid var(--line); border-radius: .6rem; padding: .75rem; }
+  .ai .connection p { margin: 0 0 .5rem; }
+  .ai .connection a { display: inline-block; margin-right: 1rem; color: var(--ink); text-decoration: underline; }
   .aibtn { cursor: pointer; background: transparent; color: var(--ink); border-color: var(--flame); font: inherit; font-size: 0.85rem; }
   .aibtn kbd { height: 1.2rem; min-width: 1.2rem; font-size: 0.75rem; }
   .ai { position: fixed; inset: 0; z-index: 5; background: rgba(6, 10, 24, 0.8); display: grid; grid-template: minmax(0, 1fr) / minmax(0, 1fr); place-items: center; padding: 1rem; }
@@ -550,7 +555,7 @@
     <div class="orb" aria-hidden="true"><div class="flame"></div><div class="droplet"></div></div>
     <h1>Flame in Freefall</h1>
     <div class="tag">A dashboard that summarizes, ranks and interprets NASA's microgravity combustion investigations, for fire safety on the way to the Moon and Mars.</div>
-    <div class="three"><span id="titleRes">NASA research</span><span>Flame console: predict a droplet flame</span><span>Fire drill: test yourself</span><span id="titleAI" hidden>Ember: the on-board AI</span></div>
+    <div class="three"><span id="titleRes">NASA research</span><span>Flame console: predict a droplet flame</span><span>Fire drill: test yourself</span><span id="titleAI" hidden>Ask Ember</span></div>
     <button type="button" class="go"><kbd>A</kbd> Start exploring</button>
     <div class="by">Team Second Toe · 2026 NASA Space Apps Challenge · Data: NASA Physical Sciences Informatics</div>
   </div>
@@ -927,7 +932,19 @@
       <button type="button" class="close" id="aiClose"><kbd>B</kbd> Close</button>
     </div>
     <div>
-      <div class="brains" id="aiBrains" hidden></div>
+      <div class="brains" id="aiBrains" role="group" aria-label="Answer source">
+        <span><kbd>X</kbd> Answer source</span>
+        <button type="button" data-brain="auto">Auto</button>
+        <button type="button" data-brain="claude">Claude</button>
+        <button type="button" data-brain="pc">PC</button>
+        <button type="button" data-brain="handheld">Handheld</button>
+        <label id="aiModelChoice" hidden>Model <select id="aiLocalModel"></select></label>
+      </div>
+      <div class="connection" id="aiConnectHelp" hidden>
+        <p id="aiConnectText"></p>
+        <a id="aiConnectLink" href="http://localhost:8000/">Open local dashboard</a>
+        <a id="aiSetupGuide" href="https://github.com/jeerun/flame-in-freefall/blob/post-event-ember/docs/legion-go-setup.md" target="_blank" rel="noopener noreferrer">Connection guide</a>
+      </div>
       <div class="qs" id="aiQs"></div>
       <form class="own" id="aiForm">
         <input id="aiInput" type="text" maxlength="300" autocomplete="off" aria-label="Your own question" placeholder="Or type your own question and press Enter">
@@ -935,7 +952,8 @@
       </form>
     </div>
     <div class="ans" id="aiAns" tabindex="0" role="region" aria-label="Ember’s answer" aria-live="polite"></div>
-    <p class="fine">Ember is a language model running on the team's own PC. It writes each answer on the spot from the NASA PSI records and the numbers on this screen. It can be wrong: check the PSI ids it cites. Not a crew procedure.</p>
+    <p class="fine" id="aiHostedNote" hidden>The submitted version ran Gemma locally. This post-event demo uses Claude to answer from the same NASA records.</p>
+    <p class="fine" id="aiLocalNote">Local models use the records or readings on this screen. Check their answers against the original NASA data before drawing conclusions.</p>
   </div>
 </dialog>
 
@@ -980,6 +998,7 @@ window.FLAME_MODEL = {
   burn_rate:  { intercept: 0.30, fuel: { heptane: 0, methanol: -0.08 }, coef: { o2: 0.012, p: 0.03, co2: -0.004, d0: 0.02 } }
 };
 </script>
+<script src="dashboard-hosted.js" data-origin="https://ember-research-demo.ember-hosted-preview.workers.dev"></script>
 <script src="model.js" onerror="this.remove()"></script>
 <script src="research.js" onerror="this.remove()"></script>
 <script src="tables.js" onerror="this.remove()"></script>
@@ -2334,7 +2353,7 @@ window.FLAME_MODEL = {
   // After each answer the local AI, when it is reachable, adds one sentence on why the test may have ended that way.
   function drillCoach() {
     var round = drill.i, game = drill;
-    if (!AI.ok) return;
+    if (!AI.ok || !answerSource()) return;
     drill.coachFor = round; drill.coach = "...";
     aiStream({ page: "console", question: "In one sentence of at most 28 words, say why this test may have ended this way.", reading: drillText() },
       function (text) { if (drill === game && drill.i === round) { drill.coach = text.replace(/\s*\[[^\]]*\]/g, ""); coachLine(); } },
@@ -3056,6 +3075,7 @@ window.FLAME_MODEL = {
     }
     view.page = name;
     document.body.dataset.page = name;
+    if (AI) showAIAvailability();
     ["Console", "Research", "Drill"].forEach(function (p) {
       var on = p.toLowerCase() === name;
       $("view" + p).hidden = !on; $("hints" + p).hidden = !on;
@@ -3113,6 +3133,7 @@ window.FLAME_MODEL = {
       if (e.key === "Enter" && e.target === $("findResearchInput")) action = "confirm";
       if (action) { e.preventDefault(); e.stopPropagation(); researchFindPanel.handle(action); }
     });
+    $("researchTools").open = window.matchMedia("(min-width: 821px) and (min-height: 500px)").matches;
     $("researchTools").addEventListener("toggle", function () {
       if (view.page === "research" && view.orbit) drawOrbit(ranked(), R.needs[view.need]);
     });
@@ -3133,9 +3154,19 @@ window.FLAME_MODEL = {
   }
 
   /* ---------- Ask the AI ---------- */
-  // A language model on the team's own PC, reached through server/serve.py. The page only shows the
-  // button when it was opened from that server and the model is ready; opened as a file, nothing changes.
-  var AI = { ok: false, model: "", gpu: "", label: "", brains: [], brain: load("brain", "auto"), def: null, open: false, busy: false, sel: 0, qs: [] };
+  // Device models are reached through the user's dashboard server. The public research page uses the hosted service.
+  var sourceModes = ["auto", "claude", "pc", "handheld"];
+  var requestedSource = new URLSearchParams(location.search).get("ember_source");
+  var savedSource = load("emberSource", null);
+  var AI = { ok: false, model: "", gpu: "", label: "", brains: [], def: null, open: false, busy: false, sel: 0, qs: [],
+    mode: sourceModes.includes(requestedSource) ? requestedSource : sourceModes.includes(savedSource) ? savedSource : "auto",
+    modelIds: { pc: load("emberPcModel", ""), handheld: load("emberHandheldModel", "") },
+    handoff: sourceModes.includes(requestedSource),
+    legacyBrain: !requestedSource && !savedSource ? load("brain", "auto") : null
+  };
+  function hostedResearchReady() {
+    return view.page === "research" && !BASE.ours && !!hostedResearch.backend;
+  }
   function aiQuestions() {
     if (view.page === "research" && R) {
       var list = ranked(), it = list[view.sel];
@@ -3206,65 +3237,127 @@ window.FLAME_MODEL = {
     var buttons = $("aiQs").children;
     if (buttons.length) buttons[(AI.sel + dir + buttons.length) % buttons.length].focus();
   }
-  // Where Ember thinks: "auto" takes the big machine when it answers and this device when it does not.
-  function upBrains() { return AI.brains.filter(function (b) { return b.up; }); }
-  function brainNow() {
-    var up = upBrains(), mine = up.filter(function (b) { return b.id === AI.brain; })[0];
-    return mine || up[0] || null;
+  function deviceRole(brain) {
+    if (brain.role === "pc" || brain.role === "handheld") return brain.role;
+    // Older servers report hardware through their launch name. A handheld's configured peer is its PC.
+    if (/handheld|legion\s*go/i.test(brain.where || brain.label || "")) return "handheld";
+    if (brain.id.startsWith("local:") && AI.brains.some(function (b) { return b.id.startsWith("peer"); })) return "handheld";
+    return "pc";
+  }
+  function deviceModels(mode) {
+    return AI.brains.filter(function (b) { return b.up && deviceRole(b) === mode; });
+  }
+  function answerSource() {
+    if (AI.mode === "auto" && AI.ok && AI.def) return AI.def;
+    if (AI.mode === "auto" || AI.mode === "claude") {
+      return hostedResearchReady() ? { id: "claude", label: hostedResearch.backend + " (online)" } : null;
+    }
+    var models = deviceModels(AI.mode);
+    return models.find(function (b) { return b.id === AI.modelIds[AI.mode]; }) || models[0] || null;
+  }
+  function endAIRequest() {
+    if (AI.request) AI.request.abort();
+    AI.request = null; AI.busy = false;
+    $("aiAns").setAttribute("aria-busy", "false");
+  }
+  function setBrain(mode) {
+    if (!sourceModes.includes(mode) || mode === AI.mode) return;
+    endAIRequest(); hush(); $("aiAns").replaceChildren();
+    AI.mode = mode; AI.legacyBrain = null; save("emberSource", mode);
+    sfx.preset(); renderBrains();
+  }
+  function cycleBrain() {
+    setBrain(sourceModes[(sourceModes.indexOf(AI.mode) + 1) % sourceModes.length]);
+  }
+  $("aiBrains").addEventListener("click", function (event) {
+    var button = event.target.closest("button[data-brain]");
+    if (button) setBrain(button.dataset.brain);
+  });
+  $("aiLocalModel").addEventListener("change", function () {
+    endAIRequest(); hush(); $("aiAns").replaceChildren();
+    AI.modelIds[AI.mode] = this.value;
+    save(AI.mode === "pc" ? "emberPcModel" : "emberHandheldModel", this.value);
+    renderBrains();
+  });
+  function showConnectionHelp() {
+    var text, link = $("aiConnectLink"), guide = $("aiSetupGuide");
+    link.hidden = false; guide.hidden = false;
+    if (AI.mode === "pc") {
+      text = "Start Ollama and Start dashboard.bat on your PC. From another device, connect both devices to the same Tailscale network and open your PC’s dashboard address.";
+      link.href = "http://localhost:8000/?ember_source=pc"; link.textContent = "Open dashboard on this PC";
+    } else if (AI.mode === "handheld") {
+      text = "On your Legion Go, run Setup Legion Go.bat once, then Start on Legion Go.bat. Press Enter at the PC address prompt to use the handheld on its own.";
+      link.href = "http://localhost:8000/?ember_source=handheld"; link.textContent = "Open dashboard on this handheld";
+    } else if (AI.mode === "claude" || !BASE.ours) {
+      text = view.page !== "research" ? "Claude answers questions on the online NASA research page." : "Open the online NASA research dashboard to ask Claude.";
+      link.href = hostedResearch.origin + "/?ember_source=claude"; link.textContent = "Open online research";
+      if (hostedResearch.isPublicSite && view.page === "research") { text = "Claude is currently unavailable. Reload to check again, or choose a local device."; link.hidden = true; }
+      guide.hidden = true;
+    } else {
+      text = "Auto checks the connected PC first, then this device. Choose PC or Handheld for connection instructions.";
+      link.hidden = true;
+    }
+    $("aiConnectText").textContent = text;
   }
   function renderBrains() {
-    var box = $("aiBrains"), up = upBrains();
-    var focused = box.contains(document.activeElement) ? document.activeElement.dataset.brain : null;
-    box.innerHTML = ""; box.hidden = up.length < 2;
-    if (up.length < 2) {
-      if (focused) $("aiClose").focus();
-      return;
-    }
-    box.appendChild(el("kbd", "", "X")); box.appendChild(el("span", "", "Ember thinks on:"));
-    [{ id: "auto", text: "Auto" }].concat(up.map(function (b) { return { id: b.id, text: b.label }; })).forEach(function (o) {
-      var b = el("button", "", o.text); b.type = "button"; b.dataset.brain = o.id;
-      b.setAttribute("aria-pressed", String(o.id === (upBrains().some(function (x) { return x.id === AI.brain; }) ? AI.brain : "auto")));
-      b.addEventListener("click", function () { setBrain(o.id); });
-      box.appendChild(b);
-      if (o.id === focused) b.focus();
+    var source = answerSource(), isHosted = source && source.id === "claude";
+    $("aiBrains").querySelectorAll("button[data-brain]").forEach(function (button) {
+      button.setAttribute("aria-pressed", String(button.dataset.brain === AI.mode));
     });
-    if (focused && !box.contains(document.activeElement)) $("aiClose").focus();
+    var models = deviceModels(AI.mode), select = $("aiLocalModel");
+    $("aiModelChoice").hidden = models.length < 2;
+    if (models.length > 1) {
+      select.replaceChildren();
+      models.forEach(function (b) { select.add(new Option(b.label, b.id)); });
+      select.value = source.id;
+    }
+    $("aiConnectHelp").hidden = !!source;
+    if (!source) showConnectionHelp();
+    $("aiQs").hidden = $("aiForm").hidden = !source;
+    $("aiForm").querySelectorAll("input,button").forEach(function (control) { control.disabled = !source; });
+    $("aiQs").querySelectorAll("button").forEach(function (button) { button.disabled = !source; });
+    $("aiLocalNote").hidden = !source || isHosted;
+    $("aiHostedNote").hidden = !isHosted;
+    var selectedButton = $("aiBrains").querySelector("[aria-pressed=true]");
+    $("aiWho").textContent = source ? (AI.mode === "auto" ? "Auto · " : "") + source.label
+      : selectedButton.textContent + " · " + (AI.mode === "pc" || AI.mode === "handheld" ? "Connect first" : "Unavailable");
   }
-  function setBrain(id) { AI.brain = id; save("brain", id); sfx.preset(); renderBrains(); aiWho(); }
-  function cycleBrain() {
-    var ids = ["auto"].concat(upBrains().map(function (b) { return b.id; }));
-    if (ids.length > 2) setBrain(ids[(Math.max(0, ids.indexOf(AI.brain)) + 1) % ids.length]);
-  }
-  function aiWho() {
-    var b = brainNow();
-    $("aiWho").textContent = b ? "Answering model: " + b.label + ". Read-aloud uses an installed English voice when available." : "Ember is offline.";
-  }
-  function openAI() {
-    if (!AI.ok || AI.open || document.querySelector("dialog[open]")) return;
+  function openAI(askFirst) {
+    if ((view.page !== "research" && !BASE.ours) || AI.open || document.querySelector("dialog[open]")) return;
     var qs = aiQuestions();
     if (!qs.length) return;
     AI.returnFocus = document.activeElement;
-    AI.open = true; AI.sel = 0; AI.qs = qs; renderAI(); renderBrains(); aiWho();
-    $("ai").hidden = false; $("ai").showModal(); $("aiQs").firstElementChild.focus();
+    AI.open = true; AI.sel = 0; AI.qs = qs; renderAI(); renderBrains();
+    $("ai").hidden = false; $("ai").showModal();
+    (answerSource() ? $("aiQs").firstElementChild : $("aiBrains").querySelector("[aria-pressed=true]")).focus();
     sfx.open();
-    askAI(AI.qs[0]);                               // one press is enough: the first question is asked straight away
+    var source = answerSource();
+    if (askFirst !== false && source && source.id !== "claude") askAI(AI.qs[0]);
   }
   function closeAI() {
     if (!AI.open) return;
     AI.open = false;
-    if (AI.request) AI.request.abort();
-    AI.request = null; AI.busy = false;
-    $("aiAns").setAttribute("aria-busy", "false");
+    endAIRequest();
     leaveDialog("ai", AI.returnFocus, "aiBtn"); hush(); sfx.close();
   }
-  // Send one question to the model on the PC. onText gets the answer so far, onEnd gets (error or null, full text).
+  // Send one question to the selected source. Stream intermediate text and pass source details on completion.
   function aiStream(body, onText, onEnd, signal) {
     var got = "", meta = { label: "", fellBack: false };
-    body.brain = AI.brain;
+    var source = answerSource();
+    if (!source) { onEnd(new Error("Connect the selected answer source first."), "", meta); return; }
+    if (source.id === "claude" && body.page === "research") {
+      return hostedResearch.ask(body, onText, onEnd, signal);
+    }
+    body.brain = AI.mode === "auto" ? "auto" : source.id;
+    if (AI.mode !== "auto") body.require_brain = true;
     fetch("/ask", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), signal: signal })
       .then(function (resp) {
         if (!resp.ok || !resp.body) throw new Error("HTTP " + resp.status);
         meta.label = resp.headers.get("X-Brain-Label") || ""; meta.fellBack = resp.headers.get("X-Brain-Fallback") === "1";
+        if (body.require_brain && meta.fellBack) {
+          resp.body.cancel().catch(function () {});
+          throw new Error("The selected device disconnected.");
+        }
         meta.used = (resp.headers.get("X-Records-Used") || "").split(",").filter(Boolean);
         var reader = resp.body.getReader(), dec = new TextDecoder();
         function pump() {
@@ -3306,14 +3399,14 @@ window.FLAME_MODEL = {
   function askAI(q) {
     q = (q || "").trim();
     if (!q || !AI.open || (AI.busy && AI.question === q)) return;
-    if (!AI.ok) { aiWho(); return; }
+    var who = answerSource();
+    if (!who) { renderBrains(); return; }
     if (AI.request) AI.request.abort();
     var request = new AbortController();
     AI.request = request; AI.busy = true; AI.question = q;
     hush();
     var box = $("aiAns"); box.innerHTML = ""; box.setAttribute("aria-busy", "true");
     box.appendChild(el("span", "asked", q));
-    var who = brainNow();
     var out = el("span", "", "Ember is thinking" + (who ? " (" + who.label + ")" : "") + " ..."); box.appendChild(out);
     var body = { page: view.page === "research" ? "research" : "console", question: q };
     if (view.page === "research" && R) {
@@ -3331,6 +3424,7 @@ window.FLAME_MODEL = {
         if (err) out.textContent = "Ember did not answer (" + err.message + "). The rest of the dashboard still works.";
         else {
           box.appendChild(el("span", "took", "Answered in " + ((Date.now() - t0) / 1000).toFixed(1) + " s by Ember (" + (meta.label || (who ? who.label : AI.model)) + ")."));
+          if (meta.sources) hostedResearch.showSources(box, meta.sources);
           if (meta.used && meta.used.length) {
             box.appendChild(el("span", "took", "NASA records it was given in full: " + meta.used.map(function (id) {
               var rec = R ? R.items.filter(function (x) { return x.id === id; })[0] : null;
@@ -3350,15 +3444,26 @@ window.FLAME_MODEL = {
   $("aiForm").addEventListener("submit", function (ev) { ev.preventDefault(); askAI($("aiInput").value); });
   // Ask the server which machines can answer. Asked again every 20 seconds, so a lost or returning PC is noticed.
   function showAIAvailability() {
-    $("aiBtn").hidden = !AI.ok; $("titleAI").hidden = !AI.ok;
-    Array.prototype.forEach.call(document.querySelectorAll(".hintAI"), function (s) { s.hidden = !AI.ok; });
-    aiWho(); if (AI.open) renderBrains();
+    var available = view.page === "research" || BASE.ours;
+    $("aiBtn").hidden = !available; $("titleAI").hidden = !AI.ok && !hostedResearchReady();
+    Array.prototype.forEach.call(document.querySelectorAll(".hintAI"), function (s) { s.hidden = !available; });
+    if (AI.open) renderBrains();
   }
   function refreshAI(first) {
-    fetch("/ai").then(function (resp) { return resp.json(); }).then(function (j) {
+    return fetch("/ai").then(function (resp) { return resp.json(); }).then(function (j) {
       var was = AI.def, wasOk = AI.ok, up = (j && j.brains ? j.brains : []).filter(function (b) { return b.up; });
       if (first && j && j.brains) { BASE.ours = true; BASE.host = j.host || ""; sendButton(); setInterval(function () { refreshAI(false); }, 20000); }
       AI.ok = !!(j && j.ok); AI.brains = j && j.brains ? j.brains : []; AI.def = up.length ? up[0] : null;
+      if (AI.legacyBrain) {
+        var previous = up.find(function (b) { return b.id === AI.legacyBrain; });
+        if (previous) {
+          AI.mode = deviceRole(previous);
+          AI.modelIds[AI.mode] = previous.id;
+          save("emberSource", AI.mode);
+          save(AI.mode === "pc" ? "emberPcModel" : "emberHandheldModel", previous.id);
+          AI.legacyBrain = null;
+        }
+      }
       AI.model = AI.def ? AI.def.model : ""; AI.gpu = (j && j.gpu) || ""; AI.label = AI.def ? AI.def.label : "";
       showAIAvailability();
       if (first) return;
@@ -3373,7 +3478,11 @@ window.FLAME_MODEL = {
     });
   }
   if (/^https?:$/.test(location.protocol) && window.fetch) {
-    refreshAI(true);                               // asks again every 20 seconds once the team's server has answered
+    var ready = hostedResearch.isPublicSite ? hostedResearch.probe() : refreshAI(true);
+    ready.then(function () {
+      showAIAvailability();
+      if (AI.handoff) { AI.handoff = false; openAI(false); }
+    });
   }
 
   /* ---------- start screen and starfield ---------- */
@@ -3714,6 +3823,7 @@ window.FLAME_MODEL = {
     if (AI.open) {
       cycleDialogTab(e, $("ai"));
       if (e.key === "Escape") { e.preventDefault(); closeAI(); }
+      else if (e.target === $("aiLocalModel")) return;
       else if (!typing) {
         if (e.key === "ArrowUp" && e.target !== $("aiAns")) { e.preventDefault(); moveAI(-1); }
         else if (e.key === "ArrowDown" && e.target !== $("aiAns")) { e.preventDefault(); moveAI(1); }

@@ -39,13 +39,13 @@ def check(page, touch):
     page.goto(CONSOLE.as_uri())
     tools = page.locator("#researchTools")
     entry = tools.locator("#moonCase")
-    expect(entry).to_be_hidden()
     expect(entry).to_have_attribute("href", "moon-evidence.html")
     if touch:
+        expect(entry).to_be_hidden()
         tools.locator("summary").tap()
         entry.tap()
     else:
-        tools.locator("summary").press("Enter")
+        expect(entry).to_be_visible()
         entry.press("Enter")
     expect(page).to_have_url(CONSOLE.with_name("moon-evidence.html").as_uri())
 

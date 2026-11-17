@@ -150,9 +150,11 @@ Working on real data (Nov 15, 2026).
 
 There are three ways.
 
-**In a browser, nothing to install.** https://jeerun.github.io/flame-in-freefall/
-It is the `console/` folder, published with
-`git subtree push --prefix console origin gh-pages`. Live Ember inference requires the Python server.
+**In a browser, nothing to install.** [Post-event research demo](https://ember-research-demo.ember-hosted-preview.workers.dev/).
+The submitted version ran Gemma locally. On the demo’s **NASA research** page, **Ask Ember → Auto**
+uses hosted Claude. Choose **PC** or **Handheld** for instructions on opening your local dashboard.
+When both devices are connected to the handheld's dashboard, Auto prefers the PC and
+uses the handheld if the PC is unavailable. [Device setup](docs/legion-go-setup.md)
 
 **Without the AI, fully offline.** Open `console/index.html` in Edge or Chrome and
 press F11. Keep all the files in `console/` together. Without `model.js` the page falls back to made-up numbers and shows a
